@@ -1,11 +1,11 @@
 -- SolarShift OS — Phase 1 core data. No scoring engine is defined here.
 create extension if not exists pgcrypto;
 
-create type public.solarshift_role as enum ('ADMIN','SOLARSHIFT','MANDATAIRE','EXPERT','CLIENT','INVESTOR','INSTITUTION');
-create type public.project_status as enum ('LEAD','QUALIFICATION','DATA_COLLECTION','ANALYSIS','VALIDATION','PRE_FINANCEABLE','FINANCEABLE','CONTRACTING','EXECUTION','OPERATING','ARCHIVED');
-create type public.validation_state as enum ('UNKNOWN','PENDING','VALIDATED','REJECTED');
-
-create table public.profiles (id uuid primary key references auth.users(id) on delete cascade, display_name text, created_at timestamptz not null default now());
+-- Supabase starter projects can already provide public.profiles. It remains
+-- the identity source of truth; this migration only references it.
+do $$ begin create type public.solarshift_role as enum ('ADMIN','SOLARSHIFT','MANDATAIRE','EXPERT','CLIENT','INVESTOR','INSTITUTION'); exception when duplicate_object then null; end $$;
+do $$ begin create type public.project_status as enum ('LEAD','QUALIFICATION','DATA_COLLECTION','ANALYSIS','VALIDATION','PRE_FINANCEABLE','FINANCEABLE','CONTRACTING','EXECUTION','OPERATING','ARCHIVED'); exception when duplicate_object then null; end $$;
+do $$ begin create type public.validation_state as enum ('UNKNOWN','PENDING','VALIDATED','REJECTED'); exception when duplicate_object then null; end $$;
 create table public.organizations (id uuid primary key default gen_random_uuid(), legal_name text not null, created_at timestamptz not null default now());
 create table public.organization_memberships (organization_id uuid not null references public.organizations(id) on delete cascade, user_id uuid not null references public.profiles(id) on delete cascade, role public.solarshift_role not null, created_at timestamptz not null default now(), primary key (organization_id,user_id,role));
 create table public.clients (id uuid primary key default gen_random_uuid(), organization_id uuid not null references public.organizations(id), legal_name text not null, siren text, siret text, created_at timestamptz not null default now(), updated_at timestamptz not null default now());
