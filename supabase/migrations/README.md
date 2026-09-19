@@ -8,7 +8,13 @@ Ordre prévu pour la Phase 1 :
 2. clients, contacts et projets ;
 3. documents, sources, paramètres, preuves et validations ;
 4. contradictions et journal d’audit ;
-5. RuleSets versionnés.
+5. RuleSets versionnés ;
+6. CR-001 : fondation versionnée des profils énergie, runs, KPI et scénarios ;
+7. correction du cycle de vie des runs pour horodater tous les états terminaux.
 
 Aucun moteur de scoring n’est introduit par ces premières migrations.
+
+La migration CR-001 sépare les données sources, les exécutions de calcul et les KPI
+dérivés. C03 et C09 ne peuvent devenir les références canoniques qu’après validation
+et promotion contrôlée d’un résultat versionné.
 

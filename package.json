@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "check": "node scripts/check-foundation.mjs",
-    "test": "node tests/unit/foundation.test.mjs",
+    "test": "node scripts/run-tests.mjs",
     "ci": "npm run check && npm test"
   },
   "engines": {
