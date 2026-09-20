@@ -39,6 +39,17 @@
     refresh();
   }
 
+  function installRiskDraft() {
+    const source = document.getElementById('riskSource');
+    const factor = document.getElementById('riskFactor');
+    if (!source || !factor) return;
+    const label = source.closest('label');
+    const marker = label?.querySelector('b');
+    if (marker) marker.remove();
+    if (label?.firstChild) label.firstChild.nodeValue = 'Observation ou référence ';
+    source.placeholder = 'Observation facultative : ajoutez une précision ou une référence si disponible';
+  }
+
   function addStyles() {
     const style = document.createElement('style');
     style.textContent = `
@@ -58,12 +69,14 @@
     if (document.querySelector('.auditJourney')) {
       addStyles();
       installRoofMode();
+      installRiskDraft();
       return;
     }
     const main = document.querySelector('main') || document.querySelector('.layout');
     if (!main) return;
     addStyles();
     installRoofMode();
+    installRiskDraft();
     const nav = document.createElement('nav');
     nav.className = 'auditJourney';
     nav.setAttribute('aria-label', 'Parcours de qualification');
