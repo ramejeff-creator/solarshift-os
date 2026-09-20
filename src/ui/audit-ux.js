@@ -22,13 +22,17 @@
       .auditJourney button.current{background:#0a3f2d;color:#fff;border-color:#0a3f2d}
       .auditProgress{flex:0 0 100%;font-size:13px;color:#587469;margin:0 0 4px}.auditJourney strong{display:block;font-size:12px;opacity:.8}.auditJourney span{font-weight:700;font-size:14px}
       .stageAnchor{scroll-margin-top:16px}.auditProgress{font-size:13px;color:#587469;margin:0 0 14px}
+      header{z-index:1200}.auditJourney{z-index:1100}.map{position:relative;z-index:0}.map .leaflet-top,.map .leaflet-bottom,.map .leaflet-control{z-index:400!important}
       @media(max-width:700px){.auditJourney button{min-width:132px}}
     `;
     document.head.appendChild(style);
   }
 
   function boot() {
-    if (document.querySelector('.auditJourney')) return;
+    if (document.querySelector('.auditJourney')) {
+      addStyles();
+      return;
+    }
     const main = document.querySelector('main') || document.querySelector('.layout');
     if (!main) return;
     addStyles();
