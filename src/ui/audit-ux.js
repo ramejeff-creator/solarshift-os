@@ -16,11 +16,11 @@
   function addStyles() {
     const style = document.createElement('style');
     style.textContent = `
-      .auditJourney{display:flex;gap:8px;overflow:auto;margin:0 0 20px;padding:4px 0 9px;scrollbar-width:thin}
+      .auditJourney{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;overflow:auto;margin:0 0 20px;padding:4px 0 9px;scrollbar-width:thin}
       .auditJourney button{min-width:145px;border:1px solid #cfe0d5;background:#fff;color:#315c4b;border-radius:9px;padding:10px 12px;text-align:left;cursor:pointer;font:inherit}
       .auditJourney button:hover,.auditJourney button:focus-visible{border-color:#1c875b;outline:3px solid #1c875b33}
       .auditJourney button.current{background:#0a3f2d;color:#fff;border-color:#0a3f2d}
-      .auditJourney strong{display:block;font-size:12px;opacity:.8}.auditJourney span{font-weight:700;font-size:14px}
+      .auditProgress{flex:0 0 100%;font-size:13px;color:#587469;margin:0 0 4px}.auditJourney strong{display:block;font-size:12px;opacity:.8}.auditJourney span{font-weight:700;font-size:14px}
       .stageAnchor{scroll-margin-top:16px}.auditProgress{font-size:13px;color:#587469;margin:0 0 14px}
       @media(max-width:700px){.auditJourney button{min-width:132px}}
     `;
