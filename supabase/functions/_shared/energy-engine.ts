@@ -235,6 +235,8 @@ function calculateFinancial(
   const investorCashFlow = [-input.initialEquityEur];
   const annualSavings: number[] = [];
   const annualProduction: number[] = [];
+  const annualRevenue: number[] = [0];
+  const annualEbitda: number[] = [0];
   const annualCosts = [input.capexEur];
   let year1Baseline = 0;
   let year1ProjectBill = 0;
@@ -258,6 +260,8 @@ function calculateFinancial(
 
     annualSavings.push(baselineBill - projectBill);
     annualProduction.push(energy.pvProductionAnnualKwh);
+    annualRevenue.push(revenue);
+    annualEbitda.push(revenue - opex);
     annualCosts.push(opex + replacement);
     projectCashFlow.push(projectFlow);
     investorCashFlow.push(projectFlow - debtService);
@@ -281,8 +285,13 @@ function calculateFinancial(
     clientSavingsYear1Eur: round(year1Baseline - year1ProjectBill),
     clientSavingsLifecycleEur: round(sum(annualSavings)),
     projectRevenueYear1Eur: round(year1Revenue),
+    projectRevenueAverageEur: round(sum(annualRevenue) / input.horizonYears),
     projectOpexYear1Eur: round(year1Opex),
     operatingMarginYear1Eur: round(year1Revenue - year1Opex),
+    operatingMarginAverageEur: round(sum(annualEbitda) / input.horizonYears),
+    projectNetTotalEur: round(sum(projectCashFlow)),
+    annualRevenueEur: annualRevenue.map((value) => round(value)),
+    annualEbitdaEur: annualEbitda.map((value) => round(value)),
     projectCashFlowEur: projectCashFlow.map((value) => round(value)),
     investorCashFlowEur: investorCashFlow.map((value) => round(value)),
     irrPct: irrResult.value === undefined ? undefined : round(irrResult.value * 100),

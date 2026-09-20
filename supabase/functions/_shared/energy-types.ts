@@ -205,8 +205,13 @@ export interface FinancialResult {
   clientSavingsYear1Eur: number;
   clientSavingsLifecycleEur: number;
   projectRevenueYear1Eur: number;
+  projectRevenueAverageEur: number;
   projectOpexYear1Eur: number;
   operatingMarginYear1Eur: number;
+  operatingMarginAverageEur: number;
+  projectNetTotalEur: number;
+  annualRevenueEur: number[];
+  annualEbitdaEur: number[];
   projectCashFlowEur: number[];
   investorCashFlowEur: number[];
   irrPct?: number;

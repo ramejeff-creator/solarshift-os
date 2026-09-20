@@ -64,13 +64,18 @@ function kpiRows(runId: string, input: EnergyScenarioInput, result: EnergyCalcul
     numeric('client_savings_year_1', result.financial.clientSavingsYear1Eur, 'EUR/year');
     numeric('client_savings_lifetime', result.financial.clientSavingsLifecycleEur, 'EUR');
     numeric('project_revenue_year_1', result.financial.projectRevenueYear1Eur, 'EUR/year');
+    numeric('project_revenue_average', result.financial.projectRevenueAverageEur, 'EUR/year');
     numeric('project_opex_year_1', result.financial.projectOpexYear1Eur, 'EUR/year');
     numeric('operating_margin', result.financial.operatingMarginYear1Eur, 'EUR/year');
+    numeric('operating_margin_average', result.financial.operatingMarginAverageEur, 'EUR/year');
+    numeric('project_net_total', result.financial.projectNetTotalEur, 'EUR');
     numeric('irr', result.financial.irrPct, '%');
     numeric('npv', result.financial.npvEur, 'EUR');
     numeric('payback_years', result.financial.paybackYears, 'years');
     numeric('lcoe', result.financial.lcoeEurPerKwh, 'EUR/kWh');
     structured('project_cash_flow', result.financial.projectCashFlowEur, 'EUR');
+    structured('annual_revenue', result.financial.annualRevenueEur, 'EUR/year');
+    structured('annual_ebitda', result.financial.annualEbitdaEur, 'EUR/year');
     structured('investor_cash_flow', result.financial.investorCashFlowEur, 'EUR');
   }
   return rows;

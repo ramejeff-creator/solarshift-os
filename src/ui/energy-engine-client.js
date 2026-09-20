@@ -43,6 +43,45 @@
 
     const button = $('runEnergyEngine');
     if (button && status) button.insertAdjacentElement('afterend', status);
+    ensureFinancialSummary(card);
+  }
+
+  function ensureFinancialSummary(financeCard) {
+    if ($('financialAnalysis')) return;
+    if (!$('financialAnalysisStyles')) {
+      const style = document.createElement('style');
+      style.id = 'financialAnalysisStyles';
+      style.textContent = '.financialAnalysis{margin-top:18px}.financialMode{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.financialMode button{border:1px solid #9ab4a6;background:#fff;color:#315c4b;border-radius:7px;padding:8px 11px;font:inherit;cursor:pointer}.financialMode button.current{background:#0a3f2d;color:#fff;border-color:#0a3f2d}.financialCashflow{padding:12px;background:#f4f9f5;border-left:4px solid #54a378;border-radius:6px;color:#315c4b}.financialMetrics{grid-template-columns:repeat(5,1fr)}@media(max-width:760px){.financialMetrics{grid-template-columns:1fr 1fr}}';
+      document.head.appendChild(style);
+    }
+    const block = document.createElement('section');
+    block.id = 'financialAnalysis';
+    block.className = 'card financialAnalysis';
+    block.innerHTML = `
+      <div class="sectionTitle"><h2>Analyse financière</h2><span class="pill">Serveur</span></div>
+      <p class="hint">Les indicateurs nets intègrent les charges d’exploitation. Les résultats restent en attente tant qu’aucun calcul Energy Engine validé n’est disponible.</p>
+      <div class="financialMode" role="group" aria-label="Perspective financière">
+        <button type="button" class="secondary current" data-financial-mode="investor">Investisseur / SPV</button>
+        <button type="button" class="secondary" data-financial-mode="owner">Propriétaire autofinancé</button>
+      </div>
+      <div class="metrics financialMetrics">
+        <div class="metric"><small>CA moyen annuel</small><span id="analysisRevenue">À calculer</span></div>
+        <div class="metric"><small>EBITDA moyen annuel</small><span id="analysisEbitda">À calculer</span></div>
+        <div class="metric"><small>TRI net fonds propres</small><span id="analysisIrr">À calculer</span></div>
+        <div class="metric"><small>Payback</small><span id="analysisPayback">À calculer</span></div>
+        <div class="metric"><small>Total net cumulé</small><span id="analysisNet">À calculer</span></div>
+      </div>
+      <p class="fine" id="analysisCharges">Charges prises en compte : assurance 0,4 % du CA · maintenance 2,5 % du CA · gestion réseau 10 % du CA pour le modèle investisseur.</p>
+      <div class="financialCashflow" id="analysisCashflow">Flux de trésorerie : à calculer côté serveur.</div>`;
+    financeCard.insertAdjacentElement('afterend', block);
+    block.querySelectorAll('[data-financial-mode]').forEach((toggle) => toggle.addEventListener('click', () => {
+      block.querySelectorAll('[data-financial-mode]').forEach((item) => item.classList.toggle('current', item === toggle));
+      block.dataset.mode = toggle.dataset.financialMode;
+      const charges = $('analysisCharges');
+      if (charges) charges.textContent = toggle.dataset.financialMode === 'owner'
+        ? 'Charges prises en compte : assurance 0,4 % du CA · maintenance 2,5 % du CA · sans commission de gestion réseau investisseur.'
+        : 'Charges prises en compte : assurance 0,4 % du CA · maintenance 2,5 % du CA · gestion réseau 10 % du CA.';
+    }));
   }
 
   function setStatus(message, tone) {
@@ -120,6 +159,12 @@
     if ($('multiple')) $('multiple').textContent = `${Number(financial.equityMultiple ?? 0).toFixed(2)}x`;
     if ($('payback')) $('payback').textContent = financial.paybackYears == null ? '—' : `${Number(financial.paybackYears).toFixed(1)} ans`;
     if ($('equity')) $('equity').textContent = `${Math.round(Number(financial.initialEquityEur ?? 0)).toLocaleString('fr-FR')} €`;
+    if ($('analysisRevenue')) $('analysisRevenue').textContent = `${Math.round(Number(financial.projectRevenueAverageEur ?? financial.projectRevenueYear1Eur ?? 0)).toLocaleString('fr-FR')} € / an`;
+    if ($('analysisEbitda')) $('analysisEbitda').textContent = `${Math.round(Number(financial.operatingMarginAverageEur ?? financial.operatingMarginYear1Eur ?? 0)).toLocaleString('fr-FR')} € / an`;
+    if ($('analysisIrr')) $('analysisIrr').textContent = financial.irrPct == null ? '—' : `${Number(financial.irrPct).toFixed(1)} %`;
+    if ($('analysisPayback')) $('analysisPayback').textContent = financial.paybackYears == null ? '—' : `${Number(financial.paybackYears).toFixed(1)} ans`;
+    if ($('analysisNet')) $('analysisNet').textContent = `${Math.round(Number(financial.projectNetTotalEur ?? 0)).toLocaleString('fr-FR')} €`;
+    if ($('analysisCashflow')) $('analysisCashflow').textContent = `Flux annuels enregistrés : ${(financial.projectCashFlowEur || []).length - 1} années · cumul net projet disponible.`;
     setStatus('Energy Engine v1 — calcul serveur validé, versionné et enregistré.', 'success');
   }
 
