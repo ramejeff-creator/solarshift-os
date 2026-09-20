@@ -13,6 +13,32 @@
     return [...document.querySelectorAll('section.card')].find((node) => pattern.test(node.textContent || ''));
   }
 
+  function installRoofMode() {
+    const roof = document.getElementById('audit-roof');
+    const tilt = document.getElementById('tilt');
+    const total = document.getElementById('roofTotal');
+    if (!roof || !tilt || !total) return;
+    const surfaceLabel = total.closest('label');
+    let note = roof.querySelector('.roofModeNote');
+    if (!note) {
+      note = document.createElement('p');
+      note.className = 'hint roofModeNote';
+      roof.querySelector('.form')?.insertAdjacentElement('beforebegin', note);
+    }
+    const refresh = () => {
+      const flat = tilt.value === 'Toit plat';
+      if (surfaceLabel?.firstChild) {
+        surfaceLabel.firstChild.nodeValue = flat ? 'Surface de toiture ' : 'Surface du pan à tracer ';
+      }
+      note.textContent = flat
+        ? 'Toit plat : tracez la surface de toiture. L’orientation et la pente concerneront les supports photovoltaïques.'
+        : 'Toiture inclinée : tracez un pan à la fois. Chaque pan devra ensuite avoir sa propre orientation, pente et production.';
+      note.dataset.mode = flat ? 'flat' : 'pitched';
+    };
+    tilt.addEventListener('change', refresh);
+    refresh();
+  }
+
   function addStyles() {
     const style = document.createElement('style');
     style.textContent = `
@@ -31,11 +57,13 @@
   function boot() {
     if (document.querySelector('.auditJourney')) {
       addStyles();
+      installRoofMode();
       return;
     }
     const main = document.querySelector('main') || document.querySelector('.layout');
     if (!main) return;
     addStyles();
+    installRoofMode();
     const nav = document.createElement('nav');
     nav.className = 'auditJourney';
     nav.setAttribute('aria-label', 'Parcours de qualification');
