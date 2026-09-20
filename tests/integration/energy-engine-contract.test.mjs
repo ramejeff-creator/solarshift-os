@@ -20,3 +20,9 @@ test('completion migration records terminal failed runs without relaxing open-ru
   assert.match(sql, /'PENDING','RUNNING'/);
   assert.match(sql, /completed_at is not null/);
 });
+
+test('successful server calculation advances only a DRAFT scenario', async () => {
+  const source = await readFile(new URL('../../supabase/functions/calculate-energy-scenario/index.ts', import.meta.url), 'utf8');
+  assert.match(source, /update\(\{ status: 'CALCULATED' \}\)/);
+  assert.match(source, /\.eq\('id', input\.scenarioId\)\.eq\('status', 'DRAFT'\)/);
+});

@@ -108,6 +108,12 @@ Deno.serve(async (request) => {
     const { data: scenario, error: scenarioError } = await service.from('scenarios').select('project_id').eq('id', input.scenarioId).single();
     if (scenarioError || scenario?.project_id !== input.projectId) return json({ error: 'Scenario does not belong to the project' }, 400);
   }
+  if (input.simulationId) {
+    const { data: simulation, error: simulationError } = await service.from('simulation_sessions').select('project_id, status, retention_days').eq('id', input.simulationId).single();
+    if (simulationError || simulation?.project_id !== input.projectId || simulation.status !== 'WORKING') {
+      return json({ error: 'Working simulation does not belong to the project' }, 400);
+    }
+  }
   if (sourceProfiles.length > 0) {
     const { data: profiles, error: profileError } = await service.from('energy_profiles').select('id, project_id').in('id', sourceProfiles);
     const validIds = new Set((profiles ?? []).filter((profile) => profile.project_id === input.projectId).map((profile) => profile.id));
@@ -116,6 +122,7 @@ Deno.serve(async (request) => {
   const { data: run, error: runError } = await service.from('calculation_runs').insert({
     project_id: input.projectId,
     scenario_id: input.scenarioId ?? null,
+    simulation_session_id: input.simulationId ?? null,
     engine_code: 'ENERGY_ENGINE',
     engine_version: ENERGY_ENGINE_VERSION,
     financial_model_version: FINANCIAL_MODEL_VERSION,
@@ -147,6 +154,26 @@ Deno.serve(async (request) => {
       completed_at: new Date().toISOString()
     }).eq('id', run.id);
     if (completionError) throw completionError;
+    // A successful canonical server run may advance only a DRAFT scenario.
+    // Validated/published scenarios remain immutable and are never overwritten.
+    if (input.scenarioId) {
+      const { error: scenarioStatusError } = await service.from('scenarios').update({ status: 'CALCULATED' })
+        .eq('id', input.scenarioId).eq('status', 'DRAFT');
+      if (scenarioStatusError) throw scenarioStatusError;
+    }
+    if (input.simulationId) {
+      const expiry = new Date();
+      const { data: simulationRetention } = await service.from('simulation_sessions').select('retention_days').eq('id', input.simulationId).single();
+      expiry.setUTCDate(expiry.getUTCDate() + (simulationRetention?.retention_days ?? 90));
+      const { error: simulationAttachError } = await service.from('simulation_sessions').update({
+        latest_calculation_run_id: run.id,
+        last_activity_at: new Date().toISOString(),
+        expires_at: expiry.toISOString(),
+        updated_by: userData.user.id,
+        updated_at: new Date().toISOString()
+      }).eq('id', input.simulationId).eq('status', 'WORKING');
+      if (simulationAttachError) throw simulationAttachError;
+    }
     return json({ calculationRunId: run.id, inputSnapshotHash: snapshotHash, result });
   } catch (error) {
     const detail = error instanceof Error ? { name: error.name, message: error.message } : { message: String(error) };
