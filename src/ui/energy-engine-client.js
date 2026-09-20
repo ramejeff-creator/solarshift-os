@@ -15,14 +15,20 @@
     );
     if (!card) return;
 
-    if (!$('engineStatus')) {
+    let status = $('engineStatus');
+    if (!status) {
       const status = document.createElement('p');
       status.id = 'engineStatus';
-      status.className = 'helper';
+      status.className = 'helper engineStatus';
       status.setAttribute('role', 'status');
+      status.setAttribute('aria-live', 'polite');
+      status.style.margin = '10px 0 0';
+      status.style.padding = '9px 11px';
+      status.style.borderRadius = '7px';
       status.textContent = 'Mode local — non canonique. Le calcul serveur attend un projet et des profils énergétiques validés.';
       const title = card.querySelector('.sectionTitle') || card.firstElementChild;
       (title || card).insertAdjacentElement('afterend', status);
+      status = $('engineStatus');
     }
 
     if (!$('runEnergyEngine')) {
@@ -34,6 +40,9 @@
       button.addEventListener('click', run);
       card.appendChild(button);
     }
+
+    const button = $('runEnergyEngine');
+    if (button && status) button.insertAdjacentElement('afterend', status);
   }
 
   function setStatus(message, tone) {
@@ -41,6 +50,8 @@
     if (!node) return;
     node.textContent = message;
     node.dataset.tone = tone || 'info';
+    node.style.background = tone === 'success' ? '#dff0e5' : tone === 'error' ? '#ffe1df' : '#fff2c9';
+    node.style.color = tone === 'success' ? '#073d2a' : tone === 'error' ? '#7d201b' : '#493500';
   }
 
   function config() {
