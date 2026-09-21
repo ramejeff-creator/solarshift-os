@@ -28,7 +28,7 @@
     const refresh = () => {
       const flat = tilt.value === 'Toit plat';
       if (surfaceLabel?.firstChild) {
-        surfaceLabel.firstChild.nodeValue = flat ? 'Surface de toiture ' : 'Surface du pan à tracer ';
+        surfaceLabel.firstChild.nodeValue = 'Surface toiture (renseigner ou tracer sur la carte) ';
       }
       note.textContent = flat
         ? 'Toit plat : tracez la surface de toiture. L’orientation et la pente concerneront les supports photovoltaïques.'

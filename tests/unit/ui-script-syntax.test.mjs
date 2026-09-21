@@ -36,6 +36,9 @@ test('roof and financing controls expose the requested variables', () => {
   assert.match(roof, /Puissance installée totale/);
   assert.match(roof, /Production annuelle moyenne/);
   assert.match(roof, /energy_profile|PVcalc|calculateSynthesis/);
+  assert.match(roof, /roofState/);
+  const auditUx = fs.readFileSync(new URL('audit-ux.js', uiRoot), 'utf8');
+  assert.match(auditUx, /Surface toiture \(renseigner ou tracer sur la carte\)/);
   assert.match(html, /id="debtShare"/);
   assert.match(finance, /Dégradation moyenne/);
   assert.match(finance, /frais de gestion/);

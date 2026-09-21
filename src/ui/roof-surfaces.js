@@ -109,6 +109,12 @@
     const terrain = document.getElementById('audit-solar');
     if (!terrain || document.getElementById('terrainRoofSummary')) return;
     ['surface', 'orientation', 'tilt', 'shade'].forEach((id) => document.getElementById(id)?.closest('label')?.setAttribute('hidden', 'hidden'));
+    const roofState = document.getElementById('roof')?.closest('label');
+    const roofForm = document.querySelector('#audit-roof > .form');
+    if (roofState && roofForm) {
+      roofState.removeAttribute('hidden');
+      roofForm.appendChild(roofState);
+    }
     const summary = document.createElement('div');
     summary.id = 'terrainRoofSummary';
     summary.innerHTML = '<h3>Synthèse toiture</h3><p class="fine">Calcul consolidé à partir de toutes les surfaces qualifiées ci-dessus.</p><div class="metrics"><div class="metric"><b>Surface exploitable totale</b><span id="terrainUsable">À calculer</span></div><div class="metric"><b>Puissance installée totale</b><span id="terrainCapacity">À calculer</span></div><div class="metric"><b>Production annuelle moyenne</b><span id="terrainProduction">À calculer</span></div></div>';
