@@ -37,10 +37,10 @@
       const id = L.stamp(layer);
       if (!configurations.has(id)) configurations.set(id, { type: 'PITCHED', orientation: 'Sud', pitch: 'Faible pente', shade: 'Aucune ou très faible' });
     });
-    host.innerHTML = `<div class="roofSurfaceHeader"><div><b>Surfaces de toiture</b><p class="fine">Chaque zone ou pan conserve sa propre orientation et sa propre pente.</p></div><button type="button" class="action" id="addRoofSurface">+ Ajouter une surface</button></div>` +
+    host.innerHTML = `<div class="roofSurfaceHeader"><div><b>Surfaces de toiture</b><p class="fine">Dessinez directement sur la carte ou utilisez le bouton pour démarrer le même outil de tracé.</p></div><button type="button" class="action" id="addRoofSurface">+ Tracer une nouvelle surface</button></div>` +
       (current.length ? `<div class="roofSurfaceList">${current.map((layer, index) => {
         const id = L.stamp(layer), config = configurations.get(id);
-        return `<article class="roofSurface" data-roof-id="${id}"><b>Surface ${index + 1} · ${area(layer).toLocaleString('fr-FR')} m²</b><div class="form"><label>Type<select data-roof-field="type"><option value="PITCHED"${config.type === 'PITCHED' ? ' selected' : ''}>Pan incliné</option><option value="FLAT"${config.type === 'FLAT' ? ' selected' : ''}>Toit plat</option></select></label><label>Orientation<select data-roof-field="orientation">${selectOptions(orientations, config.orientation)}</select></label><label class="roofPitch">Pente<select data-roof-field="pitch">${selectOptions(pitches, config.pitch)}</select></label><label>Ombrage<select data-roof-field="shade">${selectOptions(shades, config.shade)}</select></label></div><p class="fine roofSurfaceHelp">${config.type === 'FLAT' ? 'L’orientation et la pente concernent les supports photovoltaïques.' : 'Orientation et pente propres à ce pan de toiture.'}</p></article>`;
+        return `<article class="roofSurface" data-roof-id="${id}"><div class="roofSurfaceTitle"><b>Surface ${index + 1} · ${area(layer).toLocaleString('fr-FR')} m²</b><button type="button" class="roofDelete" data-delete-roof="${id}">Supprimer cette surface</button></div><div class="form"><label>Type<select data-roof-field="type"><option value="PITCHED"${config.type === 'PITCHED' ? ' selected' : ''}>Pan incliné</option><option value="FLAT"${config.type === 'FLAT' ? ' selected' : ''}>Toit plat</option></select></label><label>Orientation<select data-roof-field="orientation">${selectOptions(orientations, config.orientation)}</select></label><label class="roofPitch">Pente<select data-roof-field="pitch">${selectOptions(pitches, config.pitch)}</select></label><label>Ombrage<select data-roof-field="shade">${selectOptions(shades, config.shade)}</select></label></div><p class="fine roofSurfaceHelp">${config.type === 'FLAT' ? 'L’orientation et la pente concernent les supports photovoltaïques.' : 'Orientation et pente propres à ce pan de toiture.'}</p></article>`;
       }).join('')}</div>` : '<p class="result">Aucune surface tracée. Utilisez le bouton ci-dessus ou les outils de dessin sur la carte.</p>');
     document.getElementById('addRoofSurface')?.addEventListener('click', () => new L.Draw.Polygon(window.solarMap, { allowIntersection: false }).enable());
     host.querySelectorAll('[data-roof-id]').forEach((card) => {
@@ -52,9 +52,20 @@
       const flat = configurations.get(id).type === 'FLAT';
       card.querySelector('.roofPitch').firstChild.nodeValue = flat ? 'Pente des supports' : 'Pente du pan';
     });
+    host.querySelectorAll('[data-delete-roof]').forEach((button) => button.addEventListener('click', () => removeSurface(Number(button.dataset.deleteRoof))));
     window.OzenoRoofSurfaces = { configurations, layers: current };
     synchronizeLegacyFields();
     calculateSynthesis();
+  }
+
+  function removeSurface(id) {
+    const layer = layers().find((item) => L.stamp(item) === id);
+    if (layer) window.roofGroup.removeLayer(layer);
+    configurations.delete(id);
+    const total = layers().reduce((sum, item) => sum + area(item), 0);
+    const input = document.getElementById('roofTotal');
+    if (input) { input.value = total ? Math.round(total) : ''; input.dispatchEvent(new Event('input')); }
+    render();
   }
 
   function synchronizeLegacyFields() {
@@ -75,7 +86,8 @@
     const ratio = Number(document.getElementById('roofRatio')?.value || 0) / 100;
     const panelArea = Number(document.getElementById('panelArea')?.value || 0);
     const panelWp = Number(document.getElementById('panelWp')?.value || 0);
-    const usable = current.reduce((sum, layer) => sum + area(layer) * ratio, 0);
+    const manualSurface = Number(document.getElementById('roofTotal')?.value || 0);
+    const usable = (current.length ? current.reduce((sum, layer) => sum + area(layer), 0) : manualSurface) * ratio;
     const capacity = panelArea > 0 ? Math.floor(usable / panelArea) * panelWp / 1000 : 0;
     let annualProduction = 0;
     if (capacity > 0 && current.length) {
@@ -92,6 +104,10 @@
         } catch { return 0; }
       }));
       annualProduction = results.reduce((sum, value) => sum + value, 0);
+    } else if (capacity > 0) {
+      const yieldText = document.getElementById('dashPerformance')?.textContent || '';
+      const referenceYield = Number(yieldText.replace(/\s/g, '').match(/\d+(?:[.,]\d+)?/)?.[0]?.replace(',', '.') || 0);
+      annualProduction = referenceYield * capacity;
     }
     if (version !== calculationVersion) return;
     const set = (id, value) => { const node = document.getElementById(id); if (node) node.textContent = value; };
@@ -101,6 +117,9 @@
     set('roofCapacity', capacity ? `${capacity.toFixed(1).replace('.', ',')} kWc` : 'À calculer');
     set('roofAnnual', annualProduction ? `${Math.round(annualProduction).toLocaleString('fr-FR')} kWh/an` : 'À calculer');
     set('dashCapacity', capacity ? `${capacity.toFixed(1).replace('.', ',')} kWc` : 'À calculer');
+    const capexPerKwp = Number(document.getElementById('capexPerKwp')?.value || 0);
+    const capex = document.getElementById('capex');
+    if (capex && capacity && capexPerKwp) { capex.value = Math.round(capacity * capexPerKwp); capex.dispatchEvent(new Event('input')); }
     const surfaceInput = document.getElementById('surface'); if (surfaceInput) surfaceInput.value = Math.round(usable) || '';
     const annualInput = document.getElementById('annual'); if (annualInput && annualProduction) { annualInput.value = Math.round(annualProduction); annualInput.dispatchEvent(new Event('input')); }
   }
@@ -114,6 +133,11 @@
     if (roofState && roofForm) {
       roofState.removeAttribute('hidden');
       roofForm.appendChild(roofState);
+    }
+    if (roofForm && !document.getElementById('capexPerKwp')) {
+      const cost = document.createElement('label');
+      cost.innerHTML = 'Coût indicatif par kWc (€)<input id="capexPerKwp" type="number" min="0" step="10" value="900"><small class="fine">Hypothèse modifiable utilisée pour recalculer automatiquement le CAPEX.</small>';
+      roofForm.appendChild(cost);
     }
     const summary = document.createElement('div');
     summary.id = 'terrainRoofSummary';
@@ -156,12 +180,12 @@
   function boot() {
     if (!window.solarMap || !window.roofGroup) return;
     const style = document.createElement('style');
-    style.textContent = '.roofSurfaceHeader{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:15px 0 8px}.roofSurfaceHeader p{margin:3px 0}.roofSurfaceList{display:grid;gap:10px}.roofSurface{border:1px solid #cfe0d5;border-radius:9px;padding:12px;background:#f7faf8}.roofSurface .form{margin-top:9px;grid-template-columns:repeat(4,1fr)}#terrainRoofSummary{margin:12px 0 18px}#terrainRoofSummary .metrics{grid-template-columns:repeat(3,1fr)}#closeRoofDraw{position:absolute;z-index:950;top:10px;right:54px;border:0;border-radius:6px;padding:9px 11px;background:#7d201b;color:#fff;font:600 14px system-ui;box-shadow:0 2px 8px #0004;cursor:pointer}#closeRoofDraw[hidden]{display:none!important}@media(max-width:760px){.roofSurfaceHeader{align-items:flex-start;flex-direction:column}.roofSurface .form,#terrainRoofSummary .metrics{grid-template-columns:1fr}.leaflet-draw-actions{max-width:calc(100vw - 150px);display:flex;flex-wrap:wrap}.leaflet-draw-actions a{white-space:nowrap}#closeRoofDraw{right:10px;top:54px}}';
+    style.textContent = '.roofSurfaceHeader,.roofSurfaceTitle{display:flex;justify-content:space-between;align-items:center;gap:12px}.roofSurfaceHeader{margin:15px 0 8px}.roofSurfaceHeader p{margin:3px 0}.roofSurfaceList{display:grid;gap:10px}.roofSurface{border:1px solid #cfe0d5;border-radius:9px;padding:12px;background:#f7faf8}.roofSurface .form{margin-top:9px;grid-template-columns:repeat(4,1fr)}.roofDelete{border:1px solid #b84a43;background:#fff;color:#7d201b;border-radius:6px;padding:6px 9px;cursor:pointer}#terrainRoofSummary{margin:12px 0 18px}#terrainRoofSummary .metrics{grid-template-columns:repeat(3,1fr)}#closeRoofDraw{position:absolute;z-index:950;top:10px;right:54px;border:0;border-radius:6px;padding:9px 11px;background:#7d201b;color:#fff;font:600 14px system-ui;box-shadow:0 2px 8px #0004;cursor:pointer}#closeRoofDraw[hidden]{display:none!important}@media(max-width:760px){.roofSurfaceHeader,.roofSurfaceTitle{align-items:flex-start;flex-direction:column}.roofSurface .form,#terrainRoofSummary .metrics{grid-template-columns:1fr}.leaflet-draw-actions{max-width:calc(100vw - 150px);display:flex;flex-wrap:wrap}.leaflet-draw-actions a{white-space:nowrap}#closeRoofDraw{right:10px;top:54px}}';
     document.head.appendChild(style);
     installTerrainSummary();
     installDrawDismiss();
     window.addEventListener('ozeno:roof-surfaces', render);
-    ['roofRatio', 'panelArea', 'panelWp'].forEach((id) => document.getElementById(id)?.addEventListener('input', calculateSynthesis));
+    ['roofTotal', 'roofRatio', 'panelArea', 'panelWp', 'capexPerKwp'].forEach((id) => document.getElementById(id)?.addEventListener('input', calculateSynthesis));
     render();
   }
 

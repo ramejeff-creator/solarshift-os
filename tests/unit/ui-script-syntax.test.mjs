@@ -36,6 +36,10 @@ test('roof and financing controls expose the requested variables', () => {
   assert.match(roof, /Puissance installée totale/);
   assert.match(roof, /Production annuelle moyenne/);
   assert.match(roof, /Fermer le tracé/);
+  assert.match(roof, /Tracer une nouvelle surface/);
+  assert.match(roof, /Supprimer cette surface/);
+  assert.match(roof, /capexPerKwp/);
+  assert.match(roof, /capex\.dispatchEvent/);
   assert.match(roof, /draw:drawstart/);
   assert.match(roof, /draw:drawstop/);
   assert.match(roof, /energy_profile|PVcalc|calculateSynthesis/);
