@@ -35,4 +35,7 @@ test('roof and financing controls expose the requested variables', () => {
   assert.match(finance, /Dégradation moyenne/);
   assert.match(finance, /frais de gestion/);
   assert.doesNotMatch(finance, /commission 10/);
+  const engineClient = fs.readFileSync(new URL('energy-engine-client.js', uiRoot), 'utf8');
+  assert.match(engineClient, /frais de gestion/);
+  assert.doesNotMatch(engineClient, /gestion réseau 10 %|commission de gestion réseau/);
 });

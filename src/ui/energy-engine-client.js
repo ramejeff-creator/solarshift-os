@@ -70,7 +70,7 @@
         <div class="metric"><small>Payback</small><span id="analysisPayback">À calculer</span></div>
         <div class="metric"><small>Total net cumulé</small><span id="analysisNet">À calculer</span></div>
       </div>
-      <p class="fine" id="analysisCharges">Charges prises en compte : assurance 0,4 % du CA · maintenance 2,5 % du CA · gestion réseau 10 % du CA pour le modèle investisseur.</p>
+      <p class="fine" id="analysisCharges">Charges prises en compte : assurance 0,4 % du CA · maintenance 2,5 % du CA · frais de gestion pour le modèle investisseur.</p>
       <div class="financialCashflow" id="analysisCashflow">Flux de trésorerie : à calculer côté serveur.</div>`;
     financeCard.insertAdjacentElement('afterend', block);
     block.querySelectorAll('[data-financial-mode]').forEach((toggle) => toggle.addEventListener('click', () => {
@@ -78,8 +78,8 @@
       block.dataset.mode = toggle.dataset.financialMode;
       const charges = $('analysisCharges');
       if (charges) charges.textContent = toggle.dataset.financialMode === 'owner'
-        ? 'Charges prises en compte : assurance 0,4 % du CA · maintenance 2,5 % du CA · sans commission de gestion réseau investisseur.'
-        : 'Charges prises en compte : assurance 0,4 % du CA · maintenance 2,5 % du CA · gestion réseau 10 % du CA.';
+        ? 'Charges prises en compte : assurance 0,4 % du CA · maintenance 2,5 % du CA · sans frais de gestion investisseur.'
+        : 'Charges prises en compte : assurance 0,4 % du CA · maintenance 2,5 % du CA · frais de gestion.';
     }));
   }
 
