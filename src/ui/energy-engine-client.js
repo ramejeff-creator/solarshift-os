@@ -80,7 +80,20 @@
       if (charges) charges.textContent = toggle.dataset.financialMode === 'owner'
         ? 'Charges prises en compte : assurance 0,4 % du CA · maintenance 2,5 % du CA · sans frais de gestion investisseur.'
         : 'Charges prises en compte : assurance 0,4 % du CA · maintenance 2,5 % du CA · frais de gestion.';
+      window.dispatchEvent(new CustomEvent('ozeno:financial-mode', { detail: { mode: toggle.dataset.financialMode } }));
     }));
+    window.addEventListener('ozeno:local-finance', (event) => showLocalEstimate(event.detail));
+  }
+
+  function showLocalEstimate(financial) {
+    if (!financial || !$('financialAnalysis')) return;
+    $('financialAnalysis').querySelector('.pill').textContent = 'Estimation locale';
+    if ($('analysisRevenue')) $('analysisRevenue').textContent = `${Math.round(financial.averageRevenueEur).toLocaleString('fr-FR')} € / an`;
+    if ($('analysisEbitda')) $('analysisEbitda').textContent = `${Math.round(financial.averageEbitdaEur).toLocaleString('fr-FR')} € / an`;
+    if ($('analysisIrr')) $('analysisIrr').textContent = `${financial.irrPct.toFixed(1).replace('.', ',')} %`;
+    if ($('analysisPayback')) $('analysisPayback').textContent = financial.paybackYears || 'Non atteint';
+    if ($('analysisNet')) $('analysisNet').textContent = `${Math.round(financial.netTotalEur).toLocaleString('fr-FR')} €`;
+    if ($('analysisCashflow')) $('analysisCashflow').textContent = `Flux de trésorerie indicatif sur ${financial.horizonYears} ans · à confirmer par le calcul serveur.`;
   }
 
   function setStatus(message, tone) {
@@ -165,6 +178,7 @@
       setStatus('Calcul serveur exécuté, mais aucun résultat financier n’est disponible pour ces profils.', 'warning');
       return;
     }
+    $('financialAnalysis')?.querySelector('.pill')?.replaceChildren('Serveur validé');
     if ($('irr')) $('irr').textContent = `${Number(financial.irrPct ?? 0).toFixed(1)} %`;
     if ($('multiple')) $('multiple').textContent = `${Number(financial.equityMultiple ?? 0).toFixed(2)}x`;
     if ($('payback')) $('payback').textContent = financial.paybackYears == null ? '—' : `${Number(financial.paybackYears).toFixed(1)} ans`;

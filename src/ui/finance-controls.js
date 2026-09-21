@@ -17,6 +17,7 @@
     const shares = aciShare + accShare + gridShare;
     const price = aciShare * +$('aciPrice').value + accShare * +$('accPrice').value + gridShare * +$('gridPrice').value;
     const rent = $('rentOn').checked ? +$('annualRent').value : 0;
+    const mode = $('financialAnalysis')?.dataset.mode || 'investor';
     const debtShare = Math.min(100, Math.max(0, +$('debtShare').value)) / 100;
     const debtRate = Math.max(0, +$('debtRate').value) / 100;
     const debtTerm = Math.max(1, +$('debtTerm').value);
@@ -26,10 +27,13 @@
     const debt = capex * debtShare, equity = capex - debt;
     const payment = debtRate ? debt * debtRate / (1 - (1 + debtRate) ** -debtTerm) : debt / debtTerm;
     let balance = debt;
-    const flows = [-equity];
+    const flows = [-equity], annualRevenue = [], annualEbitda = [];
+    const managementRate = mode === 'investor' ? .1 : 0;
     for (let year = 1; year <= horizon; year++) {
       const revenue = production * (1 - .004) ** (year - 1) * price * 1.01 ** (year - 1) * adjustment;
-      const ebitda = revenue - capex * .025 - capex * .004 - revenue * .1 + 4000 - rent * 1.01 ** (year - 1);
+      const ebitda = revenue - capex * .025 - capex * .004 - revenue * managementRate + 4000 - rent * 1.01 ** (year - 1);
+      annualRevenue.push(revenue);
+      annualEbitda.push(ebitda);
       const interest = year <= debtTerm ? balance * debtRate : 0;
       const principal = year <= debtTerm ? Math.min(balance, Math.max(0, payment - interest)) : 0;
       balance = Math.max(0, balance - principal);
@@ -43,6 +47,14 @@
     $('payback').textContent = payback;
     $('equity').textContent = `${format(equity)} €`;
     $('dashIrr').textContent = $('irr').textContent;
+    window.dispatchEvent(new CustomEvent('ozeno:local-finance', { detail: {
+      horizonYears: horizon,
+      averageRevenueEur: annualRevenue.reduce((sum, value) => sum + value, 0) / Math.max(1, horizon),
+      averageEbitdaEur: annualEbitda.reduce((sum, value) => sum + value, 0) / Math.max(1, horizon),
+      irrPct: rate * 100,
+      paybackYears: payback,
+      netTotalEur: flows.reduce((sum, value) => sum + value, 0)
+    } }));
     if (typeof updateDecision === 'function') updateDecision();
     if (typeof updateReport === 'function') updateReport();
   }
@@ -50,6 +62,7 @@
   function boot() {
     ['term', 'capex', 'debtShare', 'debtRate', 'debtTerm', 'annual', 'adjust', 'aciShare', 'aciPrice', 'accShare', 'accPrice', 'gridShare', 'gridPrice', 'rentOn', 'annualRent'].forEach((id) => { if ($(id)) $(id).oninput = calculate; });
     window.sim = calculate;
+    window.addEventListener('ozeno:financial-mode', calculate);
     calculate();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
