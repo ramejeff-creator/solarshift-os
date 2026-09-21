@@ -65,7 +65,7 @@
       .mobileProjectChoice{display:none}
       @media(max-width:700px){
         header{position:static!important}
-        .auditJourney{position:static!important;top:auto!important;display:flex!important;flex-wrap:nowrap!important;gap:6px!important;margin-bottom:12px!important;padding:0 0 8px!important;overflow-x:auto!important;overscroll-behavior-x:contain;scroll-snap-type:x proximity}
+        .auditJourney{position:sticky!important;top:0!important;z-index:1100!important;display:flex!important;flex-wrap:nowrap!important;gap:6px!important;margin-bottom:12px!important;padding:7px 0 8px!important;overflow-x:auto!important;overscroll-behavior-x:contain;scroll-snap-type:x proximity;background:#edf3ef;box-shadow:0 5px 10px #062f3c12}
         .auditProgress{display:none!important}
         .auditJourney a,.auditJourney button{min-width:116px!important;padding:8px 9px!important;scroll-snap-align:start}
         .auditJourney strong{font-size:10px!important}.auditJourney span{font-size:12px!important;line-height:1.2}
