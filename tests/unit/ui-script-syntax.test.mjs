@@ -5,7 +5,7 @@ import fs from 'node:fs';
 const uiRoot = new URL('../../src/ui/', import.meta.url);
 
 test('standalone UI scripts are valid JavaScript', () => {
-  for (const file of ['supabase-session.js', 'energy-engine-client.js', 'audit-ux.js', 'production-study.js', 'roof-surfaces.js', 'finance-controls.js', 'summary-ux.js']) {
+  for (const file of ['supabase-session.js', 'energy-engine-client.js', 'audit-ux.js', 'production-study.js', 'roof-surfaces.js', 'finance-controls.js', 'summary-ux.js', 'risk-ux.js']) {
     const source = fs.readFileSync(new URL(file, uiRoot), 'utf8');
     assert.doesNotThrow(() => new Function(source), `${file} must parse`);
   }
@@ -27,6 +27,7 @@ test('roof and financing controls expose the requested variables', () => {
   const html = fs.readFileSync(new URL('index.html', uiRoot), 'utf8');
   const roof = fs.readFileSync(new URL('roof-surfaces.js', uiRoot), 'utf8');
   const finance = fs.readFileSync(new URL('finance-controls.js', uiRoot), 'utf8');
+  const risk = fs.readFileSync(new URL('risk-ux.js', uiRoot), 'utf8');
   assert.match(html, /id="roofSurfaces"/);
   assert.match(roof, /Toiture inclinée/);
   assert.match(roof, /Toit plat/);
@@ -52,6 +53,9 @@ test('roof and financing controls expose the requested variables', () => {
   assert.match(roof, /dashPerformance/);
   assert.match(roof, /energy_profile|PVcalc|calculateSynthesis/);
   assert.match(roof, /roofState/);
+  assert.match(risk, /Points vérifiés/);
+  assert.match(risk, /GO proposé/);
+  assert.match(risk, /decisionStatus span/);
   const auditUx = fs.readFileSync(new URL('audit-ux.js', uiRoot), 'utf8');
   assert.match(auditUx, /mobileProjectChoice/);
   assert.match(auditUx, /position:sticky!important/);

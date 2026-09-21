@@ -49,7 +49,7 @@
   else boot();
 }());
 
-['roof-surfaces.js', 'finance-controls.js', 'summary-ux.js'].forEach((file) => {
+['roof-surfaces.js', 'finance-controls.js', 'summary-ux.js', 'risk-ux.js'].forEach((file) => {
   const script = document.createElement('script');
   script.src = `./${file}`;
   document.head.appendChild(script);
