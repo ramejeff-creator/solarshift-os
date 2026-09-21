@@ -5,7 +5,7 @@ import fs from 'node:fs';
 const uiRoot = new URL('../../src/ui/', import.meta.url);
 
 test('standalone UI scripts are valid JavaScript', () => {
-  for (const file of ['energy-engine-client.js', 'audit-ux.js', 'production-study.js']) {
+  for (const file of ['supabase-session.js', 'energy-engine-client.js', 'audit-ux.js', 'production-study.js']) {
     const source = fs.readFileSync(new URL(file, uiRoot), 'utf8');
     assert.doesNotThrow(() => new Function(source), `${file} must parse`);
   }
