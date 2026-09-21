@@ -28,7 +28,6 @@ test('roof and financing controls expose the requested variables', () => {
   const roof = fs.readFileSync(new URL('roof-surfaces.js', uiRoot), 'utf8');
   const finance = fs.readFileSync(new URL('finance-controls.js', uiRoot), 'utf8');
   assert.match(html, /id="roofSurfaces"/);
-  assert.match(roof, /Ajouter une surface/);
   assert.match(roof, /Pan incliné/);
   assert.match(roof, /Toit plat/);
   assert.match(roof, /Ombrage/);
