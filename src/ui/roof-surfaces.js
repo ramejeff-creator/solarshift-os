@@ -82,15 +82,45 @@
     return candidates.sort((a, b) => area(b) - area(a))[0] || null;
   }
 
+  function containsPoint(points, lat, lng) {
+    let inside = false;
+    for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
+      const xi = points[i].lon, yi = points[i].lat, xj = points[j].lon, yj = points[j].lat;
+      const crosses = ((yi > lat) !== (yj > lat)) && (lng < ((xj - xi) * (lat - yi) / ((yj - yi) || Number.EPSILON)) + xi);
+      if (crosses) inside = !inside;
+    }
+    return inside;
+  }
+
+  async function buildingLayerNear(lat, lng) {
+    const query = `[out:json][timeout:15];way(around:80,${lat},${lng})["building"];out geom;`;
+    const response = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`);
+    if (!response.ok) throw new Error('empreintes indisponibles');
+    const payload = await response.json();
+    const buildings = (payload.elements || []).filter((item) => item.type === 'way' && item.geometry?.length >= 4);
+    if (!buildings.length) return null;
+    const ranked = buildings.map((item) => {
+      const center = item.geometry.reduce((sum, point) => ({ lat: sum.lat + point.lat, lon: sum.lon + point.lon }), { lat: 0, lon: 0 });
+      center.lat /= item.geometry.length;
+      center.lon /= item.geometry.length;
+      return { item, contains: containsPoint(item.geometry, lat, lng), distance: Math.hypot(center.lat - lat, center.lon - lng) };
+    }).sort((a, b) => Number(b.contains) - Number(a.contains) || a.distance - b.distance);
+    const selected = ranked[0];
+    if (!selected.contains && selected.distance > .0012) return null;
+    return L.polygon(selected.item.geometry.map((point) => [point.lat, point.lon]), { color: '#08734c', weight: 3, fillColor: '#54a378', fillOpacity: .22 });
+  }
+
   async function detectAt(event) {
     detectionStatus('Recherche du contour du bâtiment…', 'loading');
     try {
       const { lat, lng } = event.latlng;
       const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lng)}&zoom=18&polygon_geojson=1&addressdetails=0`;
-      const response = await fetch(url, { headers: { 'Accept-Language': 'fr' } });
-      if (!response.ok) throw new Error('service indisponible');
-      const payload = await response.json();
-      const layer = geometryLayer(payload.geojson);
+      let layer = null;
+      try {
+        const response = await fetch(url, { headers: { 'Accept-Language': 'fr' } });
+        if (response.ok) layer = geometryLayer((await response.json()).geojson);
+      } catch { /* La recherche directe de bâtiments prend le relais. */ }
+      if (!layer || area(layer) < 8 || area(layer) > 100000) layer = await buildingLayerNear(lat, lng);
       const detectedArea = layer ? area(layer) : 0;
       if (!layer || detectedArea < 8 || detectedArea > 100000) throw new Error('contour non disponible');
       window.roofGroup.addLayer(layer);
@@ -99,7 +129,7 @@
       if (input) { input.value = Math.round(total); input.dispatchEvent(new Event('input')); }
       window.dispatchEvent(new CustomEvent('ozeno:roof-surfaces'));
       window.solarMap.fitBounds(layer.getBounds(), { padding: [24, 24], maxZoom: 19 });
-      detectionStatus(`Contour proposé : ${detectedArea.toLocaleString('fr-FR')} m². Vérifiez-le puis corrigez-le avec l’outil d’édition si nécessaire.`, 'success');
+      detectionStatus(`Contour OpenStreetMap proposé : ${detectedArea.toLocaleString('fr-FR')} m². Vérifiez-le puis corrigez-le avec l’outil d’édition si nécessaire.`, 'success');
     } catch {
       detectionStatus('Aucun contour fiable trouvé ici. Utilisez l’outil de tracé manuel sur la carte.', 'error');
     } finally {
