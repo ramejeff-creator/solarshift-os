@@ -40,6 +40,7 @@ test('roof and financing controls expose the requested variables', () => {
   const auditUx = fs.readFileSync(new URL('audit-ux.js', uiRoot), 'utf8');
   assert.match(auditUx, /Surface toiture \(renseigner ou tracer sur la carte\)/);
   assert.match(auditUx, /removeAttribute\('placeholder'\)/);
+  assert.match(auditUx, /total\.placeholder = ''/);
   assert.match(html, /id="debtShare"/);
   assert.match(finance, /Dégradation moyenne/);
   assert.match(finance, /frais de gestion/);
