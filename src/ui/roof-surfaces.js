@@ -121,12 +121,45 @@
     terrain.querySelector('.form')?.insertAdjacentElement('beforebegin', summary);
   }
 
+  function installDrawDismiss() {
+    const mapNode = document.getElementById('map');
+    if (!mapNode || document.getElementById('closeRoofDraw')) return;
+    const close = document.createElement('button');
+    close.id = 'closeRoofDraw';
+    close.type = 'button';
+    close.textContent = '× Fermer le tracé';
+    close.setAttribute('aria-label', 'Fermer le mode tracé');
+    mapNode.appendChild(close);
+    const hide = () => { close.hidden = true; };
+    const show = () => { close.hidden = false; };
+    const cancel = () => {
+      const actions = [...mapNode.querySelectorAll('.leaflet-draw-actions a')];
+      const cancelAction = actions.find((link) => /cancel|annuler/i.test(`${link.textContent} ${link.title}`));
+      if (cancelAction) cancelAction.click();
+      else {
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
+        document.dispatchEvent(new KeyboardEvent('keyup', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
+      }
+      hide();
+    };
+    close.addEventListener('click', cancel);
+    window.solarMap.on('draw:drawstart', show);
+    window.solarMap.on('draw:drawstop', hide);
+    window.solarMap.on('draw:created', hide);
+    window.solarMap.on('draw:deletestart', show);
+    window.solarMap.on('draw:deletestop', hide);
+    window.solarMap.on('draw:editstart', show);
+    window.solarMap.on('draw:editstop', hide);
+    hide();
+  }
+
   function boot() {
     if (!window.solarMap || !window.roofGroup) return;
     const style = document.createElement('style');
-    style.textContent = '.roofSurfaceHeader{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:15px 0 8px}.roofSurfaceHeader p{margin:3px 0}.roofSurfaceList{display:grid;gap:10px}.roofSurface{border:1px solid #cfe0d5;border-radius:9px;padding:12px;background:#f7faf8}.roofSurface .form{margin-top:9px;grid-template-columns:repeat(4,1fr)}#terrainRoofSummary{margin:12px 0 18px}#terrainRoofSummary .metrics{grid-template-columns:repeat(3,1fr)}@media(max-width:760px){.roofSurfaceHeader{align-items:flex-start;flex-direction:column}.roofSurface .form,#terrainRoofSummary .metrics{grid-template-columns:1fr}}';
+    style.textContent = '.roofSurfaceHeader{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:15px 0 8px}.roofSurfaceHeader p{margin:3px 0}.roofSurfaceList{display:grid;gap:10px}.roofSurface{border:1px solid #cfe0d5;border-radius:9px;padding:12px;background:#f7faf8}.roofSurface .form{margin-top:9px;grid-template-columns:repeat(4,1fr)}#terrainRoofSummary{margin:12px 0 18px}#terrainRoofSummary .metrics{grid-template-columns:repeat(3,1fr)}#closeRoofDraw{position:absolute;z-index:950;top:10px;right:54px;border:0;border-radius:6px;padding:9px 11px;background:#7d201b;color:#fff;font:600 14px system-ui;box-shadow:0 2px 8px #0004;cursor:pointer}#closeRoofDraw[hidden]{display:none!important}@media(max-width:760px){.roofSurfaceHeader{align-items:flex-start;flex-direction:column}.roofSurface .form,#terrainRoofSummary .metrics{grid-template-columns:1fr}.leaflet-draw-actions{max-width:calc(100vw - 150px);display:flex;flex-wrap:wrap}.leaflet-draw-actions a{white-space:nowrap}#closeRoofDraw{right:10px;top:54px}}';
     document.head.appendChild(style);
     installTerrainSummary();
+    installDrawDismiss();
     window.addEventListener('ozeno:roof-surfaces', render);
     ['roofRatio', 'panelArea', 'panelWp'].forEach((id) => document.getElementById(id)?.addEventListener('input', calculateSynthesis));
     render();

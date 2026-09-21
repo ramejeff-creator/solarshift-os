@@ -35,6 +35,9 @@ test('roof and financing controls expose the requested variables', () => {
   assert.match(roof, /Surface exploitable totale/);
   assert.match(roof, /Puissance installée totale/);
   assert.match(roof, /Production annuelle moyenne/);
+  assert.match(roof, /Fermer le tracé/);
+  assert.match(roof, /draw:drawstart/);
+  assert.match(roof, /draw:drawstop/);
   assert.match(roof, /energy_profile|PVcalc|calculateSynthesis/);
   assert.match(roof, /roofState/);
   const auditUx = fs.readFileSync(new URL('audit-ux.js', uiRoot), 'utf8');
