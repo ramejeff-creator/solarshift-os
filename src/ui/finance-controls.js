@@ -3,6 +3,19 @@
   const $ = (id) => document.getElementById(id);
   const format = (value) => Math.round(value).toLocaleString('fr-FR');
 
+  function organizeRevenueFields() {
+    const form = $('aciShare')?.closest('.form');
+    if (!form || form.querySelector('.financeRevenueGroups')) return;
+    const anchor = $('aciShare').closest('label');
+    const groups = document.createElement('div');
+    groups.className = 'financeRevenueGroups';
+    groups.innerHTML = '<fieldset class="financeGroup" id="shareGroup"><legend>Répartition de l’énergie</legend></fieldset><fieldset class="financeGroup" id="priceGroup"><legend>Prix de valorisation</legend></fieldset>';
+    form.insertBefore(groups, anchor);
+    ['aciShare', 'accShare', 'gridShare'].forEach((id) => $('shareGroup').appendChild($(id).closest('label')));
+    $('shareGroup').appendChild($('mixValidation'));
+    ['aciPrice', 'accPrice', 'gridPrice', 'rentOn', 'annualRent'].forEach((id) => $('priceGroup').appendChild($(id).closest('label')));
+  }
+
   function irr(flows) {
     let low = -.9999, high = 10;
     const npv = (rate) => flows.reduce((sum, value, index) => sum + value / (1 + rate) ** index, 0);
@@ -75,8 +88,9 @@
 
   function boot() {
     const style = document.createElement('style');
-    style.textContent = '.mixValidation{grid-column:1/-1;margin:-3px 0 2px;padding:9px 11px;border-radius:7px;font-size:14px}.mixValidation.valid{background:#edf7f0;color:#08734c}.mixValidation.invalid{background:#fff0ef;color:#7d201b;border-left:4px solid #b84a43}input[aria-invalid="true"]{border-color:#b84a43;background:#fff8f7}';
+    style.textContent = '.financeRevenueGroups{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:14px}.financeGroup{min-width:0;margin:0;padding:14px;border:1px solid #cfe0d5;border-radius:10px;background:#f8fbf9;display:grid;gap:12px}.financeGroup legend{padding:0 7px;color:#0a3f2d;font-weight:800}.financeGroup label{margin:0}.financeGroup input{margin-top:5px}.mixValidation{margin:2px 0 0;padding:9px 11px;border-radius:7px;font-size:14px}.mixValidation.valid{background:#edf7f0;color:#08734c}.mixValidation.invalid{background:#fff0ef;color:#7d201b;border-left:4px solid #b84a43}input[aria-invalid="true"]{border-color:#b84a43;background:#fff8f7}@media(max-width:700px){.financeRevenueGroups{grid-template-columns:1fr}}';
     document.head.appendChild(style);
+    organizeRevenueFields();
     ['term', 'capex', 'debtShare', 'debtRate', 'debtTerm', 'annual', 'adjust', 'aciShare', 'aciPrice', 'accShare', 'accPrice', 'gridShare', 'gridPrice', 'rentOn', 'annualRent'].forEach((id) => { if ($(id)) $(id).oninput = calculate; });
     window.sim = calculate;
     window.addEventListener('ozeno:financial-mode', calculate);

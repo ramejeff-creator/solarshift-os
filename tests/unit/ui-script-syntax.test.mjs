@@ -53,6 +53,8 @@ test('roof and financing controls expose the requested variables', () => {
   assert.match(roof, /dashPerformance/);
   assert.match(roof, /energy_profile|PVcalc|calculateSynthesis/);
   assert.match(roof, /roofState/);
+  assert.match(finance, /organizeRevenueFields/);
+  assert.match(finance, /Répartition de l’énergie/);
   assert.match(risk, /Points vérifiés/);
   assert.match(risk, /riskFactorMarker/);
   assert.match(risk, /GO proposé/);
