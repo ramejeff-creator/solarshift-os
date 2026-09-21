@@ -31,6 +31,11 @@ test('roof and financing controls expose the requested variables', () => {
   assert.match(roof, /Ajouter une surface/);
   assert.match(roof, /Pan incliné/);
   assert.match(roof, /Toit plat/);
+  assert.match(roof, /Ombrage/);
+  assert.match(roof, /Surface exploitable totale/);
+  assert.match(roof, /Puissance installée totale/);
+  assert.match(roof, /Production annuelle moyenne/);
+  assert.match(roof, /energy_profile|PVcalc|calculateSynthesis/);
   assert.match(html, /id="debtShare"/);
   assert.match(finance, /Dégradation moyenne/);
   assert.match(finance, /frais de gestion/);
