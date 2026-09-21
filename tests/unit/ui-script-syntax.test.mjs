@@ -5,7 +5,7 @@ import fs from 'node:fs';
 const uiRoot = new URL('../../src/ui/', import.meta.url);
 
 test('standalone UI scripts are valid JavaScript', () => {
-  for (const file of ['supabase-session.js', 'energy-engine-client.js', 'audit-ux.js', 'production-study.js', 'roof-surfaces.js', 'finance-controls.js']) {
+  for (const file of ['supabase-session.js', 'energy-engine-client.js', 'audit-ux.js', 'production-study.js', 'roof-surfaces.js', 'finance-controls.js', 'summary-ux.js']) {
     const source = fs.readFileSync(new URL(file, uiRoot), 'utf8');
     assert.doesNotThrow(() => new Function(source), `${file} must parse`);
   }
@@ -40,4 +40,9 @@ test('roof and financing controls expose the requested variables', () => {
   assert.match(engineClient, /Estimation locale/);
   assert.match(finance, /ozeno:local-finance/);
   assert.doesNotMatch(engineClient, /gestion réseau 10 %|commission de gestion réseau/);
+  const summary = fs.readFileSync(new URL('summary-ux.js', uiRoot), 'utf8');
+  assert.match(summary, /kWh\/kWc\/an/);
+  assert.match(summary, /dashboardProfileTooltip/);
+  assert.match(summary, /Statut de qualification/);
+  assert.match(summary, /Prochaine action/);
 });
