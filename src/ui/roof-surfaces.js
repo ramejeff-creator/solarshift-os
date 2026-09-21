@@ -40,7 +40,7 @@
     host.innerHTML = `<div class="roofSurfaceHeader"><div><b>Surfaces de toiture</b><p class="fine">Dessinez directement sur la carte ou utilisez le bouton pour démarrer le même outil de tracé.</p></div><button type="button" class="action" id="addRoofSurface">+ Tracer une nouvelle surface</button></div>` +
       (current.length ? `<div class="roofSurfaceList">${current.map((layer, index) => {
         const id = L.stamp(layer), config = configurations.get(id);
-        return `<article class="roofSurface" data-roof-id="${id}"><div class="roofSurfaceTitle"><b>Surface ${index + 1} · ${area(layer).toLocaleString('fr-FR')} m²</b><button type="button" class="roofDelete" data-delete-roof="${id}">Supprimer cette surface</button></div><div class="form"><label>Type<select data-roof-field="type"><option value="PITCHED"${config.type === 'PITCHED' ? ' selected' : ''}>Pan incliné</option><option value="FLAT"${config.type === 'FLAT' ? ' selected' : ''}>Toit plat</option></select></label><label>Orientation<select data-roof-field="orientation">${selectOptions(orientations, config.orientation)}</select></label><label class="roofPitch">Pente<select data-roof-field="pitch">${selectOptions(pitches, config.pitch)}</select></label><label>Ombrage<select data-roof-field="shade">${selectOptions(shades, config.shade)}</select></label></div><p class="fine roofSurfaceHelp">${config.type === 'FLAT' ? 'L’orientation et la pente concernent les supports photovoltaïques.' : 'Orientation et pente propres à ce pan de toiture.'}</p></article>`;
+        return `<article class="roofSurface" data-roof-id="${id}"><div class="roofSurfaceTitle"><b>Surface ${index + 1} · ${area(layer).toLocaleString('fr-FR')} m²</b><button type="button" class="roofDelete" data-delete-roof="${id}" aria-label="Supprimer la surface ${index + 1}" title="Supprimer cette surface"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-2 6h10l-1 11H8L7 9Zm3 2v7h2v-7h-2Zm4 0v7h2v-7h-2Z"/></svg></button></div><div class="form"><label>Type<select data-roof-field="type"><option value="PITCHED"${config.type === 'PITCHED' ? ' selected' : ''}>Pan incliné</option><option value="FLAT"${config.type === 'FLAT' ? ' selected' : ''}>Toit plat</option></select></label><label>Orientation<select data-roof-field="orientation">${selectOptions(orientations, config.orientation)}</select></label><label class="roofPitch">Pente<select data-roof-field="pitch">${selectOptions(pitches, config.pitch)}</select></label><label>Ombrage<select data-roof-field="shade">${selectOptions(shades, config.shade)}</select></label></div><p class="fine roofSurfaceHelp">${config.type === 'FLAT' ? 'L’orientation et la pente concernent les supports photovoltaïques.' : 'Orientation et pente propres à ce pan de toiture.'}</p></article>`;
       }).join('')}</div>` : '<p class="result">Aucune surface tracée. Utilisez le bouton ci-dessus ou les outils de dessin sur la carte.</p>');
     document.getElementById('addRoofSurface')?.addEventListener('click', () => new L.Draw.Polygon(window.solarMap, { allowIntersection: false }).enable());
     host.querySelectorAll('[data-roof-id]').forEach((card) => {
@@ -145,45 +145,12 @@
     terrain.querySelector('.form')?.insertAdjacentElement('beforebegin', summary);
   }
 
-  function installDrawDismiss() {
-    const mapNode = document.getElementById('map');
-    if (!mapNode || document.getElementById('closeRoofDraw')) return;
-    const close = document.createElement('button');
-    close.id = 'closeRoofDraw';
-    close.type = 'button';
-    close.textContent = '× Fermer le tracé';
-    close.setAttribute('aria-label', 'Fermer le mode tracé');
-    mapNode.appendChild(close);
-    const hide = () => { close.hidden = true; };
-    const show = () => { close.hidden = false; };
-    const cancel = () => {
-      const actions = [...mapNode.querySelectorAll('.leaflet-draw-actions a')];
-      const cancelAction = actions.find((link) => /cancel|annuler/i.test(`${link.textContent} ${link.title}`));
-      if (cancelAction) cancelAction.click();
-      else {
-        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
-        document.dispatchEvent(new KeyboardEvent('keyup', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
-      }
-      hide();
-    };
-    close.addEventListener('click', cancel);
-    window.solarMap.on('draw:drawstart', show);
-    window.solarMap.on('draw:drawstop', hide);
-    window.solarMap.on('draw:created', hide);
-    window.solarMap.on('draw:deletestart', show);
-    window.solarMap.on('draw:deletestop', hide);
-    window.solarMap.on('draw:editstart', show);
-    window.solarMap.on('draw:editstop', hide);
-    hide();
-  }
-
   function boot() {
     if (!window.solarMap || !window.roofGroup) return;
     const style = document.createElement('style');
-    style.textContent = '.roofSurfaceHeader,.roofSurfaceTitle{display:flex;justify-content:space-between;align-items:center;gap:12px}.roofSurfaceHeader{margin:15px 0 8px}.roofSurfaceHeader p{margin:3px 0}.roofSurfaceList{display:grid;gap:10px}.roofSurface{border:1px solid #cfe0d5;border-radius:9px;padding:12px;background:#f7faf8}.roofSurface .form{margin-top:9px;grid-template-columns:repeat(4,1fr)}.roofDelete{border:1px solid #b84a43;background:#fff;color:#7d201b;border-radius:6px;padding:6px 9px;cursor:pointer}#terrainRoofSummary{margin:12px 0 18px}#terrainRoofSummary .metrics{grid-template-columns:repeat(3,1fr)}#closeRoofDraw{position:absolute;z-index:950;top:10px;right:54px;border:0;border-radius:6px;padding:9px 11px;background:#7d201b;color:#fff;font:600 14px system-ui;box-shadow:0 2px 8px #0004;cursor:pointer}#closeRoofDraw[hidden]{display:none!important}@media(max-width:760px){.roofSurfaceHeader,.roofSurfaceTitle{align-items:flex-start;flex-direction:column}.roofSurface .form,#terrainRoofSummary .metrics{grid-template-columns:1fr}.leaflet-draw-actions{max-width:calc(100vw - 150px);display:flex;flex-wrap:wrap}.leaflet-draw-actions a{white-space:nowrap}#closeRoofDraw{right:10px;top:54px}}';
+    style.textContent = '.roofSurfaceHeader,.roofSurfaceTitle{display:flex;justify-content:space-between;align-items:center;gap:12px}.roofSurfaceHeader{margin:15px 0 8px}.roofSurfaceHeader p{margin:3px 0}.roofSurfaceList{display:grid;gap:10px}.roofSurface{border:1px solid #cfe0d5;border-radius:9px;padding:12px;background:#f7faf8}.roofSurface .form{margin-top:9px;grid-template-columns:repeat(4,1fr)}.roofDelete{display:grid;place-items:center;width:36px;height:36px;flex:0 0 36px;border:1px solid #d6a4a0;background:#fff;color:#7d201b;border-radius:8px;padding:7px;cursor:pointer}.roofDelete:hover,.roofDelete:focus-visible{background:#fff0ef;border-color:#b84a43;outline:2px solid #b84a4333}.roofDelete svg{display:block;width:20px;height:20px;fill:currentColor}#terrainRoofSummary{margin:12px 0 18px}#terrainRoofSummary .metrics{grid-template-columns:repeat(3,1fr)}@media(max-width:760px){.roofSurfaceHeader{align-items:stretch;flex-direction:column}.roofSurfaceTitle{align-items:center;flex-direction:row}.roofSurface .form,#terrainRoofSummary .metrics{grid-template-columns:1fr}.leaflet-draw-actions{max-width:calc(100vw - 115px);display:flex;flex-wrap:wrap}.leaflet-draw-actions a{white-space:nowrap}}';
     document.head.appendChild(style);
     installTerrainSummary();
-    installDrawDismiss();
     window.addEventListener('ozeno:roof-surfaces', render);
     ['roofTotal', 'roofRatio', 'panelArea', 'panelWp', 'capexPerKwp'].forEach((id) => document.getElementById(id)?.addEventListener('input', calculateSynthesis));
     render();

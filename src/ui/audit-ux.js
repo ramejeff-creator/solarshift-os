@@ -62,9 +62,33 @@
       .auditProgress{flex:0 0 100%;font-size:13px;color:#587469;margin:0 0 4px}.auditJourney strong{display:block;font-size:12px;opacity:.8}.auditJourney span{font-weight:700;font-size:14px}
       .stageAnchor{scroll-margin-top:16px}.auditProgress{font-size:13px;color:#587469;margin:0 0 14px}
       header{z-index:1200}.auditJourney{z-index:1100}.map{position:relative;z-index:0}.map .leaflet-top,.map .leaflet-bottom,.map .leaflet-control{z-index:400!important}
-      @media(max-width:700px){.auditJourney button{min-width:132px}}
+      .mobileProjectChoice{display:none}
+      @media(max-width:700px){
+        header{position:static!important}
+        .auditJourney{position:static!important;top:auto!important;display:flex!important;flex-wrap:nowrap!important;gap:6px!important;margin-bottom:12px!important;padding:0 0 8px!important;overflow-x:auto!important;overscroll-behavior-x:contain;scroll-snap-type:x proximity}
+        .auditProgress{display:none!important}
+        .auditJourney a,.auditJourney button{min-width:116px!important;padding:8px 9px!important;scroll-snap-align:start}
+        .auditJourney strong{font-size:10px!important}.auditJourney span{font-size:12px!important;line-height:1.2}
+        .projects button[data-p]:not(.active){display:none}
+        .projects>.hint,.projects>.fine{display:none}
+        .mobileProjectChoice{display:block;margin:10px 0 4px}
+        .newProject{display:none}
+      }
     `;
     document.head.appendChild(style);
+  }
+
+  function installMobileProjectChoice() {
+    const projects = document.querySelector('.projects');
+    if (!projects || projects.querySelector('.mobileProjectChoice')) return;
+    const buttons = [...projects.querySelectorAll('button[data-p]')];
+    if (buttons.length < 2) return;
+    const label = document.createElement('label');
+    label.className = 'mobileProjectChoice';
+    label.innerHTML = `<span>Changer de projet</span><select aria-label="Changer de projet">${buttons.map((button) => `<option value="${button.dataset.p}"${button.classList.contains('active') ? ' selected' : ''}>${button.querySelector('b')?.textContent || button.textContent}</option>`).join('')}</select>`;
+    label.querySelector('select').addEventListener('change', (event) => buttons.find((button) => button.dataset.p === event.target.value)?.click());
+    projects.querySelector('.newProject')?.insertAdjacentElement('beforebegin', label);
+    buttons.forEach((button) => button.addEventListener('click', () => { label.querySelector('select').value = button.dataset.p; }));
   }
 
   function boot() {
@@ -72,6 +96,7 @@
       addStyles();
       installRoofMode();
       installRiskDraft();
+      installMobileProjectChoice();
       return;
     }
     const main = document.querySelector('main') || document.querySelector('.layout');
@@ -79,6 +104,7 @@
     addStyles();
     installRoofMode();
     installRiskDraft();
+    installMobileProjectChoice();
     const nav = document.createElement('nav');
     nav.className = 'auditJourney';
     nav.setAttribute('aria-label', 'Parcours de qualification');
