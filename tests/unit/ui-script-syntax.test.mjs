@@ -49,6 +49,7 @@ test('roof and financing controls expose the requested variables', () => {
   assert.match(roof, /aria-label="Supprimer la toiture/);
   assert.match(roof, /capexPerKwp/);
   assert.match(roof, /capex\.dispatchEvent/);
+  assert.match(roof, /dashPerformance/);
   assert.match(roof, /energy_profile|PVcalc|calculateSynthesis/);
   assert.match(roof, /roofState/);
   const auditUx = fs.readFileSync(new URL('audit-ux.js', uiRoot), 'utf8');

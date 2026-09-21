@@ -223,6 +223,13 @@
     set('roofCapacity', capacity ? `${capacity.toFixed(1).replace('.', ',')} kWc` : 'À calculer');
     set('roofAnnual', annualProduction ? `${Math.round(annualProduction).toLocaleString('fr-FR')} kWh/an` : 'À calculer');
     set('dashCapacity', capacity ? `${capacity.toFixed(1).replace('.', ',')} kWc` : 'À calculer');
+    if (annualProduction && capacity) {
+      const solarYield = Math.round(annualProduction / capacity);
+      set('dashPerformance', `${solarYield.toLocaleString('fr-FR')} kWh/kWc/an`);
+      const performanceNote = document.getElementById('dashPerformance')?.nextElementSibling;
+      if (performanceNote) performanceNote.textContent = 'Rendement PVGIS pondéré selon les surfaces, orientations, pentes et ombrages.';
+      set('studyYield', `${solarYield.toLocaleString('fr-FR')} kWh/kWc/an`);
+    }
     const capexPerKwp = Number(document.getElementById('capexPerKwp')?.value || 0);
     const capex = document.getElementById('capex');
     if (capex && capacity && capexPerKwp) { capex.value = Math.round(capacity * capexPerKwp); capex.dispatchEvent(new Event('input')); }
