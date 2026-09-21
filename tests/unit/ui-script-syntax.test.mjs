@@ -34,7 +34,9 @@ test('roof and financing controls expose the requested variables', () => {
   assert.match(roof, /Surface exploitable totale/);
   assert.match(roof, /Puissance installée totale/);
   assert.match(roof, /Production annuelle moyenne/);
-  assert.match(roof, /Tracer une nouvelle surface/);
+  assert.match(roof, /Détecter la toiture/);
+  assert.match(roof, /nominatim\.openstreetmap\.org\/reverse/);
+  assert.match(roof, /polygon_geojson=1/);
   assert.match(roof, /Supprimer cette surface/);
   assert.match(roof, /aria-label="Supprimer la surface/);
   assert.match(roof, /capexPerKwp/);
