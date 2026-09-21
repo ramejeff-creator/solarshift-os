@@ -17,7 +17,7 @@
 
     let status = $('engineStatus');
     if (!status) {
-      const status = document.createElement('p');
+      status = document.createElement('p');
       status.id = 'engineStatus';
       status.className = 'helper engineStatus';
       status.setAttribute('role', 'status');
@@ -28,7 +28,6 @@
       status.textContent = 'Mode local — non canonique. Le calcul serveur attend un projet et des profils énergétiques validés.';
       const title = card.querySelector('.sectionTitle') || card.firstElementChild;
       (title || card).insertAdjacentElement('afterend', status);
-      status = $('engineStatus');
     }
 
     if (!$('runEnergyEngine')) {
