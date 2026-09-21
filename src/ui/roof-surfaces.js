@@ -10,7 +10,8 @@
   const shadeFactors = { 'Aucune ou très faible': 1, 'Quelques ombres': .92, 'Ombres importantes': .75 };
   const coordinates = { Muret: [43.49001, 1.34247], Lyon: [45.764, 4.835], Lille: [50.63, 3.057] };
   let calculationVersion = 0;
-  let detectionActive = false;
+  let detectionPending = false;
+  let drawingActive = false;
 
   function area(layer) {
     const latlngs = layer.getLatLngs();
@@ -22,6 +23,13 @@
     const result = [];
     window.roofGroup?.eachLayer((layer) => result.push(layer));
     return result;
+  }
+
+  function refreshRoofTotals() {
+    const total = layers().reduce((sum, item) => sum + area(item), 0);
+    const input = document.getElementById('roofTotal');
+    if (input) { input.value = total ? Math.round(total) : ''; input.dispatchEvent(new Event('input')); }
+    window.dispatchEvent(new CustomEvent('ozeno:roof-surfaces'));
   }
 
   function selectOptions(values, selected) {
@@ -38,12 +46,11 @@
       const id = L.stamp(layer);
       if (!configurations.has(id)) configurations.set(id, { type: 'PITCHED', orientation: 'Sud', pitch: 'Faible pente', shade: 'Aucune ou très faible' });
     });
-    host.innerHTML = `<div class="roofSurfaceHeader"><div><b>Surfaces de toiture</b><p class="fine">Détection assistée au clic, à confirmer visuellement. Le tracé manuel reste disponible dans la carte.</p></div><button type="button" class="action" id="detectRoof">${detectionActive ? 'Cliquez sur la toiture…' : '⌖ Détecter la toiture'}</button></div><p id="roofDetectionStatus" class="roofDetectionStatus fine" aria-live="polite"></p>` +
+    host.innerHTML = `<div class="roofSurfaceHeader"><div><b>Surfaces de toiture</b><p class="fine">Cliquez directement sur un bâtiment pour proposer son contour. Le tracé manuel reste disponible dans la carte.</p></div></div><p id="roofDetectionStatus" class="roofDetectionStatus fine" aria-live="polite"></p>` +
       (current.length ? `<div class="roofSurfaceList">${current.map((layer, index) => {
         const id = L.stamp(layer), config = configurations.get(id);
         return `<article class="roofSurface" data-roof-id="${id}"><div class="roofSurfaceTitle"><b>Surface ${index + 1} · ${area(layer).toLocaleString('fr-FR')} m²</b><button type="button" class="roofDelete" data-delete-roof="${id}" aria-label="Supprimer la surface ${index + 1}" title="Supprimer cette surface"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-2 6h10l-1 11H8L7 9Zm3 2v7h2v-7h-2Zm4 0v7h2v-7h-2Z"/></svg></button></div><div class="form"><label>Type<select data-roof-field="type"><option value="PITCHED"${config.type === 'PITCHED' ? ' selected' : ''}>Pan incliné</option><option value="FLAT"${config.type === 'FLAT' ? ' selected' : ''}>Toit plat</option></select></label><label>Orientation<select data-roof-field="orientation">${selectOptions(orientations, config.orientation)}</select></label><label class="roofPitch">Pente<select data-roof-field="pitch">${selectOptions(pitches, config.pitch)}</select></label><label>Ombrage<select data-roof-field="shade">${selectOptions(shades, config.shade)}</select></label></div><p class="fine roofSurfaceHelp">${config.type === 'FLAT' ? 'L’orientation et la pente concernent les supports photovoltaïques.' : 'Orientation et pente propres à ce pan de toiture.'}</p></article>`;
       }).join('')}</div>` : '<p class="result">Aucune surface tracée. Utilisez le bouton ci-dessus ou les outils de dessin sur la carte.</p>');
-    document.getElementById('detectRoof')?.addEventListener('click', startRoofDetection);
     host.querySelectorAll('[data-roof-id]').forEach((card) => {
       const id = Number(card.dataset.roofId);
       card.querySelectorAll('[data-roof-field]').forEach((field) => field.addEventListener('change', () => {
@@ -67,9 +74,7 @@
   }
 
   function finishDetection() {
-    detectionActive = false;
-    window.solarMap.off('click', detectAt);
-    window.solarMap.getContainer().classList.remove('roofDetectionActive');
+    detectionPending = false;
   }
 
   function geometryLayer(geometry) {
@@ -107,10 +112,12 @@
     }).sort((a, b) => Number(b.contains) - Number(a.contains) || a.distance - b.distance);
     const selected = ranked[0];
     if (!selected.contains && selected.distance > .0012) return null;
-    return L.polygon(selected.item.geometry.map((point) => [point.lat, point.lon]), { color: '#08734c', weight: 3, fillColor: '#54a378', fillOpacity: .22 });
+    return L.polygon(selected.item.geometry.map((point) => [point.lat, point.lon]), { color: '#08734c', weight: 3, fillColor: '#54a378', fillOpacity: .22, bubblingMouseEvents: false });
   }
 
   async function detectAt(event) {
+    if (drawingActive || detectionPending) return;
+    detectionPending = true;
     detectionStatus('Recherche du contour du bâtiment…', 'loading');
     try {
       const { lat, lng } = event.latlng;
@@ -124,46 +131,24 @@
       const detectedArea = layer ? area(layer) : 0;
       if (!layer || detectedArea < 8 || detectedArea > 100000) throw new Error('contour non disponible');
       window.roofGroup.addLayer(layer);
-      const total = layers().reduce((sum, item) => sum + area(item), 0);
-      const input = document.getElementById('roofTotal');
-      if (input) { input.value = Math.round(total); input.dispatchEvent(new Event('input')); }
-      window.dispatchEvent(new CustomEvent('ozeno:roof-surfaces'));
+      layer.options.bubblingMouseEvents = false;
+      layer.on('edit', refreshRoofTotals);
+      refreshRoofTotals();
       window.solarMap.fitBounds(layer.getBounds(), { padding: [24, 24], maxZoom: 19 });
-      detectionStatus(`Contour OpenStreetMap proposé : ${detectedArea.toLocaleString('fr-FR')} m². Vérifiez-le puis corrigez-le avec l’outil d’édition si nécessaire.`, 'success');
+      layer.editing?.enable();
+      detectionStatus(`Contour proposé : ${detectedArea.toLocaleString('fr-FR')} m². Déplacez les points blancs pour le corriger.`, 'success');
     } catch {
       detectionStatus('Aucun contour fiable trouvé ici. Utilisez l’outil de tracé manuel sur la carte.', 'error');
     } finally {
       finishDetection();
-      renderDetectionButton();
     }
-  }
-
-  function renderDetectionButton() {
-    const button = document.getElementById('detectRoof');
-    if (button) button.textContent = detectionActive ? 'Cliquez sur la toiture…' : '⌖ Détecter la toiture';
-  }
-
-  function startRoofDetection() {
-    if (detectionActive) {
-      finishDetection();
-      renderDetectionButton();
-      detectionStatus('Détection annulée.');
-      return;
-    }
-    detectionActive = true;
-    window.solarMap.getContainer().classList.add('roofDetectionActive');
-    renderDetectionButton();
-    detectionStatus('Cliquez au centre de la toiture à détecter.', 'loading');
-    window.solarMap.once('click', detectAt);
   }
 
   function removeSurface(id) {
     const layer = layers().find((item) => L.stamp(item) === id);
     if (layer) window.roofGroup.removeLayer(layer);
     configurations.delete(id);
-    const total = layers().reduce((sum, item) => sum + area(item), 0);
-    const input = document.getElementById('roofTotal');
-    if (input) { input.value = total ? Math.round(total) : ''; input.dispatchEvent(new Event('input')); }
+    refreshRoofTotals();
     render();
   }
 
@@ -247,9 +232,13 @@
   function boot() {
     if (!window.solarMap || !window.roofGroup) return;
     const style = document.createElement('style');
-    style.textContent = '.roofSurfaceHeader,.roofSurfaceTitle{display:flex;justify-content:space-between;align-items:center;gap:12px}.roofSurfaceHeader{margin:15px 0 5px}.roofSurfaceHeader p{margin:3px 0}.roofDetectionStatus{min-height:18px;margin:0 0 8px}.roofDetectionStatus[data-state="success"]{color:#08734c}.roofDetectionStatus[data-state="error"]{color:#7d201b}.roofDetectionActive{cursor:crosshair}.roofSurfaceList{display:grid;gap:10px}.roofSurface{border:1px solid #cfe0d5;border-radius:9px;padding:12px;background:#f7faf8}.roofSurface .form{margin-top:9px;grid-template-columns:repeat(4,1fr)}.roofDelete{display:grid;place-items:center;width:36px;height:36px;flex:0 0 36px;border:1px solid #d6a4a0;background:#fff;color:#7d201b;border-radius:8px;padding:7px;cursor:pointer}.roofDelete:hover,.roofDelete:focus-visible{background:#fff0ef;border-color:#b84a43;outline:2px solid #b84a4333}.roofDelete svg{display:block;width:20px;height:20px;fill:currentColor}#terrainRoofSummary{margin:12px 0 18px}#terrainRoofSummary .metrics{grid-template-columns:repeat(3,1fr)}@media(max-width:760px){.roofSurfaceHeader{align-items:stretch;flex-direction:column}.roofSurfaceHeader .action{margin-top:4px}.roofSurfaceTitle{align-items:center;flex-direction:row}.roofSurface .form,#terrainRoofSummary .metrics{grid-template-columns:1fr}.leaflet-draw-actions{max-width:calc(100vw - 115px);display:flex;flex-wrap:wrap}.leaflet-draw-actions a{white-space:nowrap}}';
+    style.textContent = '.roofSurfaceHeader,.roofSurfaceTitle{display:flex;justify-content:space-between;align-items:center;gap:12px}.roofSurfaceHeader{margin:15px 0 5px}.roofSurfaceHeader p{margin:3px 0}.roofDetectionStatus{min-height:18px;margin:0 0 8px}.roofDetectionStatus[data-state="success"]{color:#08734c}.roofDetectionStatus[data-state="error"]{color:#7d201b}.roofDetectionReady.leaflet-grab,.roofDetectionReady .leaflet-interactive{cursor:pointer}.leaflet-editing-icon{width:16px!important;height:16px!important;margin-left:-8px!important;margin-top:-8px!important;border:2px solid #08734c!important;border-radius:50%!important;background:#fff!important}.roofSurfaceList{display:grid;gap:10px}.roofSurface{border:1px solid #cfe0d5;border-radius:9px;padding:12px;background:#f7faf8}.roofSurface .form{margin-top:9px;grid-template-columns:repeat(4,1fr)}.roofDelete{display:grid;place-items:center;width:36px;height:36px;flex:0 0 36px;border:1px solid #d6a4a0;background:#fff;color:#7d201b;border-radius:8px;padding:7px;cursor:pointer}.roofDelete:hover,.roofDelete:focus-visible{background:#fff0ef;border-color:#b84a43;outline:2px solid #b84a4333}.roofDelete svg{display:block;width:20px;height:20px;fill:currentColor}#terrainRoofSummary{margin:12px 0 18px}#terrainRoofSummary .metrics{grid-template-columns:repeat(3,1fr)}@media(max-width:760px){.roofSurfaceHeader{align-items:stretch;flex-direction:column}.roofSurfaceTitle{align-items:center;flex-direction:row}.roofSurface .form,#terrainRoofSummary .metrics{grid-template-columns:1fr}.leaflet-draw-actions{max-width:calc(100vw - 115px);display:flex;flex-wrap:wrap}.leaflet-draw-actions a{white-space:nowrap}.leaflet-editing-icon{width:20px!important;height:20px!important;margin-left:-10px!important;margin-top:-10px!important}}';
     document.head.appendChild(style);
     installTerrainSummary();
+    window.solarMap.getContainer().classList.add('roofDetectionReady');
+    window.solarMap.on('click', detectAt);
+    window.solarMap.on('draw:drawstart draw:editstart draw:deletestart', () => { drawingActive = true; });
+    window.solarMap.on('draw:drawstop draw:editstop draw:deletestop', () => { drawingActive = false; });
     window.addEventListener('ozeno:roof-surfaces', render);
     ['roofTotal', 'roofRatio', 'panelArea', 'panelWp', 'capexPerKwp'].forEach((id) => document.getElementById(id)?.addEventListener('input', calculateSynthesis));
     render();
