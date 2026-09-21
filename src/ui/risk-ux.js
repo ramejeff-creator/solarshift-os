@@ -16,6 +16,12 @@
       const label = option.textContent.replace(/^✓\s*/, '');
       option.textContent = `${validated.has(option.value) ? '✓ ' : ''}${label}`;
     });
+    const marker = $('riskFactorMarker');
+    if (marker) {
+      const checked = validated.has($('riskFactor').value);
+      marker.className = `riskFactorMarker ${checked ? 'checked' : ''}`;
+      marker.textContent = checked ? '✓ Validé' : '○ À vérifier';
+    }
   }
 
   function updateDecisionFromCoverage() {
@@ -57,10 +63,17 @@
     coverage.id = 'riskCoverage';
     coverage.className = 'riskCoverage';
     button.insertAdjacentElement('beforebegin', coverage);
+    const factorLabel = $('riskFactor').closest('label');
+    const marker = document.createElement('span');
+    marker.id = 'riskFactorMarker';
+    marker.className = 'riskFactorMarker';
+    marker.textContent = '○ À vérifier';
+    factorLabel?.insertBefore(marker, $('riskFactor'));
     const style = document.createElement('style');
-    style.textContent = '.riskCoverage{margin:14px 0;padding:12px;border:1px solid #cfe0d5;border-radius:9px;background:#f7faf8}.riskCoverageHead{display:flex;justify-content:space-between;gap:10px;margin-bottom:9px}.riskCoverageHead span{font-weight:800;color:#08734c}.riskMarkers{display:flex;flex-wrap:wrap;gap:7px}.riskMarkers span{display:flex;align-items:center;gap:5px;padding:5px 8px;border-radius:99px;background:#fff;border:1px solid #d5e4d8;font-size:12px;color:#587469}.riskMarkers span.checked{background:#dff0e5;border-color:#54a378;color:#073d2a}.riskMarkers i{font-style:normal;font-weight:900}.decisionStatus span{display:block!important;background:transparent!important;color:inherit!important;border-left:3px solid currentColor!important;padding:7px 8px!important}.decisionStatus strong,.decisionStatus small{color:inherit!important}';
+    style.textContent = '.riskFactorMarker{float:right;margin:0 0 4px 8px;padding:3px 8px;border-radius:99px;background:#fff2c9;color:#6b5000;font-size:12px;font-weight:800}.riskFactorMarker.checked{background:#dff0e5;color:#08734c}.riskCoverage{clear:both;margin:14px 0;padding:12px;border:1px solid #cfe0d5;border-radius:9px;background:#f7faf8}.riskCoverageHead{display:flex;justify-content:space-between;gap:10px;margin-bottom:9px}.riskCoverageHead span{font-weight:800;color:#08734c}.riskMarkers{display:flex;flex-wrap:wrap;gap:7px}.riskMarkers span{display:flex;align-items:center;gap:5px;padding:5px 8px;border-radius:99px;background:#fff;border:1px solid #d5e4d8;font-size:12px;color:#587469}.riskMarkers span.checked{background:#dff0e5;border-color:#54a378;color:#073d2a}.riskMarkers i{font-style:normal;font-weight:900}.decisionStatus span{display:block!important;background:transparent!important;color:inherit!important;border-left:3px solid currentColor!important;padding:7px 8px!important}.decisionStatus strong,.decisionStatus small{color:inherit!important}';
     document.head.appendChild(style);
     renderCoverage();
+    $('riskFactor').addEventListener('change', renderCoverage);
     window.updateDecision = updateDecisionFromCoverage;
     button.addEventListener('click', () => {
       validated.set($('riskFactor').value, Number($('riskObservation').value || 0));

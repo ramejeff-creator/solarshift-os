@@ -33,7 +33,7 @@
         surfaceLabel.firstChild.nodeValue = 'Surface toiture (renseigner ou tracer sur la carte) ';
       }
       note.textContent = flat
-        ? 'Toit plat : tracez la surface de toiture. L’orientation et la pente concerneront les supports photovoltaïques.'
+        ? 'Toit plat : tracez la surface de toiture. Aucune orientation ni pente de toiture n’est à renseigner.'
         : 'Toiture inclinée : tracez un pan à la fois. Chaque pan devra ensuite avoir sa propre orientation, pente et production.';
       note.dataset.mode = flat ? 'flat' : 'pitched';
     };
