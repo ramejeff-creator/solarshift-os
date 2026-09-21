@@ -96,10 +96,20 @@
     return window.SOLARSHIFT_CONFIG || {};
   }
 
+  function debtServiceSchedule(capexEur, horizonYears) {
+    const share = Math.min(100, Math.max(0, number('debtShare', 30))) / 100;
+    const rate = Math.max(0, number('debtRate', 4.5)) / 100;
+    const term = Math.max(1, Math.round(number('debtTerm', 15)));
+    const principal = capexEur * share;
+    const payment = rate ? principal * rate / (1 - (1 + rate) ** -term) : principal / term;
+    return Array.from({ length: horizonYears }, (_, index) => index < term ? payment : 0);
+  }
+
   function readInput() {
     const cfg = config();
     const horizonYears = Math.max(1, Math.round(number('term', 30)));
     const capexEur = number('capex');
+    const debtShare = Math.min(100, Math.max(0, number('debtShare', 30))) / 100;
     const rentEnabled = Boolean($('rentOn')?.checked);
     const aciShare = number('aciShare');
     const accShare = number('accShare');
@@ -120,7 +130,7 @@
       financial: {
         horizonYears,
         capexEur,
-        initialEquityEur: Number.isFinite(cfg.initialEquityEur) ? cfg.initialEquityEur : capexEur * 0.8,
+        initialEquityEur: Number.isFinite(cfg.initialEquityEur) ? cfg.initialEquityEur : capexEur * (1 - debtShare),
         discountRatePct: Number.isFinite(cfg.discountRatePct) ? cfg.discountRatePct : 7,
         gridImportPriceYear1EurPerKwh: gridPrice,
         solarEnergyPriceYear1EurPerKwh: solarPrice,
@@ -132,7 +142,8 @@
         exportPriceEscalationPct: 1,
         opexEscalationPct: 0,
         leaseEscalationPct: 1,
-        pvDegradationPct: 0.4
+        pvDegradationPct: 0.4,
+        debtServiceByYearEur: debtServiceSchedule(capexEur, horizonYears)
       },
       productionBenchmarks: cfg.productionBenchmarks
     };

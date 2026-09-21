@@ -48,3 +48,9 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
 }());
+
+['roof-surfaces.js', 'finance-controls.js'].forEach((file) => {
+  const script = document.createElement('script');
+  script.src = `./${file}`;
+  document.head.appendChild(script);
+});

@@ -121,7 +121,11 @@
       try {
         await authRequest('otp', { email, create_user: false, options: { emailRedirectTo: location.href.split('#')[0] } });
         $('connectionState').textContent = 'Lien envoyé. Ouvrez-le dans ce navigateur pour terminer la connexion.';
-      } catch (error) { $('connectionState').textContent = `Connexion impossible : ${error.message}`; }
+      } catch (error) {
+        $('connectionState').textContent = /signups not allowed/i.test(error.message)
+          ? 'Ce compte commercial n’est pas encore autorisé. Un administrateur doit d’abord le créer dans Supabase.'
+          : `Connexion impossible : ${error.message}`;
+      }
     });
     $('connectionLogout').addEventListener('click', () => { storeSession(null); location.reload(); });
   }
