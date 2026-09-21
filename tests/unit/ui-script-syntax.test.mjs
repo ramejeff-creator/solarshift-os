@@ -28,7 +28,7 @@ test('roof and financing controls expose the requested variables', () => {
   const roof = fs.readFileSync(new URL('roof-surfaces.js', uiRoot), 'utf8');
   const finance = fs.readFileSync(new URL('finance-controls.js', uiRoot), 'utf8');
   assert.match(html, /id="roofSurfaces"/);
-  assert.match(roof, /Pan incliné/);
+  assert.match(roof, /Toiture inclinée/);
   assert.match(roof, /Toit plat/);
   assert.match(roof, /Ombrage/);
   assert.match(roof, /Surface exploitable totale/);
@@ -42,8 +42,11 @@ test('roof and financing controls expose the requested variables', () => {
   assert.match(roof, /containsPoint/);
   assert.match(roof, /layer\.editing\?\.enable\(\)/);
   assert.match(roof, /refreshRoofTotals/);
+  assert.match(roof, /Analyse du bâtiment en cours/);
+  assert.match(roof, /Nombre de pans/);
+  assert.match(roof, /data-edit-roof/);
   assert.match(roof, /Supprimer cette surface/);
-  assert.match(roof, /aria-label="Supprimer la surface/);
+  assert.match(roof, /aria-label="Supprimer la toiture/);
   assert.match(roof, /capexPerKwp/);
   assert.match(roof, /capex\.dispatchEvent/);
   assert.match(roof, /energy_profile|PVcalc|calculateSynthesis/);

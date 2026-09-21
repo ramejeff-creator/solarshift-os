@@ -44,13 +44,14 @@
     [...configurations.keys()].filter((id) => !activeIds.has(id)).forEach((id) => configurations.delete(id));
     current.forEach((layer) => {
       const id = L.stamp(layer);
-      if (!configurations.has(id)) configurations.set(id, { type: 'PITCHED', orientation: 'Sud', pitch: 'Faible pente', shade: 'Aucune ou très faible' });
+      if (!configurations.has(id)) configurations.set(id, { type: 'PITCHED', panCount: 1, orientation: 'Sud', orientation2: 'Nord', pitch: 'Faible pente', shade: 'Aucune ou très faible' });
     });
     host.innerHTML = `<div class="roofSurfaceHeader"><div><b>Surfaces de toiture</b><p class="fine">Cliquez directement sur un bâtiment pour proposer son contour. Le tracé manuel reste disponible dans la carte.</p></div></div><p id="roofDetectionStatus" class="roofDetectionStatus fine" aria-live="polite"></p>` +
       (current.length ? `<div class="roofSurfaceList">${current.map((layer, index) => {
         const id = L.stamp(layer), config = configurations.get(id);
-        return `<article class="roofSurface" data-roof-id="${id}"><div class="roofSurfaceTitle"><b>Surface ${index + 1} · ${area(layer).toLocaleString('fr-FR')} m²</b><button type="button" class="roofDelete" data-delete-roof="${id}" aria-label="Supprimer la surface ${index + 1}" title="Supprimer cette surface"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-2 6h10l-1 11H8L7 9Zm3 2v7h2v-7h-2Zm4 0v7h2v-7h-2Z"/></svg></button></div><div class="form"><label>Type<select data-roof-field="type"><option value="PITCHED"${config.type === 'PITCHED' ? ' selected' : ''}>Pan incliné</option><option value="FLAT"${config.type === 'FLAT' ? ' selected' : ''}>Toit plat</option></select></label><label>Orientation<select data-roof-field="orientation">${selectOptions(orientations, config.orientation)}</select></label><label class="roofPitch">Pente<select data-roof-field="pitch">${selectOptions(pitches, config.pitch)}</select></label><label>Ombrage<select data-roof-field="shade">${selectOptions(shades, config.shade)}</select></label></div><p class="fine roofSurfaceHelp">${config.type === 'FLAT' ? 'L’orientation et la pente concernent les supports photovoltaïques.' : 'Orientation et pente propres à ce pan de toiture.'}</p></article>`;
-      }).join('')}</div>` : '<p class="result">Aucune surface tracée. Utilisez le bouton ci-dessus ou les outils de dessin sur la carte.</p>');
+        const twoPans = config.type === 'PITCHED' && Number(config.panCount) === 2;
+        return `<article class="roofSurface" data-roof-id="${id}"><div class="roofSurfaceTitle"><b>Toiture ${index + 1} · ${area(layer).toLocaleString('fr-FR')} m²</b><div class="roofSurfaceActions"><button type="button" class="roofEdit" data-edit-roof="${id}" aria-label="Corriger le contour de la toiture ${index + 1}" title="Corriger le contour"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 16.5-.5 4 4-.5L18.8 8.7l-3.5-3.5L4 16.5Zm16.2-9.2a1 1 0 0 0 0-1.4l-2.1-2.1a1 1 0 0 0-1.4 0l-1 1 3.5 3.5 1-1Z"/></svg></button><button type="button" class="roofDelete" data-delete-roof="${id}" aria-label="Supprimer la toiture ${index + 1}" title="Supprimer cette surface"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-2 6h10l-1 11H8L7 9Zm3 2v7h2v-7h-2Zm4 0v7h2v-7h-2Z"/></svg></button></div></div><div class="form"><label>Type<select data-roof-field="type"><option value="PITCHED"${config.type === 'PITCHED' ? ' selected' : ''}>Toiture inclinée</option><option value="FLAT"${config.type === 'FLAT' ? ' selected' : ''}>Toit plat</option></select></label>${config.type === 'PITCHED' ? `<label>Nombre de pans<select data-roof-field="panCount"><option value="1"${!twoPans ? ' selected' : ''}>1 pan</option><option value="2"${twoPans ? ' selected' : ''}>2 pans</option></select></label>` : ''}<label>${twoPans ? 'Orientation pan 1' : 'Orientation'}<select data-roof-field="orientation">${selectOptions(orientations, config.orientation)}</select></label>${twoPans ? `<label>Orientation pan 2<select data-roof-field="orientation2">${selectOptions(orientations, config.orientation2)}</select></label>` : ''}<label class="roofPitch">Pente<select data-roof-field="pitch">${selectOptions(pitches, config.pitch)}</select></label><label>Ombrage<select data-roof-field="shade">${selectOptions(shades, config.shade)}</select></label></div><p class="fine roofSurfaceHelp">${config.type === 'FLAT' ? 'L’orientation et la pente concernent les supports photovoltaïques.' : twoPans ? `Surface estimée par pan : ${Math.round(area(layer) / 2).toLocaleString('fr-FR')} m². Ajustez séparément leurs orientations.` : 'La surface correspond à un seul pan de toiture.'}</p></article>`;
+      }).join('')}</div>` : '<p class="result">Aucune toiture ajoutée. Cliquez sur un bâtiment ou utilisez les outils de dessin sur la carte.</p>');
     host.querySelectorAll('[data-roof-id]').forEach((card) => {
       const id = Number(card.dataset.roofId);
       card.querySelectorAll('[data-roof-field]').forEach((field) => field.addEventListener('change', () => {
@@ -61,6 +62,7 @@
       card.querySelector('.roofPitch').firstChild.nodeValue = flat ? 'Pente des supports' : 'Pente du pan';
     });
     host.querySelectorAll('[data-delete-roof]').forEach((button) => button.addEventListener('click', () => removeSurface(Number(button.dataset.deleteRoof))));
+    host.querySelectorAll('[data-edit-roof]').forEach((button) => button.addEventListener('click', () => editSurface(Number(button.dataset.editRoof))));
     window.OzenoRoofSurfaces = { configurations, layers: current };
     synchronizeLegacyFields();
     calculateSynthesis();
@@ -75,6 +77,7 @@
 
   function finishDetection() {
     detectionPending = false;
+    document.getElementById('roofThinking')?.setAttribute('hidden', 'hidden');
   }
 
   function geometryLayer(geometry) {
@@ -117,7 +120,14 @@
 
   async function detectAt(event) {
     if (drawingActive || detectionPending) return;
+    const existing = layers().find((layer) => layer.getBounds?.().contains(event.latlng));
+    if (existing) {
+      existing.editing?.enable();
+      detectionStatus('Cette toiture est déjà ajoutée. Déplacez ses points blancs pour corriger le contour.', 'success');
+      return;
+    }
     detectionPending = true;
+    document.getElementById('roofThinking')?.removeAttribute('hidden');
     detectionStatus('Recherche du contour du bâtiment…', 'loading');
     try {
       const { lat, lng } = event.latlng;
@@ -152,6 +162,14 @@
     render();
   }
 
+  function editSurface(id) {
+    const layer = layers().find((item) => L.stamp(item) === id);
+    if (!layer) return;
+    layer.editing?.enable();
+    window.solarMap.fitBounds(layer.getBounds(), { padding: [28, 28], maxZoom: 19 });
+    detectionStatus('Mode correction actif : déplacez les points blancs du contour.', 'success');
+  }
+
   function synchronizeLegacyFields() {
     const first = configurations.values().next().value;
     if (!first) return;
@@ -182,9 +200,13 @@
         const surfaceCapacity = capacity * (area(layer) * ratio / usableTotal);
         try {
           const angle = config.type === 'FLAT' ? 10 : angles[config.pitch];
-          const response = await fetch(`https://re.jrc.ec.europa.eu/api/v5_3/PVcalc?lat=${lat}&lon=${lon}&peakpower=1&loss=14&angle=${angle}&aspect=${aspects[config.orientation]}&outputformat=json`);
-          const payload = await response.json();
-          return Number(payload.outputs?.totals?.fixed?.E_y || 0) * shadeFactors[config.shade] * surfaceCapacity;
+          const panOrientations = config.type === 'PITCHED' && Number(config.panCount) === 2 ? [config.orientation, config.orientation2] : [config.orientation];
+          const panResults = await Promise.all(panOrientations.map(async (orientation) => {
+            const response = await fetch(`https://re.jrc.ec.europa.eu/api/v5_3/PVcalc?lat=${lat}&lon=${lon}&peakpower=1&loss=14&angle=${angle}&aspect=${aspects[orientation]}&outputformat=json`);
+            const payload = await response.json();
+            return Number(payload.outputs?.totals?.fixed?.E_y || 0) * shadeFactors[config.shade] * (surfaceCapacity / panOrientations.length);
+          }));
+          return panResults.reduce((sum, value) => sum + value, 0);
         } catch { return 0; }
       }));
       annualProduction = results.reduce((sum, value) => sum + value, 0);
@@ -234,6 +256,14 @@
     const style = document.createElement('style');
     style.textContent = '.roofSurfaceHeader,.roofSurfaceTitle{display:flex;justify-content:space-between;align-items:center;gap:12px}.roofSurfaceHeader{margin:15px 0 5px}.roofSurfaceHeader p{margin:3px 0}.roofDetectionStatus{min-height:18px;margin:0 0 8px}.roofDetectionStatus[data-state="success"]{color:#08734c}.roofDetectionStatus[data-state="error"]{color:#7d201b}.roofDetectionReady.leaflet-grab,.roofDetectionReady .leaflet-interactive{cursor:pointer}.leaflet-editing-icon{width:16px!important;height:16px!important;margin-left:-8px!important;margin-top:-8px!important;border:2px solid #08734c!important;border-radius:50%!important;background:#fff!important}.roofSurfaceList{display:grid;gap:10px}.roofSurface{border:1px solid #cfe0d5;border-radius:9px;padding:12px;background:#f7faf8}.roofSurface .form{margin-top:9px;grid-template-columns:repeat(4,1fr)}.roofDelete{display:grid;place-items:center;width:36px;height:36px;flex:0 0 36px;border:1px solid #d6a4a0;background:#fff;color:#7d201b;border-radius:8px;padding:7px;cursor:pointer}.roofDelete:hover,.roofDelete:focus-visible{background:#fff0ef;border-color:#b84a43;outline:2px solid #b84a4333}.roofDelete svg{display:block;width:20px;height:20px;fill:currentColor}#terrainRoofSummary{margin:12px 0 18px}#terrainRoofSummary .metrics{grid-template-columns:repeat(3,1fr)}@media(max-width:760px){.roofSurfaceHeader{align-items:stretch;flex-direction:column}.roofSurfaceTitle{align-items:center;flex-direction:row}.roofSurface .form,#terrainRoofSummary .metrics{grid-template-columns:1fr}.leaflet-draw-actions{max-width:calc(100vw - 115px);display:flex;flex-wrap:wrap}.leaflet-draw-actions a{white-space:nowrap}.leaflet-editing-icon{width:20px!important;height:20px!important;margin-left:-10px!important;margin-top:-10px!important}}';
     document.head.appendChild(style);
+    const interactionStyle = document.createElement('style');
+    interactionStyle.textContent = '.roofSurfaceActions{display:flex;gap:7px}.roofEdit,.roofDelete{display:grid;place-items:center;width:36px;height:36px;flex:0 0 36px;border-radius:8px;padding:7px;cursor:pointer;background:#fff}.roofEdit{border:1px solid #87b6a0;color:#08734c}.roofEdit:hover,.roofEdit:focus-visible{background:#edf7f0;outline:2px solid #08734c33}.roofEdit svg,.roofDelete svg{display:block;width:20px;height:20px;fill:currentColor}#roofThinking{position:absolute;inset:0;z-index:800;display:grid;place-items:center;background:#062f3c66;pointer-events:none}#roofThinking[hidden]{display:none!important}.roofThinkingCard{display:flex;align-items:center;gap:11px;background:#fff;color:#062f3c;border-radius:10px;padding:13px 16px;font-weight:700;box-shadow:0 5px 20px #0005}.roofSpinner{width:23px;height:23px;border:3px solid #cfe0d5;border-top-color:#08734c;border-radius:50%;animation:roofSpin .8s linear infinite}@keyframes roofSpin{to{transform:rotate(360deg)}}';
+    document.head.appendChild(interactionStyle);
+    const thinking = document.createElement('div');
+    thinking.id = 'roofThinking';
+    thinking.hidden = true;
+    thinking.innerHTML = '<div class="roofThinkingCard"><span class="roofSpinner" aria-hidden="true"></span><span>Analyse du bâtiment en cours…</span></div>';
+    document.getElementById('map')?.appendChild(thinking);
     installTerrainSummary();
     window.solarMap.getContainer().classList.add('roofDetectionReady');
     window.solarMap.on('click', detectAt);
