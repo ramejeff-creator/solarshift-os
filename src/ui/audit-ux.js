@@ -19,6 +19,7 @@
     const total = document.getElementById('roofTotal');
     if (!roof || !tilt || !total) return;
     const surfaceLabel = total.closest('label');
+    total.removeAttribute('placeholder');
     let note = roof.querySelector('.roofModeNote');
     if (!note) {
       note = document.createElement('p');
