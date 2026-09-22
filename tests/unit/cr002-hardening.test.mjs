@@ -6,6 +6,15 @@ const hardening = new URL('../../supabase/migrations/202609210008_cr002_structur
 const endpoint = new URL('../../supabase/functions/calculate-energy-scenario/index.ts', import.meta.url);
 const types = new URL('../../supabase/functions/_shared/energy-types.ts', import.meta.url);
 const client = new URL('../../src/ui/energy-engine-client.js', import.meta.url);
+const contract = new URL('../../docs/06-decisions/CR-002-PHASE-2.1-2.3-CONTRACT.md', import.meta.url);
+const commercialUi = new URL('../../src/ui/index.html', import.meta.url);
+const productionStudyUi = new URL('../../src/ui/production-study.js', import.meta.url);
+
+test('hardening migration is atomic', async () => {
+  const sql = (await readFile(hardening, 'utf8')).trim();
+  assert.match(sql, /^begin;/i);
+  assert.match(sql, /commit;$/i);
+});
 
 test('governed scenarios and their calculation evidence are immutable', async () => {
   const sql = await readFile(hardening, 'utf8');
@@ -59,4 +68,19 @@ test('server calculation accepts scenario runs only in DRAFT and resolves P50/P9
   assert.match(contracts, /productionBenchmarkResultIds\?: ProductionBenchmarkResultIds/);
   assert.match(browserClient, /productionBenchmarkResultIds: cfg\.productionBenchmarkResultIds/);
   assert.doesNotMatch(browserClient, /productionBenchmarks: cfg\.productionBenchmarks/);
+});
+
+test('commercial pre-analysis stays available without mislabelling PVGIS as P50', async () => {
+  const [sql, contractText, ui, productionUi] = await Promise.all([
+    readFile(hardening, 'utf8'), readFile(contract, 'utf8'),
+    readFile(commercialUi, 'utf8'), readFile(productionStudyUi, 'utf8')
+  ]);
+  assert.match(contractText, /Commercial pre-analysis may be calculated and saved without P50\/P90/);
+  assert.match(sql, /scenario validation requires current Evidence-backed P50 and P90 external results/);
+  assert.match(sql, /result_record\.result_kind in \('P50','P90'\)/);
+  assert.match(sql, /not exists \([\s\S]*newer_version\.supersedes_id = result_record\.id/);
+  assert.match(ui, /Production théorique PVGIS/);
+  assert.match(productionUi, /Non requis à ce stade/);
+  assert.match(productionUi, /Estimation PVGIS \$\{point\.dataset\.p50\}/);
+  assert.match(productionUi, /P90 validé/);
 });

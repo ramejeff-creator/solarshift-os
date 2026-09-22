@@ -16,7 +16,7 @@
         <div class="grid" style="margin:10px 0 0">
           <div class="card metric"><small>Scénario de travail</small><b>345 000 kWh/an</b><em>Valeur indicative actuelle</em></div>
           <div class="card metric"><small>Profil mensuel</small><b>À valider</b><em>Rendement PVGIS par mois</em></div>
-          <div class="card metric"><small>P50 / P90</small><b>À importer</b><em>Étude externe validée requise</em></div>
+          <div class="card metric"><small>P50 / P90</small><b>Étape ultérieure</b><em>Non requis pour l’avant-analyse commerciale</em></div>
           <div class="card metric"><small>Ombrage</small><b>À documenter</b><em>Simulation ou visite commerciale</em></div>
         </div>
         <p>La production publiée devra provenir d’un calcul versionné, avec coordonnées, orientation, pente, ombrage et niveau de qualité clairement tracés.</p>

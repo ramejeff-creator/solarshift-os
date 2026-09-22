@@ -1,3 +1,5 @@
+begin;
+
 -- SolarShift OS — CR-002 structural hardening after completion audit.
 -- Additive migration: closes lifecycle, immutability, engineering provenance and
 -- cross-project consistency gaps without rewriting migration 007.
@@ -502,3 +504,61 @@ begin
   return next_revision;
 end;
 $$;
+
+-- Commercial pre-analysis remains available through DRAFT and CALCULATED without
+-- P50/P90. Promotion to the governed VALIDATED state requires the latest P50 and
+-- P90 versions to be Evidence-backed validated external engineering results.
+create or replace function public.validate_scenario(
+  target_scenario uuid,
+  validation_comment text default null
+)
+returns void language plpgsql security definer set search_path = public as $$
+declare
+  s public.scenarios;
+  validated_percentiles integer;
+begin
+  select * into s from public.scenarios where id = target_scenario for update;
+  if s.id is null or not public.has_project_role(
+    s.project_id,
+    array['ADMIN','SOLARSHIFT','EXPERT']::public.solarshift_role[]
+  ) then raise exception 'not authorized'; end if;
+  if s.status <> 'CALCULATED' then
+    raise exception 'only a calculated scenario can be validated';
+  end if;
+
+  select count(distinct result_record.result_kind)
+  into validated_percentiles
+  from public.external_engine_results result_record
+  where result_record.scenario_id = s.id
+    and result_record.result_kind in ('P50','P90')
+    and result_record.validation_status = 'VALIDATED'
+    and result_record.evidence_id is not null
+    and (
+      s.technical_configuration_id is null
+      or result_record.technical_configuration_id = s.technical_configuration_id
+    )
+    and not exists (
+      select 1
+      from public.external_engine_results newer_version
+      where newer_version.supersedes_id = result_record.id
+    );
+
+  if validated_percentiles <> 2 then
+    raise exception 'scenario validation requires current Evidence-backed P50 and P90 external results';
+  end if;
+
+  update public.scenarios
+  set status = 'VALIDATED', validated_by = auth.uid(), validated_at = now()
+  where id = s.id;
+
+  insert into public.validations(
+    project_id, entity_type, entity_id, previous_status,
+    new_status, validated_by, comment
+  ) values (
+    s.project_id, 'SCENARIO', s.id, s.status::text,
+    'VALIDATED', auth.uid(), validation_comment
+  );
+end;
+$$;
+
+commit;

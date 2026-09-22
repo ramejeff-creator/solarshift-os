@@ -31,16 +31,59 @@
     });
   }
 
+  function enhanceCommercialPreAnalysis(card) {
+    const badge = card.querySelector('.pill');
+    const hint = card.querySelector('.hint');
+    if (badge) badge.textContent = 'Avant-analyse';
+    if (hint) hint.textContent = 'Estimation commerciale PVGIS calculable immédiatement, sans étude P50/P90.';
+
+    card.querySelectorAll('.metric').forEach((metric) => {
+      const label = metric.querySelector('b, small')?.textContent?.trim();
+      const value = metric.querySelector('span, b:nth-child(2)');
+      const note = metric.querySelector('small:last-child');
+      if (label === 'Rendement moyen') metric.querySelector('b').textContent = 'Rendement moyen estimé';
+      if (label === 'P50 statistique' || label === 'P50' || label === 'P90') {
+        if (value) value.textContent = 'Non requis à ce stade';
+        if (note) note.textContent = 'Requis pour validation technique';
+      }
+    });
+
+    const unit = document.getElementById('productionUnit');
+    if (unit) unit.textContent = 'Production mensuelle théorique PVGIS. Les P50/P90 proviendront d’une étude externe validée.';
+    const status = document.getElementById('studyStatus');
+    if (status) status.innerHTML = '<b>Portée :</b> estimation commerciale indicative, utilisable sans bloquer l’avant-analyse.';
+
+    const points = document.getElementById('profilePoints');
+    const tooltip = document.getElementById('curveTooltip');
+    if (!points || !tooltip) return;
+    const labelEstimatedPoint = (point) => {
+      if (point.dataset.commercialTooltip === 'ready') return;
+      point.dataset.commercialTooltip = 'ready';
+      point.addEventListener('mouseenter', () => {
+        tooltip.textContent = `${point.dataset.month} · Estimation PVGIS ${point.dataset.p50} kWh`
+          + (point.dataset.p90 ? ` · P90 validé ${point.dataset.p90} kWh` : '');
+      });
+    };
+    points.querySelectorAll('circle').forEach(labelEstimatedPoint);
+    new MutationObserver(() => points.querySelectorAll('circle').forEach(labelEstimatedPoint))
+      .observe(points, { childList: true });
+  }
+
   function boot() {
-    if (document.querySelector('.productionStudy')) return;
+    const existing = document.querySelector('.productionStudy');
+    if (existing) {
+      enhanceCommercialPreAnalysis(existing);
+      return;
+    }
     const anchor = section();
     if (!anchor) return;
     addStyles();
     const card = document.createElement('section');
     card.className = 'card productionStudy';
     card.id = 'audit-production';
-    card.innerHTML = `<div class="sectionTitle"><h2>Étude de production</h2><span class="pill">Traçable</span></div><p class="hint">Cette synthèse reprend les données de production disponibles sans remplacer une étude validée.</p><div class="productionStudyGrid"><div class="metric"><small>Rendement moyen</small><b id="studyYield">À calculer</b><small>PVGIS · adresse du projet</small></div><div class="metric"><small>Qualité de donnée</small><b>Q0–Q4</b><small>Niveau affiché après calcul</small></div><div class="metric"><small>P50</small><b>À importer</b><small>Étude externe validée</small></div><div class="metric"><small>P90</small><b>À importer</b><small>Étude externe validée</small></div></div><h3>Profil mensuel</h3><div class="monthlyProfile" aria-label="Profil mensuel de production">${barsMarkup()}</div><p class="fine">Survolez une barre pour afficher la valeur mensuelle. Le profil est recalibré avec l’orientation, la pente, l’ombrage et les coordonnées.</p><div class="status"><b>Ombrage :</b> simulation détaillée à documenter ou à connecter à une étude 3D externe.</div>`;
+    card.innerHTML = `<div class="sectionTitle"><h2>Étude de production</h2><span class="pill">Traçable</span></div><p class="hint">Cette avant-analyse commerciale utilise une estimation PVGIS. Elle reste calculable sans étude P50/P90.</p><div class="productionStudyGrid"><div class="metric"><small>Rendement moyen estimé</small><b id="studyYield">À calculer</b><small>PVGIS · adresse du projet</small></div><div class="metric"><small>Qualité de donnée</small><b>Q0–Q4</b><small>Niveau affiché après calcul</small></div><div class="metric"><small>P50</small><b>Non requis à ce stade</b><small>Requis pour validation technique</small></div><div class="metric"><small>P90</small><b>Non requis à ce stade</b><small>Requis pour validation technique</small></div></div><h3>Profil mensuel estimé</h3><div class="monthlyProfile" aria-label="Profil mensuel estimé de production">${barsMarkup()}</div><p class="fine">Survolez une barre pour afficher la valeur mensuelle. Le profil est recalibré avec l’orientation, la pente, l’ombrage et les coordonnées.</p><div class="status"><b>Portée :</b> estimation commerciale indicative. Une étude externe P50/P90 sera nécessaire avant validation technique.</div>`;
     anchor.insertAdjacentElement('afterend', card);
+    enhanceCommercialPreAnalysis(card);
     update();
     ['orientation', 'tilt', 'shade'].forEach((id) => document.getElementById(id)?.addEventListener('change', () => setTimeout(update, 100)));
   }

@@ -43,6 +43,10 @@ the migration only provides the status, dates and index required by that job.
 - External results retain engine, source reference, methodology, evidence, quality and provenance.
 - PVGIS results are theoretical production/yield inputs and cannot be stored as P50 or P90.
 - P50/P90 require an Evidence-linked, VALIDATED external result. No internal haircut is permitted.
+- Commercial pre-analysis may be calculated and saved without P50/P90. Its PVGIS production and
+  financial outputs remain explicitly indicative and may reach `CALCULATED`, but not `VALIDATED`.
+- Promotion from `CALCULATED` to `VALIDATED` requires current P50 and P90 versions linked to the
+  scenario, backed by Evidence and validated as external engineering results.
 
 ## Authorization summary
 
