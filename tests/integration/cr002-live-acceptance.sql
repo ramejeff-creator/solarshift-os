@@ -7,6 +7,10 @@ create temporary table cr002_acceptance_results (
   passed boolean not null,
   detail text not null
 ) on commit drop;
+alter table cr002_acceptance_results enable row level security;
+create policy cr002_acceptance_authenticated
+  on cr002_acceptance_results for all to authenticated
+  using (true) with check (true);
 grant select, insert on cr002_acceptance_results to authenticated;
 
 do $$

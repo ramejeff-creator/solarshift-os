@@ -39,6 +39,7 @@ test('live acceptance recipe covers the complete rollback-only CR-002 journey', 
   const sql = await readFile(liveAcceptance, 'utf8');
   assert.match(sql, /^-- CR-002 phases 2\.1-2\.3 live acceptance recipe\./);
   assert.match(sql, /create_working_simulation/);
+  assert.match(sql, /alter table cr002_acceptance_results enable row level security/);
   assert.match(sql, /freeze_simulation_to_scenario/);
   assert.match(sql, /cannot be VALIDATED/);
   assert.match(sql, /append_external_engine_result[\s\S]*'P50'/);
