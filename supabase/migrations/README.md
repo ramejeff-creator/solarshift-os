@@ -13,6 +13,7 @@ Ordre prévu pour la Phase 1 :
 7. correction du cycle de vie des runs pour horodater tous les états terminaux.
 8. CR-002 : contrats de gouvernance, configurations techniques et simulations persistées.
 9. durcissement CR-002 : immutabilité agrégée, résultats externes validés, cohérence interprojet et RPC audités.
+10. compatibilité Supabase hébergée : résolution explicite de `extensions.digest` lors du gel d’une simulation.
 
 Aucun moteur de scoring n’est introduit par ces premières migrations.
 
