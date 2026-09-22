@@ -99,6 +99,9 @@ Deno.serve(async (request) => {
     return json({ error: 'Invalid JSON body' }, 400);
   }
   if (!input?.projectId) return json({ error: 'projectId is required' }, 400);
+  if (input.scenarioId && input.simulationId) {
+    return json({ error: 'A calculation must target either a scenario or a working simulation, not both' }, 400);
+  }
 
   const userClient = createClient(supabaseUrl, anonKey, { global: { headers: { Authorization: authorization } } });
   const { data: userData, error: userError } = await userClient.auth.getUser();
@@ -107,11 +110,11 @@ Deno.serve(async (request) => {
   if (authorizationError || !canWrite) return json({ error: 'Not authorized to calculate this project' }, 403);
 
   const service = createClient(supabaseUrl, serviceRoleKey);
-  const snapshotHash = await sha256(input);
   const sourceProfiles = [input.pvProduction.profileId, input.load?.profileId].filter((id): id is string => Boolean(id));
   if (input.scenarioId) {
-    const { data: scenario, error: scenarioError } = await service.from('scenarios').select('project_id').eq('id', input.scenarioId).single();
+    const { data: scenario, error: scenarioError } = await service.from('scenarios').select('project_id, status').eq('id', input.scenarioId).single();
     if (scenarioError || scenario?.project_id !== input.projectId) return json({ error: 'Scenario does not belong to the project' }, 400);
+    if (scenario.status !== 'DRAFT') return json({ error: 'Only a DRAFT scenario can receive a calculation run' }, 409);
   }
   if (input.simulationId) {
     const { data: simulation, error: simulationError } = await service.from('simulation_sessions').select('project_id, status, retention_days').eq('id', input.simulationId).single();
@@ -124,6 +127,62 @@ Deno.serve(async (request) => {
     const validIds = new Set((profiles ?? []).filter((profile) => profile.project_id === input.projectId).map((profile) => profile.id));
     if (profileError || sourceProfiles.some((id) => !validIds.has(id))) return json({ error: 'One or more energy profiles do not belong to the project' }, 400);
   }
+
+  if (input.productionBenchmarks && !input.productionBenchmarkResultIds) {
+    return json({ error: 'Production benchmarks must be selected by validated external result ID' }, 400);
+  }
+
+  const benchmarkIds = input.productionBenchmarkResultIds;
+  if (benchmarkIds) {
+    const requested = [benchmarkIds.p50ResultId, benchmarkIds.p90ResultId].filter((id): id is string => Boolean(id));
+    if (requested.length === 0) return json({ error: 'At least one production benchmark result ID is required' }, 400);
+    if (new Set(requested).size !== requested.length) return json({ error: 'P50 and P90 must reference distinct external results' }, 400);
+
+    const { data: externalResults, error: externalResultError } = await service
+      .from('external_engine_results')
+      .select('id, project_id, result_kind, value_numeric, unit, source_engine, source_reference, methodology, evidence_id, validation_status, provenance, version')
+      .in('id', requested);
+    if (externalResultError || (externalResults?.length ?? 0) !== requested.length) {
+      return json({ error: 'One or more production benchmark results were not found' }, 400);
+    }
+
+    const byId = new Map((externalResults ?? []).map((result) => [result.id, result]));
+    const resolveBenchmark = (id: string | undefined, expectedKind: 'P50' | 'P90'): number | undefined => {
+      if (!id) return undefined;
+      const result = byId.get(id);
+      if (!result || result.project_id !== input.projectId || result.result_kind !== expectedKind
+        || result.validation_status !== 'VALIDATED' || !result.evidence_id
+        || result.value_numeric === null || result.value_numeric === undefined
+        || String(result.source_engine).toUpperCase() === 'PVGIS') {
+        throw new Error(`${expectedKind} must reference a validated, Evidence-backed external engineering result`);
+      }
+      return Number(result.value_numeric);
+    };
+
+    try {
+      const p50Kwh = resolveBenchmark(benchmarkIds.p50ResultId, 'P50');
+      const p90Kwh = resolveBenchmark(benchmarkIds.p90ResultId, 'P90');
+      input = {
+        ...input,
+        productionBenchmarks: {
+          p50Kwh,
+          p90Kwh,
+          methodology: 'VALIDATED_EXTERNAL_STUDY',
+          provenance: {
+            sourceType: 'EXTERNAL_ENGINE_RESULT',
+            sourceReference: requested.join(','),
+            evidenceId: (externalResults ?? []).map((result) => result.evidence_id).join(','),
+            externalEngineResultIds: requested,
+            versions: (externalResults ?? []).map((result) => ({ id: result.id, version: result.version }))
+          }
+        }
+      };
+    } catch (error) {
+      return json({ error: error instanceof Error ? error.message : String(error) }, 400);
+    }
+  }
+
+  const snapshotHash = await sha256(input);
   const { data: run, error: runError } = await service.from('calculation_runs').insert({
     project_id: input.projectId,
     scenario_id: input.scenarioId ?? null,

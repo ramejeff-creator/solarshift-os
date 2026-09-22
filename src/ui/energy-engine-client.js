@@ -158,7 +158,7 @@
         pvDegradationPct: 0.4,
         debtServiceByYearEur: debtServiceSchedule(capexEur, horizonYears)
       },
-      productionBenchmarks: cfg.productionBenchmarks
+      productionBenchmarkResultIds: cfg.productionBenchmarkResultIds
     };
   }
 

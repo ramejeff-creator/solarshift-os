@@ -173,6 +173,12 @@ export interface ValidatedProductionBenchmarks {
   provenance: Provenance;
 }
 
+/** Identifiers resolved server-side from validated external engineering records. */
+export interface ProductionBenchmarkResultIds {
+  p50ResultId?: string;
+  p90ResultId?: string;
+}
+
 export interface EnergyScenarioInput {
   projectId: string;
   scenarioId?: string;
@@ -180,6 +186,8 @@ export interface EnergyScenarioInput {
   pvProduction: EnergyProfileInput;
   load?: EnergyProfileInput;
   financial?: FinancialAssumptions;
+  productionBenchmarkResultIds?: ProductionBenchmarkResultIds;
+  /** Internal engine input. The public server endpoint resolves it from result IDs. */
   productionBenchmarks?: ValidatedProductionBenchmarks;
 }
 

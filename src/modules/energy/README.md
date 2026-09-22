@@ -53,6 +53,10 @@ assumptions fail validation.
 checks project write access, hashes the complete input snapshot, creates a versioned
 calculation run, appends calculated KPI records and records warnings/missing inputs.
 
+P50/P90 inputs are passed as `productionBenchmarkResultIds`. The server resolves
+the corresponding Evidence-backed, validated `external_engine_results`; raw
+client-declared benchmark values are rejected.
+
 Calculated production and IRR do not overwrite C03/C09 automatically. They become
 canonical only after validation through the existing controlled promotion function.
 
