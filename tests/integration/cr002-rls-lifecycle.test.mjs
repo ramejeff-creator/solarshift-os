@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
+const liveAcceptance = new URL('./cr002-live-acceptance.sql', import.meta.url);
+
 const migration = new URL('../../supabase/migrations/202609200007_cr002_contracts_technical_simulations.sql', import.meta.url);
 
 test('investors are isolated from simulations and require a published scenario ACL', async () => {
@@ -31,4 +33,22 @@ test('publication and revocation are restricted to ADMIN or SOLARSHIFT', async (
   assert.match(revoke, /array\['ADMIN','SOLARSHIFT'\]/);
   assert.doesNotMatch(publish, /array\[[^\]]*(?:MANDATAIRE|EXPERT|CLIENT|INVESTOR)[^\]]*\]/);
   assert.doesNotMatch(revoke, /array\[[^\]]*(?:MANDATAIRE|EXPERT|CLIENT|INVESTOR)[^\]]*\]/);
+});
+
+test('live acceptance recipe covers the complete rollback-only CR-002 journey', async () => {
+  const sql = await readFile(liveAcceptance, 'utf8');
+  assert.match(sql, /^-- CR-002 phases 2\.1-2\.3 live acceptance recipe\./);
+  assert.match(sql, /create_working_simulation/);
+  assert.match(sql, /freeze_simulation_to_scenario/);
+  assert.match(sql, /cannot be VALIDATED/);
+  assert.match(sql, /append_external_engine_result[\s\S]*'P50'/);
+  assert.match(sql, /append_external_engine_result[\s\S]*'P90'/);
+  assert.match(sql, /validated scenario content is immutable/);
+  assert.match(sql, /publish_scenario/);
+  assert.match(sql, /revoke_scenario_publication/);
+  assert.match(sql, /membership\.role <> 'INVESTOR'/);
+  assert.match(sql, /existing_grant\.role <> 'INVESTOR'/);
+  assert.match(sql, /investor sees only the explicitly published scenario/);
+  assert.match(sql, /publication and revocation are audited/);
+  assert.match(sql, /rollback;\s*$/i);
 });
