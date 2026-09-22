@@ -150,7 +150,7 @@ insert into public.calculation_runs(
   'SUCCEEDED',
   'Q1',
   '{"commercial_preanalysis":true,"p50_p90":null}'::jsonb,
-  encode(digest('cr002-live-acceptance', 'sha256'), 'hex'),
+  encode(extensions.digest('cr002-live-acceptance', 'sha256'), 'hex'),
   '{"production_source":"PVGIS"}'::jsonb,
   now(),
   current_setting('cr002.worker_user')::uuid

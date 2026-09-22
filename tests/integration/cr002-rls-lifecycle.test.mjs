@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const liveAcceptance = new URL('./cr002-live-acceptance.sql', import.meta.url);
+const freezeHashMigration = new URL('../../supabase/migrations/202609220009_cr002_freeze_hash_schema.sql', import.meta.url);
 
 const migration = new URL('../../supabase/migrations/202609200007_cr002_contracts_technical_simulations.sql', import.meta.url);
 
@@ -52,4 +53,14 @@ test('live acceptance recipe covers the complete rollback-only CR-002 journey', 
   assert.match(sql, /investor sees only the explicitly published scenario/);
   assert.match(sql, /publication and revocation are audited/);
   assert.match(sql, /rollback;\s*$/i);
+});
+
+test('hosted Supabase FREEZE resolves pgcrypto from the extensions schema', async () => {
+  const sql = await readFile(freezeHashMigration, 'utf8');
+  const acceptance = await readFile(liveAcceptance, 'utf8');
+  assert.match(sql, /^begin;/);
+  assert.match(sql, /create or replace function public\.freeze_simulation_to_scenario/);
+  assert.match(sql, /extensions\.digest\(snapshot::text, 'sha256'\)/);
+  assert.match(sql, /commit;\s*$/);
+  assert.match(acceptance, /extensions\.digest\('cr002-live-acceptance', 'sha256'\)/);
 });
