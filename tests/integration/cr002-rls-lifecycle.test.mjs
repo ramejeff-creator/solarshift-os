@@ -47,8 +47,8 @@ test('live acceptance recipe covers the complete rollback-only CR-002 journey', 
   assert.match(sql, /validated scenario content is immutable/);
   assert.match(sql, /publish_scenario/);
   assert.match(sql, /revoke_scenario_publication/);
-  assert.match(sql, /membership\.role <> 'INVESTOR'/);
-  assert.match(sql, /existing_grant\.role <> 'INVESTOR'/);
+  assert.match(sql, /insert into auth\.users/);
+  assert.match(sql, /investor_user := gen_random_uuid\(\)/);
   assert.match(sql, /investor sees only the explicitly published scenario/);
   assert.match(sql, /publication and revocation are audited/);
   assert.match(sql, /rollback;\s*$/i);

@@ -19,38 +19,24 @@ declare
   worker_user uuid;
   investor_user uuid;
 begin
-  select g.project_id, g.user_id, candidate.id
-  into target_project, worker_user, investor_user
+  select g.project_id, g.user_id
+  into target_project, worker_user
   from public.project_access_grants g
-  join public.projects project_record on project_record.id = g.project_id
-  cross join lateral (
-    select p.id
-    from public.profiles p
-    where p.id <> g.user_id
-      and not exists (
-        select 1
-        from public.organization_memberships membership
-        where membership.organization_id = project_record.organization_id
-          and membership.user_id = p.id
-          and membership.role <> 'INVESTOR'
-      )
-      and not exists (
-        select 1
-        from public.project_access_grants existing_grant
-        where existing_grant.project_id = g.project_id
-          and existing_grant.user_id = p.id
-          and existing_grant.role <> 'INVESTOR'
-      )
-    order by p.id
-    limit 1
-  ) candidate
   where g.role in ('ADMIN','SOLARSHIFT')
-  order by g.created_at, candidate.id
+  order by g.created_at
   limit 1;
 
   if target_project is null then
-    raise exception 'live acceptance requires an ADMIN or SOLARSHIFT project grant and a profile without internal access to that project';
+    raise exception 'live acceptance requires an ADMIN or SOLARSHIFT project grant';
   end if;
+
+  -- A synthetic user prevents existing organization or project roles from
+  -- making the investor RLS assertion pass for the wrong reason.
+  investor_user := gen_random_uuid();
+  insert into auth.users(id, aud, role)
+  values (investor_user, 'authenticated', 'authenticated');
+  insert into public.profiles(id) values (investor_user)
+  on conflict do nothing;
 
   insert into public.project_access_grants(project_id, user_id, role)
   values (target_project, investor_user, 'INVESTOR')
