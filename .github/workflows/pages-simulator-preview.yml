@@ -1,0 +1,39 @@
+name: Publish public simulator preview
+
+on:
+  push:
+    branches: [codex/pages-simulator-preview]
+    paths:
+      - 'public-simulator/**'
+      - '.github/workflows/pages-simulator-preview.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages-simulator
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out the isolated preview branch
+        uses: actions/checkout@v4
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Upload only the public simulator bundle
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./public-simulator
+      - name: Deploy the preview
+        id: deployment
+        uses: actions/deploy-pages@v4
