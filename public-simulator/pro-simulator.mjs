@@ -150,6 +150,9 @@ function updateProjectSummary() {
     ? externalInstallationLabels[selected('externalSurfaceType')?.value] || 'Installation à préciser'
     : roof === 'flat' ? 'Toit plat' : roof === 'pitched' ? `Toiture inclinée · ${selected('roofPans')?.value === 'two' ? '2 pans' : '1 pan'}` : 'À choisir';
   const siteLabel = siteKind === 'land' ? (externalSurfaceLabels[selected('externalSurfaceType')?.value] || 'Surface extérieure à choisir') : siteKind === 'building' ? (buildingLabels[building] || 'Type de bâtiment à choisir') : 'À choisir';
+  const externalInstallation = externalInstallationLabels[selected('externalSurfaceType')?.value];
+  $('externalInstallationSummary').hidden = siteKind !== 'land' || !externalInstallation;
+  $('externalInstallationLabel').textContent = externalInstallation || 'À préciser';
   document.querySelectorAll('#summaryBuilding, [data-summary-building]').forEach((node) => { node.textContent = siteLabel; });
   document.querySelectorAll('#summaryRoof, [data-summary-roof]').forEach((node) => { node.textContent = roofLabel; });
   document.querySelectorAll('#summaryArea, [data-summary-area]').forEach((node) => { node.textContent = area >= 20 ? `${numberFormat(area)} m²` : 'À mesurer'; });
@@ -188,8 +191,18 @@ function updateSiteKind() {
   if (siteKind) mapSiteKind = siteKind;
   roofInteractions?.setFootprintDetectionEnabled(buildingPath);
   const externalSurfaceGroup = document.querySelector('.simExternalSurfaceGroup');
+  const buildingDetails = document.querySelector('.simBuildingDetails');
+  const roofTypeGroup = document.querySelector('.simRoofTypeGroup');
+  const externalInstallationSummary = $('externalInstallationSummary');
+  if (buildingDetails) buildingDetails.hidden = !buildingPath;
   if (externalSurfaceGroup) externalSurfaceGroup.hidden = !externalPath;
-  document.querySelectorAll('input[name="buildingUse"]').forEach((input) => { input.required = true; });
+  if (roofTypeGroup) roofTypeGroup.hidden = !buildingPath;
+  if (externalInstallationSummary && !externalPath) externalInstallationSummary.hidden = true;
+  document.querySelectorAll('input[name="buildingUse"]').forEach((input) => {
+    input.disabled = !buildingPath;
+    input.required = buildingPath;
+    if (!buildingPath) input.checked = false;
+  });
   document.querySelectorAll('input[name="roofType"]').forEach((input) => {
     input.disabled = !buildingPath;
     input.required = buildingPath;

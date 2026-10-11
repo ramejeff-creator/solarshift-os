@@ -115,10 +115,17 @@
         <section class="simStep" data-step="2" aria-labelledby="roofHeading" hidden>
           <div class="simStepHeading">
             <span class="simStepIcon" aria-hidden="true">⌂</span>
-            <div><p class="simEyebrow">ÉTAPE 2 SUR 5</p><h2 id="roofHeading">Caractérisez votre site et votre installation</h2><p>Choisissez l’activité du site, puis indiquez si le projet concerne une toiture ou une surface extérieure.</p></div>
+            <div><p class="simEyebrow">ÉTAPE 2 SUR 5</p><h2 id="roofHeading">Caractérisez votre site et votre installation</h2><p>Commencez par choisir un bâtiment ou une surface extérieure ; les choix suivants s’adaptent à votre projet.</p></div>
           </div>
           <fieldset class="simChoiceGroup">
-            <legend data-number="1">Type de bâtiment <small>Choisissez la catégorie qui correspond le mieux à votre activité.</small></legend>
+            <legend data-number="1">Nature du site <small>Votre projet concerne un bâtiment ou une surface extérieure ?</small></legend>
+            <div class="simSiteKindChoices">
+              <label class="simChoiceCard"><input type="radio" name="siteKind" value="building" required checked><span class="simSiteKindIcon" aria-hidden="true">▤</span><b>Bâtiment professionnel</b><small>Installation sur une toiture.</small></label>
+              <label class="simChoiceCard"><input type="radio" name="siteKind" value="land" required><span class="simSiteKindIcon" aria-hidden="true">▦</span><b>Surface extérieure</b><small>Parking pour ombrière, terrain ou surface agricole.</small></label>
+            </div>
+          </fieldset>
+          <fieldset class="simChoiceGroup simBuildingDetails" id="buildingDetails">
+            <legend>Type de bâtiment <small>Choisissez la catégorie qui correspond le mieux à votre activité.</small></legend>
             <div class="simBuildingChoices">
               <label class="simChoiceCard"><input type="radio" name="buildingUse" value="offices"><span class="simBuildingArt building-offices" aria-hidden="true"></span><b>Bureaux & tertiaire</b><small>Immeubles de bureaux, sièges sociaux, etc.</small></label>
               <label class="simChoiceCard"><input type="radio" name="buildingUse" value="logistics"><span class="simBuildingArt building-logistics" aria-hidden="true"></span><b>Stockage & logistique</b><small>Entrepôts, plateformes logistiques, etc.</small></label>
@@ -128,40 +135,32 @@
               <label class="simChoiceCard"><input type="radio" name="buildingUse" value="other"><span class="simBuildingArt building-other" aria-hidden="true"></span><b>Autre bâtiment professionnel</b><small>Hôtels, santé, tertiaire spécialisé, etc.</small></label>
             </div>
           </fieldset>
-          <fieldset class="simChoiceGroup simInstallationGroup">
-            <legend data-number="2">Support du projet <small>Choisissez une toiture ou une surface extérieure, puis précisez sa nature.</small></legend>
-            <div class="simInstallationChoices">
-              <section class="simInstallOption simRoofInstallOption">
-                <label class="simInstallOptionHeading"><input type="radio" name="siteKind" value="building" required checked><span><strong>Sur toiture de bâtiment</strong></span></label>
-                <fieldset class="simRoofTypeGroup">
-                  <legend class="simVisuallyHidden">Type de toiture</legend>
-                  <div class="simRoofChoices">
-                    <label class="simChoiceCard simRoofCard"><input type="radio" name="roofType" value="flat" required><span class="simSolarArt solar-flat" aria-hidden="true"></span><b>Toit plat</b><small>Panneaux sur supports</small></label>
-                    <label class="simChoiceCard simRoofCard"><input type="radio" name="roofType" value="pitched" required><span class="simSolarArt solar-pitched" aria-hidden="true"></span><b>Toiture inclinée</b><small>Un ou deux pans</small></label>
-                  </div>
-                </fieldset>
-                <fieldset class="simChoiceGroup simPansGroup" hidden>
-                  <legend>Combien de pans de toiture seront équipés ?</legend>
-                  <div class="simPansChoices">
-                    <label class="simPillChoice"><input type="radio" name="roofPans" value="one" checked><span aria-hidden="true">⌂</span> Un pan</label>
-                    <label class="simPillChoice"><input type="radio" name="roofPans" value="two"><span aria-hidden="true">⌂</span> Deux pans</label>
-                  </div>
-                  <small class="simFieldHint">Pour deux pans, le simulateur répartit la surface à parts égales.</small>
-                </fieldset>
-              </section>
-              <span class="simInstallationOr" aria-hidden="true">Ou</span>
-              <div class="simInstallOption simCanopyInstallOption">
-                <label class="simCanopyCard"><input type="radio" name="siteKind" value="land" required><span class="simCanopyArt" aria-hidden="true"><img src="assets/simulator/pv-carport.png" alt=""></span><span class="simCanopyText"><strong>Surface extérieure</strong><small>Parking pour ombrière, terrain ou surface agricole.</small></span><span class="simCanopyArrow" aria-hidden="true">→</span></label>
-                <fieldset class="simExternalSurfaceGroup" hidden>
-                  <legend>Quelle est la nature de cette surface ?</legend>
-                  <div class="simPansChoices">
-                    <label class="simPillChoice"><input type="radio" name="externalSurfaceType" value="parking" required><span aria-hidden="true">▦</span> Parking</label>
-                    <label class="simPillChoice"><input type="radio" name="externalSurfaceType" value="terrain" required><span aria-hidden="true">⌖</span> Terrain</label>
-                    <label class="simPillChoice"><input type="radio" name="externalSurfaceType" value="agriculture" required>Agricole</label>
-                  </div>
-                </fieldset>
-              </div>
+          <fieldset class="simChoiceGroup simExternalSurfaceGroup" hidden>
+            <legend>Quelle est la nature de cette surface ?</legend>
+            <div class="simPansChoices">
+              <label class="simPillChoice"><input type="radio" name="externalSurfaceType" value="parking" required><span aria-hidden="true">▦</span> Parking</label>
+              <label class="simPillChoice"><input type="radio" name="externalSurfaceType" value="terrain" required><span aria-hidden="true">⌖</span> Terrain</label>
+              <label class="simPillChoice"><input type="radio" name="externalSurfaceType" value="agriculture" required>Agricole</label>
             </div>
+          </fieldset>
+          <fieldset class="simChoiceGroup simInstallationGroup">
+            <legend data-number="2">Type d’installation <small>Précisez la toiture ou l’installation envisagée.</small></legend>
+            <fieldset class="simRoofTypeGroup">
+              <legend class="simVisuallyHidden">Type de toiture</legend>
+              <div class="simRoofChoices">
+                <label class="simChoiceCard simRoofCard"><input type="radio" name="roofType" value="flat" required><span class="simSolarArt solar-flat" aria-hidden="true"></span><b>Toit plat</b><small>Panneaux sur supports</small></label>
+                <label class="simChoiceCard simRoofCard"><input type="radio" name="roofType" value="pitched" required><span class="simSolarArt solar-pitched" aria-hidden="true"></span><b>Toiture inclinée</b><small>Un ou deux pans</small></label>
+              </div>
+            </fieldset>
+            <fieldset class="simChoiceGroup simPansGroup" hidden>
+              <legend>Combien de pans de toiture seront équipés ?</legend>
+              <div class="simPansChoices">
+                <label class="simPillChoice"><input type="radio" name="roofPans" value="one" checked><span aria-hidden="true">⌂</span> Un pan</label>
+                <label class="simPillChoice"><input type="radio" name="roofPans" value="two"><span aria-hidden="true">⌂</span> Deux pans</label>
+              </div>
+              <small class="simFieldHint">Pour deux pans, le simulateur répartit la surface à parts égales.</small>
+            </fieldset>
+            <div class="simExternalDetails simDerivedInstallation" id="externalInstallationSummary" hidden aria-live="polite"><p>Installation envisagée : <strong id="externalInstallationLabel">À préciser</strong></p></div>
           </fieldset>
           <section class="simMapSection" aria-labelledby="roofMapHeading">
             <div class="simMapHeading"><div><h3 id="roofMapHeading" data-number="3">Repérez votre toiture ou surface à couvrir</h3><p id="roofMapDescription">Tracez son contour avec le rectangle ou le polygone. Vous pourrez ajuster les points si besoin.</p></div><span class="simMapArea" id="mapAreaOutput">Surface à repérer</span></div>
