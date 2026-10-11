@@ -180,6 +180,14 @@ fieldset.simQuestion > div { clear: both; }
 .simQuestion::after { display: block; clear: both; content: ''; }
 .simQuestion [data-number]::before { width: 30px; height: 30px; margin-right: 12px; font-size: 14px; }
 .simQuestionLabel { color: var(--sim-ink); font: 800 16px/1.3 Manrope,system-ui,sans-serif; }
+.simTechnicalAssumption h3 { margin: 0 0 10px; color: var(--sim-ink); font: 800 16px/1.3 Manrope,system-ui,sans-serif; }
+.simTechnicalAssumption p { margin: 0; color: var(--sim-muted); font-size: 13px; line-height: 1.6; }
+.simMapOrientation { margin-top: 12px; padding: 13px 14px; border: 1px solid #d7e7de; border-radius: 10px; background: #f5faf6; }
+.simMapOrientation strong { display: block; color: #164b38; font-size: 13px; }
+.simMapOrientation strong small { color: #6b8176; font-size: 11px; font-weight: 500; }
+.simMapOrientation .simPanExplanation { margin: 4px 0 9px; }
+.simMapOrientation .simButton { min-height: 38px; padding: 8px 12px; font-size: 12px; }
+.simPickingOrientation { cursor: crosshair !important; }
 .simUsableCard { display: block; }
 .simUsableCard .simField { grid-template-columns: minmax(0,1fr) auto; gap: 11px; }
 .simUsableCard output { align-self: center; padding-right: 10px; color: var(--sim-pine); font-size: 16px; }

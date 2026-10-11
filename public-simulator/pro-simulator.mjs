@@ -5,7 +5,7 @@ import { resolveAnnualConsumption, resolveBuildingConsumptionBenchmark, resolveE
 
 const $ = (id) => document.getElementById(id);
 const form = $('simulatorForm');
-form.querySelectorAll('input[name="usageMode"]').forEach((input) => { input.checked = false; input.required = true; });
+form.querySelectorAll('input[name="usageMode"]').forEach((input) => { input.required = true; });
 const steps = [...document.querySelectorAll('[data-step]')].filter((section) => Number(section.dataset.step) <= 5);
 const progressItems = [...document.querySelectorAll('[data-progress-step]')];
 const monthNames = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
@@ -29,6 +29,9 @@ let roofMap = null;
 let roofMapShapes = null;
 let roofMapLocationKey = null;
 let mapSiteKind = null;
+let roofOrientation = null;
+let roofOrientationPicker = null;
+let roofOrientationLine = null;
 let drawnRoofAreaM2 = 0;
 let roofInteractions = null;
 const roofPreviews = new Map();
@@ -173,7 +176,7 @@ function updateProjectSummary() {
       : selected('externalSurfaceType')?.value === 'terrain'
         ? 'La puissance dépendra des surfaces équipables et des contraintes du terrain.'
         : 'La puissance de l’ombrière dépendra de son implantation et d’une étude dédiée.'
-    : 'Vous préciserez la pente, l’orientation et l’ombrage pour affiner votre estimation.';
+    : 'La pente et l’orientation sont des hypothèses techniques de pré-étude, à confirmer lors de l’étude du site.';
   updateRoofPreviews();
 }
 
@@ -282,6 +285,9 @@ function initRoofMap() {
   if (roofMapLocationKey && roofMapLocationKey !== locationKey) {
     cancelRoofDetection();
     roofMapShapes?.clearLayers();
+    finishRoofOrientationPick(); roofOrientation = null;
+    if (roofOrientationLine) { roofMap?.removeLayer(roofOrientationLine); roofOrientationLine = null; }
+    $('orientationStatus').textContent = 'Non renseignée · hypothèse sud appliquée à l’estimation.';
     updateDrawnRoofArea();
   }
   roofMapLocationKey = locationKey;
@@ -309,6 +315,58 @@ function initRoofMap() {
     roofInteractions.setFootprintDetectionEnabled(selected('siteKind')?.value === 'building');
   } else roofMap.setView([location.latitude, location.longitude], 18);
   window.setTimeout(() => roofMap.invalidateSize(), 80);
+}
+function bearingBetweenPoints(start, end) {
+  const radians = (value) => value * Math.PI / 180;
+  const lat1 = radians(start.lat), lat2 = radians(end.lat), deltaLng = radians(end.lng - start.lng);
+  const y = Math.sin(deltaLng) * Math.cos(lat2);
+  const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(deltaLng);
+  return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+}
+function nearestCompassLabel(azimuth) {
+  const normalized = ((Number(azimuth) % 360) + 360) % 360;
+  return Object.entries(azimuthLabels).map(([degree, label]) => ({ degree: Number(degree), label }))
+    .reduce((best, item) => {
+      const difference = Math.abs(((normalized - item.degree + 540) % 360) - 180);
+      return difference < best.difference ? { difference, label: item.label } : best;
+    }, { difference: Infinity, label: 'Sud' }).label;
+}
+function finishRoofOrientationPick(message = '') {
+  if (!roofOrientationPicker) return;
+  roofMap?.getContainer()?.removeEventListener('click', roofOrientationPicker.handler, true);
+  if (roofOrientationPicker.preview) roofMap?.removeLayer(roofOrientationPicker.preview);
+  roofMap?.getContainer()?.classList.remove('simPickingOrientation');
+  roofOrientationPicker = null;
+  $('pickRoofOrientation').textContent = 'Repérer l’orientation sur la carte';
+  if (message) $('orientationStatus').textContent = message;
+}
+function startRoofOrientationPick() {
+  if (!roofMap) { $('orientationStatus').textContent = 'La carte doit être chargée avant le repérage.'; return; }
+  if (roofOrientationPicker) { finishRoofOrientationPick('Repérage annulé · hypothèse sud conservée.'); return; }
+  let start = null;
+  let preview = null;
+  if (roofOrientationLine) { roofMap.removeLayer(roofOrientationLine); roofOrientationLine = null; }
+  const container = roofMap.getContainer();
+  const handler = (event) => {
+    if (event.target.closest?.('.leaflet-control')) return;
+    event.preventDefault(); event.stopImmediatePropagation();
+    const point = roofMap.mouseEventToLatLng(event);
+    if (!start) {
+      start = point;
+      preview = window.L.circleMarker(point, { radius: 6, color: '#08734c', weight: 2, fillColor: '#fff', fillOpacity: 1, interactive: false }).addTo(roofMap);
+      $('orientationStatus').textContent = 'Point de départ noté · cliquez dans le sens de la pente, du faîtage vers le bas du toit.';
+      return;
+    }
+    roofOrientation = bearingBetweenPoints(start, point);
+    roofOrientationLine = window.L.polyline([start, point], { color: '#08734c', weight: 4, dashArray: '7 6', interactive: false }).addTo(roofMap);
+    finishRoofOrientationPick(`${nearestCompassLabel(roofOrientation)} · repérée sur la carte (${Math.round(roofOrientation)}°).`);
+  };
+  roofOrientationPicker = { handler, get preview() { return preview; } };
+  container.classList.add('simPickingOrientation');
+  container.addEventListener('click', handler, true);
+  $('pickRoofOrientation').textContent = 'Annuler le repérage';
+  $('orientationStatus').textContent = 'Cliquez sur le point de départ de la pente, puis sur son extrémité basse.';
+  $('roofMap').scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 async function findAddresses(query) {
   searchController?.abort();
@@ -494,15 +552,15 @@ function roofAzimuth(aspect) {
 function buildEstimateInput() {
   const siteKind = selected('siteKind')?.value;
   const roofType = selectedRoofType();
-  const orientationValue = selected('orientation')?.value;
-  const orientation = orientationValue == null ? null : Number(orientationValue);
-  const tiltBand = selected('tiltBand')?.value;
+  const twoPans = roofType === 'pitched' && selected('roofPans')?.value === 'two';
+  const orientation = roofOrientation ?? 180;
+  const orientationSource = roofOrientation == null ? 'default-south' : 'map-trace';
+  const tiltBand = selected('tiltBand')?.value || '0-6';
   const grossArea = Number($('roofArea').value) || drawnRoofAreaM2;
   const usablePercent = Number($('usablePercent').value);
   const shade = selected('shade')?.value;
   const supported = ['flat', 'pitched'].includes(roofType);
   const sizing = supported ? estimateSolarCapacity({ roofType, orientation, tiltBand, grossArea, usablePercent }) : null;
-  const twoPans = roofType === 'pitched' && selected('roofPans')?.value === 'two';
   const planes = supported ? solarRoofPlanes({ roofType, roofPans: selected('roofPans')?.value, orientation }) : [];
   const buildingUse = selected('buildingUse')?.value || null;
   const warehouseSubtype = $('warehouseSubtype')?.value || 'unknown';
@@ -534,7 +592,7 @@ function buildEstimateInput() {
       ? `Prix total réseau déclaré : ${numberFormat(price.valueEurPerKwh, 3)} €/kWh HT. Il reste distinct de la composante ACI évitable SolarShift (${benchmarkPrice.aciAvoidableCorridorEurPerKwh?.ref?.toFixed(2) ?? 'à préciser'} €/kWh), à confirmer sur facture détaillée.`
       : 'Prix TTC déclaré : conservé comme information, mais non injecté dans le calcul financier HT. La composante ACI reste distincte.';
   return {
-    address: readLocation(), roofType, supported, orientation, orientations: planes.map((plane) => plane.orientation), planes, twoPans, aspect: orientation - 180,
+    address: readLocation(), roofType, supported, orientation, orientationSource, orientations: planes.map((plane) => plane.orientation), planes, twoPans, aspect: orientation - 180,
     tilt: sizing ? PRO_SIMULATOR_TILT_ANGLES[tiltBand] : null,
     selectedTilt: sizing ? PRO_SIMULATOR_TILT_ANGLES[tiltBand] : null, tiltBand,
     grossArea, usablePercent, usableArea: sizing?.usableAreaM2 ?? grossArea * usablePercent / 100,
@@ -625,8 +683,8 @@ function renderResult(input, production = null) {
   $('resultInstallationType').textContent = input.siteKind === 'land'
     ? externalInstallationLabels[input.externalSurfaceType] || 'Installation à préciser'
     : input.roofType === 'flat' ? 'Toit plat' : input.roofType === 'pitched' ? `Toiture inclinée${input.twoPans ? ' · 2 pans' : ' · 1 pan'}` : 'À compléter';
-  $('resultOrientation').textContent = input.siteKind === 'land' ? 'À qualifier selon l’installation' : azimuthLabels[input.orientation] || 'À compléter';
-  $('resultTilt').textContent = input.siteKind === 'land' || input.tilt == null ? 'À qualifier' : `${numberFormat(input.tilt)}°`;
+  $('resultOrientation').textContent = input.siteKind === 'land' ? 'À qualifier selon l’installation'
+    : `${nearestCompassLabel(input.orientation)}${input.orientationSource === 'map-trace' ? ' · repérée sur la carte' : ' · hypothèse par défaut'}`;
   $('resultShade').textContent = input.shade === 'none' ? 'Aucun ou très faible · hypothèse' : input.shade === 'some' ? 'Quelques ombres · hypothèse' : input.shade === 'high' ? 'Ombres importantes · hypothèse' : 'À compléter';
   $('resultSpecificYield').textContent = production && input.siteKind !== 'land'
     ? `${numberFormat(Number(production.annual_kwh_kwc) * input.shadeFactor)} kWh/kWc/an · estimation PVGIS`
@@ -808,27 +866,17 @@ function updateRoofSupport() {
 }
 function updateTiltLegend() {
   const roofType = selectedRoofType();
-  $('tiltLegend').textContent = roofType === 'flat' ? 'Inclinaison des supports envisagée' : 'Inclinaison de la toiture';
-  const note = $('tiltRecommendation');
-  if (roofType === 'flat') {
-    note.textContent = 'Pour un toit plat, indiquez l’inclinaison de support envisagée. L’optimum PVGIS sera affiché séparément comme recommandation.';
-    note.hidden = false;
-  } else {
-    note.textContent = 'Pour une toiture inclinée, la pente du toit détermine physiquement l’angle des panneaux.';
-    note.hidden = false;
-  }
+  const pitched = roofType === 'pitched';
+  $('roofPitchGroup').hidden = !pitched;
+  document.querySelectorAll('input[name="tiltBand"]').forEach((input) => { input.disabled = !pitched; });
+  if (!pitched) document.querySelector('input[name="tiltBand"][value="0-6"]').checked = true;
+  $('tiltLegend').textContent = 'Inclinaison de la toiture';
+  $('tiltRecommendation').hidden = true;
 }
 function updatePanOrientation() {
-  const two = selected('roofType')?.value === 'pitched' && selected('roofPans')?.value === 'two';
-  $('orientationLegend').textContent = two ? 'Orientation du premier pan' : 'Orientation principale des panneaux';
-  const note = $('secondPanOrientation');
-  note.hidden = !two;
-  const orientation = selected('orientation')?.value;
-  note.textContent = orientation == null
-    ? 'Choisissez l’orientation d’un pan. Le second sera considéré comme opposé, avec la moitié de la surface, la même pente et le même ombrage.'
-    : `Pan 1 : ${azimuthLabels[orientation]} · Pan 2 : ${azimuthLabels[(Number(orientation) + 180) % 360]}. Chaque pan représente 50 % de la surface, avec la même pente et le même ombrage. Pour un toit asymétrique, une étude séparée des pans est nécessaire.`;
+  $('mapOrientationGroup').hidden = selected('siteKind')?.value !== 'building' || selectedRoofType() !== 'pitched';
 }
-function updatePanChoice() { document.querySelector('.simPansGroup').hidden = selectedRoofType() !== 'pitched'; updatePanOrientation(); updateRoofSupport(); }
+function updatePanChoice() { document.querySelector('.simPansGroup').hidden = selectedRoofType() !== 'pitched'; updateRoofSupport(); updateTiltLegend(); updatePanOrientation(); }
 function updateUsableOutput() { $('usableOutput').textContent = `${$('usablePercent').value} %`; }
 function goBack() {
   calculationController?.abort(); calculationController = null; clearCalculationTimer();
@@ -839,6 +887,9 @@ function restart() {
   calculationController?.abort(); calculationController = null; clearCalculationTimer(); setCalculationButtonLoading(false);
   cancelRoofDetection();
   form.reset();
+  finishRoofOrientationPick(); roofOrientation = null;
+  if (roofOrientationLine) { roofMap?.removeLayer(roofOrientationLine); roofOrientationLine = null; }
+  $('orientationStatus').textContent = 'Non renseignée · hypothèse sud appliquée à l’estimation.';
   selectedAddress = null;
   drawnRoofAreaM2 = 0;
   roofMapShapes?.clearLayers();
@@ -870,6 +921,7 @@ $('siteAddress').addEventListener('keydown', (event) => {
  $('useMyLocation').addEventListener('click', useMyLocation);
 $('saveRoofContour').addEventListener('click', () => roofInteractions?.finishCorrection(true));
 $('cancelRoofContour').addEventListener('click', () => roofInteractions?.finishCorrection(false));
+$('pickRoofOrientation').addEventListener('click', startRoofOrientationPick);
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape' && !$('roofContourEditor').hidden) { event.preventDefault(); roofInteractions?.finishCorrection(false); }
 });
@@ -879,9 +931,19 @@ document.addEventListener('click', (event) => {
 $('latitude').addEventListener('input', () => { cancelRoofDetection(); selectedAddress = null; updateContinueLabel(); });
 $('longitude').addEventListener('input', () => { cancelRoofDetection(); selectedAddress = null; updateContinueLabel(); });
 $('usablePercent').addEventListener('input', updateUsableOutput);
-form.querySelectorAll('input[name="siteKind"]').forEach((input) => input.addEventListener('change', updateSiteKind));
+form.querySelectorAll('input[name="siteKind"]').forEach((input) => input.addEventListener('change', () => {
+  finishRoofOrientationPick(); roofOrientation = null;
+  if (roofOrientationLine) { roofMap?.removeLayer(roofOrientationLine); roofOrientationLine = null; }
+  $('orientationStatus').textContent = 'Non renseignée · hypothèse sud appliquée à l’estimation.';
+  updateSiteKind();
+}));
 form.querySelectorAll('input[name="roofType"]').forEach((input) => input.addEventListener('change', updateTiltLegend));
-form.querySelectorAll('input[name="roofType"]').forEach((input) => input.addEventListener('change', updatePanChoice));
+form.querySelectorAll('input[name="roofType"]').forEach((input) => input.addEventListener('change', () => {
+  finishRoofOrientationPick(); roofOrientation = null;
+  if (roofOrientationLine) { roofMap?.removeLayer(roofOrientationLine); roofOrientationLine = null; }
+  $('orientationStatus').textContent = 'Non renseignée · hypothèse sud appliquée à l’estimation.';
+  updateTiltLegend(); updatePanChoice();
+}));
 form.querySelectorAll('[data-next]').forEach((button, index) => button.addEventListener('click', async (event) => {
   if (index === 0 && await validateStepOne()) showStep(2);
   else if (index === 1 && validateStepTwo()) showStep(3);
