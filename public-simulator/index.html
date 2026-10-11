@@ -271,13 +271,36 @@
               <label class="simChoiceCard"><input type="radio" name="usageMode" value="full-sale"><span class="simSolarArt solar-sale" aria-hidden="true"><svg class="simUseCaseArt" viewBox="0 0 420 230" focusable="false"><defs><linearGradient id="flowSaleRoof" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#16785d"/><stop offset="1" stop-color="#39a77c"/></linearGradient><marker id="flowSaleArrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 8 4 0 8Z" fill="#188765"/></marker></defs><circle cx="83" cy="49" r="25" fill="#ffc746"/><path d="M83 10v-7m0 92v-7M44 49h-8m94 0h-8M56 22l-6-6m66 66-6-6m0-54 6-6m-66 66-6 6" stroke="#efae24" stroke-width="4" stroke-linecap="round"/><path d="M26 177 102 130l94 38-79 49Z" fill="#d9eee2" stroke="#9bc9ad" stroke-width="2"/><path d="m62 158 41-26 63 27-43 27Z" fill="url(#flowSaleRoof)"/><path d="m78 164 41-27m-19 34 41-27m-21 35 41-27m-70-11 42 20m-23-31 42 20" stroke="#d7f0e7" stroke-width="1.5"/><path d="M54 177v-38l49-31 57 26v41l-53 31Z" fill="#fff" stroke="#9eb6aa" stroke-width="2"/><path d="m54 139 49-31 57 26-53 34Z" fill="#edf5ef" stroke="#9eb6aa" stroke-width="2"/><path d="M76 157v-11m17 1v-11m34 25v-13m14-1v-12" stroke="#83a69a" stroke-width="5"/><path d="M104 169v-17l17 9v18" fill="#d4e9df" stroke="#8eac9e" stroke-width="2"/><path d="M193 157c36-23 53-32 76-33" fill="none" stroke="#188765" stroke-width="5" stroke-linecap="round" marker-end="url(#flowSaleArrow)"/><path d="m304 71 32 18 30-18m-30 18v93m-26-74-24 85m82-85 25 85m-81-48h46m-60 30h74m-91 17h108" fill="none" stroke="#426f8b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="m296 82 40 23 40-23m-40 23v-16" fill="none" stroke="#426f8b" stroke-width="3"/><circle cx="336" cy="50" r="13" fill="#e8f5ee" stroke="#a4c9b4" stroke-width="2"/><path d="M336 42v16m-6-11 6 4 6-4" fill="none" stroke="#17835f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><text x="68" y="222" fill="#537365" font-size="11" font-family="system-ui,sans-serif" font-weight="700" letter-spacing="1.2">PRODUCTION</text><text x="292" y="205" fill="#537365" font-size="11" font-family="system-ui,sans-serif" font-weight="700" letter-spacing="1.2">RÉSEAU PUBLIC</text></svg></span><div><b>Vente en totalité</b><small>Toute l’électricité produite est vendue au réseau, sans consommation sur place.</small></div></label>
               <label class="simChoiceCard"><input type="radio" name="usageMode" value="undecided"><span class="simSolarArt solar-self" aria-hidden="true"></span><div><b>Je ne sais pas encore</b><small>Vous pourrez comparer les options lors d’une étude.</small></div></label>
             </div>
-            <small class="simFieldHint">Aucun tarif, partage ACC, économie ou rentabilité n’est déduit par ce simulateur.</small>
+            <small class="simFieldHint">La synthèse peut afficher des ordres de grandeur fondés sur les hypothèses SolarShift V1 ; ils ne remplacent ni une facture ni une étude avec profil horaire.</small>
             <p id="usageError" class="simError" role="alert" hidden>Choisissez un usage, ou « Je ne sais pas encore », pour afficher la synthèse indicative.</p>
           </fieldset>
           <label class="simField simConsumptionField" for="annualConsumption">Consommation annuelle du site <span class="simOptional">facultatif</span>
             <input id="annualConsumption" name="annualConsumption" type="number" min="0" max="1000000000" step="1000" inputmode="numeric" placeholder="kWh/an, si vous le connaissez">
-            <small>Cette donnée de volume ne permet pas de calculer l’autoconsommation simultanée.</small>
+            <small>Si elle est saisie, elle est prioritaire. Sinon l’activité et l’emprise au sol mesurée sur la carte servent à une estimation, sans correction du nombre d’étages.</small>
           </label>
+          <fieldset class="simChoiceGroup simBenchmarkGroup" aria-label="Hypothèses de pré-étude">
+            <legend>Repères de consommation et d’électricité · hypothèses SolarShift V1</legend>
+            <label class="simField" id="warehouseSubtypeLabel" hidden>Votre site comporte-t-il du froid ou de la réfrigération ?
+              <select id="warehouseSubtype"><option value="unknown">Je ne sais pas</option><option value="dry">Non · entrepôt sec</option><option value="cold">Oui · entrepôt frigorifique</option></select>
+            </label>
+            <label class="simField" id="industryScheduleLabel" hidden>Rythme d’activité industrielle
+              <select id="industrySchedule"><option value="UNKNOWN">Je ne sais pas</option><option value="DAYTIME">Journée</option><option value="TWO_SHIFT">2×8</option><option value="THREE_SHIFT">3×8 / continu</option></select>
+            </label>
+            <label class="simField" for="subscribedPowerKva">Puissance souscrite exacte (kVA), si connue
+              <input id="subscribedPowerKva" type="number" min="0.1" step="0.1" inputmode="decimal" placeholder="À relever sur la facture">
+            </label>
+            <label class="simField" for="subscribedPowerBand">Sinon, tranche de puissance estimative
+              <select id="subscribedPowerBand"><option value="">Suggestion selon l’activité</option><option value="LE_36_KVA">≤ 36 kVA</option><option value="37_100_KVA">37–100 kVA</option><option value="101_250_KVA">101–250 kVA</option><option value="GT_250_KVA_BT">&gt; 250 kVA · BT</option><option value="HTA">HTA / grande puissance</option><option value="UNKNOWN">Je ne sais pas</option></select>
+            </label>
+            <small id="powerBenchmarkNote" class="simFieldHint">La tranche proposée reste une hypothèse SolarShift, à confirmer sur facture.</small>
+            <label class="simField" for="avoidedElectricityPrice">Prix moyen du kWh facturé, si connu (€/kWh)
+              <input id="avoidedElectricityPrice" type="number" min="0.001" max="10" step="0.001" inputmode="decimal" placeholder="À relever sur la facture">
+            </label>
+            <label class="simField" for="electricityPriceBasis">Base du prix saisi
+              <select id="electricityPriceBasis"><option value="HT">HT</option><option value="TTC">TTC</option></select>
+            </label>
+            <small id="priceBenchmarkNote" class="simFieldHint">Les repères de prix réseau et la composante ACI évitable sont distincts ; les valeurs SolarShift ne sont pas des tarifs officiels.</small>
+          </fieldset>
           <fieldset class="simChoiceGroup">
             <legend data-number="2">Quand souhaitez-vous lancer votre projet ? <span class="simOptional">facultatif</span></legend>
             <div class="simTimelineChoices">
@@ -310,8 +333,8 @@
             <article class="simSummaryMetric"><span>Puissance estimée</span><strong id="capacityRange">À compléter</strong><small id="capacityCorridor"></small></article>
             <article class="simSummaryMetric"><span>Production annuelle estimée</span><strong id="annualProduction">À compléter</strong><small>Selon PVGIS · pré-étude non canonique</small></article>
             <article class="simSummaryMetric"><span>Budget équipements et installation</span><strong id="installationBudget" class="simPendingValue">À compléter</strong><small id="installationBudgetRange">Fourchette à confirmer par devis</small></article>
-            <article class="simSummaryMetric"><span>Coût moyen du kWh solaire</span><strong id="resultSolarKwhCost" class="simPendingValue">À préciser</strong><small>Calcul financier non disponible</small></article>
-            <article class="simSummaryMetric"><span>TRI indicatif</span><strong id="resultIndicativeIrr" class="simPendingValue">À préciser</strong><small>Selon un scénario financier confirmé</small></article>
+            <article class="simSummaryMetric"><span>Coût de production du kWh solaire</span><strong id="resultSolarKwhCost" class="simPendingValue">À préciser</strong><small id="resultLcoeNote">Estimation sur 25 ans · CAPEX et OPEX estimés</small></article>
+            <article class="simSummaryMetric"><span>TRI indicatif propriétaire</span><strong id="resultIndicativeIrr" class="simPendingValue">À préciser</strong><small id="resultIrrNote">Estimation indicative à confirmer</small></article>
             <article class="simSummaryMetric"><span>CO₂ évité par an</span><strong id="resultAnnualCarbon" class="simPendingValue">À préciser</strong><small>Méthode carbone à valider</small></article>
           </div>
           <div class="simResultDetails">
@@ -333,13 +356,14 @@
             <section class="simResultPanel" aria-labelledby="resultFinancialHeading">
               <h3 id="resultFinancialHeading">Synthèse financière</h3>
               <dl class="simResultFacts simFinancialFacts">
-                <div><dt>Éligibilité aux aides</dt><dd>À vérifier</dd></div>
-                <div><dt>Prime à l’investissement</dt><dd>À confirmer</dd></div>
-                <div><dt>Gains cumulés sur 25 ans, charges déduites, hors CAPEX</dt><dd>À préciser</dd></div>
-                <div><dt>Gains nets sur 25 ans, investissement déduit</dt><dd>À préciser</dd></div>
+                <div><dt>Profil retenu</dt><dd id="resultFinanceProfile">Propriétaire exploitant · fonds propres</dd></div>
+                <div><dt>Horizon et financement</dt><dd id="resultFinanceHorizon">25 ans · 100 % fonds propres</dd></div>
                 <div><dt>CAPEX équipements et installation</dt><dd id="resultFinancialCapex">À préciser</dd></div>
+                <div><dt>Économie ACI estimée · année 1</dt><dd id="resultAciSavings">À préciser</dd></div>
+                <div><dt>Potentiel ACC estimé · année 1</dt><dd id="resultAccPotential">À préciser</dd></div>
+                <div><dt>Charges d’exploitation estimées · année 1</dt><dd id="resultAnnualOpex">À préciser</dd></div>
               </dl>
-              <p class="simResultFootnote">Aucun calcul financier n’est reconstruit ici. Les aides, tarifs et coûts restent à confirmer.</p>
+              <p class="simResultFootnote">Aperçu estimatif : propriétaire exploitant, 100 % fonds propres, horizon de 25 ans ; ACC valorisée à 0,12 €/kWh comme potentiel sans contrat confirmé. L’ACI évitable est distincte du prix réseau déclaré. Répartition annuelle théorique, sans profil horaire ; CAPEX et OPEX à confirmer.</p>
             </section>
           </div>
           <section class="simAnnualComparison" aria-labelledby="resultAnnualComparisonHeading">
@@ -356,11 +380,11 @@
             <section class="simResultPanel simLongTermPanel" aria-labelledby="resultLongTermHeading">
               <h3 id="resultLongTermHeading">Projection de gains sur 25 ans</h3>
               <p>Gains cumulés, investissement et charges déduits.</p>
-              <div class="simProjectionPlaceholder"><span aria-hidden="true">↗</span><strong>Votre rentabilité reste à préciser</strong><p>Le calcul financier doit être actualisé. Aucun résultat n’est reconstitué dans ce simulateur.</p></div>
+              <div class="simProjectionPlaceholder"><span aria-hidden="true">↗</span><strong id="resultProjectionTitle">Votre rentabilité reste à préciser</strong><p id="resultProjectionSummary">Le calcul financier reste à confirmer avec un conseiller, un profil horaire et des devis.</p></div>
             </section>
           </div>
           <section id="simUnsupportedResult" class="simScopeNotice" hidden>La puissance et la production restent <strong>à compléter</strong> : ce type d’installation n’est pas encore couvert par le modèle d’estimation.</section>
-          <section class="simEstimateLimits" aria-labelledby="estimateLimitsHeading"><h3 id="estimateLimitsHeading">À retenir</h3><p id="resultEstimateSummary">Cette estimation indicative ne remplace pas une étude technique, énergétique ou financière.</p><p id="resultRoofType"></p><p id="resultUsage"></p><p class="simMethodDetails"><strong>Sources et hypothèses</strong> PVGIS via le service de prévisualisation, données saisies et hypothèse de surface exploitable modifiable. Les indicateurs financiers, les aides, le TRI et le carbone restent à préciser ; aucune valeur n’est inventée et aucun matching temporel n’est produit.</p></section>
+          <section class="simEstimateLimits" aria-labelledby="estimateLimitsHeading"><h3 id="estimateLimitsHeading">À retenir</h3><p id="resultEstimateSummary">Cette estimation indicative ne remplace pas une étude technique, énergétique ou financière.</p><p id="resultRoofType"></p><p id="resultUsage"></p><p class="simMethodDetails"><strong>Sources et hypothèses</strong> PVGIS, benchmarks SolarShift V1 et paramètres financiers de pré-étude. Les prix, la répartition annuelle, CAPEX et OPEX sont estimatifs ; aucune coïncidence horaire, aide, fiscalité ou économie canonique n’est établie.</p></section>
           <section class="simProjectNext"><div><p class="simEyebrow">POUR LA SUITE</p><h3>Faire étudier le projet</h3><p>Votre estimation n’est pas enregistrée. La suite ouvre l’espace projets ; elle ne crée ni projet ni dossier.</p></div><a id="convertEstimateButton" class="simButton simButtonPrimary" href="./projects.html">Transformer cette estimation en projet <span aria-hidden="true">→</span></a></section>
         </div>
         <div class="simStepActions"><button class="simButton simButtonQuiet" type="button" data-back>← Modifier les données</button><button id="printEstimateButton" class="simButton simButtonQuiet" type="button">Imprimer ma synthèse</button><button id="restartButton" class="simButton simButtonQuiet" type="button">Nouvelle estimation</button></div>

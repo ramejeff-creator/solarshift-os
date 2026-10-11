@@ -1,6 +1,7 @@
 import { hasHouseNumber, normalizeSiteAddressSuggestion, siteAddressAutocompleteUrl } from './site-address.mjs';
 import { CR010_SIZING_VERSION, estimateSolarCapacity, PRO_SIMULATOR_TILT_ANGLES, solarRoofPlanes } from './pro-simulator-estimation.mjs';
 import { installRoofMapInteractions } from './roof-map-interactions.mjs';
+import { resolveAnnualConsumption, resolveBuildingConsumptionBenchmark, resolveElectricityPrice, resolvePowerBand } from './prestudy-building-benchmarks.mjs';
 
 const $ = (id) => document.getElementById(id);
 const form = $('simulatorForm');
@@ -176,6 +177,12 @@ function updateProjectSummary() {
   updateRoofPreviews();
 }
 
+function updateBenchmarkContext() {
+  const isBuilding = selected('siteKind')?.value === 'building';
+  const buildingUse = selected('buildingUse')?.value;
+  $('warehouseSubtypeLabel').hidden = !isBuilding || buildingUse !== 'logistics';
+  $('industryScheduleLabel').hidden = !isBuilding || buildingUse !== 'industry';
+}
 function updateSiteKind() {
   const siteKind = selected('siteKind')?.value;
   const buildingPath = siteKind === 'building';
@@ -213,6 +220,7 @@ function updateSiteKind() {
     input.required = externalPath;
     if (!externalPath) input.checked = false;
   });
+  updateBenchmarkContext();
   $('areaLabel').textContent = siteKind === 'land' ? 'Surface extérieure à étudier (m²)' : 'Surface totale de toiture (m²)';
   $('areaHelp').textContent = siteKind === 'land'
     ? 'Surface du parking, du terrain ou de la zone agricole, mesurée sur la carte ou indiquée.'
@@ -496,6 +504,35 @@ function buildEstimateInput() {
   const sizing = supported ? estimateSolarCapacity({ roofType, orientation, tiltBand, grossArea, usablePercent }) : null;
   const twoPans = roofType === 'pitched' && selected('roofPans')?.value === 'two';
   const planes = supported ? solarRoofPlanes({ roofType, roofPans: selected('roofPans')?.value, orientation }) : [];
+  const buildingUse = selected('buildingUse')?.value || null;
+  const warehouseSubtype = $('warehouseSubtype')?.value || 'unknown';
+  const industrySchedule = $('industrySchedule')?.value || 'UNKNOWN';
+  const buildingBenchmark = siteKind === 'building'
+    ? resolveBuildingConsumptionBenchmark({ buildingUse, subtype: warehouseSubtype, industrySchedule, areaM2: grossArea })
+    : null;
+  const rawConsumption = $('annualConsumption').value.trim();
+  const declaredConsumption = rawConsumption === '' ? null : Number(rawConsumption);
+  const consumption = resolveAnnualConsumption({ declaredKwh: declaredConsumption, benchmark: buildingBenchmark });
+  const exactPowerRaw = $('subscribedPowerKva')?.value.trim() || '';
+  const power = resolvePowerBand({ buildingUse, selectedBand: $('subscribedPowerBand')?.value || '', exactKva: exactPowerRaw === '' ? null : Number(exactPowerRaw) });
+  const rawPrice = $('avoidedElectricityPrice').value.trim();
+  const declaredPrice = rawPrice === '' ? null : Number(rawPrice);
+  const price = resolveElectricityPrice({ selectedBand: power.band, declaredEurPerKwh: declaredPrice, declaredBasis: $('electricityPriceBasis')?.value || 'HT' });
+  const benchmarkPrice = resolveElectricityPrice({ selectedBand: power.band });
+  const aciAvoidablePrice = benchmarkPrice.aciAvoidableCorridorEurPerKwh?.ref ?? null;
+  $('consumptionBenchmarkNote').textContent = consumption.status === 'ASSUMPTION'
+    ? `Fourchette SolarShift indicative : ${numberFormat(consumption.corridorKwh.low)}–${numberFormat(consumption.corridorKwh.high)} kWh/an ; valeur centrale utilisée : ${numberFormat(consumption.valueKwh)} kWh/an. Calculée à partir de l’emprise au sol mesurée sur la carte ; ce n’est pas la surface de plancher.`
+    : 'La consommation déclarée reste prioritaire. Sans saisie, une activité et le contour cartographique permettent une estimation indicative.';
+  $('powerBenchmarkNote').textContent = power.status === 'ASSUMPTION'
+    ? `Tranche proposée selon le type de bâtiment : ${power.band.replaceAll('_', ' ')} · hypothèse SolarShift à confirmer sur facture.`
+    : 'La tranche choisie ou la puissance exacte reste déclarative et à confirmer sur facture.';
+  $('priceBenchmarkNote').textContent = declaredPrice == null
+    ? price.corridorEurPerKwh
+      ? `Benchmark SolarShift HT : ${price.corridorEurPerKwh.low.toFixed(2)}–${price.corridorEurPerKwh.high.toFixed(2)} €/kWh (réseau) ; composante ACI évitable ${price.aciAvoidableCorridorEurPerKwh.low.toFixed(2)}–${price.aciAvoidableCorridorEurPerKwh.high.toFixed(2)} €/kWh. À confirmer sur facture ; ce ne sont pas des tarifs officiels.`
+      : 'Aucun benchmark tarifaire disponible tant que la puissance n’est pas renseignée ou estimée.'
+    : price.usableForHtEconomics
+      ? `Prix total réseau déclaré : ${numberFormat(price.valueEurPerKwh, 3)} €/kWh HT. Il reste distinct de la composante ACI évitable SolarShift (${benchmarkPrice.aciAvoidableCorridorEurPerKwh?.ref?.toFixed(2) ?? 'à préciser'} €/kWh), à confirmer sur facture détaillée.`
+      : 'Prix TTC déclaré : conservé comme information, mais non injecté dans le calcul financier HT. La composante ACI reste distincte.';
   return {
     address: readLocation(), roofType, supported, orientation, orientations: planes.map((plane) => plane.orientation), planes, twoPans, aspect: orientation - 180,
     tilt: sizing ? PRO_SIMULATOR_TILT_ANGLES[tiltBand] : null,
@@ -505,10 +542,18 @@ function buildEstimateInput() {
     lowKwp: sizing?.lowKwp ?? null, referenceKwp: sizing?.referenceKwp ?? null, highKwp: sizing?.highKwp ?? null,
     moduleCount: sizing?.moduleCount ?? null, modulePowerWc: sizing?.modulePowerWc ?? null,
     sizingVersion: sizing?.version ?? null, layoutWarning: sizing?.layoutWarning ?? null,
-    annualConsumption: Number($('annualConsumption').value) || null,
+    annualConsumption: consumption.valueKwh,
+    consumption,
+    buildingBenchmark,
+    subscribedPower: power,
+    electricityPrice: price,
+    avoidedElectricityPrice: aciAvoidablePrice,
+    electricityPriceBasis: price.basis,
     usageMode: selected('usageMode')?.value || 'self-consumption',
     siteKind,
-    buildingUse: selected('buildingUse')?.value || null,
+    buildingUse,
+    warehouseSubtype,
+    industrySchedule,
     externalSurfaceType: selected('externalSurfaceType')?.value || null,
     material: selected('material')?.value || null
   };
@@ -528,7 +573,14 @@ function apiUrl(input, optimal = false, orientation = input.orientation) {
       budget_reference_kwp: input.referenceKwp,
       budget_high_kwp: input.highKwp,
       roof_pans: input.twoPans ? 'two' : 'one',
-      shade: input.shade
+      shade: input.shade,
+      financial_preview: 1,
+      usage_mode: input.usageMode === 'undecided' ? 'unspecified' : input.usageMode,
+      site_kind: input.siteKind,
+      ...(input.buildingUse ? { building_use: input.buildingUse } : {}),
+      ...(input.externalSurfaceType ? { external_surface_type: input.externalSurfaceType } : {}),
+      ...(input.annualConsumption != null ? { annual_consumption_kwh: input.annualConsumption } : {}),
+      ...(input.avoidedElectricityPrice != null ? { avoided_electricity_price_eur_kwh: input.avoidedElectricityPrice } : {})
     })
   };
   Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, String(value)));
@@ -554,7 +606,7 @@ function renderResult(input, production = null) {
   $('annualProduction').textContent = annual != null ? `${numberFormat(annual)} kWh/an` : 'À compléter';
   const budget = production?.installation_budget;
   const budgetReady = budget?.status === 'ASSUMPTION' && budget.scope === 'EQUIPMENT_AND_INSTALLATION'
-    && budget.rangeBasis === 'CAPACITY_CORRIDOR_AT_FIXED_UNIT_COST'
+    && ['CAPACITY_AND_INSTALLATION_TYPE_REFERENCE', 'CAPACITY_CORRIDOR_AT_FIXED_UNIT_COST'].includes(budget.rangeBasis)
     && [budget.lowEur, budget.referenceEur, budget.highEur].every((value) => typeof value === 'number' && Number.isFinite(value) && value > 0)
     && budget.lowEur <= budget.referenceEur && budget.referenceEur <= budget.highEur;
   const budgetRange = budgetReady ? `${numberFormat(Math.round(budget.lowEur / 1000))}–${numberFormat(Math.round(budget.highEur / 1000))} k€` : production ? 'À préciser' : 'En attente';
@@ -580,6 +632,48 @@ function renderResult(input, production = null) {
     ? `${numberFormat(Number(production.annual_kwh_kwc) * input.shadeFactor)} kWh/kWc/an · estimation PVGIS`
     : 'À calculer / qualifier';
   $('resultFinancialCapex').textContent = budgetReady ? budgetRange : 'À préciser';
+  const financial = production?.financial_preview;
+  const financialReady = financial?.status === 'ASSUMPTION';
+  const lcoe = Number(financial?.lcoeEurPerKwh);
+  $('resultSolarKwhCost').textContent = Number.isFinite(lcoe) && lcoe > 0 ? `${numberFormat(lcoe, 3)} €/kWh` : 'À préciser';
+  $('resultSolarKwhCost').classList.toggle('simPendingValue', !(Number.isFinite(lcoe) && lcoe > 0));
+  $('resultLcoeNote').textContent = financial?.horizonYears === 25 ? 'Estimation sur 25 ans · CAPEX et OPEX estimés' : 'Coût du kWh solaire estimé';
+  const irrPct = Number(financial?.irrPct);
+  $('resultIndicativeIrr').textContent = financialReady && Number.isFinite(irrPct) ? `${numberFormat(irrPct, 1)} %` : 'À préciser';
+  $('resultIndicativeIrr').classList.toggle('simPendingValue', !(financialReady && Number.isFinite(irrPct)));
+  $('resultIrrNote').textContent = financialReady
+    ? 'Propriétaire exploitant · fonds propres · avant impôts · estimation indicative'
+    : financial?.reason === 'AVOIDED_TARIFF_REQUIRED'
+      ? 'Tarif de facture nécessaire pour valoriser l’économie ACI'
+      : financial?.reason === 'FULL_SALE_PRICE_REQUIRED'
+        ? 'Prix de vente totale à confirmer'
+        : 'Renseignez la consommation pour estimer les flux';
+  if (input.electricityPrice?.status === 'ASSUMPTION' && input.electricityPrice.aciAvoidableCorridorEurPerKwh) {
+    const corridor = input.electricityPrice.aciAvoidableCorridorEurPerKwh;
+    $('resultIrrNote').textContent = `Composante ACI évitable SolarShift : ${numberFormat(corridor.ref, 2)} €/kWh HT (corridor ${numberFormat(corridor.low, 2)}–${numberFormat(corridor.high, 2)}), à confirmer sur facture.`;
+  } else if (input.electricityPrice?.status === 'PARTIAL') {
+    $('resultIrrNote').textContent = 'Prix TTC saisi : conservé comme information, sans comparaison directe avec les hypothèses HT.';
+  }
+  const yearOneAci = Number(financial?.aciSavingsYear1Eur);
+  $('resultAciSavings').textContent = Number.isFinite(yearOneAci)
+    ? `${numberFormat(yearOneAci)} €/an · facture évitée estimée`
+    : financial?.annualAllocation?.aciCeilingKwh != null
+      ? `${numberFormat(financial.annualAllocation.aciCeilingKwh)} kWh/an · valorisation à préciser`
+      : 'À préciser : consommation annuelle requise';
+  const yearOneAcc = Number(financial?.potentialAccValueYear1Eur);
+  $('resultAccPotential').textContent = Number.isFinite(yearOneAcc)
+    ? `${numberFormat(yearOneAcc)} €/an · potentiel à 0,12 €/kWh`
+    : financial?.annualAllocation?.potentialAccKwh != null
+      ? `${numberFormat(financial.annualAllocation.potentialAccKwh)} kWh/an · potentiel à valoriser`
+      : 'À préciser : consommation annuelle requise';
+  const annualOpex = Number(financial?.annualOpexYear1Eur);
+  $('resultAnnualOpex').textContent = Number.isFinite(annualOpex) ? `${numberFormat(annualOpex)} €/an · estimation` : 'À préciser';
+  $('resultProjectionTitle').textContent = financialReady ? 'Projection propriétaire indicative disponible' : 'Votre rentabilité reste à préciser';
+  $('resultProjectionSummary').textContent = financialReady
+    ? `Gains estimés avant investissement : ${numberFormat(Number(financial.gainsBeforeCapexEur))} € sur 25 ans ; après CAPEX : ${numberFormat(Number(financial.netGainsEur))} €. L’ACC reste un potentiel annuel, sans contrat confirmé.`
+    : financial?.reason === 'AVOIDED_TARIFF_REQUIRED'
+      ? 'Le coût de production et le potentiel ACC sont estimés ; le tarif évité de votre facture est nécessaire pour calculer les gains et le TRI.'
+      : 'Un conseiller pourra confirmer les flux avec un profil horaire et des devis.';
   const monthlyValues = Array.isArray(production?.monthly_kwh_kwc) && production.monthly_kwh_kwc.length === 12
     ? production.monthly_kwh_kwc.map((value) => Number(value) * input.referenceKwp * input.shadeFactor)
     : null;
@@ -588,6 +682,11 @@ function renderResult(input, production = null) {
     : annual == null && input.annualConsumption > 0
       ? 'Production ou consommation insuffisante pour comparer les volumes annuels.'
       : 'Consommation annuelle non renseignée : comparaison indisponible.';
+  if (input.consumption?.status === 'ASSUMPTION' && input.buildingBenchmark) {
+    $('resultAnnualComparison').textContent += ` Consommation estimée SolarShift : ${numberFormat(input.consumption.corridorKwh.low)}–${numberFormat(input.consumption.corridorKwh.high)} kWh/an (valeur centrale ${numberFormat(input.consumption.valueKwh)}), calculée sur l’emprise cartographique du bâtiment ; les niveaux/étages ne sont pas pris en compte.`;
+  } else if (input.consumption?.status === 'DECLARED') {
+    $('resultAnnualComparison').textContent += ' Consommation déclarée, à confirmer sur facture.';
+  }
   const productionPanel = $('simProductionPanel');
   const monthlyChart = $('simMonthlyChart');
   monthlyChart.replaceChildren();
@@ -804,6 +903,7 @@ form.addEventListener('input', (event) => {
 form.addEventListener('change', (event) => {
   event.target.closest('.simChoiceGroup')?.classList.remove('isMissing');
   if (event.target.name === 'usageMode') $('usageError').hidden = true;
+  updateBenchmarkContext();
   $('formError').hidden = true;
   updateProjectSummary();
   updatePanOrientation();

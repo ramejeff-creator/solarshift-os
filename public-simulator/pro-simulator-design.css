@@ -99,6 +99,10 @@ body:not([data-active-step="1"]) .simScopeNote { display: none; }
 .simStep:not([data-step="1"]):not(#resultStep) > .simStepHeading { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .simChoiceGroup { margin-bottom: 24px; }
 .simChoiceGroup legend { color: var(--sim-ink); font: 800 18px/1.3 Manrope,system-ui,sans-serif; margin-bottom: 15px; }
+.simBenchmarkGroup { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px 18px; margin-top: 14px; padding: 17px; border: 1px solid #dce9e3; border-radius: 13px; background: #f8fbf9; }
+.simBenchmarkGroup legend { grid-column: 1/-1; margin-bottom: 0; font-size: 15px; }
+.simBenchmarkGroup .simField input,.simBenchmarkGroup .simField select { width: 100%; min-height: 48px; padding: 11px 13px; border: 1px solid #cbd8e0; border-radius: 9px; background: #fff; color: var(--sim-ink); font: inherit; }
+.simBenchmarkGroup > .simFieldHint { grid-column: 1/-1; display: block; margin: -5px 0 3px; }
 [data-number]::before { content: attr(data-number); display: inline-grid; place-items: center; width: 34px; height: 34px; margin-right: 13px; border-radius: 50%; color: #fff; background: linear-gradient(145deg,#087d57,#004b39); font: 700 16px/1 Manrope,system-ui,sans-serif; vertical-align: middle; }
 .simChoiceGroup legend small { margin-left: 10px; color: var(--sim-muted); font: 400 12px/1.4 'DM Sans',system-ui,sans-serif; }
 .simOptional { display: inline-block; vertical-align: middle; margin-left: 5px; padding: 2px 6px; border-radius: 5px; background: #edf7f2; color: #71899b; font: 400 10px/1.3 'DM Sans',system-ui,sans-serif; }
@@ -887,3 +891,4 @@ body[data-active-step="2"] .simIntroArt,body[data-active-step="2"] .simHeroNote 
   margin-inline: auto;
   background-size: 200% 200%;
 }
+@media (max-width:700px) { .simBenchmarkGroup { grid-template-columns: 1fr; padding: 13px; } .simBenchmarkGroup legend,.simBenchmarkGroup > .simFieldHint { grid-column: 1; } }
