@@ -675,9 +675,9 @@ async function calculate(event) {
   $('retryEstimateButton').hidden = true;
   $('calculateButton').disabled = true;
   setCalculationButtonLoading(true);
-  renderResult(input);
-  showStep(5);
   try {
+    showStep(5);
+    renderResult(input);
     const production = await requestPvgis(input, controller.signal);
     if (controller.signal.aborted) return;
     renderResult(input, production);
