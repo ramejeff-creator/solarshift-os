@@ -129,7 +129,7 @@
             </div>
           </fieldset>
           <fieldset class="simChoiceGroup simInstallationGroup">
-            <legend data-number="2">Type d’installation <small>Choisissez le type de surface sur laquelle vous souhaitez installer des panneaux solaires.</small></legend>
+            <legend data-number="2">Support du projet <small>Choisissez une toiture ou une surface extérieure, puis précisez sa nature.</small></legend>
             <div class="simInstallationChoices">
               <section class="simInstallOption simRoofInstallOption">
                 <label class="simInstallOptionHeading"><input type="radio" name="siteKind" value="building" required checked><span><strong>Sur toiture de bâtiment</strong></span></label>
@@ -151,9 +151,9 @@
               </section>
               <span class="simInstallationOr" aria-hidden="true">Ou</span>
               <div class="simInstallOption simCanopyInstallOption">
-                <label class="simCanopyCard"><input type="radio" name="siteKind" value="land" required><span class="simCanopyArt" aria-hidden="true"><img src="assets/simulator/pv-carport.png" alt=""></span><span class="simCanopyText"><strong>Sur ombrière / parking</strong><small>Parkings et structures dédiées</small></span><span class="simCanopyArrow" aria-hidden="true">→</span></label>
+                <label class="simCanopyCard"><input type="radio" name="siteKind" value="land" required><span class="simCanopyArt" aria-hidden="true"><img src="assets/simulator/pv-carport.png" alt=""></span><span class="simCanopyText"><strong>Surface extérieure</strong><small>Parking pour ombrière, terrain ou surface agricole.</small></span><span class="simCanopyArrow" aria-hidden="true">→</span></label>
                 <fieldset class="simExternalSurfaceGroup" hidden>
-                  <legend>Quelle surface souhaitez-vous couvrir ?</legend>
+                  <legend>Quelle est la nature de cette surface ?</legend>
                   <div class="simPansChoices">
                     <label class="simPillChoice"><input type="radio" name="externalSurfaceType" value="parking" required><span aria-hidden="true">▦</span> Parking</label>
                     <label class="simPillChoice"><input type="radio" name="externalSurfaceType" value="terrain" required><span aria-hidden="true">⌖</span> Terrain</label>
@@ -294,7 +294,7 @@
             <div class="simRecapRow"><span class="simBuildingArt building-offices" data-summary-building-art aria-hidden="true"></span><p><span data-summary-site-label>Type de bâtiment</span><strong data-summary-building>À choisir</strong></p></div>
             <div class="simRecapRow"><span class="simSolarArt solar-flat" data-summary-roof-art aria-hidden="true"></span><p><span data-summary-installation-label>Installation</span><strong data-summary-roof>À choisir</strong></p></div>
           </aside></div>
-          <div class="simStepActions"><button class="simButton simButtonQuiet" type="button" data-back>← Retour</button><span class="simPrivacy">Vos résultats sont accessibles sans email ni téléphone.</span><button id="calculateButton" class="simButton simButtonPrimary" type="button" data-next>Voir ma synthèse <span aria-hidden="true">→</span></button></div>
+          <div class="simStepActions"><button class="simButton simButtonQuiet" type="button" data-back>← Retour</button><span class="simPrivacy">Vos résultats sont accessibles sans email ni téléphone.</span><button id="calculateButton" class="simButton simButtonPrimary" type="button" data-next><span id="calculateSpinner" class="simButtonSpinner" aria-hidden="true" hidden></span><span id="calculateLabel">Voir ma synthèse</span><span aria-hidden="true">→</span></button></div>
         </section>
 
       </form>

@@ -519,6 +519,13 @@ body[data-view="summary"] .simCard { background: transparent; border: 0; box-sha
 #resultStep > .simStepHeading { margin: 0 0 18px; }
 #resultStep > .simStepHeading .simStepIcon,#resultStep > .simStepHeading h2,#resultStep > .simStepHeading .simEyebrow { display: none; }
 .simSummaryMetrics { display: grid; grid-template-columns: repeat(6,minmax(0,1fr)); gap: 12px; margin-bottom: 18px; }
+.simButtonPrimary.isLoading { outline: 3px solid #f2bd39; outline-offset: 3px; }
+.simButtonSpinner { display: inline-block; width: 14px; height: 14px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: roofDetectionSpin .75s linear infinite; }
+#calculateSpinner[hidden] { display: none; }
+.simResultStatus[hidden] { display: none; }
+.simResultStatus[data-kind="loading"] { display: flex; align-items: center; gap: 10px; }
+.simResultStatus[data-kind="loading"]::before { content: ""; flex: 0 0 15px; width: 15px; height: 15px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: roofDetectionSpin .75s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .simButtonSpinner, .simResultStatus[data-kind="loading"]::before { animation: none; } }
 .simMapCanvas { position: relative; min-width: 0; isolation: isolate; }
 .simMapHint { position: absolute; z-index: 800; top: 12px; left: 60px; right: 60px; display: flex; align-items: center; gap: 10px; margin: 0; padding: 12px 15px; border: 1px solid #e3b448; border-radius: 10px; background: #fff3c4; color: #164a3b; box-shadow: 0 3px 14px #153c2630; font-size: 14px; font-weight: 750; line-height: 1.45; pointer-events: none; }
 .simMapHint > svg { flex: 0 0 26px; width: 26px; height: 26px; color: #a66c00; }

@@ -23,6 +23,7 @@ let selectedAddress = null;
 let searchTimer = null;
 let searchController = null;
 let calculationController = null;
+let calculationTimer = null;
 let roofMap = null;
 let roofMapShapes = null;
 let roofMapLocationKey = null;
@@ -140,11 +141,14 @@ function updateDrawnRoofArea() {
 function updateProjectSummary() {
   const buildingLabels = { offices: 'Bureaux & tertiaire', logistics: 'Stockage & logistique', industry: 'Industrie & atelier', retail: 'Commerce & grande surface', public: 'Équipement public', other: 'Autre bâtiment professionnel' };
   const externalSurfaceLabels = { parking: 'Parking', terrain: 'Terrain', agriculture: 'Surface agricole' };
+  const externalInstallationLabels = { parking: 'Ombrière photovoltaïque', terrain: 'Installation photovoltaïque au sol', agriculture: 'Structure agrivoltaïque' };
   const area = Number($('roofArea')?.value) || drawnRoofAreaM2;
   const siteKind = selected('siteKind')?.value;
   const building = selected('buildingUse')?.value;
   const roof = selectedRoofType();
-  const roofLabel = roof === 'flat' ? 'Toit plat' : roof === 'pitched' ? `Toiture inclinée · ${selected('roofPans')?.value === 'two' ? '2 pans' : '1 pan'}` : roof === 'canopy' ? 'Ombrière photovoltaïque' : 'À choisir';
+  const roofLabel = siteKind === 'land'
+    ? externalInstallationLabels[selected('externalSurfaceType')?.value] || 'Installation à préciser'
+    : roof === 'flat' ? 'Toit plat' : roof === 'pitched' ? `Toiture inclinée · ${selected('roofPans')?.value === 'two' ? '2 pans' : '1 pan'}` : 'À choisir';
   const siteLabel = siteKind === 'land' ? (externalSurfaceLabels[selected('externalSurfaceType')?.value] || 'Surface extérieure à choisir') : siteKind === 'building' ? (buildingLabels[building] || 'Type de bâtiment à choisir') : 'À choisir';
   document.querySelectorAll('#summaryBuilding, [data-summary-building]').forEach((node) => { node.textContent = siteLabel; });
   document.querySelectorAll('#summaryRoof, [data-summary-roof]').forEach((node) => { node.textContent = roofLabel; });
@@ -160,7 +164,11 @@ function updateProjectSummary() {
   document.querySelectorAll('[data-summary-installation-label]').forEach((node) => { node.textContent = installationLabel; });
   document.querySelectorAll('[data-summary-area-label]').forEach((node) => { node.textContent = areaLabel; });
   $('summaryAdvice').textContent = siteKind === 'land'
-    ? 'La puissance d’une ombrière dépendra ensuite de son implantation et d’une étude dédiée.'
+    ? selected('externalSurfaceType')?.value === 'agriculture'
+      ? 'La configuration agrivoltaïque dépendra de l’activité agricole et d’une étude dédiée.'
+      : selected('externalSurfaceType')?.value === 'terrain'
+        ? 'La puissance dépendra des surfaces équipables et des contraintes du terrain.'
+        : 'La puissance de l’ombrière dépendra de son implantation et d’une étude dédiée.'
     : 'Vous préciserez la pente, l’orientation et l’ombrage pour affiner votre estimation.';
   updateRoofPreviews();
 }
@@ -526,6 +534,7 @@ function renderResult(input, production = null) {
   const annual = production && input.referenceKwp != null ? Number(production.annual_kwh_kwc) * input.referenceKwp * input.shadeFactor : null;
   $('resultLocation').textContent = input.address.label;
   $('resultStatus').hidden = Boolean(production);
+  if (production) $('resultStatus').dataset.kind = 'ready';
   $('resultContent').hidden = false;
   $('capacityRange').textContent = input.referenceKwp != null ? `${numberFormat(input.referenceKwp, 1)} kWc` : 'À compléter';
   $('capacityCorridor').textContent = input.lowKwp != null ? `Fourchette indicative : ${numberFormat(input.lowKwp, 1)}–${numberFormat(input.highKwp, 1)} kWc` : 'Modèle non disponible pour cette installation';
@@ -546,11 +555,12 @@ function renderResult(input, production = null) {
   $('resultUsableAssumption').textContent = `${numberFormat(input.usablePercent)} % de la surface totale · hypothèse modifiable`;
   const buildingLabels = { offices: 'Bureaux & tertiaire', logistics: 'Stockage & logistique', industry: 'Industrie & atelier', retail: 'Commerce & grande surface', public: 'Équipement public', other: 'Autre bâtiment professionnel' };
   const externalSurfaceLabels = { parking: 'Parking', terrain: 'Terrain', agriculture: 'Surface agricole' };
+  const externalInstallationLabels = { parking: 'Ombrière photovoltaïque', terrain: 'Installation photovoltaïque au sol', agriculture: 'Structure agrivoltaïque' };
   $('resultBuildingUse').textContent = input.siteKind === 'land' ? externalSurfaceLabels[input.externalSurfaceType] || 'Surface extérieure à préciser' : buildingLabels[input.buildingUse] || 'À compléter';
   $('resultInstallationType').textContent = input.siteKind === 'land'
-    ? 'Ombrière photovoltaïque'
+    ? externalInstallationLabels[input.externalSurfaceType] || 'Installation à préciser'
     : input.roofType === 'flat' ? 'Toit plat' : input.roofType === 'pitched' ? `Toiture inclinée${input.twoPans ? ' · 2 pans' : ' · 1 pan'}` : 'À compléter';
-  $('resultOrientation').textContent = input.siteKind === 'land' ? 'À qualifier pour l’ombrière' : azimuthLabels[input.orientation] || 'À compléter';
+  $('resultOrientation').textContent = input.siteKind === 'land' ? 'À qualifier selon l’installation' : azimuthLabels[input.orientation] || 'À compléter';
   $('resultTilt').textContent = input.siteKind === 'land' || input.tilt == null ? 'À qualifier' : `${numberFormat(input.tilt)}°`;
   $('resultShade').textContent = input.shade === 'none' ? 'Aucun ou très faible · hypothèse' : input.shade === 'some' ? 'Quelques ombres · hypothèse' : input.shade === 'high' ? 'Ombres importantes · hypothèse' : 'À compléter';
   $('resultSpecificYield').textContent = production && input.siteKind !== 'land'
@@ -590,7 +600,7 @@ function renderResult(input, production = null) {
     productionPanel.hidden = true;
   }
   $('resultRoofType').textContent = input.siteKind === 'land'
-    ? `Type de surface : parking, terrain ou surface agricole · installation envisagée : ombrière photovoltaïque.`
+    ? `Type de surface : ${(externalSurfaceLabels[input.externalSurfaceType] || 'surface extérieure').toLowerCase()} · installation envisagée : ${(externalInstallationLabels[input.externalSurfaceType] || 'à préciser').toLowerCase()}.`
     : `Bâtiment : ${{ flat: 'toit plat', pitched: 'toiture inclinée' }[input.roofType] || 'à compléter'}.`;
   $('resultUsage').textContent = `Usage envisagé : ${{ 'self-consumption': 'autoconsommation', 'full-sale': 'vente totale', undecided: 'non décidé' }[input.usageMode] || 'à compléter'} · qualification indicative uniquement.`;
   $('simUnsupportedResult').hidden = input.supported;
@@ -599,11 +609,25 @@ function mapPvgisError(error) {
   if (error?.name === 'AbortError') return '';
   return error instanceof Error ? error.message : 'Le calcul n’a pas abouti. Vérifiez les données du site puis réessayez.';
 }
+function clearCalculationTimer() {
+  if (calculationTimer !== null) window.clearInterval(calculationTimer);
+  calculationTimer = null;
+}
+function setCalculationButtonLoading(loading) {
+  const button = $('calculateButton');
+  button.classList.toggle('isLoading', loading);
+  if (loading) button.setAttribute('aria-busy', 'true');
+  else button.removeAttribute('aria-busy');
+  $('calculateSpinner').hidden = !loading;
+  $('calculateLabel').textContent = loading ? 'Calcul en cours…' : 'Voir ma synthèse';
+}
 async function calculate(event) {
   event.preventDefault();
   const input = buildEstimateInput();
   if (!input.supported) {
     calculationController?.abort();
+    clearCalculationTimer();
+    setCalculationButtonLoading(false);
     renderResult(input);
     $('simUnsupportedResult').hidden = false;
     $('resultStatus').textContent = 'Aucune estimation de puissance ou de production n’est disponible pour ce type d’installation.';
@@ -615,13 +639,23 @@ async function calculate(event) {
     return;
   }
   calculationController?.abort();
+  clearCalculationTimer();
+  setCalculationButtonLoading(false);
   calculationController = new AbortController();
   const controller = calculationController;
-  $('resultStatus').textContent = 'Calcul PVGIS en cours…';
+  const calculationStartedAt = Date.now();
+  const updateCalculationStatus = () => {
+    if (controller.signal.aborted || calculationController !== controller) return;
+    const elapsedSeconds = Math.floor((Date.now() - calculationStartedAt) / 1000);
+    $('resultStatus').textContent = `Calcul PVGIS en cours… (${elapsedSeconds} s)`;
+  };
+  updateCalculationStatus();
+  calculationTimer = window.setInterval(updateCalculationStatus, 1000);
   $('resultStatus').dataset.kind = 'loading';
   $('resultStatus').hidden = false;
   $('retryEstimateButton').hidden = true;
   $('calculateButton').disabled = true;
+  setCalculationButtonLoading(true);
   renderResult(input);
   showStep(5);
   try {
@@ -635,7 +669,12 @@ async function calculate(event) {
     $('resultStatus').hidden = false;
     $('retryEstimateButton').hidden = false;
   } finally {
-    if (!controller.signal.aborted) $('calculateButton').disabled = false;
+    if (calculationController === controller) {
+      clearCalculationTimer();
+      setCalculationButtonLoading(false);
+      $('calculateButton').disabled = false;
+      calculationController = null;
+    }
   }
 }
 function updateRoofSupport() {
@@ -671,11 +710,12 @@ function updatePanOrientation() {
 function updatePanChoice() { document.querySelector('.simPansGroup').hidden = selectedRoofType() !== 'pitched'; updatePanOrientation(); updateRoofSupport(); }
 function updateUsableOutput() { $('usableOutput').textContent = `${$('usablePercent').value} %`; }
 function goBack() {
-  calculationController?.abort(); $('calculateButton').disabled = false;
+  calculationController?.abort(); calculationController = null; clearCalculationTimer();
+  setCalculationButtonLoading(false); $('calculateButton').disabled = false;
   if (currentStep > 1) showStep(currentStep - 1);
 }
 function restart() {
-  calculationController?.abort();
+  calculationController?.abort(); calculationController = null; clearCalculationTimer(); setCalculationButtonLoading(false);
   cancelRoofDetection();
   form.reset();
   selectedAddress = null;
