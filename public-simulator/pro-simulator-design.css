@@ -853,3 +853,17 @@ body[data-active-step="2"] .simIntroArt,body[data-active-step="2"] .simHeroNote 
   .simSiteSummary { padding: 11px; }
   .simSiteSummary .simSummaryArea strong { font-size: 20px; }
 }
+
+/* Keep sprite-backed illustrations proportional at tablet and phone widths. */
+.simBuildingChoices .simBuildingArt {
+  height: auto;
+  aspect-ratio: 16 / 9;
+}
+.simRoofCard .simSolarArt {
+  width: min(100%, 148px);
+  height: auto;
+  aspect-ratio: 1 / 1;
+  align-self: center;
+  margin-inline: auto;
+  background-size: 200% 200%;
+}
