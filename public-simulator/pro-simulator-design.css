@@ -794,7 +794,8 @@ body[data-active-step="2"] .simIntroArt,body[data-active-step="2"] .simHeroNote 
 .simCanopyInstallOption { display: flex; flex-direction: column; justify-content: center; border-color: #f2e0aa; background: #fff9e8; }
 .simCanopyCard { display: grid; grid-template-columns: 20px minmax(90px,.8fr) minmax(0,1.2fr) 34px; gap: 10px; align-items: center; min-height: 100px; padding: 12px; border: 1px solid #f1dfa8; border-radius: 10px; background: #fff; cursor: pointer; }
 .simCanopyCard:has(input:checked) { outline: 2px solid #087d57; background: #f2faf5; }
-.simCanopyArt { display: grid; place-items: center; min-height: 74px; border-radius: 8px; background: linear-gradient(145deg,#e9f5fc,#f6fbfd); color: #e9a900; font-size: 43px; }
+.simCanopyArt { display: grid; place-items: center; min-height: 74px; overflow: hidden; border-radius: 8px; background: linear-gradient(145deg,#e9f5fc,#f6fbfd); }
+.simCanopyArt img { display: block; width: 100%; height: 100%; max-height: 88px; object-fit: contain; }
 .simCanopyText strong,.simCanopyText small { display: block; }
 .simCanopyText strong { color: var(--sim-ink); font: 800 13px/1.3 Manrope,system-ui,sans-serif; }
 .simCanopyText small { margin-top: 4px; color: var(--sim-muted); font-size: 11px; line-height: 1.4; }
@@ -804,6 +805,9 @@ body[data-active-step="2"] .simIntroArt,body[data-active-step="2"] .simHeroNote 
 .simExternalSurfaceGroup legend { margin-bottom: 7px; color: #526b62; font-size: 11px; font-weight: 700; }
 .simExternalSurfaceGroup .simPansChoices { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); }
 .simExternalSurfaceGroup .simPillChoice { padding: 5px; font-size: 10px; }
+.simExternalSurfaceGroup .simExternalAgriculture { flex-direction: column; gap: 0; min-width: 0; min-height: 68px; }
+.simExternalAgriculture img { display: block; width: 62px; height: 45px; object-fit: contain; }
+.simExternalAgriculture > span { line-height: 1.2; }
 .simRoofWorkspace { display: block; }
 .simMapSection { width: 100%; }
 .simMapLayout { grid-template-columns: minmax(0,1fr) 265px; gap: 16px; }
@@ -844,10 +848,13 @@ body[data-active-step="2"] .simIntroArt,body[data-active-step="2"] .simHeroNote 
   .simRoofCard { min-height: 118px; }
   .simRoofCard .simSolarArt { height: 66px; }
   .simCanopyCard { grid-template-columns: 18px 65px minmax(0,1fr) 30px; gap: 8px; padding: 9px; }
-  .simCanopyArt { min-height: 62px; font-size: 34px; }
+  .simCanopyArt { min-height: 62px; }
+  .simCanopyArt img { max-height: 70px; }
   .simCanopyText strong { font-size: 12px; }
   .simExternalSurfaceGroup .simPansChoices { gap: 4px; }
   .simExternalSurfaceGroup .simPillChoice { font-size: 9px; }
+  .simExternalSurfaceGroup .simExternalAgriculture { min-height: 62px; }
+  .simExternalAgriculture img { width: 48px; height: 40px; }
   .simMapHeading h3 { font-size: 16px; }
   .simRoofMap { height: 72vw; min-height: 310px; max-height: 430px; }
   .simSiteSummary { padding: 11px; }
