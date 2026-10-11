@@ -448,7 +448,12 @@ function validateStepFour() {
   const choice = selected('usageMode');
   const group = document.querySelector('.simUseCases');
   group?.classList.toggle('isMissing', !choice);
-  if (!choice) { group?.querySelector('input[name="usageMode"]')?.focus(); return false; }
+  $('usageError').hidden = Boolean(choice);
+  if (!choice) {
+    group?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'center' });
+    group?.querySelector('input[name="usageMode"]')?.focus({ preventScroll: true });
+    return false;
+  }
   return true;
 }
 function roofAzimuth(aspect) {
@@ -736,6 +741,7 @@ form.addEventListener('input', (event) => {
 });
 form.addEventListener('change', (event) => {
   event.target.closest('.simChoiceGroup')?.classList.remove('isMissing');
+  if (event.target.name === 'usageMode') $('usageError').hidden = true;
   $('formError').hidden = true;
   updateProjectSummary();
   updatePanOrientation();
