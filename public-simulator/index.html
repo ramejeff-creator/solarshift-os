@@ -120,8 +120,8 @@
           <fieldset class="simChoiceGroup">
             <legend data-number="1">Nature du site <small>Votre projet concerne un bâtiment ou une surface extérieure ?</small></legend>
             <div class="simSiteKindChoices">
-              <label class="simChoiceCard"><input type="radio" name="siteKind" value="building" required checked><span class="simSiteKindIcon" aria-hidden="true"><svg viewBox="0 0 48 48" focusable="false"><path d="M8 41h32M13 41V9h22v32M18 15h4m4 0h4M18 22h4m4 0h4M18 29h4m4 0h4M21 41v-6h6v6"/></svg></span><b>Bâtiment professionnel</b><small>Installation sur une toiture.</small></label>
-              <label class="simChoiceCard"><input type="radio" name="siteKind" value="land" required><span class="simSiteKindIcon" aria-hidden="true"><svg viewBox="0 0 48 48" focusable="false"><path d="m7 13 31-5 3 26-29 7L7 13Z M7 13l16 8 18-13M23 21l-1 20M16 17l4 25M31 17l3 19"/></svg></span><b>Surface extérieure</b><small>Parking pour ombrière, terrain ou surface agricole.</small></label>
+              <label class="simChoiceCard"><input type="radio" name="siteKind" value="building" required checked><span class="simSiteKindIcon" aria-hidden="true"><svg viewBox="0 0 96 96" focusable="false"><path d="M10 82h76M18 82V18h48v64M66 38h14v44M27 29h8m9 0h8M27 42h8m9 0h8M27 55h8m9 0h8M27 68h8m9 0h8M39 82V69h13v13M76 50h4m-4 12h4m-4 12h4"/></svg></span><b>Bâtiment professionnel</b><small>Installation sur une toiture.</small></label>
+              <label class="simChoiceCard"><input type="radio" name="siteKind" value="land" required><span class="simSiteKindIcon" aria-hidden="true"><svg viewBox="0 0 96 96" focusable="false"><path d="m8 35 55-22 25 11-55 24L8 35Zm8 16 55-23M21 56l55-23M25 45v37m-9-31v31m48-43v45m17-52v52M8 82l24-10 31 9 25-10M8 82h80M21 51l-8-4m50-19 8-4"/></svg></span><b>Surface extérieure</b><small>Parking pour ombrière, terrain ou surface agricole.</small></label>
             </div>
           </fieldset>
           <fieldset class="simChoiceGroup simBuildingDetails" id="buildingDetails">
@@ -135,16 +135,16 @@
               <label class="simChoiceCard"><input type="radio" name="buildingUse" value="other"><span class="simBuildingArt building-other" aria-hidden="true"></span><b>Autre bâtiment professionnel</b><small>Hôtels, santé, tertiaire spécialisé, etc.</small></label>
             </div>
           </fieldset>
-          <fieldset class="simChoiceGroup simExternalSurfaceGroup" hidden>
-            <legend>Quelle est la nature de cette surface ?</legend>
-            <div class="simPansChoices">
-              <label class="simPillChoice"><input type="radio" name="externalSurfaceType" value="parking" required><span aria-hidden="true">▦</span> Parking</label>
-              <label class="simPillChoice"><input type="radio" name="externalSurfaceType" value="terrain" required><span aria-hidden="true">⌖</span> Terrain</label>
-              <label class="simPillChoice"><input type="radio" name="externalSurfaceType" value="agriculture" required>Agricole</label>
-            </div>
-          </fieldset>
           <fieldset class="simChoiceGroup simInstallationGroup">
             <legend data-number="2">Type d’installation <small>Précisez la toiture ou l’installation envisagée.</small></legend>
+            <fieldset class="simChoiceGroup simExternalSurfaceGroup" hidden>
+              <legend>Quelle est la nature de cette surface ?</legend>
+              <div class="simPansChoices">
+                <label class="simPillChoice"><input type="radio" name="externalSurfaceType" value="parking" required><span aria-hidden="true">▦</span> Parking</label>
+                <label class="simPillChoice"><input type="radio" name="externalSurfaceType" value="terrain" required><span aria-hidden="true">⌖</span> Terrain</label>
+                <label class="simPillChoice"><input type="radio" name="externalSurfaceType" value="agriculture" required>Agricole</label>
+              </div>
+            </fieldset>
             <fieldset class="simRoofTypeGroup">
               <legend class="simVisuallyHidden">Type de toiture</legend>
               <div class="simRoofChoices">

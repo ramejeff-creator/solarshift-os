@@ -656,6 +656,12 @@ async function calculate(event) {
   setCalculationButtonLoading(false);
   calculationController = new AbortController();
   const controller = calculationController;
+  const requestTimeoutMs = 45000;
+  let requestTimedOut = false;
+  const requestTimeout = window.setTimeout(() => {
+    requestTimedOut = true;
+    controller.abort();
+  }, requestTimeoutMs);
   const calculationStartedAt = Date.now();
   const updateCalculationStatus = () => {
     if (controller.signal.aborted || calculationController !== controller) return;
@@ -676,12 +682,15 @@ async function calculate(event) {
     if (controller.signal.aborted) return;
     renderResult(input, production);
   } catch (error) {
-    if (controller.signal.aborted) return;
-    $('resultStatus').textContent = mapPvgisError(error);
+    if (controller.signal.aborted && !requestTimedOut) return;
+    $('resultStatus').textContent = requestTimedOut
+      ? 'Le calcul prend trop de temps. Vérifiez votre connexion puis réessayez.'
+      : mapPvgisError(error);
     $('resultStatus').dataset.kind = 'error';
     $('resultStatus').hidden = false;
     $('retryEstimateButton').hidden = false;
   } finally {
+    window.clearTimeout(requestTimeout);
     if (calculationController === controller) {
       clearCalculationTimer();
       setCalculationButtonLoading(false);

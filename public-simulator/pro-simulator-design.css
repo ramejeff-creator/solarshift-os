@@ -109,8 +109,8 @@ body:not([data-active-step="1"]) .simScopeNote { display: none; }
 .simBuildingChoices { grid-template-columns: repeat(6,minmax(0,1fr)); gap: 10px; }
 .simSiteKindChoices { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; max-width:760px; }
 .simSiteKindChoices .simChoiceCard { min-height:112px; padding:15px; }
-.simSiteKindIcon { display:grid; place-items:center; width:52px; height:52px; border-radius:13px; background:#edf7f2; color:var(--sim-green); }
-.simSiteKindIcon svg { display:block; width:36px; height:36px; fill:none; stroke:currentColor; stroke-width:2.1; stroke-linecap:round; stroke-linejoin:round; }
+.simSiteKindIcon { display:grid; place-items:center; width:64px; height:64px; border-radius:13px; background:#edf7f2; color:var(--sim-green); }
+.simSiteKindIcon svg { display:block; width:56px; height:56px; fill:none; stroke:currentColor; stroke-width:2.8; stroke-linecap:round; stroke-linejoin:round; }
 .simBuildingDetails[hidden],.simExternalDetails[hidden] { display:none !important; }
 .simRoofWorkspace[hidden] { display:none !important; }
 .simExternalDetails { margin:2px 0 22px; padding:14px 16px; border:1px solid #d3e7d9; border-left:4px solid var(--sim-green); border-radius:9px; background:#f3faf5; color:#345c49; font-size:13px; }
@@ -821,6 +821,8 @@ body[data-active-step="2"] .simIntroArt,body[data-active-step="2"] .simHeroNote 
 .simExternalSurfaceGroup legend { margin-bottom: 7px; color: #526b62; font-size: 11px; font-weight: 700; }
 .simExternalSurfaceGroup .simPansChoices { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); }
 .simExternalSurfaceGroup .simPillChoice { padding: 5px; font-size: 10px; }
+.simInstallationGroup .simExternalSurfaceGroup { margin: 0 0 16px; }
+.simInstallationGroup .simExternalSurfaceGroup legend { margin-left: 0; font-size: 13px; }
 .simRoofWorkspace { display: block; }
 .simMapSection { width: 100%; }
 .simMapLayout { grid-template-columns: minmax(0,1fr) 265px; gap: 16px; }
