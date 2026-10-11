@@ -214,12 +214,12 @@ fieldset.simQuestion > div { clear: both; }
 .simRoofPreview { height: 180px; margin: 15px 0; border-radius: 11px; background: #e9f3ec; }
 .simRoofPreview .leaflet-control-attribution { font-size: 7px; }
 .simRecap .simAdvice { margin-top: 16px; }
-.simUseCaseChoices { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
-.simUseCaseChoices .simChoiceCard { flex-direction: row; justify-content: flex-start; align-items: center; min-height: 225px; gap: 12px; padding: 20px 16px; text-align: left; }
-.simUseCaseChoices .simSolarArt { width: 45%; height: 174px; }
+.simUseCaseChoices { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; }
+.simUseCaseChoices .simChoiceCard { flex-direction: row; justify-content: flex-start; align-items: center; min-height: 190px; gap: 10px; padding: 16px 12px; text-align: left; }
+.simUseCaseChoices .simSolarArt { width: 43%; height: 150px; }
 .simUseCaseChoices .simChoiceCard > div { min-width: 0; }
-.simUseCaseChoices b { display: block; margin-bottom: 12px; font-size: 19px; line-height: 1.2; letter-spacing: -.03em; }
-.simUseCaseChoices small { display: block; font-size: 13px; line-height: 1.5; }
+.simUseCaseChoices b { display: block; margin-bottom: 9px; font-size: 17px; line-height: 1.2; letter-spacing: -.03em; }
+.simUseCaseChoices small { display: block; font-size: 12px; line-height: 1.45; }
 .simUseCases > .simFieldHint { display: block; margin-top: 10px; }
 .simTimelineChoices { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px; }
 .simTimelineChoices .simIconChoice { min-height: 173px; gap: 9px; padding: 17px 8px; }
@@ -284,6 +284,10 @@ fieldset.simQuestion > div { clear: both; }
   .simBuildingArt { height: 80px; }
   .simChoiceCard small { font-size: 10px; }
   .simDetailsLayout { grid-template-columns: minmax(0,1fr) 260px; gap: 17px; }
+  .simUseCaseChoices .simChoiceCard { min-height: 210px; padding: 13px 9px; gap: 7px; }
+  .simUseCaseChoices .simSolarArt { width: 40%; height: 130px; }
+  .simUseCaseChoices b { font-size: 15px; }
+  .simUseCaseChoices small { font-size: 11px; }
   .simUseCaseChoices .simChoiceCard { flex-direction: column; text-align: center; }
   .simUseCaseChoices .simSolarArt { width: 85%; height: 140px; }
   .simUseCaseChoices b { font-size: 17px; }
