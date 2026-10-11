@@ -820,9 +820,6 @@ body[data-active-step="2"] .simIntroArt,body[data-active-step="2"] .simHeroNote 
 .simExternalSurfaceGroup legend { margin-bottom: 7px; color: #526b62; font-size: 11px; font-weight: 700; }
 .simExternalSurfaceGroup .simPansChoices { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); }
 .simExternalSurfaceGroup .simPillChoice { padding: 5px; font-size: 10px; }
-.simExternalSurfaceGroup .simExternalAgriculture { flex-direction: column; gap: 0; min-width: 0; min-height: 68px; }
-.simExternalAgriculture img { display: block; width: 62px; height: 45px; object-fit: contain; }
-.simExternalAgriculture > span { line-height: 1.2; }
 .simRoofWorkspace { display: block; }
 .simMapSection { width: 100%; }
 .simMapLayout { grid-template-columns: minmax(0,1fr) 265px; gap: 16px; }
@@ -868,8 +865,6 @@ body[data-active-step="2"] .simIntroArt,body[data-active-step="2"] .simHeroNote 
   .simCanopyText strong { font-size: 12px; }
   .simExternalSurfaceGroup .simPansChoices { gap: 4px; }
   .simExternalSurfaceGroup .simPillChoice { font-size: 9px; }
-  .simExternalSurfaceGroup .simExternalAgriculture { min-height: 62px; }
-  .simExternalAgriculture img { width: 48px; height: 40px; }
   .simMapHeading h3 { font-size: 16px; }
   .simRoofMap { height: 72vw; min-height: 310px; max-height: 430px; }
   .simSiteSummary { padding: 11px; }
