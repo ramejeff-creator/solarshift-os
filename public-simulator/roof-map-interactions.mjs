@@ -14,10 +14,15 @@ export function ringContainsPoint(ring, latitude, longitude) {
 // The map owns selection. No preliminary button or nearest-building guess is needed.
 export function installRoofMapInteractions({ map, shapes, leaflet, onChange, onStatus, onEditing,
   fetchFootprints = fetchBuildingFootprints }) {
-  let drawing = false, correction = null, request = null, footprintDetectionEnabled = true;
+  let drawing = false, correction = null, request = null, requestTimer = null, footprintDetectionEnabled = true;
   const bound = new WeakSet();
   const status = (message, kind = 'info') => onStatus?.(message, kind);
+  function clearRequestTimer() {
+    if (requestTimer !== null) globalThis.clearInterval(requestTimer);
+    requestTimer = null;
+  }
   function cancelRequest() {
+    clearRequestTimer();
     request?.abort();
     request = null;
   }
@@ -70,7 +75,14 @@ export function installRoofMapInteractions({ map, shapes, leaflet, onChange, onS
     cancelRequest();
     const controller = new AbortController();
     request = controller;
-    status('Recherche du contour de cette toiture…', 'loading');
+    const startedAt = Date.now();
+    const updateLoadingStatus = () => {
+      if (request !== controller || controller.signal.aborted) return;
+      const elapsedSeconds = Math.floor((Date.now() - startedAt) / 1000);
+      status(`Recherche du contour de cette toiture… (${elapsedSeconds} s)`, 'loading');
+    };
+    updateLoadingStatus();
+    requestTimer = globalThis.setInterval(updateLoadingStatus, 1000);
     try {
       const ways = await fetchFootprints(lat, lng, { radiusMeters: 250, signal: controller.signal });
       if (controller.signal.aborted || request !== controller) return;
@@ -99,7 +111,10 @@ export function installRoofMapInteractions({ map, shapes, leaflet, onChange, onS
     } catch (error) {
       if (!controller.signal.aborted && request === controller) status('Le repérage cartographique est indisponible pour le moment. Vous pouvez dessiner la toiture avec l’outil polygone ou rectangle.', 'warning');
     } finally {
-      if (request === controller) request = null;
+      if (request === controller) {
+        clearRequestTimer();
+        request = null;
+      }
     }
   }
   shapes.eachLayer(bind);

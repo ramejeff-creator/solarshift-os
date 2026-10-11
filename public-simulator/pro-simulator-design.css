@@ -529,7 +529,11 @@ body[data-view="summary"] .simCard { background: transparent; border: 0; box-sha
 #roofContourEditor[hidden] { display: none; }
 #roofContourEditor { padding: 12px; border: 1px solid #a8cbb9; border-radius: 10px; background: #f0f8f3; }
 #roofDetectionStatus:empty { display: none; }
+#roofDetectionStatus:not(:empty) { position: absolute; z-index: 801; right: 12px; bottom: 12px; left: 12px; margin: 0; padding: 10px 12px; border: 1px solid #bdd6c8; border-radius: 9px; background: #fff; box-shadow: 0 2px 10px #153c2620; }
 #roofDetectionStatus[data-kind="loading"] { color: #24654c; }
+#roofDetectionStatus[data-kind="loading"]::before { content: ""; display: inline-block; width: 13px; height: 13px; margin-right: 8px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; vertical-align: -2px; animation: roofDetectionSpin .75s linear infinite; }
+@keyframes roofDetectionSpin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { #roofDetectionStatus[data-kind="loading"]::before { animation: none; } }
 #roofDetectionStatus[data-kind="warning"] { color: #805d17; }
 .simRoofMap.leaflet-grab, .simRoofMap .leaflet-interactive { cursor: pointer; }
 .simRoofMap .leaflet-editing-icon { border: 2px solid #087957; border-radius: 50%; background: #fff; }
