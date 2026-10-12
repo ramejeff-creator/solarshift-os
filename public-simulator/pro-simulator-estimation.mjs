@@ -19,7 +19,7 @@ const MODULE_DENSITY_WC_M2 = MODULE_POWER_WC / MODULE_AREA_M2;
 /** V0: two symmetric roof planes, opposite azimuths and equal installed power. */
 export function solarRoofPlanes({ roofType, roofPans, orientation }) {
   const azimuth = Number(orientation);
-  if (!Number.isFinite(azimuth) || azimuth < 0 || azimuth > 315 || azimuth % 45 !== 0) throw new TypeError('Orientation invalide.');
+  if (!Number.isFinite(azimuth) || azimuth < 0 || azimuth >= 360) throw new TypeError('Orientation invalide.');
   return roofType === 'pitched' && roofPans === 'two'
     ? [{ orientation: azimuth, weight: .5 }, { orientation: (azimuth + 180) % 360, weight: .5 }]
     : [{ orientation: azimuth, weight: 1 }];
@@ -60,7 +60,7 @@ export function estimateSolarCapacity({ roofType, orientation, tiltBand, grossAr
   const usable = Number(usablePercent);
   const azimuth = Number(orientation);
   const tilt = PRO_SIMULATOR_TILT_ANGLES[tiltBand];
-  if (!['flat', 'pitched'].includes(roofType) || !Number.isFinite(azimuth) || azimuth < 0 || azimuth > 315 || azimuth % 45 !== 0
+  if (!['flat', 'pitched'].includes(roofType) || !Number.isFinite(azimuth) || azimuth < 0 || azimuth >= 360
       || !Number.isFinite(area) || area <= 0 || !Number.isFinite(usable) || usable < 0 || usable > 100 || !Number.isFinite(tilt)) {
     throw new TypeError('Les hypothèses de surface, inclinaison et orientation doivent être valides.');
   }

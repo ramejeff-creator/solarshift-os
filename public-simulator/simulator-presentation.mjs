@@ -21,3 +21,11 @@ export function carbonEquivalenceKm(carbonTonnes) {
   return typeof carbonTonnes === 'number' && Number.isFinite(carbonTonnes) && carbonTonnes >= 0
     ? Math.round(carbonTonnes * 1_000_000 / 142) : null;
 }
+
+export function formatGainRange(lowEur, highEur = lowEur) {
+  if (![lowEur, highEur].every((v) => typeof v === 'number' && Number.isFinite(v)) || lowEur > highEur) return 'À préciser';
+  const millions = Math.max(Math.abs(lowEur), Math.abs(highEur)) >= 1_000_000;
+  const divisor = millions ? 1_000_000 : 1000;
+  const format = (value) => (value / divisor).toLocaleString('fr-FR', { maximumFractionDigits: millions ? 2 : 0 });
+  return `${format(lowEur)}${lowEur === highEur ? '' : `–${format(highEur)}`} ${millions ? 'M€' : 'k€'}`;
+}

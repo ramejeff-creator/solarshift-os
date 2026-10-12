@@ -189,6 +189,7 @@ fieldset.simQuestion > div { clear: both; }
 .simMapOrientation .simButton { min-height: 38px; padding: 8px 12px; font-size: 12px; }
 .simPickingOrientation { cursor: crosshair !important; }
 .simUsableCard { display: block; }
+#usableAreaGroup { margin: 16px 0; }
 .simUsableCard .simField { grid-template-columns: minmax(0,1fr) auto; gap: 11px; }
 .simUsableCard output { align-self: center; padding-right: 10px; color: var(--sim-pine); font-size: 16px; }
 .simUsableCard .simField input[type=range] { min-height: 20px; margin: 2px 0; }

@@ -1,7 +1,8 @@
 import { hasHouseNumber, normalizeSiteAddressSuggestion, siteAddressAutocompleteUrl } from './site-address.mjs';
-import { CR010_SIZING_VERSION, estimateSolarCapacity, PRO_SIMULATOR_TILT_ANGLES, solarRoofPlanes } from './pro-simulator-estimation.mjs';
+import { CR010_SIZING_VERSION, estimateSolarCapacity, PRO_SIMULATOR_TILT_ANGLES, solarRoofPlanes } from './pro-simulator-estimation.mjs?v=20261012-7';
 import { installRoofMapInteractions } from './roof-map-interactions.mjs?v=20261012-3';
-import { projectTimingLabel, paybackWindow, carbonEquivalenceKm } from './simulator-presentation.mjs?v=20261012-3';
+import { projectTimingLabel, paybackWindow, carbonEquivalenceKm, formatGainRange } from './simulator-presentation.mjs?v=20261012-7';
+import { requestSolarPreview } from './solar-preview-request.mjs?v=20261012-7';
 import { resolveAnnualConsumption, resolveBuildingConsumptionBenchmark, resolveElectricityPrice, resolvePowerBand } from './prestudy-building-benchmarks.mjs';
 import { findInvalidControl, qualificationErrorMessage } from './simulator-validation.mjs';
 
@@ -644,6 +645,11 @@ function apiUrl(input, optimal = false, orientation = input.orientation) {
       ...(input.buildingUse ? { building_use: input.buildingUse } : {}),
       ...(input.externalSurfaceType ? { external_surface_type: input.externalSurfaceType } : {}),
       ...(input.annualConsumption != null ? { annual_consumption_kwh: input.annualConsumption } : {}),
+      financial_model_version: '2026-10-12.1',
+      ...(input.aciAvoidablePriceCorridor ? {
+        avoided_electricity_price_low_eur_kwh: input.aciAvoidablePriceCorridor.low,
+        avoided_electricity_price_high_eur_kwh: input.aciAvoidablePriceCorridor.high
+      } : {}),
       ...(input.avoidedElectricityPrice != null ? { avoided_electricity_price_eur_kwh: input.avoidedElectricityPrice } : {})
     })
   };
@@ -651,13 +657,9 @@ function apiUrl(input, optimal = false, orientation = input.orientation) {
   return url.toString();
 }
 async function requestPvgis(input, signal, optimal = false, orientation = input.orientation) {
-  const response = await fetch(apiUrl(input, optimal, orientation), { signal });
-  if (!response.ok) throw new Error(`Le calcul solaire est momentanément indisponible (code ${response.status}).`);
-  const result = await response.json();
-  if (!Number.isFinite(Number(result.annual_kwh_kwc))) {
-    throw new Error('Le service de calcul solaire a renvoyé un résultat incomplet. Réessayez dans quelques instants.');
-  }
-  return result;
+  return requestSolarPreview(apiUrl(input, optimal, orientation), { signal,
+    onRetry: () => { $('resultStatus').textContent = 'Le service solaire est momentanément occupé. Nouvelle tentative automatique…'; }
+  });
 }
 function renderResult(input, production = null) {
   const annual = production && input.referenceKwp != null ? Number(production.annual_kwh_kwc) * input.referenceKwp * input.shadeFactor : null;
@@ -741,23 +743,19 @@ function renderResult(input, production = null) {
     && Number.isFinite(Number(yearOneAci)) && Number.isFinite(Number(yearOneAcc))
     ? Number(yearOneAci) + Number(yearOneAcc) : null;
   const aciPriceCorridor = input.aciAvoidablePriceCorridor;
-  const annualSavingsLow = annualSavings != null && aciKwh != null && accKwh != null && aciPriceCorridor
-    ? Number(aciKwh) * aciPriceCorridor.low + Number(accKwh) * 0.12 : annualSavings;
-  const annualSavingsHigh = annualSavings != null && aciKwh != null && accKwh != null && aciPriceCorridor
-    ? Number(aciKwh) * aciPriceCorridor.high + Number(accKwh) * 0.12 : annualSavings;
+  const annualSavingsLow = financial?.scenarioCorridor?.annualSavingsYear1Eur?.low ?? annualSavings;
+  const annualSavingsHigh = financial?.scenarioCorridor?.annualSavingsYear1Eur?.high ?? annualSavings;
   $('resultAnnualSavings').textContent = annualSavingsLow != null && annualSavingsHigh != null
     ? annualSavingsLow === annualSavingsHigh
       ? `${numberFormat(annualSavingsLow / 1000, 1)} k€/an`
       : `${numberFormat(annualSavingsLow / 1000, 1)}–${numberFormat(annualSavingsHigh / 1000, 1)} k€/an`
     : 'À préciser';
   $('resultAnnualSavings').classList.toggle('simPendingValue', annualSavings == null);
-  const gainsBeforeCapex = financial?.gainsBeforeCapexEur;
-  const netGainLow = gainsBeforeCapex != null && Number.isFinite(Number(gainsBeforeCapex)) && budgetReady
-    ? Number(gainsBeforeCapex) - budget.highEur : null;
-  const netGainHigh = gainsBeforeCapex != null && Number.isFinite(Number(gainsBeforeCapex)) && budgetReady
-    ? Number(gainsBeforeCapex) - budget.lowEur : null;
+  // Old API responses remain usable as a reference point, never a fabricated range.
+  const netGainLow = financial?.scenarioCorridor?.netGainsEur?.low ?? financial?.netGainsEur ?? null;
+  const netGainHigh = financial?.scenarioCorridor?.netGainsEur?.high ?? financial?.netGainsEur ?? null;
   $('resultNetGain25Years').textContent = netGainLow != null && netGainHigh != null
-    ? `${numberFormat(netGainLow / 1_000_000, 2)}–${numberFormat(netGainHigh / 1_000_000, 2)} M€` : 'À préciser';
+    ? formatGainRange(Number(netGainLow), Number(netGainHigh)) : 'À préciser';
   $('resultNetGain25Years').classList.toggle('simPendingValue', netGainLow == null || netGainHigh == null);
   const gridPrice = input.electricityPrice;
   const gridCorridor = gridPrice?.corridorEurPerKwh;
@@ -877,7 +875,13 @@ function setCalculationButtonLoading(loading) {
 }
 async function calculate(event) {
   event.preventDefault();
-  const input = buildEstimateInput();
+  let input;
+  try { input = buildEstimateInput(); }
+  catch (error) {
+    $('usageError').textContent = error.message || 'Vérifiez les paramètres de votre estimation.';
+    $('usageError').hidden = false;
+    return;
+  }
   if (!input.supported) {
     calculationController?.abort();
     clearCalculationTimer();
@@ -944,6 +948,8 @@ function updateRoofSupport() {
   const supported = ['flat', 'pitched'].includes(selectedRoofType());
   const fields = document.querySelector('.simTechnicalFields');
   if (fields) fields.hidden = !supported;
+  $('usableAreaGroup').hidden = !supported;
+  $('usablePercent').disabled = !supported;
   document.querySelectorAll('[data-step="3"] .simTechnicalFields input').forEach((input) => { input.disabled = !supported; });
   $('unsupportedRoofNotice').hidden = supported;
   $('unsupportedQualificationNotice').hidden = supported;
