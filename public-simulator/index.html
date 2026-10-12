@@ -7,7 +7,7 @@
   <title>OZENO · Simulateur solaire professionnel</title>
   <link rel="icon" type="image/png" href="./exec-d2eda8f0-968b-466f-b6ab-7ba649808352.png">
   <link rel="stylesheet" href="./pro-simulator.css?v=20261012-3">
-  <link rel="stylesheet" href="./pro-simulator-design.css?v=20261012-7">
+  <link rel="stylesheet" href="./pro-simulator-design.css?v=20261012-8">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css">
   <script src="./runtime-config.js"></script>
@@ -175,6 +175,7 @@
             <div class="simMapLayout">
               <div class="simMapCanvas">
                 <div id="roofMap" class="simRoofMap" role="application" aria-label="Carte satellite pour tracer le contour de la surface" aria-describedby="roofMapHint"></div>
+                <div id="roofContourEditor" class="simMapActions" hidden><strong>Correction du contour</strong><button id="saveRoofContour" class="simButton simButtonPrimary" type="button">Enregistrer le contour</button><button id="cancelRoofContour" class="simButton simButtonQuiet" type="button">Annuler la correction</button></div>
                 <p id="roofMapHint" class="simMapHint"><svg aria-hidden="true"><use href="#sim-bulb"/></svg><span>Cliquez une fois sur chaque toiture ou zone à ajouter pour proposer son contour. Pour le corriger, cliquez une seconde fois dessus.</span></p>
                 <p id="roofDetectionStatus" class="simFieldHint" role="status" aria-live="polite"></p>
               </div>
@@ -187,7 +188,6 @@
             </label>
           </div>
             <div class="simMapOrientation" id="mapOrientationGroup" hidden><strong>Orientation de la toiture <small>(facultatif)</small></strong><p id="orientationStatus" class="simPanExplanation" role="status" aria-live="polite">Non renseignée · hypothèse sud appliquée à l’estimation.</p><button type="button" id="pickRoofOrientation" class="simButton simButtonSecondary">Repérer l’orientation sur la carte</button><p class="simPanExplanation">Pour un toit incliné, cliquez du faîtage vers le bas de pente. Si vous ne savez pas, l’estimation gardera l’hypothèse indiquée.</p></div>
-            <div id="roofContourEditor" class="simMapActions" hidden><strong>Correction du contour</strong><button id="saveRoofContour" class="simButton simButtonPrimary" type="button">Enregistrer le contour</button><button id="cancelRoofContour" class="simButton simButtonQuiet" type="button">Annuler la correction</button></div>
             <p class="simFieldHint">La surface tracée reste une estimation : le contour peut inclure des zones non équipables.</p>
           </section>
           <p id="areaError" class="simInlineError" hidden>Tracez le toit sur la carte ou indiquez sa surface pour continuer.</p>

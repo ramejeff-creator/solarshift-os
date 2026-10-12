@@ -49,6 +49,24 @@ test('manually drawn contour opens editor after drawstop and saved edits are pre
   assert.equal(layer.getLatLngs()[0][0].lat, 48.123);
   assert.equal(shapes.getLayers().length, 1);
 });
+test('contour correction actions sit directly below the map, before site summary and surface controls', () => {
+  const html = readFileSync(new URL('../../public-simulator/index.html', import.meta.url), 'utf8');
+  const js = readFileSync(new URL('../../public-simulator/pro-simulator.mjs', import.meta.url), 'utf8');
+  const css = readFileSync(new URL('../../public-simulator/pro-simulator-design.css', import.meta.url), 'utf8');
+  assert.match(html, /<div id="roofMap"[^>]*><\/div>\s*<div id="roofContourEditor"/);
+  assert.equal((html.match(/id="roofContourEditor"/g) || []).length, 1);
+  const editorPosition = html.indexOf('id="roofContourEditor"');
+  assert.ok(editorPosition < html.indexOf('<aside class="simSiteSummary"'));
+  assert.ok(editorPosition < html.indexOf('id="usableAreaGroup"'));
+  assert.ok(editorPosition < html.indexOf('id="mapOrientationGroup"'));
+  assert.match(html, /id="roofContourEditor"[^>]*hidden/);
+  assert.match(css, /#roofContourEditor\[hidden\] \{ display: none; \}/);
+  assert.match(css, /#roofContourEditor \{ flex-wrap: wrap;/);
+  assert.match(js, /onEditing\(active\) \{ \$\('roofContourEditor'\)\.hidden = !active; \}/);
+  assert.match(js, /\$\('saveRoofContour'\)\.addEventListener\('click', \(\) => roofInteractions\?\.finishCorrection\(true\)\)/);
+  assert.match(js, /\$\('cancelRoofContour'\)\.addEventListener\('click', \(\) => roofInteractions\?\.finishCorrection\(false\)\)/);
+});
+
 test('payback presentation uses only server projection crossing, not a fabricated financial return', () => {
   const rows = [{ year: 0, cumulativeNetGainEur: -100 }, { year: 1, cumulativeNetGainEur: -40 }, { year: 2, cumulativeNetGainEur: 20 }];
   assert.equal(paybackWindow(rows, true), '1–2 ans');
