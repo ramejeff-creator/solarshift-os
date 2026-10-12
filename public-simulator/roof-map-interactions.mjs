@@ -105,8 +105,8 @@ export function installRoofMapInteractions({ map, shapes, leaflet, onChange, onS
       shapes.addLayer(layer);
       bind(layer);
       onChange();
-      // Keep the surrounding buildings visible rather than zooming into the roof.
-      map.fitBounds(layer.getBounds(), { padding: [45, 45], maxZoom: 18 });
+      // Zoom in to inspect the roof while retaining nearby context.
+      map.fitBounds(layer.getBounds(), { padding: [45, 45], maxZoom: 19 });
       edit(layer);
     } catch (error) {
       if (!controller.signal.aborted && request === controller) status('Le repérage cartographique est indisponible pour le moment. Vous pouvez dessiner la toiture avec l’outil polygone ou rectangle.', 'warning');

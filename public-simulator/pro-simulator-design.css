@@ -182,20 +182,24 @@ fieldset.simQuestion > div { clear: both; }
 .simQuestionLabel { color: var(--sim-ink); font: 800 16px/1.3 Manrope,system-ui,sans-serif; }
 .simTechnicalAssumption h3 { margin: 0 0 10px; color: var(--sim-ink); font: 800 16px/1.3 Manrope,system-ui,sans-serif; }
 .simTechnicalAssumption p { margin: 0; color: var(--sim-muted); font-size: 13px; line-height: 1.6; }
-.simMapOrientation { margin-top: 12px; padding: 13px 14px; border: 1px solid #d7e7de; border-radius: 10px; background: #f5faf6; }
+.simSurfaceControls { display: grid; grid-template-columns: minmax(190px,.72fr) minmax(0,1.28fr); gap: 12px; align-items: stretch; margin: 12px 0; }
+.simMapOrientation { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 8px 14px; min-width: 0; margin: 0; padding: 12px 14px; border: 1px solid #d7e7de; border-radius: 10px; background: #f5faf6; }
+.simMapOrientation[hidden] { display: none; }
+.simOrientationHeader { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 12px; min-width: 0; }
 .simMapOrientation strong { display: block; color: #164b38; font-size: 13px; }
 .simMapOrientation strong small { color: #6b8176; font-size: 11px; font-weight: 500; }
-.simMapOrientation .simPanExplanation { margin: 4px 0 9px; }
+.simOrientationHeader .simPanExplanation { margin: 0; text-align: right; }
 .simMapOrientation .simButton { min-height: 38px; padding: 8px 12px; font-size: 12px; }
+#roofOrientationHelp { grid-column: 1 / -1; margin: 0; }
 .simPickingOrientation { cursor: crosshair !important; }
 .simPickingOrientation .leaflet-draw { display: none; }
 .simPickingOrientation .leaflet-interactive { pointer-events: none; cursor: crosshair !important; fill-opacity: .08; }
-.simUsableCard { display: block; }
-#usableAreaGroup { margin: 16px 0; }
+.simUsableCard { display: block; margin: 0; padding: 10px 13px; }
+#usableAreaGroup { min-width: 0; margin: 0; }
 .simUsableCard .simField { grid-template-columns: minmax(0,1fr) auto; gap: 11px; }
 .simUsableCard output { align-self: center; padding-right: 10px; color: var(--sim-pine); font-size: 16px; }
 .simUsableCard .simField input[type=range] { min-height: 20px; margin: 2px 0; }
-.simUsableCard .simField small { padding-left: 42px; }
+.simUsableCard .simField small { grid-column: 1 / -1; padding-left: 0; }
 .simTiltChoices { gap: 9px; }
 .simTiltChoices .simIconChoice { min-height: 100px; padding: 10px 5px; }
 .simTiltGlyph { width: 64px; height: 33px; border: 0; }
@@ -397,6 +401,12 @@ fieldset.simQuestion > div { clear: both; }
   .simIntroArt img { max-height: 175px; object-fit: contain; }
   .simBenefits { display: none; }
   .simCard { border-radius: 18px; }
+  .simSurfaceControls { grid-template-columns: minmax(0,1fr); gap: 8px; }
+  .simMapOrientation { grid-template-columns: minmax(0,1fr); }
+  .simOrientationHeader { align-items: flex-start; }
+  .simOrientationHeader .simPanExplanation { text-align: left; }
+  #roofOrientationHelp { grid-column: 1; }
+  .simMapOrientation .simButton { justify-self: start; }
   .simStep { padding: 22px 18px; }
   .simStepHeading { gap: 12px; margin-bottom: 20px; }
   .simStepIcon { flex-basis: 42px; height: 42px; border-radius: 12px; }

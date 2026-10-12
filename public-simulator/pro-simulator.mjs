@@ -94,7 +94,7 @@ function useSuggestion(suggestion) {
   $('continueLabel').textContent = 'Continuer';
   $('latitude').value = suggestion.latitude;
   $('longitude').value = suggestion.longitude;
-  if (roofMap) roofMap.setView([suggestion.latitude, suggestion.longitude], 18);
+  if (roofMap) roofMap.setView([suggestion.latitude, suggestion.longitude], 19);
   updateProjectSummary();
   clearSuggestions();
   setAddressStatus(typedHouseNumber && !suggestionHasNumber
@@ -278,7 +278,7 @@ function updateRoofPreviews() {
       window.L.geoJSON(geometry, { style: { color: '#fff', weight: 2, fillColor: '#5db78d', fillOpacity: .4 } }).addTo(preview.shapes);
       preview.map.fitBounds(preview.shapes.getBounds(), { padding: [20, 20], maxZoom: 19, animate: false });
     } else {
-      preview.map.setView([location.latitude, location.longitude], 18, { animate: false });
+      preview.map.setView([location.latitude, location.longitude], 19, { animate: false });
       window.L.circleMarker([location.latitude, location.longitude], { radius: 6, color: '#fff', weight: 2, fillColor: '#007952', fillOpacity: 1 }).addTo(preview.shapes);
     }
   });
@@ -298,7 +298,7 @@ function initRoofMap() {
   }
   roofMapLocationKey = locationKey;
   if (!roofMap) {
-    roofMap = window.L.map(container, { scrollWheelZoom: false }).setView([location.latitude, location.longitude], 18);
+    roofMap = window.L.map(container, { scrollWheelZoom: false }).setView([location.latitude, location.longitude], 19);
     const satellite = window.L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
       attribution: 'Tiles © Esri', maxZoom: 19
     });
@@ -322,7 +322,7 @@ function initRoofMap() {
       onEditing(active) { $('roofContourEditor').hidden = !active; }
     });
     roofInteractions.setFootprintDetectionEnabled(selected('siteKind')?.value === 'building');
-  } else roofMap.setView([location.latitude, location.longitude], 18);
+  } else roofMap.setView([location.latitude, location.longitude], 19);
   window.setTimeout(() => roofMap.invalidateSize(), 80);
 }
 function nearestCompassLabel(azimuth) {
@@ -493,7 +493,7 @@ function useMyLocation() {
     $('siteAddress').value = 'Ma position';
     $('latitude').value = String(latitude);
     $('longitude').value = String(longitude);
-    if (roofMap) roofMap.setView([latitude, longitude], 18);
+    if (roofMap) roofMap.setView([latitude, longitude], 19);
     clearSuggestions();
     updateContinueLabel();
     setAddressStatus('Position récupérée. Elle sera utilisée pour le calcul solaire.', 'ready');

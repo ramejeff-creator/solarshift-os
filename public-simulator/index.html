@@ -181,13 +181,19 @@
               </div>
               <aside class="simSiteSummary" aria-label="Résumé du site"><h3>Votre site</h3><span class="simBuildingArt building-offices" data-summary-building-art aria-hidden="true"></span><p><span id="summaryBuildingLabel">Type de bâtiment</span><strong id="summaryBuilding">À choisir</strong></p><p><span>Installation</span><strong id="summaryRoof">À choisir</strong></p><label class="simField simManualArea" for="roofArea"><span id="areaLabel">Surface totale de toiture (m²)</span><input id="roofArea" name="roofArea" type="number" min="20" max="1000000" step="1" inputmode="decimal" placeholder="Ex. 1 200 m²"><small id="areaHelp">Mesurée sur la carte ou indiquée si vous la connaissez.</small></label><p class="simSummaryArea"><span id="summaryAreaLabel">Surface de toiture tracée</span><strong id="summaryArea">À mesurer</strong></p><div class="simAdvice"><svg aria-hidden="true"><use href="#sim-bulb"/></svg><p><strong>Et après ?</strong><span id="summaryAdvice">Vous préciserez la pente, l’orientation et l’ombrage pour affiner votre estimation.</span></p></div></aside>
             </div>
-          <div id="usableAreaGroup" class="simFieldGrid simAreaGrid simUsableCard simQuestion">
-            <label class="simField" for="usablePercent"><span class="simQuestionLabel" data-number="4">Part de toiture exploitable</span> <output id="usableOutput">65 %</output>
-              <input id="usablePercent" name="usablePercent" type="range" min="30" max="90" step="5" value="65">
-              <small>Hypothèse indicative par défaut : 65 %, modifiable. Aucune détection automatique des obstacles n’est réalisée ici.</small>
-            </label>
+          <div class="simSurfaceControls">
+            <div id="usableAreaGroup" class="simFieldGrid simAreaGrid simUsableCard simQuestion">
+              <label class="simField" for="usablePercent"><span class="simQuestionLabel" data-number="4">Part de toiture exploitable</span> <output id="usableOutput">65 %</output>
+                <input id="usablePercent" name="usablePercent" type="range" min="30" max="90" step="5" value="65">
+                <small>Hypothèse indicative par défaut : 65 %, modifiable. Aucune détection automatique des obstacles n’est réalisée ici.</small>
+              </label>
+            </div>
+            <div class="simMapOrientation" id="mapOrientationGroup" hidden>
+              <div class="simOrientationHeader"><strong>Orientation de la toiture <small>(facultatif)</small></strong><p id="orientationStatus" class="simPanExplanation" role="status" aria-live="polite">Non renseignée · hypothèse sud appliquée à l’estimation.</p></div>
+              <button type="button" id="pickRoofOrientation" class="simButton simButtonSecondary">Repérer l’orientation sur la carte</button>
+              <p id="roofOrientationHelp" class="simPanExplanation">Cliquez aux deux extrémités de la ligne au sommet du toit (faîtage), puis sur le pan à équiper si vous n’en équipez qu’un.</p>
+            </div>
           </div>
-            <div class="simMapOrientation" id="mapOrientationGroup" hidden><strong>Orientation de la toiture <small>(facultatif)</small></strong><p id="orientationStatus" class="simPanExplanation" role="status" aria-live="polite">Non renseignée · hypothèse sud appliquée à l’estimation.</p><button type="button" id="pickRoofOrientation" class="simButton simButtonSecondary">Repérer l’orientation sur la carte</button><p id="roofOrientationHelp" class="simPanExplanation">Cliquez aux deux extrémités de la ligne au sommet du toit (faîtage), puis sur le pan à équiper si vous n’en équipez qu’un.</p></div>
             <p class="simFieldHint">La surface tracée reste une estimation : le contour peut inclure des zones non équipables.</p>
           </section>
           <p id="areaError" class="simInlineError" hidden>Tracez le toit sur la carte ou indiquez sa surface pour continuer.</p>

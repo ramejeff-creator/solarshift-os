@@ -67,6 +67,24 @@ test('contour correction actions sit directly below the map, before site summary
   assert.match(js, /\$\('cancelRoofContour'\)\.addEventListener\('click', \(\) => roofInteractions\?\.finishCorrection\(false\)\)/);
 });
 
+test('usable-area slider and roof orientation sit side by side with values aligned beside their explanations', () => {
+  const html = readFileSync(new URL('../../public-simulator/index.html', import.meta.url), 'utf8');
+  const css = readFileSync(new URL('../../public-simulator/pro-simulator-design.css', import.meta.url), 'utf8');
+  const js = readFileSync(new URL('../../public-simulator/pro-simulator.mjs', import.meta.url), 'utf8');
+  const controlsStart = html.indexOf('<div class="simSurfaceControls">');
+  const controlsEnd = html.indexOf('La surface tracée reste une estimation', controlsStart);
+  const controls = html.slice(controlsStart, controlsEnd);
+  assert.ok(controlsStart >= 0 && controlsEnd > controlsStart);
+  assert.ok(controls.indexOf('id="usableAreaGroup"') < controls.indexOf('id="mapOrientationGroup"'));
+  assert.match(controls, /<output id="usableOutput">65 %<\/output>/);
+  assert.match(controls, /<p id="orientationStatus" class="simPanExplanation"/);
+  assert.match(css, /\.simSurfaceControls \{ display: grid; grid-template-columns: minmax\(190px,\.72fr\) minmax\(0,1\.28fr\)/);
+  assert.match(css, /\.simOrientationHeader \.simPanExplanation \{ margin: 0; text-align: right; \}/);
+  assert.match(css, /\.simSurfaceControls \{ grid-template-columns: minmax\(0,1fr\); gap: 8px; \}/);
+  assert.match(js, /setView\(\[location\.latitude, location\.longitude\], 19\)/);
+  assert.match(js, /setView\(\[suggestion\.latitude, suggestion\.longitude\], 19\)/);
+});
+
 test('payback presentation uses only server projection crossing, not a fabricated financial return', () => {
   const rows = [{ year: 0, cumulativeNetGainEur: -100 }, { year: 1, cumulativeNetGainEur: -40 }, { year: 2, cumulativeNetGainEur: 20 }];
   assert.equal(paybackWindow(rows, true), '1–2 ans');
