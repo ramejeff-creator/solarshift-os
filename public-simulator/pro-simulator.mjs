@@ -3,6 +3,7 @@ import { CR010_SIZING_VERSION, estimateSolarCapacity, PRO_SIMULATOR_TILT_ANGLES,
 import { installRoofMapInteractions } from './roof-map-interactions.mjs?v=20261012-3';
 import { projectTimingLabel, paybackWindow, carbonEquivalenceKm } from './simulator-presentation.mjs?v=20261012-3';
 import { resolveAnnualConsumption, resolveBuildingConsumptionBenchmark, resolveElectricityPrice, resolvePowerBand } from './prestudy-building-benchmarks.mjs';
+import { findInvalidControl, qualificationErrorMessage } from './simulator-validation.mjs';
 
 const $ = (id) => document.getElementById(id);
 const form = $('simulatorForm');
@@ -496,10 +497,10 @@ async function validateStepOne() {
 }
 function validateStepTwo() {
   const section = form.querySelector('[data-step="2"]');
-  const invalid = section.querySelector(':invalid');
+  const invalid = findInvalidControl(section);
   section.querySelectorAll('.simChoiceGroup').forEach((group) => {
     const required = [...group.querySelectorAll('input[required]')];
-    group.classList.toggle('isMissing', required.some((input) => !input.checkValidity()));
+    group.classList.toggle('isMissing', required.some((input) => input.willValidate && !input.checkValidity()));
   });
   const area = Number($('roofArea').value) || drawnRoofAreaM2;
   $('areaError').hidden = area >= 20;
@@ -520,13 +521,13 @@ function validateStepTwo() {
 function validateStepThree() {
   if (!['flat', 'pitched'].includes(selectedRoofType())) { $('formError').hidden = true; return true; }
   const section = form.querySelector('[data-step="3"]');
-  const invalid = section.querySelector(':invalid');
+  const invalid = findInvalidControl(section);
   section.querySelectorAll('.simChoiceGroup').forEach((group) => {
     const required = [...group.querySelectorAll('input[required]')];
-    group.classList.toggle('isMissing', required.some((input) => !input.checkValidity()));
+    group.classList.toggle('isMissing', required.some((input) => input.willValidate && !input.checkValidity()));
   });
   if (invalid) {
-    $('formError').textContent = 'Choisissez une option dans chaque rubrique encadrée en rouge.';
+    $('formError').textContent = qualificationErrorMessage(invalid);
     $('formError').hidden = false;
     invalid.focus();
     return false;
@@ -582,17 +583,17 @@ function buildEstimateInput() {
   const benchmarkPrice = resolveElectricityPrice({ selectedBand: power.band });
   const aciAvoidablePrice = benchmarkPrice.aciAvoidableCorridorEurPerKwh?.ref ?? null;
   $('consumptionBenchmarkNote').textContent = consumption.status === 'ASSUMPTION'
-    ? `Fourchette SolarShift indicative : ${numberFormat(consumption.corridorKwh.low)}–${numberFormat(consumption.corridorKwh.high)} kWh/an ; valeur centrale utilisée : ${numberFormat(consumption.valueKwh)} kWh/an. Calculée à partir de l’emprise au sol mesurée sur la carte ; ce n’est pas la surface de plancher.`
+    ? 'Consommation estimée selon l’activité et l’emprise au sol mesurée sur la carte, à confirmer sur facture. Les étages ne sont pas pris en compte.'
     : 'La consommation déclarée reste prioritaire. Sans saisie, une activité et le contour cartographique permettent une estimation indicative.';
   $('powerBenchmarkNote').textContent = power.status === 'ASSUMPTION'
-    ? `Tranche proposée selon le type de bâtiment : ${power.band.replaceAll('_', ' ')} · hypothèse SolarShift à confirmer sur facture.`
+    ? `Tranche proposée selon le type de bâtiment : ${power.band.replaceAll('_', ' ')} · estimation à confirmer sur facture.`
     : 'La tranche choisie ou la puissance exacte reste déclarative et à confirmer sur facture.';
   $('priceBenchmarkNote').textContent = declaredPrice == null
     ? price.corridorEurPerKwh
-      ? `Benchmark SolarShift HT : ${price.corridorEurPerKwh.low.toFixed(2)}–${price.corridorEurPerKwh.high.toFixed(2)} €/kWh (réseau) ; composante ACI évitable ${price.aciAvoidableCorridorEurPerKwh.low.toFixed(2)}–${price.aciAvoidableCorridorEurPerKwh.high.toFixed(2)} €/kWh. À confirmer sur facture ; ce ne sont pas des tarifs officiels.`
-      : 'Aucun benchmark tarifaire disponible tant que la puissance n’est pas renseignée ou estimée.'
+      ? 'Un prix réseau indicatif sera utilisé en l’absence de prix déclaré. L’économie sur votre facture ne porte que sur la part évitable, à confirmer lors de l’étude.'
+      : 'La puissance doit être renseignée ou estimée pour proposer un prix réseau indicatif.'
     : price.usableForHtEconomics
-      ? `Prix total réseau déclaré : ${numberFormat(price.valueEurPerKwh, 3)} €/kWh HT. Il reste distinct de la composante ACI évitable SolarShift (${benchmarkPrice.aciAvoidableCorridorEurPerKwh?.ref?.toFixed(2) ?? 'à préciser'} €/kWh), à confirmer sur facture détaillée.`
+      ? `Prix total réseau déclaré : ${numberFormat(price.valueEurPerKwh, 3)} €/kWh HT. L’économie estimée ne porte que sur la part évitable de votre facture, à confirmer lors de l’étude.`
       : 'Prix TTC déclaré : conservé comme information, mais non injecté dans le calcul financier HT. La composante ACI reste distincte.';
   return {
     address: readLocation(), roofType, supported, orientation, orientationSource, orientations: planes.map((plane) => plane.orientation), planes, twoPans, aspect: orientation - 180,
@@ -623,7 +624,7 @@ function buildEstimateInput() {
 }
 function apiUrl(input, optimal = false, orientation = input.orientation) {
   const endpoint = window.SOLARSHIFT_CONFIG?.pvgisEndpoint;
-  if (!endpoint) throw new Error('Le service de calcul PVGIS n’est pas configuré.');
+  if (!endpoint) throw new Error('Le service de calcul solaire n’est pas configuré.');
   const url = new URL(endpoint, window.location.href);
   const params = {
     lat: input.address.latitude, lon: input.address.longitude,
@@ -654,7 +655,7 @@ async function requestPvgis(input, signal, optimal = false, orientation = input.
   if (!response.ok) throw new Error(`Le calcul solaire est momentanément indisponible (code ${response.status}).`);
   const result = await response.json();
   if (!Number.isFinite(Number(result.annual_kwh_kwc))) {
-    throw new Error('Le service PVGIS a renvoyé un résultat incomplet. Réessayez dans quelques instants.');
+    throw new Error('Le service de calcul solaire a renvoyé un résultat incomplet. Réessayez dans quelques instants.');
   }
   return result;
 }
@@ -678,7 +679,7 @@ function renderResult(input, production = null) {
     : 'À préciser';
   $('resultConsumptionEstimate').classList.toggle('simPendingValue', !consumptionKnown);
   $('resultConsumptionNote').textContent = consumptionCorridor
-    ? `Benchmark SolarShift V1 · valeur centrale ${numberFormat(Number(input.annualConsumption) / 1000, 1)} MWh/an`
+    ? `Consommation indicative · valeur centrale ${numberFormat(Number(input.annualConsumption) / 1000, 1)} MWh/an`
     : input.consumption?.status === 'DECLARED'
       ? 'Valeur déclarée · à confirmer sur facture'
       : 'Estimation selon le type et l’emprise du bâtiment';
@@ -702,7 +703,7 @@ function renderResult(input, production = null) {
     : `${nearestCompassLabel(input.orientation)}${input.orientationSource === 'map-trace' ? ' · repérée sur la carte' : ' · hypothèse par défaut'}`;
   $('resultShade').textContent = input.shade === 'none' ? 'Aucun ou très faible · hypothèse' : input.shade === 'some' ? 'Quelques ombres · hypothèse' : input.shade === 'high' ? 'Ombres importantes · hypothèse' : 'À compléter';
   $('resultSpecificYield').textContent = production && input.siteKind !== 'land'
-    ? `${numberFormat(Number(production.annual_kwh_kwc) * input.shadeFactor)} kWh/kWc/an · estimation PVGIS`
+    ? `${numberFormat(Number(production.annual_kwh_kwc) * input.shadeFactor)} kWh/kWc/an · estimation indicative`
     : 'À calculer / qualifier';
   $('resultFinancialCapex').textContent = budgetReady ? budgetRange : 'À préciser';
   const financial = production?.financial_preview;
@@ -723,7 +724,7 @@ function renderResult(input, production = null) {
       : 'À préciser : consommation annuelle requise';
   const yearOneAcc = financial?.potentialAccValueYear1Eur;
   $('resultAccPotential').textContent = yearOneAcc != null && Number.isFinite(Number(yearOneAcc))
-    ? `${numberFormat(Number(yearOneAcc))} €/an · potentiel à 0,12 €/kWh`
+    ? `${numberFormat(Number(yearOneAcc))} €/an · valorisation locale potentielle`
     : financial?.annualAllocation?.potentialAccKwh != null
       ? `${numberFormat(financial.annualAllocation.potentialAccKwh)} kWh/an · potentiel à valoriser`
       : 'À préciser : consommation annuelle requise';
@@ -791,11 +792,11 @@ function renderResult(input, production = null) {
   $('resultAnnualCarbon').classList.toggle('simPendingValue', carbonTonnes == null);
   const equivalentKm = carbonEquivalenceKm(carbonTonnes);
   $('resultCarbonKm').textContent = equivalentKm == null ? 'À préciser' : `${numberFormat(equivalentKm)} km`;
-  $('resultCarbonNote').textContent = `Équivalent brut · facteur RTE 2025 (${numberFormat(carbonIntensityGPerKwh, 1)} gCO₂e/kWh) · sans profil horaire ni cycle de vie PV`;
+  $('resultCarbonNote').textContent = 'Ordre de grandeur indicatif, sans bilan carbone détaillé ni prise en compte du cycle de vie de l’installation.';
   $('resultProjectionTitle').textContent = financialReady ? 'Projection propriétaire indicative disponible' : 'Votre rentabilité reste à préciser';
   $('resultProjectionSummary').textContent = financialReady
     ? netGainLow != null && netGainHigh != null
-      ? `Gain net estimé après CAPEX : ${numberFormat(netGainLow / 1000)}–${numberFormat(netGainHigh / 1000)} k€ sur 25 ans. Projection marketing indicative ; l’ACC reste un potentiel sans contrat confirmé.`
+      ? `Gain net estimé après CAPEX : ${numberFormat(netGainLow / 1000)}–${numberFormat(netGainHigh / 1000)} k€ sur 25 ans. Projection indicative ; l’ACC reste un potentiel sans contrat confirmé.`
       : `Gain net estimé après CAPEX : ${numberFormat(Number(financial.netGainsEur) / 1000)} k€ sur 25 ans. Projection indicative, à confirmer avec un conseiller.`
     : financial?.reason === 'AVOIDED_TARIFF_REQUIRED'
       ? 'Le coût de production et le potentiel ACC sont estimés ; le tarif évité de votre facture est nécessaire pour calculer les gains et le TRI.'
@@ -809,7 +810,7 @@ function renderResult(input, production = null) {
       ? 'Production ou consommation insuffisante pour comparer les volumes annuels.'
       : 'Consommation annuelle non renseignée : comparaison indisponible.';
   if (input.consumption?.status === 'ASSUMPTION' && input.buildingBenchmark) {
-    $('resultAnnualComparison').textContent += ` Consommation estimée SolarShift : ${numberFormat(input.consumption.corridorKwh.low)}–${numberFormat(input.consumption.corridorKwh.high)} kWh/an (valeur centrale ${numberFormat(input.consumption.valueKwh)}), calculée sur l’emprise cartographique du bâtiment ; les niveaux/étages ne sont pas pris en compte.`;
+    $('resultAnnualComparison').textContent += ' Consommation indicative, à confirmer sur facture ; les niveaux/étages ne sont pas pris en compte.';
   } else if (input.consumption?.status === 'DECLARED') {
     $('resultAnnualComparison').textContent += ' Consommation déclarée, à confirmer sur facture.';
   }
@@ -902,7 +903,7 @@ async function calculate(event) {
   const updateCalculationStatus = () => {
     if (controller.signal.aborted || calculationController !== controller) return;
     const elapsedSeconds = Math.floor((Date.now() - calculationStartedAt) / 1000);
-    $('resultStatus').textContent = `Calcul PVGIS en cours… (${elapsedSeconds} s)`;
+    $('resultStatus').textContent = `Calcul solaire en cours… (${elapsedSeconds} s)`;
   };
   updateCalculationStatus();
   calculationTimer = window.setInterval(updateCalculationStatus, 1000);
@@ -1039,6 +1040,7 @@ document.querySelectorAll('[data-back]').forEach((button) => button.addEventList
 form.addEventListener('input', (event) => {
   if (!event.target.matches('input')) return;
   event.target.closest('.simChoiceGroup')?.classList.remove('isMissing');
+  if (event.target.id === 'annualConsumption') $('formError').hidden = true;
   if (event.target.id === 'roofArea') {
     drawnRoofAreaM2 = 0;
     $('mapAreaOutput').textContent = event.target.value ? `${numberFormat(Number(event.target.value))} m² saisis` : 'Surface à repérer';

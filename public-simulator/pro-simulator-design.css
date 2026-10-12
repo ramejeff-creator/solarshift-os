@@ -31,7 +31,7 @@ body.proSimulator { position: relative; isolation: isolate; min-height: 100vh; b
 .simProgress li.isCurrent b { color: var(--sim-pine); font-weight: 800; }
 .simProgress li.isComplete > span { background: #edf7f1; color: var(--sim-pine); border-color: #edf7f1; }
 .simShell { display: grid; grid-template-columns: 280px minmax(0,1fr); column-gap: 38px; width: min(1560px,calc(100% - 96px)); margin: 22px auto 40px; }
-.simIntro { position: relative; grid-column: 1 / -1; display: block; min-height: 405px; margin: 0; padding: 30px 0 22px; }
+.simIntro { position: relative; isolation: isolate; overflow: clip; grid-column: 1 / -1; display: block; min-height: 405px; margin: 0; padding: 30px 0 22px; }
 .simIntroCopy { position: relative; z-index: 1; width: 49%; }
 .simEyebrow { margin-bottom: 17px; font-size: 11px; font-weight: 700; letter-spacing: .2em; color: #759082; }
 .simIntro h1 { max-width: 730px; margin: 0; color: #061c27; font: 800 clamp(40px,4.2vw,68px)/1.08 Manrope,system-ui,sans-serif; letter-spacing: -.05em; }
@@ -806,6 +806,11 @@ html, body { max-width: 100%; overflow-x: clip; }
 body[data-view="contact"] .simProgressBand,body[data-view="summary"] .simProgressBand { display: none; }
 
 /* Lead-oriented synthesis, following the desktop and mobile result concepts. */
+/* Fit the illustration inside its hero instead of letting the sun overlap navigation. */
+@media (min-width:701px) {
+  .simIntroArt { top: 0; }
+  .simIntroArt img { height: 100%; object-fit: contain; object-position: center bottom; }
+}
 #resultStep > .simStepHeading { margin: 8px 0 20px; }
 #resultStep .simStepHeading h2 { color: #073d3d; font-size: clamp(32px,4vw,48px); letter-spacing: -.035em; }
 #resultStep .simResultSubtitle { margin-top: 5px; font-size: 16px; }

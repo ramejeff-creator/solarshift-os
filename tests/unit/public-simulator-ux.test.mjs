@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { installRoofMapInteractions } from '../../public-simulator/roof-map-interactions.mjs';
 import { projectTimingLabel, paybackWindow, carbonEquivalenceKm } from '../../public-simulator/simulator-presentation.mjs';
+import { findInvalidControl, qualificationErrorMessage } from '../../public-simulator/simulator-validation.mjs';
 
 function emitter(extra = {}) {
   const listeners = new Map();
@@ -69,4 +70,35 @@ test('public simulator direct DOM bindings exist and IDs are unique', () => {
   const ids = [...html.matchAll(/id="([^"]+)"/g)].map((match) => match[1]);
   assert.equal(ids.length, new Set(ids).size, 'duplicate DOM IDs');
   for (const [, id] of js.matchAll(/\$\('([^']+)'\)/g)) assert.ok(ids.includes(id), `missing DOM binding: ${id}`);
+});
+
+test('public presentation does not disclose calculation sources or detailed benchmark coefficients', () => {
+  const html = readFileSync(new URL('../../public-simulator/index.html', import.meta.url), 'utf8');
+  const js = readFileSync(new URL('../../public-simulator/pro-simulator.mjs', import.meta.url), 'utf8');
+  assert.doesNotMatch(html, /PVGIS|RTE 2025|Impact CO₂|benchmarks? SolarShift|0,12 €\/kWh|19,6 gCO₂e|142 gCO₂e/i);
+  const renderedMessages = [...js.matchAll(/\.textContent\s*(?:\+?=)([\s\S]*?);\s*(?:\r?\n|$)/g)].map((match) => match[1]).join('\n');
+  assert.doesNotMatch(renderedMessages, /PVGIS|RTE 2025|benchmarks? SolarShift|Fourchette SolarShift|0,12 €\/kWh|carbonIntensityGPerKwh/);
+  assert.match(html, /À propos de votre estimation/);
+  assert.match(html, /indicatifs et non contractuels/);
+  assert.match(html, /cycle de vie de l’installation n’est pas pris en compte/);
+});
+
+test('hero illustration is contained below navigation, including on narrow screens', () => {
+  const css = readFileSync(new URL('../../public-simulator/pro-simulator-design.css', import.meta.url), 'utf8');
+  assert.match(css, /\.simIntro \{[^}]*isolation: isolate;[^}]*overflow: clip;/);
+  assert.match(css, /@media \(min-width:701px\) \{\s*\.simIntroArt \{ top: 0; \}\s*\.simIntroArt img \{ height: 100%; object-fit: contain;/);
+});
+
+test('qualification accepts exact consumption and reports invalid controls, not fieldsets or disabled defaults', () => {
+  const html = readFileSync(new URL('../../public-simulator/index.html', import.meta.url), 'utf8');
+  assert.match(html, /<input id="annualConsumption"[^>]*min="0"[^>]*step="any"/);
+  const disabledTilt = { willValidate: false, checkValidity() { throw new Error('disabled controls must be ignored'); } };
+  const consumption = { id: 'annualConsumption', willValidate: true, checkValidity: () => true };
+  const section = { querySelectorAll(selector) { assert.equal(selector, 'input, select, textarea'); return [disabledTilt, consumption]; } };
+  assert.equal(findInvalidControl(section), null);
+  consumption.checkValidity = () => false;
+  assert.equal(findInvalidControl(section), consumption);
+  assert.match(qualificationErrorMessage(consumption), /consommation annuelle/);
+  assert.doesNotMatch(qualificationErrorMessage(consumption), /Choisissez une option/);
+  assert.match(qualificationErrorMessage({ type: 'radio' }), /Choisissez une option/);
 });

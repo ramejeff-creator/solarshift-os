@@ -58,10 +58,35 @@ try {
   assert.match(await page.locator('[data-step="3"] [data-summary-area]').innerText(), /897/);
   await page.locator('#annualConsumption').fill('100000');
   await page.screenshot({ path: resolve(output, 'qualification-desktop.png'), fullPage: true });
+  // A real bill need not be a multiple of 1000 kWh, and decimal kWh are valid too.
+  await page.locator('#annualConsumption').fill('-1');
+  await page.locator('[data-step="3"] [data-next]').click();
+  assert.match(await page.locator('#formError').innerText(), /consommation annuelle/);
+  for (const consumption of ['442338', '442338.5', '']) {
+    await page.locator('#annualConsumption').fill(consumption);
+    await page.locator('[data-step="3"] [data-next]').click();
+    assert.equal(await page.locator('[data-step="4"]').isVisible(), true, `consumption ${consumption} blocked qualification`);
+    await page.locator('[data-step="4"] [data-back]').click();
+  }
+  await page.locator('#annualConsumption').fill('100000');
   await page.locator('[data-step="3"] [data-next]').click();
   await page.locator('label:has(input[name="projectTiming"][value="3-6-months"])').click();
   await page.locator('#warehouseSubtype').selectOption('dry');
   await page.locator('#subscribedPowerBand').selectOption('LE_36_KVA');
+  for (const width of [1440, 1920, 768, 390]) {
+    await page.setViewportSize({ width, height: 1000 });
+    const layout = await page.evaluate(() => {
+      const hero = document.querySelector('.simIntro').getBoundingClientRect();
+      const art = document.querySelector('.simIntroArt').getBoundingClientRect();
+      const progress = document.querySelector('.simProgressBand').getBoundingClientRect();
+      return { heroTop: hero.top, artTop: art.top, progressBottom: progress.bottom,
+        overflow: getComputedStyle(document.querySelector('.simIntro')).overflowY };
+    });
+    assert.ok(layout.heroTop >= layout.progressBottom, `hero overlaps navigation at ${width}px`);
+    assert.ok(layout.artTop >= layout.heroTop, `illustration overlaps hero top at ${width}px`);
+    assert.equal(layout.overflow, 'clip');
+  }
+  await page.setViewportSize({ width: 1440, height: 1000 });
   await page.screenshot({ path: resolve(output, 'usage-timing.png'), fullPage: true });
   const solarResponse = page.waitForResponse((response) => response.url().includes('/pvgis?') && response.request().method() === 'GET');
   await page.locator('#calculateButton').click();
