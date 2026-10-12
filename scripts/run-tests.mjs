@@ -9,3 +9,4 @@ await import('../tests/unit/cr002-hardening.test.mjs');
 await import('../tests/integration/cr002-rls-lifecycle.test.mjs');
 await import('../tests/unit/risk-register-ux.test.mjs');
 await import('../tests/unit/ui-script-syntax.test.mjs');
+await import('../tests/unit/public-simulator-ux.test.mjs');

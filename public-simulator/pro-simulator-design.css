@@ -703,7 +703,7 @@ html, body { max-width: 100%; overflow-x: clip; }
 .simShell, .simCard, .simStep, .simDetailsLayout, .simTechnicalFields { min-width: 0; }
 .simUseCases .simUseCaseArt { display: none; }
 .simUseCases .simChoiceCard { min-height: 88px; }
-.simChoiceGroup:has(.simTimelineChoices) { display: none; }
+.simChoiceGroup:has(.simTimelineChoices) { display: block; margin-top: 24px; }
 #contactStep, .simSummaryGrid, #comparisonCard, .simRecommendation { display: none !important; }
 .simSummaryMetrics { grid-template-columns: repeat(6,minmax(0,1fr)); gap: 13px; margin: 18px 0; }
 .simSummaryMetric { min-height: 120px; align-content: center; }
@@ -861,6 +861,133 @@ body[data-view="contact"] .simProgressBand,body[data-view="summary"] .simProgres
   #resultStep .simFinancePanel { grid-column: auto; }
   #resultStep .simResultRoofPreview { height: 180px; }
   .simAllocationChart { width: 176px; height: 176px; }
+}
+
+/* Detailed synthesis: accessible icons, actual monthly values and explicit allocation. */
+.simTiltLayout { display: grid; grid-template-columns: minmax(0,1fr) 220px; gap: 14px; align-items: stretch; }
+.simInlineHelp { display: flex; align-items: flex-start; gap: 10px; padding: 14px; border-radius: 12px; background: #edf8f1; font-size: 12px; color: #5e778d; line-height: 1.5; }
+.simInlineHelp svg { width: 19px; height: 19px; flex: 0 0 19px; color: #00684e; }
+.simInlineHelp strong { color: #143d45; }
+.simInlineHelp p { margin: 4px 0 0; }
+.simQuestionHelp { margin: 0 0 14px; color: #647e94; font-size: 13px; line-height: 1.5; }
+#resultStep .simSummaryNotice { display: flex; gap: 14px; align-items: center; margin: 0 0 20px; padding: 16px 20px; background: #e8f5ed; color: #365d50; border-radius: 14px; font-size: 13px; line-height: 1.5; }
+.simSummaryNotice svg { width: 28px; height: 28px; flex: 0 0 28px; color: #00634b; }
+#resultStep .simSummaryMetric { display: grid; grid-template-columns: 55px minmax(0,1fr); column-gap: 14px; row-gap: 4px; min-height: 120px; background: #fff; }
+#resultStep .simSummaryMetric > span:not(.simMetricIcon),#resultStep .simSummaryMetric > strong,#resultStep .simSummaryMetric > small { grid-column: 2; min-width: 0; }
+#resultStep .simSummaryMetric > strong { font-size: clamp(21px,1.9vw,29px); line-height: 1.2; overflow-wrap: normal; }
+#resultStep .simSummaryMetric > .simMetricIcon { grid-column: 1; grid-row: 1 / 4; display: grid; place-items: center; width: 55px; height: 65px; align-self: center; border-radius: 13px; background: #eaf8ef; color: #075c47; }
+.simMetricIcon svg { width: 34px; height: 34px; }
+#resultStep .simMetricIcon.simGold { color: #efa500; background: #fff8e5; }
+.simPanelHeading { display: flex; gap: 12px; align-items: center; margin-bottom: 18px; min-height: 60px; }
+.simPanelHeading > div { min-width: 0; }
+#resultStep .simPanelHeading h3 { margin: 0; color: #0b2332; font-size: 17px; line-height: 1.3; }
+.simPanelHeading p { margin: 4px 0 0; color: #688095; font-size: 12px; line-height: 1.4; }
+.simPanelIcon { display: grid; place-items: center; width: 46px; height: 52px; flex: 0 0 46px; border-radius: 11px; color: white; background: linear-gradient(135deg,#187b5c,#034333); }
+.simPanelIcon.simGold { background: linear-gradient(135deg,#e3a124,#ad710e); }
+.simPanelIcon svg { width: 30px; height: 30px; }
+#resultStep .simPotentialPanel .simResultFacts { background: #f8fbfa; border-radius: 10px; padding: 0 10px; }
+#resultStep .simResultFacts dt { display: flex; gap: 9px; align-items: center; font-size: 12px; line-height: 1.45; }
+.simResultFacts dt svg { width: 21px; height: 21px; flex: 0 0 21px; }
+#resultStep .simResultFacts dd { color: #102c40; font-size: 12px; line-height: 1.45; }
+#resultStep .simPotentialPanel .simResultFacts dd { text-align: right; }
+#resultStep .simResultRoofPreview { height: 190px; }
+.simMonthlyPlot { display: grid; grid-template-columns: 34px minmax(0,1fr); gap: 7px; margin-top: 8px; }
+.simMonthlyAxis { display: flex; flex-direction: column; justify-content: space-between; height: 135px; padding: 0; color: #708198; font-size: 10px; text-align: right; }
+#resultStep .simProductionPanel .simMonthlyChart { height: 155px; margin: 0; gap: 4px; background: repeating-linear-gradient(to top,transparent 0,transparent calc(25% - 1px),#e6eeeb calc(25% - 1px),#e6eeeb 25%); }
+#resultStep .simMonthBarWrap { height: 135px; }
+#resultStep .simMonthlyChart { padding: 0; }
+#resultStep .simMonth { gap: 0; }
+#resultStep .simMonthBar { background: linear-gradient(180deg,#448e7b,#075b4d); border-radius: 3px 3px 0 0; }
+#resultStep .simMonth label { display: block; color: #708198; font-size: 9px; margin-top: 7px; }
+.simChartUnit { margin: 6px 0 0; color: #708198; font-size: 11px; }
+.simChartData { margin-top: 12px; font-size: 11px; color: #6b7f90; }
+.simChartData summary { cursor: pointer; }
+.simChartData table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+.simChartData th,.simChartData td { padding: 4px 8px; border-bottom: 1px solid #e4eee8; text-align: left; }
+.simChartData td { text-align: right; }
+#resultStep .simAllocationChart { width: min(100%,260px); height: auto; aspect-ratio: 1; margin: 25px auto; }
+#resultStep .simAllocationChart > div { max-width: 55%; gap: 6px; }
+#resultStep .simAllocationChart > div strong { color: #0b2332; font-size: clamp(18px,1.8vw,26px); }
+#resultStep .simAllocationChart > div span { font-size: 12px; }
+#resultStep .simAllocationChart > div small { color: #6e8295; font-size: 10px; line-height: 1.35; }
+#resultStep .simAllocationFacts > div { display: block; position: relative; padding: 12px 0 12px 25px; }
+.simAllocationFacts > div::before { content: ''; position: absolute; left: 0; top: 15px; width: 15px; height: 15px; border-radius: 50%; background: #075b48; }
+.simAllocationFacts > .simAllocationAcc::before { background: #a9dbb7; }
+.simAllocationFacts > .simAllocationSurplus::before { background: #e4eee8; }
+#resultStep .simAllocationFacts dd { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 5px 10px; align-items: baseline; justify-content: space-between; }
+.simAllocationFacts dd strong { color: #0b2332; font-size: 23px; }
+.simAllocationFacts dd span { color: #6a7f95; font-size: 12px; font-weight: 400; }
+.simEcoCallout { display: flex; gap: 12px; align-items: center; margin: 20px 0 0; padding: 17px 14px; border-radius: 13px; background: linear-gradient(125deg,#eaf8ee,#f4faf7); color: #436577; font-size: 13px; line-height: 1.5; }
+.simEcoCallout > svg { width: 38px; height: 38px; color: #398b4c; flex: 0 0 38px; }
+.simEcoCallout p { margin: 0; }
+.simEcoCallout p span,.simEcoCallout p strong { display: block; }
+.simEcoCallout p strong { color: #075b48; font-size: 24px; margin: 3px 0; }
+#resultStep .simFinancialFacts { padding: 5px 12px; background: #fffcf4; border: 1px solid #fbefd2; border-radius: 13px; }
+#resultStep .simFinancialFacts dt svg { color: #dc990e; }
+#resultStep .simFinancialFacts > div { padding-block: 12px; grid-template-columns: minmax(0,1fr) minmax(75px,.9fr); }
+.simHypotheses { margin: 22px 0; border: 1px solid #e2ece6; border-radius: 14px; background: #fff; box-shadow: 0 4px 18px #153c2608; }
+.simHypotheses > summary { display: flex; align-items: center; gap: 14px; padding: 18px 20px; cursor: pointer; color: #102c40; font-weight: 800; list-style: none; }
+.simHypotheses > summary::after { content: '+'; margin-left: auto; font-size: 23px; }
+.simHypotheses[open] > summary::after { content: '−'; }
+.simHypotheses > summary > svg { width: 27px; height: 27px; color: #075b48; }
+.simHypothesisGrid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); padding: 0 20px 20px; }
+.simHypothesisGrid section { padding: 0 16px; border-right: 1px solid #e3ece6; }
+.simHypothesisGrid section:first-child { padding-left: 0; }
+.simHypothesisGrid section:last-child { border-right: 0; }
+.simHypothesisGrid svg { width: 27px; height: 27px; color: #6a7c98; }
+.simHypothesisGrid h4 { margin: 10px 0 6px; color: #334d65; font-size: 12px; }
+.simHypothesisGrid p { color: #70839a; font-size: 11px; line-height: 1.6; margin: 5px 0; }
+.simHypotheses .simEstimateLimits { margin: 0; border: 0; border-radius: 0 0 14px 14px; font-size: 12px; }
+.simSummaryActions { display: flex; justify-content: flex-end; gap: 12px; align-items: center; }
+.simSummaryActions svg { width: 18px; height: 18px; }
+.simConsumptionVisualization { display: grid; grid-template-columns: minmax(150px,1.15fr) minmax(120px,1fr); gap: 14px; align-items: center; margin: 25px 0 32px; }
+#resultStep .simConsumptionVisualization .simAllocationChart { width: 100%; margin: 0; }
+#resultStep .simConsumptionVisualization .simAllocationChart > div strong { font-size: 18px; }
+#resultStep .simConsumptionVisualization .simAllocationChart > div span { font-size: 10px; }
+#resultStep .simConsumptionVisualization .simAllocationChart > div small { display: none; }
+#resultStep .simAllocationFacts dd { display: grid; gap: 4px; }
+.simFinanceDetails { margin: 16px 0 0; color: #476679; font-size: 12px; }
+.simFinanceDetails summary { cursor: pointer; padding: 10px 0; font-weight: 700; }
+#resultStep .simFinanceDetails dd { text-align: right; }
+#resultStep .simProjectionPlaceholder { display: block; padding: 12px; min-height: 0; text-align: left; border: 0; background: #f1f8f4; }
+#resultStep .simProjectionPlaceholder > span { display: none; }
+#resultStep .simProjectionPlaceholder > strong { font-size: 12px; }
+#resultStep .simProjectionPlaceholder > p { margin: 5px 0 0; font-size: 11px; line-height: 1.5; }
+body[data-view="summary"] .simIntro { min-height: 160px; }
+#resultStep > .simStepHeading .simResultSubtitle { display: none; }
+.simTiltChoices:has(input:disabled) .simIconChoice:not(:has(input:checked)) { opacity: .45; }
+.simStep[data-step="3"] > .simStepHeading,.simStep[data-step="4"] > .simStepHeading { display: none; }
+.simTechnicalFields .simConsumptionField { max-width: none; padding: 17px 20px; border: 1px solid #dce6eb; border-radius: 14px; margin: 15px 0 0; }
+.simTechnicalFields .simConsumptionField input { max-width: 520px; margin-top: 12px; }
+@media (max-width:1200px) {
+  .simTiltLayout { grid-template-columns: 1fr; }
+  #resultStep .simSummaryMetric { grid-template-columns: 42px minmax(0,1fr); padding: 14px; gap: 6px 10px; }
+  #resultStep .simSummaryMetric > .simMetricIcon { width: 42px; height: 56px; }
+  #resultStep .simSummaryMetric > strong { font-size: 22px; }
+  .simConsumptionVisualization { grid-template-columns: 1fr; }
+  #resultStep .simConsumptionVisualization .simAllocationChart { width: 240px; margin: 0 auto; }
+  #resultStep .simConsumptionVisualization .simAllocationChart > div strong { font-size: 23px; }
+}
+@media (max-width:700px) {
+  #resultStep .simSummaryMetric { grid-template-columns: 58px minmax(0,1fr); min-height: 102px; padding: 17px; }
+  #resultStep .simSummaryMetric > .simMetricIcon { width: 52px; height: 62px; }
+  #resultStep .simSummaryMetric > strong { font-size: 27px; }
+  #resultStep .simResultPanel { padding: 18px 14px; }
+  #resultStep .simAllocationChart { width: 260px; }
+  #resultStep .simAllocationChart > div strong { font-size: 23px; }
+  .simConsumptionVisualization { margin-bottom: 16px; }
+  #resultStep .simConsumptionVisualization .simAllocationChart > div small { display: block; }
+  .simHypothesisGrid { grid-template-columns: 1fr; gap: 18px; }
+  .simHypothesisGrid section { border-right: 0; border-bottom: 1px solid #e3ece6; padding: 0 0 14px; }
+  .simTimelineChoices { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .simTimelineChoices .simIconChoice { min-height: 150px; }
+  .simSummaryActions { flex-direction: column; width: 100%; }
+  .simSummaryActions .simButton { width: 100%; }
+}
+@media print {
+  .simHypotheses .simHypothesisGrid { display: grid; }
+  .simHypotheses,.simResultPanel,.simSummaryMetric { break-inside: avoid; }
+  .simProjectNext { display: none; }
 }
 
 /* Installation pathway aligned with the enlarged-map simulator mockup. */

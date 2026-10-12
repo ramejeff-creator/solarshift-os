@@ -1,6 +1,7 @@
 import { hasHouseNumber, normalizeSiteAddressSuggestion, siteAddressAutocompleteUrl } from './site-address.mjs';
 import { CR010_SIZING_VERSION, estimateSolarCapacity, PRO_SIMULATOR_TILT_ANGLES, solarRoofPlanes } from './pro-simulator-estimation.mjs';
-import { installRoofMapInteractions } from './roof-map-interactions.mjs';
+import { installRoofMapInteractions } from './roof-map-interactions.mjs?v=20261012-3';
+import { projectTimingLabel, paybackWindow, carbonEquivalenceKm } from './simulator-presentation.mjs?v=20261012-3';
 import { resolveAnnualConsumption, resolveBuildingConsumptionBenchmark, resolveElectricityPrice, resolvePowerBand } from './prestudy-building-benchmarks.mjs';
 
 const $ = (id) => document.getElementById(id);
@@ -16,7 +17,7 @@ const heroCopy = Object.freeze({
   2: ['Estimez le potentiel solaire de votre <em>site</em>', 'En quelques étapes, obtenez une première estimation du potentiel solaire de votre bâtiment ou de votre surface extérieure.', 'Un parcours adapté à votre site', 'Les questions s’adaptent à une toiture ou à une surface extérieure destinée à une ombrière.'],
   3: ['Qualification <em>technique</em>', 'Ces repères nous aident à préciser l’estimation de la surface choisie.', 'Des informations simples pour avancer', 'Les valeurs déclarées restent indicatives et seront à confirmer lors de l’étude technique.'],
   4: ['Parlons de <em>votre projet solaire</em>', 'Ces informations nous permettent de mieux comprendre votre besoin et votre calendrier.', 'Un projet à votre rythme', 'Précisez l’usage envisagé et votre horizon de réalisation. Aucun engagement à cette étape.'],
-  5: ['Votre première estimation', 'Consultez librement cet aperçu indicatif. Il ne crée pas de projet et ne remplace pas une étude complète.', 'Et maintenant ?', 'Faites confirmer la toiture, la structure et l’implantation avant tout engagement.']
+  5: ['Votre synthèse solaire', 'Estimation indicative de votre projet', 'Une première étape vers votre projet', 'Ces résultats sont des estimations. Une étude détaillée permettra de confirmer le potentiel et les économies.']
 });
 
 let currentStep = 1;
@@ -34,6 +35,7 @@ let roofOrientationPicker = null;
 let roofOrientationLine = null;
 let drawnRoofAreaM2 = 0;
 let roofInteractions = null;
+let lastEstimate = null;
 const roofPreviews = new Map();
 
 function selected(name) { return form.querySelector(`input[name="${name}"]:checked`); }
@@ -57,7 +59,7 @@ function showStep(step) {
   $('progressFill').style.width = `${((progressStep - 1) / Math.max(1, progressItems.length - 1)) * 100}%`;
   document.querySelector('.simTopbar').scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
   $('simTitle').focus({ preventScroll: true });
-  if (step === 2) window.setTimeout(() => { initRoofMap(); roofMap?.invalidateSize(); }, 0);
+  if (step === 2) window.setTimeout(() => { initRoofMap(); roofMap?.invalidateSize(); roofInteractions?.editLast(); }, 0);
   if (step === 3 || step === 4) window.setTimeout(updateRoofPreviews, 0);
 }
 function updatePresentation(step) {
@@ -244,7 +246,7 @@ function updateSiteKind() {
     : 'Tracez le contour de la toiture avec le rectangle ou le polygone. Vous pourrez ajuster les points si besoin.';
   $('roofMapHint').lastElementChild.textContent = siteKind === 'land'
     ? 'Pour un parking, un terrain ou une surface agricole, dessinez le contour avec le polygone ou le rectangle. Le repérage automatique des toitures n’est pas appliqué.'
-    : 'Cliquez une fois sur chaque toiture pour proposer son contour automatique. Pour le corriger, cliquez une seconde fois dessus. Vous pouvez aussi dessiner au polygone ou au rectangle.';
+    : 'Cliquez sur une toiture pour proposer son contour. Les poignées apparaissent directement : déplacez-les pour ajuster la surface. Vous pouvez aussi dessiner au polygone ou au rectangle.';
   $('roofMap').setAttribute('aria-label', siteKind === 'land'
     ? 'Carte satellite pour tracer le contour de la surface extérieure'
     : 'Carte satellite pour tracer le contour de la toiture');
@@ -611,6 +613,7 @@ function buildEstimateInput() {
     avoidedElectricityPrice: aciAvoidablePrice,
     electricityPriceBasis: price.basis,
     usageMode: selected('usageMode')?.value || 'self-consumption',
+    projectTiming: selected('projectTiming')?.value || 'unknown',
     siteKind,
     buildingUse,
     warehouseSubtype,
@@ -657,9 +660,11 @@ async function requestPvgis(input, signal, optimal = false, orientation = input.
   return result;
 }
 function renderResult(input, production = null) {
+  lastEstimate = { schemaVersion: 'SOLARSHIFT_PRESTUDY_HANDOFF_V1', kind: 'NON_CANONICAL_PRESTUDY', createdAt: new Date().toISOString(), commercial: { projectTiming: input.projectTiming, projectTimingLabel: projectTimingLabel(input.projectTiming), status: 'DECLARED_NOT_VERIFIED' }, input, production };
   const annual = production && input.referenceKwp != null ? Number(production.annual_kwh_kwc) * input.referenceKwp * input.shadeFactor : null;
   const carbonIntensityGPerKwh = 19.6; // RTE, Bilan électrique 2025: émissions directes moyennes de production.
   $('resultLocation').textContent = input.address.label;
+  $('resultTiming').textContent = `Calendrier souhaité : ${projectTimingLabel(input.projectTiming)} · information déclarative.`;
   $('resultStatus').hidden = Boolean(production);
   if (production) $('resultStatus').dataset.kind = 'ready';
   $('resultContent').hidden = false;
@@ -711,6 +716,7 @@ function renderResult(input, production = null) {
   const irrReady = financialReady && irrPct != null && Number.isFinite(Number(irrPct));
   $('resultIndicativeIrr').textContent = irrReady ? `${numberFormat(Number(irrPct), 1)} %` : 'À préciser';
   $('resultIndicativeIrr').classList.toggle('simPendingValue', !irrReady);
+  $('resultPayback').textContent = paybackWindow(financial?.projection, financialReady);
   const yearOneAci = financial?.aciSavingsYear1Eur;
   $('resultAciSavings').textContent = yearOneAci != null && Number.isFinite(Number(yearOneAci))
     ? `${numberFormat(Number(yearOneAci))} €/an · facture évitée estimée`
@@ -758,9 +764,14 @@ function renderResult(input, production = null) {
       ? `${numberFormat(Number(gridPrice.valueEurPerKwh), 3)} €/kWh HT` : 'À confirmer sur facture';
   const allocationKnown = annual != null && annual > 0 && aciKwh != null && Number.isFinite(Number(aciKwh));
   $('resultAciRate').textContent = allocationKnown && annual > 0
-    ? `${numberFormat(Math.min(100, Number(aciKwh) / annual * 100), 0)} % · plafond annuel théorique` : 'À préciser';
+    ? `${numberFormat(Math.min(100, Number(aciKwh) / annual * 100), 1)} %` : 'À préciser';
   $('resultAccRate').textContent = allocationKnown && annual > 0 && accKwh != null && Number.isFinite(Number(accKwh))
-    ? `${numberFormat(Math.min(100, Number(accKwh) / annual * 100), 0)} % · potentiel théorique` : 'À préciser';
+    ? `${numberFormat(Math.min(100, Number(accKwh) / annual * 100), 1)} %` : 'À préciser';
+  $('resultAciVolume').textContent = allocationKnown ? `${numberFormat(aciKwh)} kWh/an · plafond théorique` : '';
+  $('resultAccVolume').textContent = allocationKnown && Number.isFinite(accKwh) ? `${numberFormat(accKwh)} kWh/an · potentiel` : '';
+  $('resultCoverage').textContent = allocationKnown && input.annualConsumption > 0
+    ? `Au maximum ${numberFormat(Math.min(100, Number(aciKwh) / input.annualConsumption * 100), 0)} % de votre consommation annuelle pourrait être couverte par le solaire. Ce plafond reste à confirmer avec un profil horaire.`
+    : 'Un profil horaire permettra de préciser la part de votre consommation couverte par le solaire.';
   const surplusKwh = allocationKnown && accKwh != null && Number.isFinite(Number(accKwh))
     ? Math.max(0, annual - Number(aciKwh) - Number(accKwh)) : null;
   const allocationChart = $('resultAllocationChart');
@@ -771,12 +782,17 @@ function renderResult(input, production = null) {
     allocationChart.style.setProperty('--aci-share', `${aciShare ?? 0}%`);
     allocationChart.style.setProperty('--acc-share', `${accShare ?? 0}%`);
     allocationChart.classList.toggle('isAvailable', aciShare != null && accShare != null);
+    allocationChart.setAttribute('aria-label', allocationKnown
+      ? `Répartition de la production PV : ACI ${numberFormat(aciShare, 1)} %, ACC potentielle ${numberFormat(accShare ?? 0, 1)} %. Consommation annuelle : ${numberFormat(input.annualConsumption)} kWh.`
+      : 'Répartition de la production indisponible ; consommation et production à qualifier.');
   }
   $('resultSurplus').textContent = surplusKwh != null
     ? `${numberFormat(surplusKwh / 1000, 1)} MWh/an (${numberFormat(surplusKwh / annual * 100, 0)} % de la production) · potentiel` : 'À préciser';
   const carbonTonnes = annual != null && Number.isFinite(annual) ? annual * carbonIntensityGPerKwh / 1_000_000 : null;
   $('resultAnnualCarbon').textContent = carbonTonnes != null ? `${numberFormat(carbonTonnes, 1)} tCO₂e/an` : 'À préciser';
   $('resultAnnualCarbon').classList.toggle('simPendingValue', carbonTonnes == null);
+  const equivalentKm = carbonEquivalenceKm(carbonTonnes);
+  $('resultCarbonKm').textContent = equivalentKm == null ? 'À préciser' : `${numberFormat(equivalentKm)} km`;
   $('resultCarbonNote').textContent = `Équivalent brut · facteur RTE 2025 (${numberFormat(carbonIntensityGPerKwh, 1)} gCO₂e/kWh) · sans profil horaire ni cycle de vie PV`;
   $('resultProjectionTitle').textContent = financialReady ? 'Projection propriétaire indicative disponible' : 'Votre rentabilité reste à préciser';
   $('resultProjectionSummary').textContent = financialReady
@@ -802,8 +818,14 @@ function renderResult(input, production = null) {
   const productionPanel = $('simProductionPanel');
   const monthlyChart = $('simMonthlyChart');
   monthlyChart.replaceChildren();
+  $('simMonthlyAxis').replaceChildren();
+  $('simMonthlyValues').replaceChildren();
   if (monthlyValues && monthlyValues.every(Number.isFinite) && input.siteKind !== 'land') {
     const maxMonthly = Math.max(...monthlyValues, 1);
+    [1, .75, .5, .25, 0].forEach((fraction) => {
+      const tick = document.createElement('span'); tick.textContent = numberFormat(maxMonthly * fraction / 1000, 1);
+      $('simMonthlyAxis').append(tick);
+    });
     monthlyValues.forEach((value, index) => {
       const month = document.createElement('div');
       month.className = 'simMonth';
@@ -818,6 +840,10 @@ function renderResult(input, production = null) {
       wrap.append(bar);
       month.append(wrap, label);
       monthlyChart.append(month);
+      const row = document.createElement('tr');
+      const heading = document.createElement('th'); heading.scope = 'row'; heading.textContent = monthNames[index];
+      const cell = document.createElement('td'); cell.textContent = numberFormat(value);
+      row.append(heading, cell); $('simMonthlyValues').append(row);
     });
     productionPanel.hidden = false;
   } else {
@@ -922,10 +948,13 @@ function updateRoofSupport() {
 function updateTiltLegend() {
   const roofType = selectedRoofType();
   const pitched = roofType === 'pitched';
-  $('roofPitchGroup').hidden = !pitched;
+  $('roofPitchGroup').hidden = !['flat', 'pitched'].includes(roofType);
   document.querySelectorAll('input[name="tiltBand"]').forEach((input) => { input.disabled = !pitched; });
   if (!pitched) document.querySelector('input[name="tiltBand"][value="0-6"]').checked = true;
-  $('tiltLegend').textContent = 'Inclinaison de la toiture';
+  $('tiltLegend').textContent = pitched ? 'Inclinaison de la toiture' : 'Toit plat · inclinaison retenue par défaut';
+  $('roofPitchHelp').textContent = pitched
+    ? 'Choisissez la plage qui ressemble le plus à la pente du toit. Une estimation suffit.'
+    : 'Pour votre toiture plate, l’estimation applique une faible inclinaison par défaut. Le choix des supports sera confirmé lors de l’étude.';
   $('tiltRecommendation').hidden = true;
 }
 function updatePanOrientation() {
@@ -945,6 +974,7 @@ function restart() {
   calculationController?.abort(); calculationController = null; clearCalculationTimer(); setCalculationButtonLoading(false);
   cancelRoofDetection();
   form.reset();
+  lastEstimate = null;
   finishRoofOrientationPick(); roofOrientation = null;
   if (roofOrientationLine) { roofMap?.removeLayer(roofOrientationLine); roofOrientationLine = null; }
   $('orientationStatus').textContent = 'Non renseignée · hypothèse sud appliquée à l’estimation.';
@@ -1034,6 +1064,12 @@ form.addEventListener('submit', (event) => {
 });
 $('restartButton').addEventListener('click', restart);
 $('printEstimateButton').addEventListener('click', () => window.print());
+$('downloadEstimateButton').addEventListener('click', () => {
+  if (!lastEstimate) return;
+  const url = URL.createObjectURL(new Blob([JSON.stringify(lastEstimate, null, 2)], { type: 'application/json' }));
+  const link = document.createElement('a'); link.href = url; link.download = 'ozeno-pre-etude-indicative.json';
+  link.click(); window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
 $('retryEstimateButton').addEventListener('click', calculate);
 updateUsableOutput();
 updateSiteKind();

@@ -14,7 +14,7 @@ export function ringContainsPoint(ring, latitude, longitude) {
 // The map owns selection. No preliminary button or nearest-building guess is needed.
 export function installRoofMapInteractions({ map, shapes, leaflet, onChange, onStatus, onEditing,
   fetchFootprints = fetchBuildingFootprints }) {
-  let drawing = false, correction = null, request = null, requestTimer = null, footprintDetectionEnabled = true;
+  let drawing = false, correction = null, pendingEdit = null, request = null, requestTimer = null, footprintDetectionEnabled = true;
   const bound = new WeakSet();
   const status = (message, kind = 'info') => onStatus?.(message, kind);
   function clearRequestTimer() {
@@ -107,7 +107,7 @@ export function installRoofMapInteractions({ map, shapes, leaflet, onChange, onS
       onChange();
       // Keep the surrounding buildings visible rather than zooming into the roof.
       map.fitBounds(layer.getBounds(), { padding: [45, 45], maxZoom: 18 });
-      status('Contour proposé. Vérifiez-le sur la photo et cliquez dessus pour le corriger.', 'ready');
+      edit(layer);
     } catch (error) {
       if (!controller.signal.aborted && request === controller) status('Le repérage cartographique est indisponible pour le moment. Vous pouvez dessiner la toiture avec l’outil polygone ou rectangle.', 'warning');
     } finally {
@@ -119,20 +119,30 @@ export function installRoofMapInteractions({ map, shapes, leaflet, onChange, onS
   }
   shapes.eachLayer(bind);
   map.on('click', detectAt);
-  map.on('draw:created', (event) => { cancelRequest(); shapes.addLayer(event.layer); bind(event.layer); onChange(); });
+  map.on('draw:created', (event) => {
+    cancelRequest(); shapes.addLayer(event.layer); bind(event.layer); onChange();
+    // Leaflet.draw fires created before drawstop: do not open two editors at once.
+    if (drawing) pendingEdit = event.layer;
+    else edit(event.layer);
+  });
   map.on('draw:edited draw:deleted', onChange);
   map.on('draw:drawstart draw:editstart draw:deletestart', () => {
-    finishCorrection(true); cancelRequest(); drawing = true;
+    pendingEdit = null; finishCorrection(true); cancelRequest(); drawing = true;
     status('Terminez le tracé ou la modification avec les commandes de la carte.');
   });
-  map.on('draw:drawstop draw:editstop draw:deletestop', () => { drawing = false; });
+  map.on('draw:drawstop draw:editstop draw:deletestop', () => {
+    drawing = false;
+    const layer = pendingEdit; pendingEdit = null;
+    if (layer && shapes.getLayers().includes(layer)) edit(layer);
+  });
   return {
     finishCorrection,
+    editLast() { const layer = shapes.getLayers().at(-1); if (layer) edit(layer); },
     setFootprintDetectionEnabled(enabled) {
       footprintDetectionEnabled = Boolean(enabled);
       if (!footprintDetectionEnabled) cancelRequest();
     },
-    cancel() { cancelRequest(); finishCorrection(false); },
+    cancel() { pendingEdit = null; cancelRequest(); finishCorrection(false); },
     detectAt
   };
 }
