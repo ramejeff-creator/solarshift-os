@@ -12,9 +12,9 @@ export function ringContainsPoint(ring, latitude, longitude) {
 }
 
 // The map owns selection. No preliminary button or nearest-building guess is needed.
-export function installRoofMapInteractions({ map, shapes, leaflet, onChange, onStatus, onEditing,
+export function installRoofMapInteractions({ map, shapes, leaflet, onChange, onStatus, onEditing, drawControl,
   fetchFootprints = fetchBuildingFootprints }) {
-  let drawing = false, correction = null, pendingEdit = null, request = null, requestTimer = null, footprintDetectionEnabled = true;
+  let drawing = false, correction = null, pendingEdit = null, request = null, requestTimer = null, footprintDetectionEnabled = true, suspended = false;
   const bound = new WeakSet();
   const status = (message, kind = 'info') => onStatus?.(message, kind);
   function clearRequestTimer() {
@@ -42,7 +42,7 @@ export function installRoofMapInteractions({ map, shapes, leaflet, onChange, onS
     status(save ? 'Contour enregistré. Cliquez sur une autre toiture pour ajouter une surface.' : 'Correction annulée. Le contour précédent est conservé.');
   }
   function edit(layer) {
-    if (drawing || !layer.editing || correction?.layer === layer) return;
+    if (suspended || drawing || !layer.editing || correction?.layer === layer) return;
     finishCorrection(true);
     cancelRequest();
     correction = { layer, coordinates: JSON.parse(JSON.stringify(layer.getLatLngs())) };
@@ -67,7 +67,7 @@ export function installRoofMapInteractions({ map, shapes, leaflet, onChange, onS
     return ringContainsPoint(rings[0], lat, lng) && !rings.slice(1).some((ring) => ringContainsPoint(ring, lat, lng));
   }
   async function detectAt(event) {
-    if (!footprintDetectionEnabled || drawing || !event.latlng) return;
+    if (suspended || !footprintDetectionEnabled || drawing || !event.latlng) return;
     const { lat, lng } = event.latlng;
     const existing = shapes.getLayers().find((layer) => contains(layer, lat, lng));
     if (existing) { edit(existing); return; }
@@ -120,6 +120,7 @@ export function installRoofMapInteractions({ map, shapes, leaflet, onChange, onS
   shapes.eachLayer(bind);
   map.on('click', detectAt);
   map.on('draw:created', (event) => {
+    if (suspended) return;
     cancelRequest(); shapes.addLayer(event.layer); bind(event.layer); onChange();
     // Leaflet.draw fires created before drawstop: do not open two editors at once.
     if (drawing) pendingEdit = event.layer;
@@ -137,6 +138,21 @@ export function installRoofMapInteractions({ map, shapes, leaflet, onChange, onS
   });
   return {
     finishCorrection,
+    setSuspended(enabled) {
+      suspended = Boolean(enabled);
+      if (!suspended) return;
+      pendingEdit = null; cancelRequest(); finishCorrection(true);
+      // Leaflet.draw 1.0.4: save/disable the active handler directly. Toolbar.disable()
+      // would revert edited/deleted layers, losing the user's current adjustments.
+      Object.values(drawControl?._toolbars || {}).forEach((toolbar) => {
+        const handler = toolbar._activeMode?.handler;
+        handler?.save?.(); handler?.disable?.();
+      });
+      drawing = false;
+      shapes.eachLayer((layer) => layer.editing?.disable());
+      onEditing?.(false);
+      status('');
+    },
     editLast() { const layer = shapes.getLayers().at(-1); if (layer) edit(layer); },
     setFootprintDetectionEnabled(enabled) {
       footprintDetectionEnabled = Boolean(enabled);

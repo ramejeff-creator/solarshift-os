@@ -7,7 +7,7 @@
   <title>OZENO · Simulateur solaire professionnel</title>
   <link rel="icon" type="image/png" href="./exec-d2eda8f0-968b-466f-b6ab-7ba649808352.png">
   <link rel="stylesheet" href="./pro-simulator.css?v=20261012-3">
-  <link rel="stylesheet" href="./pro-simulator-design.css?v=20261012-8">
+  <link rel="stylesheet" href="./pro-simulator-design.css?v=20261012-9">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css">
   <script src="./runtime-config.js"></script>
@@ -187,7 +187,7 @@
               <small>Hypothèse indicative par défaut : 65 %, modifiable. Aucune détection automatique des obstacles n’est réalisée ici.</small>
             </label>
           </div>
-            <div class="simMapOrientation" id="mapOrientationGroup" hidden><strong>Orientation de la toiture <small>(facultatif)</small></strong><p id="orientationStatus" class="simPanExplanation" role="status" aria-live="polite">Non renseignée · hypothèse sud appliquée à l’estimation.</p><button type="button" id="pickRoofOrientation" class="simButton simButtonSecondary">Repérer l’orientation sur la carte</button><p class="simPanExplanation">Pour un toit incliné, cliquez du faîtage vers le bas de pente. Si vous ne savez pas, l’estimation gardera l’hypothèse indiquée.</p></div>
+            <div class="simMapOrientation" id="mapOrientationGroup" hidden><strong>Orientation de la toiture <small>(facultatif)</small></strong><p id="orientationStatus" class="simPanExplanation" role="status" aria-live="polite">Non renseignée · hypothèse sud appliquée à l’estimation.</p><button type="button" id="pickRoofOrientation" class="simButton simButtonSecondary">Repérer l’orientation sur la carte</button><p id="roofOrientationHelp" class="simPanExplanation">Cliquez aux deux extrémités de la ligne au sommet du toit (faîtage), puis sur le pan à équiper si vous n’en équipez qu’un.</p></div>
             <p class="simFieldHint">La surface tracée reste une estimation : le contour peut inclure des zones non équipables.</p>
           </section>
           <p id="areaError" class="simInlineError" hidden>Tracez le toit sur la carte ou indiquez sa surface pour continuer.</p>
@@ -397,6 +397,6 @@
   </main>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
-  <script type="module" src="./pro-simulator.mjs?v=20261012-7"></script>
+  <script type="module" src="./pro-simulator.mjs?v=20261012-9"></script>
 </body>
 </html>

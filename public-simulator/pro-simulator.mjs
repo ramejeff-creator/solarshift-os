@@ -1,6 +1,6 @@
 import { hasHouseNumber, normalizeSiteAddressSuggestion, siteAddressAutocompleteUrl } from './site-address.mjs';
 import { CR010_SIZING_VERSION, estimateSolarCapacity, PRO_SIMULATOR_TILT_ANGLES, solarRoofPlanes } from './pro-simulator-estimation.mjs?v=20261012-7';
-import { installRoofMapInteractions } from './roof-map-interactions.mjs?v=20261012-3';
+import { installRoofMapInteractions } from './roof-map-interactions.mjs?v=20261012-9';
 import { projectTimingLabel, paybackWindow, carbonEquivalenceKm, formatGainRange } from './simulator-presentation.mjs?v=20261012-7';
 import { requestSolarPreview } from './solar-preview-request.mjs?v=20261012-7';
 import { resolveAnnualConsumption, resolveBuildingConsumptionBenchmark, resolveElectricityPrice, resolvePowerBand } from './prestudy-building-benchmarks.mjs';
@@ -30,6 +30,7 @@ let calculationController = null;
 let calculationTimer = null;
 let roofMap = null;
 let roofMapShapes = null;
+let roofDrawControl = null;
 let roofMapLocationKey = null;
 let mapSiteKind = null;
 let roofOrientation = null;
@@ -45,7 +46,7 @@ function numberFormat(value, maximumFractionDigits = 0) {
   return Number(value).toLocaleString('fr-FR', { maximumFractionDigits, minimumFractionDigits: 0 }).replace(/[\u00a0\u202f]/g, ' ');
 }
 function showStep(step) {
-  if (currentStep === 2 && step !== 2) { roofInteractions?.finishCorrection(true); cancelRoofDetection(); }
+  if (currentStep === 2 && step !== 2) { finishRoofOrientationPick(); roofInteractions?.finishCorrection(true); cancelRoofDetection(); }
   currentStep = step;
   updatePresentation(step);
   steps.forEach((section) => { section.hidden = Number(section.dataset.step) !== step; });
@@ -307,26 +308,22 @@ function initRoofMap() {
     satellite.addTo(roofMap);
     window.L.control.layers({ Satellite: satellite, Plan: plan }, null, { position: 'topright' }).addTo(roofMap);
     roofMapShapes = window.L.featureGroup().addTo(roofMap);
-    roofMap.addControl(new window.L.Control.Draw({
+    roofDrawControl = new window.L.Control.Draw({
       position: 'topleft',
       edit: { featureGroup: roofMapShapes, remove: true },
       draw: { polygon: { allowIntersection: false, showArea: true }, rectangle: true, polyline: false, circle: false, marker: false, circlemarker: false }
-    }));
+    });
+    roofMap.addControl(roofDrawControl);
+    // Anchor the status inside the actual map, not over the correction buttons below it.
+    container.appendChild($('roofDetectionStatus'));
     roofInteractions = installRoofMapInteractions({
-      map: roofMap, shapes: roofMapShapes, leaflet: window.L, onChange: updateDrawnRoofArea,
+      map: roofMap, shapes: roofMapShapes, leaflet: window.L, drawControl: roofDrawControl, onChange: updateDrawnRoofArea,
       onStatus(message, kind) { $('roofDetectionStatus').textContent = message; $('roofDetectionStatus').dataset.kind = kind; },
       onEditing(active) { $('roofContourEditor').hidden = !active; }
     });
     roofInteractions.setFootprintDetectionEnabled(selected('siteKind')?.value === 'building');
   } else roofMap.setView([location.latitude, location.longitude], 18);
   window.setTimeout(() => roofMap.invalidateSize(), 80);
-}
-function bearingBetweenPoints(start, end) {
-  const radians = (value) => value * Math.PI / 180;
-  const lat1 = radians(start.lat), lat2 = radians(end.lat), deltaLng = radians(end.lng - start.lng);
-  const y = Math.sin(deltaLng) * Math.cos(lat2);
-  const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(deltaLng);
-  return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
 }
 function nearestCompassLabel(azimuth) {
   const normalized = ((Number(azimuth) % 360) + 360) % 360;
@@ -336,41 +333,109 @@ function nearestCompassLabel(azimuth) {
       return difference < best.difference ? { difference, label: item.label } : best;
     }, { difference: Infinity, label: 'Sud' }).label;
 }
-function finishRoofOrientationPick(message = '') {
+function ridgePanOrientation(start, end, side = null) {
+  const latitudeScale = Math.cos((start.lat + end.lat) / 2 * Math.PI / 180);
+  const dx = (end.lng - start.lng) * latitudeScale, dy = end.lat - start.lat;
+  if (dx === 0 && dy === 0) return null;
+  // Local tangent bearing at the ridge midpoint: reversing the clicks gives exactly
+  // the same pair of roof normals, without introducing a click-order bias.
+  const normal = (Math.atan2(dx, dy) * 180 / Math.PI + 450) % 360;
+  if (!side) return normal;
+  const cross = dx * (side.lat - start.lat) - dy * (side.lng - start.lng) * latitudeScale;
+  if (cross === 0) return null;
+  return cross < 0 ? normal : (normal + 180) % 360;
+}
+function roofOrientationMessage() {
+  if (roofOrientation == null) return 'Non renseignée · hypothèse sud appliquée à l’estimation.';
+  const first = `${nearestCompassLabel(roofOrientation)} (${Math.round(roofOrientation)}°)`;
+  return selected('roofPans')?.value === 'two'
+    ? `Deux pans repérés : ${first} / ${nearestCompassLabel((roofOrientation + 180) % 360)} (${Math.round((roofOrientation + 180) % 360)}°).`
+    : `${first} · pan à équiper repéré sur la carte.`;
+}
+function finishRoofOrientationPick(message = '', keepTrace = false) {
   if (!roofOrientationPicker) return;
-  roofMap?.getContainer()?.removeEventListener('click', roofOrientationPicker.handler, true);
-  if (roofOrientationPicker.preview) roofMap?.removeLayer(roofOrientationPicker.preview);
-  roofMap?.getContainer()?.classList.remove('simPickingOrientation');
+  const previous = roofOrientationPicker;
+  const container = roofMap.getContainer();
+  container.removeEventListener('click', previous.handler, true);
+  container.removeEventListener('mousemove', previous.moveHandler);
+  previous.markers.forEach((marker) => roofMap.removeLayer(marker));
+  if (!keepTrace) {
+    if (previous.trace) roofMap.removeLayer(previous.trace);
+    previous.previousLine?.addTo(roofMap);
+    roofOrientationLine = previous.previousLine;
+  }
+  container.classList.remove('simPickingOrientation');
+  if (previous.doubleClickZoomEnabled) roofMap.doubleClickZoom.enable();
+  $('roofMapHint').lastElementChild.textContent = previous.hint;
   roofOrientationPicker = null;
+  roofInteractions?.setSuspended(false);
   $('pickRoofOrientation').textContent = 'Repérer l’orientation sur la carte';
-  if (message) $('orientationStatus').textContent = message;
+  $('orientationStatus').textContent = message || roofOrientationMessage();
+  $('roofDetectionStatus').textContent = keepTrace
+    ? 'Repérage terminé. Le contour est conservé ; cliquez dessus pour le modifier.'
+    : 'Repérage annulé. Le contour et l’orientation précédente sont conservés.';
+  $('roofDetectionStatus').dataset.kind = 'info';
 }
 function startRoofOrientationPick() {
   if (!roofMap) { $('orientationStatus').textContent = 'La carte doit être chargée avant le repérage.'; return; }
-  if (roofOrientationPicker) { finishRoofOrientationPick('Repérage annulé · hypothèse sud conservée.'); return; }
-  let start = null;
-  let preview = null;
-  if (roofOrientationLine) { roofMap.removeLayer(roofOrientationLine); roofOrientationLine = null; }
+  if (roofOrientationPicker) { finishRoofOrientationPick(); return; }
+  // Commit the current contour and suspend editing/detection before accepting orientation clicks.
+  roofInteractions?.setSuspended(true);
+  $('roofContourEditor').hidden = true;
+  $('roofDetectionStatus').textContent = '';
   const container = roofMap.getContainer();
-  const handler = (event) => {
+  const session = {
+    start: null, end: null, trace: null, markers: [], previousLine: roofOrientationLine,
+    hint: $('roofMapHint').lastElementChild.textContent,
+    doubleClickZoomEnabled: Boolean(roofMap.doubleClickZoom?.enabled()),
+    twoPans: selected('roofPans')?.value === 'two'
+  };
+  session.previousLine && roofMap.removeLayer(session.previousLine);
+  roofMap.doubleClickZoom?.disable();
+  const prompt = (message) => {
+    $('orientationStatus').textContent = message;
+    $('roofMapHint').lastElementChild.textContent = message;
+  };
+  const commit = (orientation) => {
+    roofOrientation = orientation;
+    roofOrientationLine = session.trace;
+    session.trace.setStyle({ dashArray: null });
+    finishRoofOrientationPick(roofOrientationMessage(), true);
+  };
+  session.moveHandler = (event) => {
+    if (!session.start || session.end || event.target.closest?.('.leaflet-control')) return;
+    session.trace.setLatLngs([session.start, roofMap.mouseEventToLatLng(event)]);
+  };
+  session.handler = (event) => {
     if (event.target.closest?.('.leaflet-control')) return;
     event.preventDefault(); event.stopImmediatePropagation();
     const point = roofMap.mouseEventToLatLng(event);
-    if (!start) {
-      start = point;
-      preview = window.L.circleMarker(point, { radius: 6, color: '#08734c', weight: 2, fillColor: '#fff', fillOpacity: 1, interactive: false }).addTo(roofMap);
-      $('orientationStatus').textContent = 'Point de départ noté · cliquez dans le sens de la pente, du faîtage vers le bas du toit.';
+    if (!session.start) {
+      session.start = point;
+      session.markers.push(window.L.circleMarker(point, { radius: 6, color: '#d52b32', weight: 3, fillColor: '#fff', fillOpacity: 1, interactive: false }).addTo(roofMap));
+      session.trace = window.L.polyline([point, point], { color: '#d52b32', weight: 4, dashArray: '7 6', interactive: false }).addTo(roofMap);
+      prompt('Cliquez sur l’autre extrémité de la ligne au sommet du toit (faîtage).');
       return;
     }
-    roofOrientation = bearingBetweenPoints(start, point);
-    roofOrientationLine = window.L.polyline([start, point], { color: '#08734c', weight: 4, dashArray: '7 6', interactive: false }).addTo(roofMap);
-    finishRoofOrientationPick(`${nearestCompassLabel(roofOrientation)} · repérée sur la carte (${Math.round(roofOrientation)}°).`);
+    if (!session.end) {
+      if (ridgePanOrientation(session.start, point) == null) { prompt('Choisissez un deuxième point distinct, à l’autre extrémité du faîtage.'); return; }
+      session.end = point;
+      session.trace.setLatLngs([session.start, point]);
+      session.markers.push(window.L.circleMarker(point, { radius: 6, color: '#d52b32', weight: 3, fillColor: '#fff', fillOpacity: 1, interactive: false }).addTo(roofMap));
+      if (session.twoPans) { commit(ridgePanOrientation(session.start, point)); return; }
+      prompt('Faîtage repéré en rouge. Cliquez maintenant sur le pan de toiture à équiper, d’un côté de cette ligne.');
+      return;
+    }
+    const orientation = ridgePanOrientation(session.start, session.end, point);
+    if (orientation == null) { prompt('Cliquez à l’intérieur du pan à équiper, pas sur la ligne rouge du faîtage.'); return; }
+    commit(orientation);
   };
-  roofOrientationPicker = { handler, get preview() { return preview; } };
+  roofOrientationPicker = session;
   container.classList.add('simPickingOrientation');
-  container.addEventListener('click', handler, true);
+  container.addEventListener('click', session.handler, true);
+  container.addEventListener('mousemove', session.moveHandler);
   $('pickRoofOrientation').textContent = 'Annuler le repérage';
-  $('orientationStatus').textContent = 'Cliquez sur le point de départ de la pente, puis sur son extrémité basse.';
+  prompt('Contour figé. Cliquez sur une extrémité de la ligne au sommet du toit (faîtage), puis sur l’autre. Échap pour annuler.');
   $('roofMap').scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 async function findAddresses(query) {
@@ -968,6 +1033,9 @@ function updateTiltLegend() {
 }
 function updatePanOrientation() {
   $('mapOrientationGroup').hidden = selected('siteKind')?.value !== 'building' || selectedRoofType() !== 'pitched';
+  $('roofOrientationHelp').textContent = selected('roofPans')?.value === 'two'
+    ? 'Cliquez aux deux extrémités de la ligne au sommet du toit (faîtage). Les orientations des deux pans seront déduites.'
+    : 'Cliquez aux deux extrémités de la ligne au sommet du toit (faîtage), puis cliquez sur le pan à équiper.';
 }
 function updatePanChoice() { document.querySelector('.simPansGroup').hidden = selectedRoofType() !== 'pitched'; updateRoofSupport(); updateTiltLegend(); updatePanOrientation(); }
 function updateUsableOutput() {
@@ -1019,6 +1087,7 @@ $('saveRoofContour').addEventListener('click', () => roofInteractions?.finishCor
 $('cancelRoofContour').addEventListener('click', () => roofInteractions?.finishCorrection(false));
 $('pickRoofOrientation').addEventListener('click', startRoofOrientationPick);
 document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && roofOrientationPicker) { event.preventDefault(); finishRoofOrientationPick(); return; }
   if (event.key === 'Escape' && !$('roofContourEditor').hidden) { event.preventDefault(); roofInteractions?.finishCorrection(false); }
 });
 document.addEventListener('click', (event) => {
@@ -1032,6 +1101,13 @@ form.querySelectorAll('input[name="siteKind"]').forEach((input) => input.addEven
   if (roofOrientationLine) { roofMap?.removeLayer(roofOrientationLine); roofOrientationLine = null; }
   $('orientationStatus').textContent = 'Non renseignée · hypothèse sud appliquée à l’estimation.';
   updateSiteKind();
+}));
+form.querySelectorAll('input[name="roofPans"]').forEach((input) => input.addEventListener('change', () => {
+  // A one-pan selection must never reuse an arbitrary side inferred for two pans.
+  finishRoofOrientationPick(); roofOrientation = null;
+  if (roofOrientationLine) { roofMap?.removeLayer(roofOrientationLine); roofOrientationLine = null; }
+  $('orientationStatus').textContent = roofOrientationMessage();
+  updatePanOrientation();
 }));
 form.querySelectorAll('input[name="roofType"]').forEach((input) => input.addEventListener('change', updateTiltLegend));
 form.querySelectorAll('input[name="roofType"]').forEach((input) => input.addEventListener('change', () => {

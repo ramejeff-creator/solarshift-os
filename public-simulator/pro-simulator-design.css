@@ -188,6 +188,8 @@ fieldset.simQuestion > div { clear: both; }
 .simMapOrientation .simPanExplanation { margin: 4px 0 9px; }
 .simMapOrientation .simButton { min-height: 38px; padding: 8px 12px; font-size: 12px; }
 .simPickingOrientation { cursor: crosshair !important; }
+.simPickingOrientation .leaflet-draw { display: none; }
+.simPickingOrientation .leaflet-interactive { pointer-events: none; cursor: crosshair !important; fill-opacity: .08; }
 .simUsableCard { display: block; }
 #usableAreaGroup { margin: 16px 0; }
 .simUsableCard .simField { grid-template-columns: minmax(0,1fr) auto; gap: 11px; }
