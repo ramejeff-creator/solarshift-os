@@ -63,6 +63,7 @@ try {
   await page.locator('#warehouseSubtype').selectOption('dry');
   await page.locator('#subscribedPowerBand').selectOption('LE_36_KVA');
   await page.screenshot({ path: resolve(output, 'usage-timing.png'), fullPage: true });
+  const solarResponse = page.waitForResponse((response) => response.url().includes('/pvgis?') && response.request().method() === 'GET');
   await page.locator('#calculateButton').click();
   await page.waitForFunction(() => document.getElementById('resultStatus').hidden || document.getElementById('resultStatus').dataset.kind === 'error', null, { timeout: 60000 });
   assert.equal(await page.locator('#resultStatus').isHidden(), true, await page.locator('#resultStatus').innerText());
@@ -73,13 +74,10 @@ try {
   for (const id of ['resultAciRate', 'resultAccRate', 'resultAciVolume', 'resultAccVolume', 'resultPayback', 'resultAnnualSavings', 'resultAnnualCarbon']) {
     assert.doesNotMatch(await page.locator(`#${id}`).innerText(), /À préciser|NaN|undefined|Infinity/);
   }
-  const downloadEvent = page.waitForEvent('download');
-  await page.locator('#downloadEstimateButton').click();
-  const download = await downloadEvent;
-  const payload = JSON.parse(await readFile(await download.path(), 'utf8'));
-  assert.equal(payload.commercial.projectTiming, '3-6-months');
-  assert.equal(payload.kind, 'NON_CANONICAL_PRESTUDY');
-  assert.ok(payload.production.annual_kwh_kwc > 0);
+  const production = await (await solarResponse).json();
+  assert.ok(production.annual_kwh_kwc > 0);
+  assert.equal(await page.locator('#downloadEstimateButton').count(), 0);
+  assert.match(await page.locator('#convertEstimateButton').innerText(), /Demander une étude détaillée/);
   await page.screenshot({ path: resolve(output, 'synthesis-desktop.png'), fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.waitForTimeout(500);
@@ -100,5 +98,5 @@ try {
   await page.locator('label:has(input[name="tiltBand"][value="15-30"])').click();
   assert.equal(await page.locator('input[name="tiltBand"]:checked').inputValue(), '15-30');
   assert.equal(errors.length, 0, errors.join('\n'));
-  console.log(JSON.stringify({ target, status: 'PASS', pageErrors: errors, production: payload.production.annual_kwh_kwc, timing: payload.commercial, screenshots: output }, null, 2));
+  console.log(JSON.stringify({ target, status: 'PASS', pageErrors: errors, production: production.annual_kwh_kwc, timingRetained: true, screenshots: output }, null, 2));
 } finally { await browser.close(); await new Promise((resolve) => server.close(resolve)); }

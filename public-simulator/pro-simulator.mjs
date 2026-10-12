@@ -35,7 +35,6 @@ let roofOrientationPicker = null;
 let roofOrientationLine = null;
 let drawnRoofAreaM2 = 0;
 let roofInteractions = null;
-let lastEstimate = null;
 const roofPreviews = new Map();
 
 function selected(name) { return form.querySelector(`input[name="${name}"]:checked`); }
@@ -660,7 +659,6 @@ async function requestPvgis(input, signal, optimal = false, orientation = input.
   return result;
 }
 function renderResult(input, production = null) {
-  lastEstimate = { schemaVersion: 'SOLARSHIFT_PRESTUDY_HANDOFF_V1', kind: 'NON_CANONICAL_PRESTUDY', createdAt: new Date().toISOString(), commercial: { projectTiming: input.projectTiming, projectTimingLabel: projectTimingLabel(input.projectTiming), status: 'DECLARED_NOT_VERIFIED' }, input, production };
   const annual = production && input.referenceKwp != null ? Number(production.annual_kwh_kwc) * input.referenceKwp * input.shadeFactor : null;
   const carbonIntensityGPerKwh = 19.6; // RTE, Bilan électrique 2025: émissions directes moyennes de production.
   $('resultLocation').textContent = input.address.label;
@@ -974,7 +972,6 @@ function restart() {
   calculationController?.abort(); calculationController = null; clearCalculationTimer(); setCalculationButtonLoading(false);
   cancelRoofDetection();
   form.reset();
-  lastEstimate = null;
   finishRoofOrientationPick(); roofOrientation = null;
   if (roofOrientationLine) { roofMap?.removeLayer(roofOrientationLine); roofOrientationLine = null; }
   $('orientationStatus').textContent = 'Non renseignée · hypothèse sud appliquée à l’estimation.';
@@ -1064,12 +1061,6 @@ form.addEventListener('submit', (event) => {
 });
 $('restartButton').addEventListener('click', restart);
 $('printEstimateButton').addEventListener('click', () => window.print());
-$('downloadEstimateButton').addEventListener('click', () => {
-  if (!lastEstimate) return;
-  const url = URL.createObjectURL(new Blob([JSON.stringify(lastEstimate, null, 2)], { type: 'application/json' }));
-  const link = document.createElement('a'); link.href = url; link.download = 'ozeno-pre-etude-indicative.json';
-  link.click(); window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-});
 $('retryEstimateButton').addEventListener('click', calculate);
 updateUsableOutput();
 updateSiteKind();
