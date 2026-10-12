@@ -1100,7 +1100,7 @@ body[data-active-step="2"] .simIntroArt,body[data-active-step="2"] .simHeroNote 
 
 /* Keep sprite-backed illustrations proportional at tablet and phone widths. */
 .simBuildingChoices .simBuildingArt {
-  height: auto;
+  height: clamp(58px, 8vw, 105px);
   aspect-ratio: 16 / 9;
 }
 .simRoofCard .simSolarArt {

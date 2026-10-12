@@ -85,6 +85,13 @@ test('usable-area slider and roof orientation sit side by side with values align
   assert.match(js, /setView\(\[suggestion\.latitude, suggestion\.longitude\], 19\)/);
 });
 
+test('simulator layout refreshes cached styles and keeps building illustrations in a visible frame', () => {
+  const html = readFileSync(new URL('../../public-simulator/index.html', import.meta.url), 'utf8');
+  const css = readFileSync(new URL('../../public-simulator/pro-simulator-design.css', import.meta.url), 'utf8');
+  assert.match(html, /pro-simulator-design\.css\?v=20261012-10/);
+  assert.match(css, /\.simBuildingChoices \.simBuildingArt \{\s*height: clamp\(58px, 8vw, 105px\);\s*aspect-ratio: 16 \/ 9;/);
+});
+
 test('payback presentation uses only server projection crossing, not a fabricated financial return', () => {
   const rows = [{ year: 0, cumulativeNetGainEur: -100 }, { year: 1, cumulativeNetGainEur: -40 }, { year: 2, cumulativeNetGainEur: 20 }];
   assert.equal(paybackWindow(rows, true), '1–2 ans');
