@@ -317,12 +317,12 @@
         <button id="retryEstimateButton" class="simButton simButtonQuiet" type="button" hidden>Relancer le calcul solaire</button>
         <div id="resultContent" hidden>
           <div class="simSummaryMetrics">
-            <article class="simSummaryMetric"><span>Puissance estimée</span><strong id="capacityRange">À compléter</strong><small id="capacityCorridor"></small></article>
+            <article class="simSummaryMetric"><span>Puissance PV estimée</span><strong id="capacityRange">À compléter</strong><small id="capacityCorridor"></small></article>
             <article class="simSummaryMetric"><span>Production annuelle estimée</span><strong id="annualProduction">À compléter</strong><small>Selon PVGIS · pré-étude non canonique</small></article>
-            <article class="simSummaryMetric"><span>Budget équipements et installation</span><strong id="installationBudget" class="simPendingValue">À compléter</strong><small id="installationBudgetRange">Fourchette à confirmer par devis</small></article>
-            <article class="simSummaryMetric"><span>Coût de production du kWh solaire</span><strong id="resultSolarKwhCost" class="simPendingValue">À préciser</strong><small id="resultLcoeNote">Estimation sur 25 ans · CAPEX et OPEX estimés</small></article>
-            <article class="simSummaryMetric"><span>TRI indicatif propriétaire</span><strong id="resultIndicativeIrr" class="simPendingValue">À préciser</strong><small id="resultIrrNote">Estimation indicative à confirmer</small></article>
-            <article class="simSummaryMetric"><span>CO₂ évité par an</span><strong id="resultAnnualCarbon" class="simPendingValue">À préciser</strong><small>Méthode carbone à valider</small></article>
+            <article class="simSummaryMetric"><span>Consommation annuelle estimée</span><strong id="resultConsumptionEstimate" class="simPendingValue">À préciser</strong><small id="resultConsumptionNote">Déclarée ou estimée selon le site</small></article>
+            <article class="simSummaryMetric simMarketingMetric"><span>Économie estimée · année 1</span><strong id="resultAnnualSavings" class="simPendingValue">À préciser</strong><small>ACI + potentiel ACC · avant confirmation</small></article>
+            <article class="simSummaryMetric simMarketingMetric"><span>Gain cumulé estimé · 25 ans</span><strong id="resultNetGain25Years" class="simPendingValue">À préciser</strong><small>CAPEX et charges estimés déduits</small></article>
+            <article class="simSummaryMetric"><span>CO₂ potentiellement évité · an</span><strong id="resultAnnualCarbon" class="simPendingValue">À préciser</strong><small id="resultCarbonNote">Ordre de grandeur indicatif</small></article>
           </div>
           <div class="simResultDetails">
             <section class="simResultPanel" aria-labelledby="resultTechnicalHeading">
@@ -344,18 +344,24 @@
               <dl class="simResultFacts simFinancialFacts">
                 <div><dt>Profil retenu</dt><dd id="resultFinanceProfile">Propriétaire exploitant · fonds propres</dd></div>
                 <div><dt>Horizon et financement</dt><dd id="resultFinanceHorizon">25 ans · 100 % fonds propres</dd></div>
-                <div><dt>CAPEX équipements et installation</dt><dd id="resultFinancialCapex">À préciser</dd></div>
+                <div><dt>Prix réseau estimatif · HT</dt><dd id="resultGridPrice">À préciser</dd></div>
+                <div><dt>CAPEX indicatif équipements et installation</dt><dd id="resultFinancialCapex">À préciser</dd></div>
                 <div><dt>Économie ACI estimée · année 1</dt><dd id="resultAciSavings">À préciser</dd></div>
+                <div><dt>Autoconsommation estimée (part de la production)</dt><dd id="resultAciRate">À préciser</dd></div>
                 <div><dt>Potentiel ACC estimé · année 1</dt><dd id="resultAccPotential">À préciser</dd></div>
+                <div><dt>Part de production attribuée à l’ACC</dt><dd id="resultAccRate">À préciser</dd></div>
+                <div><dt>Surplus indicatif non affecté</dt><dd id="resultSurplus">À préciser</dd></div>
+                <div><dt>Coût solaire estimé</dt><dd id="resultSolarKwhCost">À préciser</dd></div>
+                <div><dt>TRI indicatif propriétaire</dt><dd id="resultIndicativeIrr">À préciser</dd></div>
                 <div><dt>Charges d’exploitation estimées · année 1</dt><dd id="resultAnnualOpex">À préciser</dd></div>
               </dl>
-              <p class="simResultFootnote">Aperçu estimatif : propriétaire exploitant, 100 % fonds propres, horizon de 25 ans ; ACC valorisée à 0,12 €/kWh comme potentiel sans contrat confirmé. L’ACI évitable est distincte du prix réseau déclaré. Répartition annuelle théorique, sans profil horaire ; CAPEX et OPEX à confirmer.</p>
+              <p class="simResultFootnote">Aperçu marketing indicatif : propriétaire exploitant, 100 % fonds propres, horizon de 25 ans. ACC valorisée à 0,12 €/kWh comme potentiel sans contrat confirmé. L’ACI évitable est distincte du prix réseau déclaré. Répartition annuelle théorique, sans profil horaire ; CAPEX et OPEX à confirmer.</p>
             </section>
           </div>
           <section class="simAnnualComparison" aria-labelledby="resultAnnualComparisonHeading">
             <p id="resultAnnualComparisonHeading">Production annuelle estimée comparée à la consommation saisie</p>
             <strong id="resultAnnualComparison">Consommation non renseignée : comparaison indisponible.</strong>
-            <small>Une comparaison de volumes annuels ne mesure ni la coïncidence horaire ni l’autoconsommation réelle.</small>
+            <small>Ces ordres de grandeur servent à qualifier l’intérêt du projet. Ils ne mesurent pas la coïncidence horaire et restent à confirmer avec un conseiller.</small>
           </section>
           <div class="simResultDetails simResultCharts">
             <section id="simProductionPanel" class="simResultPanel simProductionPanel" aria-labelledby="resultProductionHeading" hidden>
@@ -370,7 +376,7 @@
             </section>
           </div>
           <section id="simUnsupportedResult" class="simScopeNotice" hidden>La puissance et la production restent <strong>à compléter</strong> : ce type d’installation n’est pas encore couvert par le modèle d’estimation.</section>
-          <section class="simEstimateLimits" aria-labelledby="estimateLimitsHeading"><h3 id="estimateLimitsHeading">À retenir</h3><p id="resultEstimateSummary">Cette estimation indicative ne remplace pas une étude technique, énergétique ou financière.</p><p id="resultRoofType"></p><p id="resultUsage"></p><p class="simMethodDetails"><strong>Sources et hypothèses</strong> PVGIS, benchmarks SolarShift V1 et paramètres financiers de pré-étude. Les prix, la répartition annuelle, CAPEX et OPEX sont estimatifs ; aucune coïncidence horaire, aide, fiscalité ou économie canonique n’est établie.</p></section>
+          <section class="simEstimateLimits" aria-labelledby="estimateLimitsHeading"><h3 id="estimateLimitsHeading">À retenir</h3><p id="resultEstimateSummary">Cette estimation indicative ne remplace pas une étude technique, énergétique ou financière.</p><p id="resultRoofType"></p><p id="resultUsage"></p><p class="simMethodDetails"><strong>Sources et hypothèses</strong> PVGIS, benchmarks SolarShift V1 et paramètres financiers de pré-étude. Les prix, la répartition annuelle, CAPEX et OPEX sont estimatifs ; aucune coïncidence horaire, aide, fiscalité ou économie canonique n’est établie. Le repère CO₂ utilise l’intensité moyenne directe de production publiée par <a href="https://analysesetdonnees.rte-france.com/bilan-electrique-2025/emissions" target="_blank" rel="noopener noreferrer">RTE pour 2025</a> ; il ne déduit pas les émissions du cycle de vie photovoltaïque.</p></section>
           <section class="simProjectNext"><div><p class="simEyebrow">POUR LA SUITE</p><h3>Faire étudier le projet</h3><p>Votre estimation n’est pas enregistrée. La suite ouvre l’espace projets ; elle ne crée ni projet ni dossier.</p></div><a id="convertEstimateButton" class="simButton simButtonPrimary" href="./projects.html">Transformer cette estimation en projet <span aria-hidden="true">→</span></a></section>
         </div>
         <div class="simStepActions"><button class="simButton simButtonQuiet" type="button" data-back>← Modifier les données</button><button id="printEstimateButton" class="simButton simButtonQuiet" type="button">Imprimer ma synthèse</button><button id="restartButton" class="simButton simButtonQuiet" type="button">Nouvelle estimation</button></div>

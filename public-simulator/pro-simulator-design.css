@@ -756,6 +756,15 @@ html, body { max-width: 100%; overflow-x: clip; }
   .simStepActions .simButton { width: 100%; }
 }
 
+/* Lead-oriented public summary: keep commercial estimates prominent and readable. */
+.simSummaryMetric { grid-template-columns: minmax(0,1fr); gap: 7px; }
+.simSummaryMetric > svg { display: none; }
+.simSummaryMetric > span,.simSummaryMetric > strong,.simSummaryMetric > small { grid-column: 1; }
+.simSummaryMetric > span { color: #607582; font-weight: 650; }
+.simMarketingMetric { border-color: #cde4d6; background: linear-gradient(145deg,#f4fbf6,#fff); }
+.simMarketingMetric > strong { color: #00694c; }
+.simMarketingMetric > .simPendingValue { color: #748b87; }
+
 /* Keep the site header limited to its brand and account action; progress is a separate row. */
 .simTopbar { display: flex; grid-template-columns: none; align-items: center; justify-content: space-between; gap: 24px; width: min(1560px,calc(100% - 96px)); height: 82px; min-height: 82px; margin: 0 auto; padding: 0; }
 .simBrand { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 0; }

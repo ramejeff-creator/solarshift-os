@@ -605,6 +605,7 @@ function buildEstimateInput() {
     buildingBenchmark,
     subscribedPower: power,
     electricityPrice: price,
+    aciAvoidablePriceCorridor: benchmarkPrice.aciAvoidableCorridorEurPerKwh ?? null,
     avoidedElectricityPrice: aciAvoidablePrice,
     electricityPriceBasis: price.basis,
     usageMode: selected('usageMode')?.value || 'self-consumption',
@@ -655,24 +656,35 @@ async function requestPvgis(input, signal, optimal = false, orientation = input.
 }
 function renderResult(input, production = null) {
   const annual = production && input.referenceKwp != null ? Number(production.annual_kwh_kwc) * input.referenceKwp * input.shadeFactor : null;
+  const carbonIntensityGPerKwh = 19.6; // RTE, Bilan électrique 2025: émissions directes moyennes de production.
   $('resultLocation').textContent = input.address.label;
   $('resultStatus').hidden = Boolean(production);
   if (production) $('resultStatus').dataset.kind = 'ready';
   $('resultContent').hidden = false;
   $('capacityRange').textContent = input.referenceKwp != null ? `${numberFormat(input.referenceKwp, 1)} kWc` : 'À compléter';
   $('capacityCorridor').textContent = input.lowKwp != null ? `Fourchette indicative : ${numberFormat(input.lowKwp, 1)}–${numberFormat(input.highKwp, 1)} kWc` : 'Modèle non disponible pour cette installation';
-  $('annualProduction').textContent = annual != null ? `${numberFormat(annual)} kWh/an` : 'À compléter';
+  $('annualProduction').textContent = annual != null ? `${numberFormat(annual / 1000, 1)} MWh/an` : 'À compléter';
+  const consumptionKnown = input.annualConsumption != null && Number.isFinite(Number(input.annualConsumption));
+  const consumptionCorridor = input.consumption?.status === 'ASSUMPTION' ? input.consumption.corridorKwh : null;
+  $('resultConsumptionEstimate').textContent = consumptionKnown
+    ? consumptionCorridor
+      ? `${numberFormat(consumptionCorridor.low / 1000, 0)}–${numberFormat(consumptionCorridor.high / 1000, 0)} MWh/an`
+      : `${numberFormat(Number(input.annualConsumption) / 1000, 1)} MWh/an`
+    : 'À préciser';
+  $('resultConsumptionEstimate').classList.toggle('simPendingValue', !consumptionKnown);
+  $('resultConsumptionNote').textContent = consumptionCorridor
+    ? `Benchmark SolarShift V1 · valeur centrale ${numberFormat(Number(input.annualConsumption) / 1000, 1)} MWh/an`
+    : input.consumption?.status === 'DECLARED'
+      ? 'Valeur déclarée · à confirmer sur facture'
+      : 'Estimation selon le type et l’emprise du bâtiment';
   const budget = production?.installation_budget;
   const budgetReady = budget?.status === 'ASSUMPTION' && budget.scope === 'EQUIPMENT_AND_INSTALLATION'
     && ['CAPACITY_AND_INSTALLATION_TYPE_REFERENCE', 'CAPACITY_CORRIDOR_AT_FIXED_UNIT_COST'].includes(budget.rangeBasis)
     && [budget.lowEur, budget.referenceEur, budget.highEur].every((value) => typeof value === 'number' && Number.isFinite(value) && value > 0)
     && budget.lowEur <= budget.referenceEur && budget.referenceEur <= budget.highEur;
-  const budgetRange = budgetReady ? `${numberFormat(Math.round(budget.lowEur / 1000))}–${numberFormat(Math.round(budget.highEur / 1000))} k€` : production ? 'À préciser' : 'En attente';
-  $('installationBudget').textContent = budgetRange;
-  $('installationBudget').classList.toggle('simPendingValue', !budgetReady);
-  $('installationBudgetRange').textContent = budgetReady
-    ? 'Fourchette indicative · équipements et installation'
-    : production ? 'À préciser avec un devis' : 'Non disponible';
+  const budgetRange = budgetReady
+    ? `${numberFormat(Math.round(budget.referenceEur / 1000))} k€ · corridor ${numberFormat(Math.round(budget.lowEur / 1000))}–${numberFormat(Math.round(budget.highEur / 1000))} k€`
+    : production ? 'À préciser' : 'En attente';
   $('resultGrossArea').textContent = `${numberFormat(input.grossArea)} m²`;
   $('resultUsableArea').textContent = `${numberFormat(input.usableArea)} m²`;
   $('resultUsableAssumption').textContent = `${numberFormat(input.usablePercent)} % de la surface totale · hypothèse modifiable`;
@@ -695,40 +707,73 @@ function renderResult(input, production = null) {
   const lcoe = Number(financial?.lcoeEurPerKwh);
   $('resultSolarKwhCost').textContent = Number.isFinite(lcoe) && lcoe > 0 ? `${numberFormat(lcoe, 3)} €/kWh` : 'À préciser';
   $('resultSolarKwhCost').classList.toggle('simPendingValue', !(Number.isFinite(lcoe) && lcoe > 0));
-  $('resultLcoeNote').textContent = financial?.horizonYears === 25 ? 'Estimation sur 25 ans · CAPEX et OPEX estimés' : 'Coût du kWh solaire estimé';
-  const irrPct = Number(financial?.irrPct);
-  $('resultIndicativeIrr').textContent = financialReady && Number.isFinite(irrPct) ? `${numberFormat(irrPct, 1)} %` : 'À préciser';
-  $('resultIndicativeIrr').classList.toggle('simPendingValue', !(financialReady && Number.isFinite(irrPct)));
-  $('resultIrrNote').textContent = financialReady
-    ? 'Propriétaire exploitant · fonds propres · avant impôts · estimation indicative'
-    : financial?.reason === 'AVOIDED_TARIFF_REQUIRED'
-      ? 'Tarif de facture nécessaire pour valoriser l’économie ACI'
-      : financial?.reason === 'FULL_SALE_PRICE_REQUIRED'
-        ? 'Prix de vente totale à confirmer'
-        : 'Renseignez la consommation pour estimer les flux';
-  if (input.electricityPrice?.status === 'ASSUMPTION' && input.electricityPrice.aciAvoidableCorridorEurPerKwh) {
-    const corridor = input.electricityPrice.aciAvoidableCorridorEurPerKwh;
-    $('resultIrrNote').textContent = `Composante ACI évitable SolarShift : ${numberFormat(corridor.ref, 2)} €/kWh HT (corridor ${numberFormat(corridor.low, 2)}–${numberFormat(corridor.high, 2)}), à confirmer sur facture.`;
-  } else if (input.electricityPrice?.status === 'PARTIAL') {
-    $('resultIrrNote').textContent = 'Prix TTC saisi : conservé comme information, sans comparaison directe avec les hypothèses HT.';
-  }
-  const yearOneAci = Number(financial?.aciSavingsYear1Eur);
-  $('resultAciSavings').textContent = Number.isFinite(yearOneAci)
-    ? `${numberFormat(yearOneAci)} €/an · facture évitée estimée`
+  const irrPct = financial?.irrPct;
+  const irrReady = financialReady && irrPct != null && Number.isFinite(Number(irrPct));
+  $('resultIndicativeIrr').textContent = irrReady ? `${numberFormat(Number(irrPct), 1)} %` : 'À préciser';
+  $('resultIndicativeIrr').classList.toggle('simPendingValue', !irrReady);
+  const yearOneAci = financial?.aciSavingsYear1Eur;
+  $('resultAciSavings').textContent = yearOneAci != null && Number.isFinite(Number(yearOneAci))
+    ? `${numberFormat(Number(yearOneAci))} €/an · facture évitée estimée`
     : financial?.annualAllocation?.aciCeilingKwh != null
       ? `${numberFormat(financial.annualAllocation.aciCeilingKwh)} kWh/an · valorisation à préciser`
       : 'À préciser : consommation annuelle requise';
-  const yearOneAcc = Number(financial?.potentialAccValueYear1Eur);
-  $('resultAccPotential').textContent = Number.isFinite(yearOneAcc)
-    ? `${numberFormat(yearOneAcc)} €/an · potentiel à 0,12 €/kWh`
+  const yearOneAcc = financial?.potentialAccValueYear1Eur;
+  $('resultAccPotential').textContent = yearOneAcc != null && Number.isFinite(Number(yearOneAcc))
+    ? `${numberFormat(Number(yearOneAcc))} €/an · potentiel à 0,12 €/kWh`
     : financial?.annualAllocation?.potentialAccKwh != null
       ? `${numberFormat(financial.annualAllocation.potentialAccKwh)} kWh/an · potentiel à valoriser`
       : 'À préciser : consommation annuelle requise';
-  const annualOpex = Number(financial?.annualOpexYear1Eur);
-  $('resultAnnualOpex').textContent = Number.isFinite(annualOpex) ? `${numberFormat(annualOpex)} €/an · estimation` : 'À préciser';
+  const annualOpex = financial?.annualOpexYear1Eur;
+  $('resultAnnualOpex').textContent = annualOpex != null && Number.isFinite(Number(annualOpex)) ? `${numberFormat(Number(annualOpex))} €/an · estimation` : 'À préciser';
+  const allocation = financial?.annualAllocation;
+  const aciKwh = allocation?.aciCeilingKwh;
+  const accKwh = allocation?.potentialAccKwh;
+  const annualSavings = yearOneAci != null && yearOneAcc != null
+    && Number.isFinite(Number(yearOneAci)) && Number.isFinite(Number(yearOneAcc))
+    ? Number(yearOneAci) + Number(yearOneAcc) : null;
+  const aciPriceCorridor = input.aciAvoidablePriceCorridor;
+  const annualSavingsLow = annualSavings != null && aciKwh != null && accKwh != null && aciPriceCorridor
+    ? Number(aciKwh) * aciPriceCorridor.low + Number(accKwh) * 0.12 : annualSavings;
+  const annualSavingsHigh = annualSavings != null && aciKwh != null && accKwh != null && aciPriceCorridor
+    ? Number(aciKwh) * aciPriceCorridor.high + Number(accKwh) * 0.12 : annualSavings;
+  $('resultAnnualSavings').textContent = annualSavingsLow != null && annualSavingsHigh != null
+    ? annualSavingsLow === annualSavingsHigh
+      ? `${numberFormat(annualSavingsLow / 1000, 1)} k€/an`
+      : `${numberFormat(annualSavingsLow / 1000, 1)}–${numberFormat(annualSavingsHigh / 1000, 1)} k€/an`
+    : 'À préciser';
+  $('resultAnnualSavings').classList.toggle('simPendingValue', annualSavings == null);
+  const gainsBeforeCapex = financial?.gainsBeforeCapexEur;
+  const netGainLow = gainsBeforeCapex != null && Number.isFinite(Number(gainsBeforeCapex)) && budgetReady
+    ? Number(gainsBeforeCapex) - budget.highEur : null;
+  const netGainHigh = gainsBeforeCapex != null && Number.isFinite(Number(gainsBeforeCapex)) && budgetReady
+    ? Number(gainsBeforeCapex) - budget.lowEur : null;
+  $('resultNetGain25Years').textContent = netGainLow != null && netGainHigh != null
+    ? `${numberFormat(netGainLow / 1_000_000, 2)}–${numberFormat(netGainHigh / 1_000_000, 2)} M€` : 'À préciser';
+  $('resultNetGain25Years').classList.toggle('simPendingValue', netGainLow == null || netGainHigh == null);
+  const gridPrice = input.electricityPrice;
+  const gridCorridor = gridPrice?.corridorEurPerKwh;
+  $('resultGridPrice').textContent = gridCorridor
+    ? `${numberFormat(gridCorridor.low, 2)}–${numberFormat(gridCorridor.high, 2)} €/kWh HT`
+    : gridPrice?.usableForHtEconomics && gridPrice.valueEurPerKwh != null
+      ? `${numberFormat(Number(gridPrice.valueEurPerKwh), 3)} €/kWh HT` : 'À confirmer sur facture';
+  const allocationKnown = annual != null && annual > 0 && aciKwh != null && Number.isFinite(Number(aciKwh));
+  $('resultAciRate').textContent = allocationKnown && annual > 0
+    ? `${numberFormat(Math.min(100, Number(aciKwh) / annual * 100), 0)} % · plafond annuel théorique` : 'À préciser';
+  $('resultAccRate').textContent = allocationKnown && annual > 0 && accKwh != null && Number.isFinite(Number(accKwh))
+    ? `${numberFormat(Math.min(100, Number(accKwh) / annual * 100), 0)} % · potentiel théorique` : 'À préciser';
+  const surplusKwh = allocationKnown && accKwh != null && Number.isFinite(Number(accKwh))
+    ? Math.max(0, annual - Number(aciKwh) - Number(accKwh)) : null;
+  $('resultSurplus').textContent = surplusKwh != null
+    ? `${numberFormat(surplusKwh / 1000, 1)} MWh/an (${numberFormat(surplusKwh / annual * 100, 0)} % de la production) · potentiel` : 'À préciser';
+  const carbonTonnes = annual != null && Number.isFinite(annual) ? annual * carbonIntensityGPerKwh / 1_000_000 : null;
+  $('resultAnnualCarbon').textContent = carbonTonnes != null ? `${numberFormat(carbonTonnes, 1)} tCO₂e/an` : 'À préciser';
+  $('resultAnnualCarbon').classList.toggle('simPendingValue', carbonTonnes == null);
+  $('resultCarbonNote').textContent = `Équivalent brut · facteur RTE 2025 (${numberFormat(carbonIntensityGPerKwh, 1)} gCO₂e/kWh) · sans profil horaire ni cycle de vie PV`;
   $('resultProjectionTitle').textContent = financialReady ? 'Projection propriétaire indicative disponible' : 'Votre rentabilité reste à préciser';
   $('resultProjectionSummary').textContent = financialReady
-    ? `Gains estimés avant investissement : ${numberFormat(Number(financial.gainsBeforeCapexEur))} € sur 25 ans ; après CAPEX : ${numberFormat(Number(financial.netGainsEur))} €. L’ACC reste un potentiel annuel, sans contrat confirmé.`
+    ? netGainLow != null && netGainHigh != null
+      ? `Gain net estimé après CAPEX : ${numberFormat(netGainLow / 1000)}–${numberFormat(netGainHigh / 1000)} k€ sur 25 ans. Projection marketing indicative ; l’ACC reste un potentiel sans contrat confirmé.`
+      : `Gain net estimé après CAPEX : ${numberFormat(Number(financial.netGainsEur) / 1000)} k€ sur 25 ans. Projection indicative, à confirmer avec un conseiller.`
     : financial?.reason === 'AVOIDED_TARIFF_REQUIRED'
       ? 'Le coût de production et le potentiel ACC sont estimés ; le tarif évité de votre facture est nécessaire pour calculer les gains et le TRI.'
       : 'Un conseiller pourra confirmer les flux avec un profil horaire et des devis.';
