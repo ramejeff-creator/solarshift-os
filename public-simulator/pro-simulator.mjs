@@ -94,7 +94,7 @@ function useSuggestion(suggestion) {
   updateProjectSummary();
   clearSuggestions();
   setAddressStatus(typedHouseNumber && !suggestionHasNumber
-    ? `La rue est localisée, mais le numéro ${typedHouseNumber} n’est pas confirmé par la base d’adresses. Vérifiez le bâtiment sur la carte.`
+    ? `La rue est localisée, mais le numéro ${typedHouseNumber} n’est pas confirmé par la base d’adresses. Vérifiez le bâtiment sur la carte à l’étape suivante.`
     : 'Adresse sélectionnée. Vérifiez qu’elle correspond bien au bâtiment étudié.', typedHouseNumber && !suggestionHasNumber ? 'warning' : 'ready');
 }
 function renderSuggestions(results) {
@@ -148,6 +148,8 @@ function updateProjectSummary() {
   const externalInstallationLabels = { parking: 'Ombrière photovoltaïque', terrain: 'Installation photovoltaïque au sol', agriculture: 'Structure agrivoltaïque' };
   const area = Number($('roofArea')?.value) || drawnRoofAreaM2;
   const siteKind = selected('siteKind')?.value;
+  const usablePercent = Number($('usablePercent')?.value) || 65;
+  const displayedArea = siteKind === 'building' ? area * usablePercent / 100 : area;
   const building = selected('buildingUse')?.value;
   const roof = selectedRoofType();
   const roofLabel = siteKind === 'land'
@@ -159,14 +161,14 @@ function updateProjectSummary() {
   $('externalInstallationLabel').textContent = externalInstallation || 'À préciser';
   document.querySelectorAll('#summaryBuilding, [data-summary-building]').forEach((node) => { node.textContent = siteLabel; });
   document.querySelectorAll('#summaryRoof, [data-summary-roof]').forEach((node) => { node.textContent = roofLabel; });
-  document.querySelectorAll('#summaryArea, [data-summary-area]').forEach((node) => { node.textContent = area >= 20 ? `${numberFormat(area)} m²` : 'À mesurer'; });
+  document.querySelectorAll('#summaryArea, [data-summary-area]').forEach((node) => { node.textContent = area >= 20 ? `${numberFormat(displayedArea)} m²` : 'À mesurer'; });
   document.querySelectorAll('[data-summary-building-art]').forEach((node) => { node.hidden = siteKind === 'land'; node.className = `simBuildingArt building-${building || 'offices'}`; });
   document.querySelectorAll('[data-summary-roof-art]').forEach((node) => { node.hidden = roof === 'canopy'; node.className = `simSolarArt solar-${roof || 'flat'}`; });
   const siteKindLabel = siteKind === 'land' ? 'Type de surface' : 'Type de bâtiment';
   const installationLabel = siteKind === 'land' ? 'Installation' : 'Type de toiture';
-  const areaLabel = siteKind === 'land' ? 'Surface extérieure' : 'Surface de toiture';
+  const areaLabel = siteKind === 'land' ? 'Surface extérieure' : 'Surface exploitable estimée';
   $('summaryBuildingLabel').textContent = siteKindLabel;
-  $('summaryAreaLabel').textContent = `${areaLabel} tracée`;
+  $('summaryAreaLabel').textContent = siteKind === 'land' ? `${areaLabel} tracée` : areaLabel;
   document.querySelectorAll('[data-summary-site-label]').forEach((node) => { node.textContent = siteKindLabel; });
   document.querySelectorAll('[data-summary-installation-label]').forEach((node) => { node.textContent = installationLabel; });
   document.querySelectorAll('[data-summary-area-label]').forEach((node) => { node.textContent = areaLabel; });
@@ -685,9 +687,7 @@ function renderResult(input, production = null) {
   const budgetRange = budgetReady
     ? `${numberFormat(Math.round(budget.referenceEur / 1000))} k€ · corridor ${numberFormat(Math.round(budget.lowEur / 1000))}–${numberFormat(Math.round(budget.highEur / 1000))} k€`
     : production ? 'À préciser' : 'En attente';
-  $('resultGrossArea').textContent = `${numberFormat(input.grossArea)} m²`;
   $('resultUsableArea').textContent = `${numberFormat(input.usableArea)} m²`;
-  $('resultUsableAssumption').textContent = `${numberFormat(input.usablePercent)} % de la surface totale · hypothèse modifiable`;
   const buildingLabels = { offices: 'Bureaux & tertiaire', logistics: 'Stockage & logistique', industry: 'Industrie & atelier', retail: 'Commerce & grande surface', public: 'Équipement public', other: 'Autre bâtiment professionnel' };
   const externalSurfaceLabels = { parking: 'Parking', terrain: 'Terrain', agriculture: 'Surface agricole' };
   const externalInstallationLabels = { parking: 'Ombrière photovoltaïque', terrain: 'Installation photovoltaïque au sol', agriculture: 'Structure agrivoltaïque' };
@@ -763,6 +763,15 @@ function renderResult(input, production = null) {
     ? `${numberFormat(Math.min(100, Number(accKwh) / annual * 100), 0)} % · potentiel théorique` : 'À préciser';
   const surplusKwh = allocationKnown && accKwh != null && Number.isFinite(Number(accKwh))
     ? Math.max(0, annual - Number(aciKwh) - Number(accKwh)) : null;
+  const allocationChart = $('resultAllocationChart');
+  const aciShare = allocationKnown ? Math.min(100, Number(aciKwh) / annual * 100) : null;
+  const accShare = allocationKnown && accKwh != null && Number.isFinite(Number(accKwh))
+    ? Math.min(100 - aciShare, Number(accKwh) / annual * 100) : null;
+  if (allocationChart) {
+    allocationChart.style.setProperty('--aci-share', `${aciShare ?? 0}%`);
+    allocationChart.style.setProperty('--acc-share', `${accShare ?? 0}%`);
+    allocationChart.classList.toggle('isAvailable', aciShare != null && accShare != null);
+  }
   $('resultSurplus').textContent = surplusKwh != null
     ? `${numberFormat(surplusKwh / 1000, 1)} MWh/an (${numberFormat(surplusKwh / annual * 100, 0)} % de la production) · potentiel` : 'À préciser';
   const carbonTonnes = annual != null && Number.isFinite(annual) ? annual * carbonIntensityGPerKwh / 1_000_000 : null;
@@ -818,6 +827,7 @@ function renderResult(input, production = null) {
     ? `Type de surface : ${(externalSurfaceLabels[input.externalSurfaceType] || 'surface extérieure').toLowerCase()} · installation envisagée : ${(externalInstallationLabels[input.externalSurfaceType] || 'à préciser').toLowerCase()}.`
     : `Bâtiment : ${{ flat: 'toit plat', pitched: 'toiture inclinée' }[input.roofType] || 'à compléter'}.`;
   $('resultUsage').textContent = `Usage envisagé : ${{ 'self-consumption': 'autoconsommation', 'full-sale': 'vente totale', undecided: 'non décidé' }[input.usageMode] || 'à compléter'} · qualification indicative uniquement.`;
+  updateRoofPreviews();
   $('simUnsupportedResult').hidden = input.supported;
 }
 function mapPvgisError(error) {
@@ -922,7 +932,10 @@ function updatePanOrientation() {
   $('mapOrientationGroup').hidden = selected('siteKind')?.value !== 'building' || selectedRoofType() !== 'pitched';
 }
 function updatePanChoice() { document.querySelector('.simPansGroup').hidden = selectedRoofType() !== 'pitched'; updateRoofSupport(); updateTiltLegend(); updatePanOrientation(); }
-function updateUsableOutput() { $('usableOutput').textContent = `${$('usablePercent').value} %`; }
+function updateUsableOutput() {
+  $('usableOutput').textContent = `${$('usablePercent').value} %`;
+  updateProjectSummary();
+}
 function goBack() {
   calculationController?.abort(); calculationController = null; clearCalculationTimer();
   setCalculationButtonLoading(false); $('calculateButton').disabled = false;

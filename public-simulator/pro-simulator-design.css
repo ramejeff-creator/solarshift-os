@@ -805,6 +805,64 @@ html, body { max-width: 100%; overflow-x: clip; }
 }
 body[data-view="contact"] .simProgressBand,body[data-view="summary"] .simProgressBand { display: none; }
 
+/* Lead-oriented synthesis, following the desktop and mobile result concepts. */
+#resultStep > .simStepHeading { margin: 8px 0 20px; }
+#resultStep .simStepHeading h2 { color: #073d3d; font-size: clamp(32px,4vw,48px); letter-spacing: -.035em; }
+#resultStep .simResultSubtitle { margin-top: 5px; font-size: 16px; }
+#resultStep .simResultLocation { margin-top: 12px; }
+#resultStep .simSummaryMetrics { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; }
+#resultStep .simSummaryMetric { min-height: 112px; padding: 18px 17px; border-radius: 15px; }
+#resultStep .simSummaryMetric > strong { font-size: clamp(21px,2.1vw,29px); }
+#resultStep .simSummaryMetric.simMarketingMetric { border-color: #d4eadb; background: linear-gradient(145deg,#f0f9f2,#fff 78%); }
+#resultStep .simSummaryMetric.simMarketingMetric > strong { color: #087454; }
+#resultStep .simResultDetails { grid-template-columns: minmax(0,1.05fr) minmax(0,.92fr) minmax(0,1fr); align-items: stretch; gap: 14px; }
+#resultStep .simResultPanel { padding: 18px; border-color: #e3ece6; border-radius: 15px; box-shadow: 0 4px 18px #153c2608; }
+#resultStep .simResultPanel h3 { font-size: 18px; }
+#resultStep .simResultRoofPreview { height: 165px; margin: 8px 0 14px; border-radius: 12px; }
+#resultStep .simPotentialPanel .simResultFacts { margin-top: 0; }
+#resultStep .simPotentialPanel > .simResultFootnote { margin: 12px 0 0; }
+#resultStep .simProductionPanel { margin-top: 16px; padding: 0; border: 0; box-shadow: none; }
+#resultStep .simProductionPanel h3 { font-size: 14px; }
+#resultStep .simProductionPanel .simMonthlyChart { height: 150px; }
+.simConsumptionTotal { margin: 0 0 8px; padding: 12px; border-radius: 11px; background: #f4f8f6; }
+.simConsumptionTotal > span,.simConsumptionTotal > strong,.simConsumptionTotal > small { display: block; }
+.simConsumptionTotal > span { color: var(--sim-muted); font-size: 12px; }
+.simConsumptionTotal > strong { margin-top: 3px; color: var(--sim-pine); font: 800 23px/1.25 Manrope,system-ui,sans-serif; }
+.simConsumptionTotal > small { margin-top: 3px; color: var(--sim-muted); font-size: 10px; line-height: 1.4; }
+.simAllocationChart { position: relative; display: grid; place-items: center; width: 190px; height: 190px; margin: 12px auto 16px; border-radius: 50%; background: conic-gradient(#dce9e3 0 100%); }
+.simAllocationChart.isAvailable { background: conic-gradient(#075b48 0 var(--aci-share),#a9dbb7 var(--aci-share) calc(var(--aci-share) + var(--acc-share)),#e4eee8 calc(var(--aci-share) + var(--acc-share)) 100%); }
+.simAllocationChart::before { position: absolute; inset: 21%; border-radius: 50%; background: #fff; content: ""; }
+.simAllocationChart > div { position: relative; display: grid; gap: 3px; max-width: 100px; text-align: center; }
+.simAllocationChart > div strong { color: #12383b; font: 800 14px/1.25 Manrope,system-ui,sans-serif; }
+.simAllocationChart > div span { color: var(--sim-muted); font-size: 10px; line-height: 1.25; }
+.simAllocationFacts { margin-top: 0; }
+.simAllocationFacts > div { grid-template-columns: minmax(0,1fr) auto; }
+.simFinancePanel { background: linear-gradient(180deg,#fff 0%,#fcfdfb 100%); }
+.simFinancialLead { margin: 0 0 12px; padding: 10px 11px; border-radius: 9px; background: #fff8e7; color: #705a1d; font-size: 11px; line-height: 1.45; }
+.simFinancePanel .simFinancialFacts > div { grid-template-columns: minmax(0,1fr) auto; }
+.simFinancePanel .simFinancialFacts dd { text-align: right; }
+.simFinancePanel .simFinancialFacts > div:has(#resultAnnualCarbon) { align-items: start; }
+.simFinancePanel #resultCarbonNote { grid-column: 1 / -1; color: var(--sim-muted); font-size: 10px; line-height: 1.4; }
+.simFinancePanel .simProjectionPlaceholder { margin: 14px 0 0; }
+.simFinancePanel > .simResultFootnote { margin: 12px 0 0; }
+@media (max-width:1000px) {
+  #resultStep .simSummaryMetrics { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  #resultStep .simResultDetails { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  #resultStep .simFinancePanel { grid-column: 1 / -1; }
+}
+@media (max-width:700px) {
+  #resultStep > .simStepHeading { margin: 0 0 16px; }
+  #resultStep .simStepHeading h2 { font-size: 34px; }
+  #resultStep .simResultSubtitle { font-size: 14px; }
+  #resultStep .simSummaryMetrics,#resultStep .simResultDetails { grid-template-columns: 1fr; }
+  #resultStep .simSummaryMetrics { gap: 9px; }
+  #resultStep .simSummaryMetric { min-height: 98px; padding: 15px; }
+  #resultStep .simSummaryMetric > strong { font-size: 25px; }
+  #resultStep .simFinancePanel { grid-column: auto; }
+  #resultStep .simResultRoofPreview { height: 180px; }
+  .simAllocationChart { width: 176px; height: 176px; }
+}
+
 /* Installation pathway aligned with the enlarged-map simulator mockup. */
 body[data-active-step="2"] .simIntro { min-height: 145px; padding-top: 22px; padding-bottom: 12px; }
 body[data-active-step="2"] .simIntroCopy { width: 100%; max-width: 900px; }
