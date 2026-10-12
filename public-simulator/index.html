@@ -7,7 +7,7 @@
   <title>OZENO · Simulateur solaire professionnel</title>
   <link rel="icon" type="image/png" href="./exec-d2eda8f0-968b-466f-b6ab-7ba649808352.png">
   <link rel="stylesheet" href="./pro-simulator.css?v=20261012-3">
-  <link rel="stylesheet" href="./pro-simulator-design.css?v=20261012-5">
+  <link rel="stylesheet" href="./pro-simulator-design.css?v=20261012-6">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css">
   <script src="./runtime-config.js"></script>
@@ -26,6 +26,7 @@
     <symbol id="sim-trend" viewBox="0 0 32 32"><path d="m3 26 10-10 6 5L29 7m-9 0h9v9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="sim-building" viewBox="0 0 32 32"><path d="M4 28V12l9 4V9l9 4V4l6 3v21ZM9 21v3m6-3v3m6-3v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
     <symbol id="sim-leaf" viewBox="0 0 32 32"><path d="M27 5C12 2 3 10 7 20c5 9 18 6 20-15Z" fill="currentColor"/><path d="m6 28 15-17" fill="none" stroke="white" stroke-width="1.5"/></symbol>
+    <symbol id="sim-tree" viewBox="0 0 32 32"><path d="M13 21h6v9h-6z" fill="#387c2e"/><path d="M16 2a6 6 0 0 0-6 7 7 7 0 0 0-4 10 5 5 0 0 0 4 7h12a5 5 0 0 0 4-7 7 7 0 0 0-4-10 6 6 0 0 0-6-7Z" fill="#4b9637"/><path d="M16 2a6 6 0 0 1 6 7 7 7 0 0 1 4 10 5 5 0 0 1-4 7h-6Z" fill="#38832d"/></symbol>
     <symbol id="sim-bolt" viewBox="0 0 32 32"><path d="m18 2-13 17h10l-1 11L28 12H17Z" fill="currentColor"/></symbol>
     <symbol id="sim-bars" viewBox="0 0 32 32"><rect x="4" y="18" width="6" height="12" rx="2" fill="currentColor"/><rect x="13" y="11" width="6" height="19" rx="2" fill="currentColor"/><rect x="22" y="3" width="6" height="27" rx="2" fill="currentColor"/></symbol>
     <symbol id="sim-shield" viewBox="0 0 32 32"><path d="m16 3 11 4v9c0 6-11 13-11 13S5 22 5 16V7Z" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="m11 15 4 4 7-8" fill="none" stroke="currentColor" stroke-width="2.4"/></symbol>
@@ -329,6 +330,7 @@
           <div class="simSummaryMetrics">
             <article class="simSummaryMetric"><span class="simMetricIcon simGold"><svg aria-hidden="true"><use href="#sim-sun"/></svg></span><span>Puissance PV estimée</span><strong id="capacityRange">À compléter</strong><small id="capacityCorridor"></small></article>
             <article class="simSummaryMetric"><span class="simMetricIcon"><svg aria-hidden="true"><use href="#sim-bolt"/></svg></span><span>Production annuelle</span><strong id="annualProduction">À compléter</strong><small>Estimation indicative</small></article>
+            <article class="simSummaryMetric"><span class="simMetricIcon simGold"><svg aria-hidden="true"><use href="#sim-tag"/></svg></span><span>Investissement estimé · CAPEX</span><strong id="resultInvestmentRange" class="simPendingValue">À préciser</strong><small>Équipements et installation · à confirmer par devis</small></article>
             <article class="simSummaryMetric simMarketingMetric"><span class="simMetricIcon simGold"><svg aria-hidden="true"><use href="#sim-finance"/></svg></span><span>Économie annuelle estimée</span><strong id="resultAnnualSavings" class="simPendingValue">À préciser</strong><small>ACI + potentiel ACC · année 1</small></article>
             <article class="simSummaryMetric simMarketingMetric"><span class="simMetricIcon"><svg aria-hidden="true"><use href="#sim-bars"/></svg></span><span>Gain cumulé · 25 ans</span><strong id="resultNetGain25Years" class="simPendingValue">À préciser</strong><small>CAPEX et charges estimés déduits</small></article>
           </div>
@@ -372,7 +374,7 @@
                 <div><dt><svg aria-hidden="true"><use href="#sim-calendar"/></svg>Retour sur investissement estimé</dt><dd id="resultPayback">À préciser</dd></div>
                 <div><dt><svg aria-hidden="true"><use href="#sim-leaf"/></svg>Repère CO₂ évité · an</dt><dd id="resultAnnualCarbon" class="simPendingValue">À préciser</dd><small id="resultCarbonNote">Ordre de grandeur indicatif</small></div>
               </dl>
-              <div class="simEcoCallout"><svg aria-hidden="true"><use href="#sim-leaf"/></svg><p><span>À titre de comparaison, l’empreinte de</span><strong id="resultCarbonKm">À préciser</strong><span>en voiture thermique moyenne (diesel). Équivalence pédagogique, pas des trajets réellement évités.</span></p></div>
+              <div class="simEcoCallout simCarbonEquivalence"><span class="simTreeIcon"><svg aria-hidden="true"><use href="#sim-tree"/></svg></span><p><span>Soit l’équivalent de</span><strong id="resultCarbonKm">À préciser</strong><span>en voiture thermique évités chaque année.</span></p><details class="simEquivalenceInfo"><summary aria-label="À propos de l’équivalence automobile"><svg aria-hidden="true"><use href="#sim-info"/></svg></summary><p>Comparaison indicative avec l’empreinte d’une voiture thermique moyenne (diesel). Il ne s’agit pas de trajets réellement évités ; le cycle de vie de l’installation n’est pas pris en compte.</p></details></div>
               <details class="simFinanceDetails"><summary>Détail de l’investissement et des gains</summary><dl class="simResultFacts"><div><dt>CAPEX équipements et installation</dt><dd id="resultFinancialCapex">À préciser</dd></div><div><dt>Économie ACI · année 1</dt><dd id="resultAciSavings">À préciser</dd></div><div><dt>Potentiel ACC · année 1</dt><dd id="resultAccPotential">À préciser</dd></div><div><dt>TRI indicatif propriétaire</dt><dd id="resultIndicativeIrr">À préciser</dd></div><div><dt>Charges d’exploitation · année 1</dt><dd id="resultAnnualOpex">À préciser</dd></div></dl></details>
               <div class="simProjectionPlaceholder"><span aria-hidden="true">↗</span><strong id="resultProjectionTitle">Votre rentabilité reste à préciser</strong><p id="resultProjectionSummary">Le calcul financier reste à confirmer avec un conseiller, un profil horaire et des devis.</p></div>
               <p class="simResultFootnote">La valorisation locale du surplus reste un potentiel sans contrat confirmé. Les économies, l’investissement et les charges sont estimatifs, à confirmer.</p>
@@ -394,6 +396,6 @@
   </main>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
-  <script type="module" src="./pro-simulator.mjs?v=20261012-5"></script>
+  <script type="module" src="./pro-simulator.mjs?v=20261012-6"></script>
 </body>
 </html>

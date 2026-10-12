@@ -96,11 +96,18 @@ try {
   assert.equal(await page.locator('#simMonthlyChart .simMonth').count(), 12);
   assert.equal(await page.locator('#simMonthlyValues tr').count(), 12);
   assert.match(await page.locator('#resultTiming').innerText(), /3 à 6 mois/);
-  for (const id of ['resultAciRate', 'resultAccRate', 'resultAciVolume', 'resultAccVolume', 'resultPayback', 'resultAnnualSavings', 'resultAnnualCarbon']) {
+  for (const id of ['resultInvestmentRange', 'resultAciRate', 'resultAccRate', 'resultAciVolume', 'resultAccVolume', 'resultPayback', 'resultAnnualSavings', 'resultAnnualCarbon']) {
     assert.doesNotMatch(await page.locator(`#${id}`).innerText(), /À préciser|NaN|undefined|Infinity/);
   }
   const production = await (await solarResponse).json();
   assert.ok(production.annual_kwh_kwc > 0);
+  const budget = production.installation_budget;
+  const euroFormat = new Intl.NumberFormat('fr-FR');
+  assert.equal(await page.locator('#resultInvestmentRange').innerText(), `${euroFormat.format(Math.round(budget.lowEur / 1000))}–${euroFormat.format(Math.round(budget.highEur / 1000))} k€`);
+  assert.equal(await page.locator('.simCarbonEquivalence use[href="#sim-tree"]').count(), 1);
+  await page.locator('.simEquivalenceInfo summary').click();
+  assert.match(await page.locator('.simEquivalenceInfo p').innerText(), /Il ne s’agit pas de trajets réellement évités/);
+  await page.locator('.simEquivalenceInfo summary').click();
   assert.equal(await page.locator('#downloadEstimateButton').count(), 0);
   assert.match(await page.locator('#convertEstimateButton').innerText(), /Demander une étude détaillée/);
   await page.screenshot({ path: resolve(output, 'synthesis-desktop.png'), fullPage: true });

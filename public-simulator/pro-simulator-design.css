@@ -1099,3 +1099,23 @@ body[data-active-step="2"] .simIntroArt,body[data-active-step="2"] .simHeroNote 
   background-size: 200% 200%;
 }
 @media (max-width:700px) { .simBenchmarkGroup { grid-template-columns: 1fr; padding: 13px; } .simBenchmarkGroup legend,.simBenchmarkGroup > .simFieldHint { grid-column: 1; } }
+
+/* Keep all five lead indicators together, with a distinct tree equivalence. */
+#resultStep .simSummaryMetrics { grid-template-columns: repeat(5,minmax(0,1fr)); }
+#resultStep .simSummaryMetric > strong { font-size: clamp(19px,1.6vw,27px); overflow-wrap: anywhere; }
+.simCarbonEquivalence { position: relative; align-items: flex-start; padding-right: 38px; }
+.simTreeIcon { display: grid; place-items: center; flex: 0 0 56px; width: 56px; height: 56px; border-radius: 50%; background: #e1f3d6; }
+.simTreeIcon svg { width: 34px; height: 34px; }
+.simEquivalenceInfo { position: absolute; top: 15px; right: 12px; }
+.simEquivalenceInfo summary { display: grid; place-items: center; width: 20px; height: 20px; cursor: pointer; list-style: none; }
+.simEquivalenceInfo summary::-webkit-details-marker { display: none; }
+.simEquivalenceInfo summary svg { width: 17px; height: 17px; }
+.simEquivalenceInfo summary:focus-visible { outline: 2px solid #087454; outline-offset: 3px; border-radius: 50%; }
+.simEquivalenceInfo > p { position: absolute; z-index: 2; top: 28px; right: 0; width: min(260px,60vw); padding: 12px; border: 1px solid #d4eadc; border-radius: 10px; background: #fff; box-shadow: 0 4px 16px #153c2620; font-size: 12px; }
+@media (min-width:701px) and (max-width:1200px) {
+  #resultStep .simSummaryMetrics { grid-template-columns: repeat(3,minmax(0,1fr)); }
+}
+@media (max-width:700px) {
+  #resultStep .simSummaryMetrics { grid-template-columns: 1fr; }
+  #resultStep .simSummaryMetric > strong { font-size: 27px; }
+}

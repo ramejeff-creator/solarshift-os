@@ -691,6 +691,10 @@ function renderResult(input, production = null) {
   const budgetRange = budgetReady
     ? `${numberFormat(Math.round(budget.referenceEur / 1000))} k€ · corridor ${numberFormat(Math.round(budget.lowEur / 1000))}–${numberFormat(Math.round(budget.highEur / 1000))} k€`
     : production ? 'À préciser' : 'En attente';
+  $('resultInvestmentRange').textContent = budgetReady
+    ? `${numberFormat(Math.round(budget.lowEur / 1000))}–${numberFormat(Math.round(budget.highEur / 1000))} k€`
+    : production ? 'À préciser' : 'En attente';
+  $('resultInvestmentRange').classList.toggle('simPendingValue', !budgetReady);
   $('resultUsableArea').textContent = `${numberFormat(input.usableArea)} m²`;
   const buildingLabels = { offices: 'Bureaux & tertiaire', logistics: 'Stockage & logistique', industry: 'Industrie & atelier', retail: 'Commerce & grande surface', public: 'Équipement public', other: 'Autre bâtiment professionnel' };
   const externalSurfaceLabels = { parking: 'Parking', terrain: 'Terrain', agriculture: 'Surface agricole' };

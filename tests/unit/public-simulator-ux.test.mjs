@@ -72,6 +72,47 @@ test('public simulator direct DOM bindings exist and IDs are unique', () => {
   for (const [, id] of js.matchAll(/\$\('([^']+)'\)/g)) assert.ok(ids.includes(id), `missing DOM binding: ${id}`);
 });
 
+test('summary restores the server CAPEX corridor between production and savings', () => {
+  const html = readFileSync(new URL('../../public-simulator/index.html', import.meta.url), 'utf8');
+  const js = readFileSync(new URL('../../public-simulator/pro-simulator.mjs', import.meta.url), 'utf8');
+  const metrics = html.slice(html.indexOf('<div class="simSummaryMetrics">'), html.indexOf('<div class="simResultDetails">'));
+  const ids = [...metrics.matchAll(/<strong id="([^"]+)"/g)].map((match) => match[1]);
+  assert.deepEqual(ids, ['capacityRange', 'annualProduction', 'resultInvestmentRange', 'resultAnnualSavings', 'resultNetGain25Years']);
+  const budgetCode = js.slice(js.indexOf('  const budget = production?.installation_budget;'), js.indexOf("  $('resultUsableArea').textContent"));
+  const render = new Function('production', '$', 'numberFormat', budgetCode);
+  const element = { textContent: '', classList: { toggle(name, pending) { assert.equal(name, 'simPendingValue'); this.pending = pending; } } };
+  const format = (value) => new Intl.NumberFormat('fr-FR').format(value);
+  const budget = { status: 'ASSUMPTION', scope: 'EQUIPMENT_AND_INSTALLATION', rangeBasis: 'CAPACITY_AND_INSTALLATION_TYPE_REFERENCE', lowEur: 184560, referenceEur: 201000, highEur: 230700 };
+  const run = (production) => render(production, (id) => { assert.equal(id, 'resultInvestmentRange'); return element; }, format);
+  run({ installation_budget: budget });
+  assert.equal(element.textContent, '185–231 k€');
+  assert.equal(element.classList.pending, false);
+  for (const invalid of [{ ...budget, lowEur: null }, { ...budget, highEur: Infinity }, { ...budget, referenceEur: 300000 }, { ...budget, scope: 'OTHER' }, { ...budget, status: 'UNKNOWN' }]) {
+    run({ installation_budget: invalid });
+    assert.equal(element.textContent, 'À préciser');
+    assert.equal(element.classList.pending, true);
+  }
+  run(null);
+  assert.equal(element.textContent, 'En attente');
+});
+
+test('automobile equivalence matches requested copy with a tree, dynamic km and accessible caveat', () => {
+  const html = readFileSync(new URL('../../public-simulator/index.html', import.meta.url), 'utf8');
+  const css = readFileSync(new URL('../../public-simulator/pro-simulator-design.css', import.meta.url), 'utf8');
+  const block = html.match(/<div class="simEcoCallout simCarbonEquivalence">.*?<\/details><\/div>/)?.[0];
+  assert.ok(block);
+  assert.match(block, /href="#sim-tree"/);
+  assert.doesNotMatch(block, /href="#sim-leaf"|530.?000/);
+  assert.match(block, /Soit l’équivalent de/);
+  assert.match(block, /id="resultCarbonKm"/);
+  assert.match(block, /en voiture thermique évités chaque année\./);
+  assert.match(block, /summary aria-label="À propos de l’équivalence automobile"/);
+  assert.match(block, /Il ne s’agit pas de trajets réellement évités/);
+  assert.match(html, /href="#sim-leaf"\/><\/svg>Repère CO₂ évité/);
+  assert.match(css, /#resultStep \.simSummaryMetrics \{ grid-template-columns: repeat\(5,minmax\(0,1fr\)\); \}/);
+  assert.match(css, /@media \(max-width:700px\) \{\s*#resultStep \.simSummaryMetrics \{ grid-template-columns: 1fr; \}/);
+});
+
 test('public presentation does not disclose calculation sources or detailed benchmark coefficients', () => {
   const html = readFileSync(new URL('../../public-simulator/index.html', import.meta.url), 'utf8');
   const js = readFileSync(new URL('../../public-simulator/pro-simulator.mjs', import.meta.url), 'utf8');
