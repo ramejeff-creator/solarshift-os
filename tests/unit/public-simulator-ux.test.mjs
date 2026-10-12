@@ -77,10 +77,17 @@ test('usable-area slider and roof orientation sit side by side with values align
   assert.ok(controlsStart >= 0 && controlsEnd > controlsStart);
   assert.ok(controls.indexOf('id="usableAreaGroup"') < controls.indexOf('id="mapOrientationGroup"'));
   assert.match(controls, /<output id="usableOutput">65 %<\/output>/);
-  assert.match(controls, /<p id="orientationStatus" class="simPanExplanation"/);
+  assert.match(controls, /<h3 class="simQuestionLabel" data-number="5">Orientation de la toiture/);
+  assert.match(controls, /<output id="orientationStatus" class="simOrientationResult"/);
   assert.match(css, /\.simSurfaceControls \{ display: grid; grid-template-columns: minmax\(190px,\.72fr\) minmax\(0,1\.28fr\)/);
-  assert.match(css, /\.simOrientationHeader \.simPanExplanation \{ margin: 0; text-align: right; \}/);
+  assert.match(css, /\.simMapOrientation \[data-number\]::before/);
+  assert.match(css, /\.simOrientationResult \{ display: block; flex: 0 1 52%;/);
   assert.match(css, /\.simSurfaceControls \{ grid-template-columns: minmax\(0,1fr\); gap: 8px; \}/);
+  const financialSummary = js.slice(js.indexOf('  const annualSavings ='), js.indexOf('  const gridPrice ='));
+  assert.match(financialSummary, /resultAnnualSavings'[\s\S]*annualSavings \/ 1000/);
+  assert.match(financialSummary, /formatGainRange\(netGainCentral\)/);
+  assert.doesNotMatch(financialSummary, /scenarioCorridor/);
+  assert.match(js, /Scénario central : gain net estimé après CAPEX/);
   assert.match(js, /setView\(\[location\.latitude, location\.longitude\], 19\)/);
   assert.match(js, /setView\(\[suggestion\.latitude, suggestion\.longitude\], 19\)/);
 });
@@ -88,7 +95,7 @@ test('usable-area slider and roof orientation sit side by side with values align
 test('simulator layout refreshes cached styles and keeps building illustrations in a visible frame', () => {
   const html = readFileSync(new URL('../../public-simulator/index.html', import.meta.url), 'utf8');
   const css = readFileSync(new URL('../../public-simulator/pro-simulator-design.css', import.meta.url), 'utf8');
-  assert.match(html, /pro-simulator-design\.css\?v=20261012-10/);
+  assert.match(html, /pro-simulator-design\.css\?v=20261012-11/);
   assert.match(css, /\.simBuildingChoices \.simBuildingArt \{\s*height: clamp\(58px, 8vw, 105px\);\s*aspect-ratio: 16 \/ 9;/);
 });
 

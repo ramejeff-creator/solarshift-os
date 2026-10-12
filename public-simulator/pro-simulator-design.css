@@ -185,10 +185,13 @@ fieldset.simQuestion > div { clear: both; }
 .simSurfaceControls { display: grid; grid-template-columns: minmax(190px,.72fr) minmax(0,1.28fr); gap: 12px; align-items: stretch; margin: 12px 0; }
 .simMapOrientation { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 8px 14px; min-width: 0; margin: 0; padding: 12px 14px; border: 1px solid #d7e7de; border-radius: 10px; background: #f5faf6; }
 .simMapOrientation[hidden] { display: none; }
-.simOrientationHeader { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 12px; min-width: 0; }
+.simOrientationHeader { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; min-width: 0; }
 .simMapOrientation strong { display: block; color: #164b38; font-size: 13px; }
 .simMapOrientation strong small { color: #6b8176; font-size: 11px; font-weight: 500; }
-.simOrientationHeader .simPanExplanation { margin: 0; text-align: right; }
+.simMapOrientation .simQuestionLabel { margin: 0; }
+.simMapOrientation .simQuestionLabel small { color: #6b8176; font-size: 11px; font-weight: 500; }
+.simMapOrientation [data-number]::before { display: inline-grid; place-items: center; width: 30px; height: 30px; margin-right: 12px; border-radius: 50%; color: #fff; background: linear-gradient(145deg,#087d57,#004b39); font: 700 14px/1 Manrope,system-ui,sans-serif; vertical-align: middle; content: attr(data-number); }
+.simOrientationResult { display: block; flex: 0 1 52%; min-width: 170px; min-height: 40px; padding: 8px 11px; border: 1px solid #d4e0e8; border-radius: 9px; background: #fff; color: #315363; font: 500 12px/1.45 Manrope,system-ui,sans-serif; text-align: left; }
 .simMapOrientation .simButton { min-height: 38px; padding: 8px 12px; font-size: 12px; }
 #roofOrientationHelp { grid-column: 1 / -1; margin: 0; }
 .simPickingOrientation { cursor: crosshair !important; }
@@ -403,8 +406,9 @@ fieldset.simQuestion > div { clear: both; }
   .simCard { border-radius: 18px; }
   .simSurfaceControls { grid-template-columns: minmax(0,1fr); gap: 8px; }
   .simMapOrientation { grid-template-columns: minmax(0,1fr); }
-  .simOrientationHeader { align-items: flex-start; }
-  .simOrientationHeader .simPanExplanation { text-align: left; }
+  .simOrientationHeader { align-items: stretch; flex-direction: column; }
+  .simMapOrientation [data-number]::before { width: 26px; height: 26px; margin-right: 7px; font-size: 12px; }
+  .simOrientationResult { flex-basis: auto; min-width: 0; width: 100%; }
   #roofOrientationHelp { grid-column: 1; }
   .simMapOrientation .simButton { justify-self: start; }
   .simStep { padding: 22px 18px; }

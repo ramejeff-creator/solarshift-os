@@ -7,7 +7,7 @@
   <title>OZENO · Simulateur solaire professionnel</title>
   <link rel="icon" type="image/png" href="./exec-d2eda8f0-968b-466f-b6ab-7ba649808352.png">
   <link rel="stylesheet" href="./pro-simulator.css?v=20261012-3">
-  <link rel="stylesheet" href="./pro-simulator-design.css?v=20261012-10">
+  <link rel="stylesheet" href="./pro-simulator-design.css?v=20261012-11">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css">
   <script src="./runtime-config.js"></script>
@@ -189,7 +189,7 @@
               </label>
             </div>
             <div class="simMapOrientation" id="mapOrientationGroup" hidden>
-              <div class="simOrientationHeader"><strong>Orientation de la toiture <small>(facultatif)</small></strong><p id="orientationStatus" class="simPanExplanation" role="status" aria-live="polite">Non renseignée · hypothèse sud appliquée à l’estimation.</p></div>
+              <div class="simOrientationHeader"><h3 class="simQuestionLabel" data-number="5">Orientation de la toiture <small>(facultatif)</small></h3><output id="orientationStatus" class="simOrientationResult" role="status" aria-live="polite">Non renseignée · hypothèse sud appliquée à l’estimation.</output></div>
               <button type="button" id="pickRoofOrientation" class="simButton simButtonSecondary">Repérer l’orientation sur la carte</button>
               <p id="roofOrientationHelp" class="simPanExplanation">Cliquez aux deux extrémités de la ligne au sommet du toit (faîtage), puis sur le pan à équiper si vous n’en équipez qu’un.</p>
             </div>
@@ -338,8 +338,8 @@
             <article class="simSummaryMetric"><span class="simMetricIcon simGold"><svg aria-hidden="true"><use href="#sim-sun"/></svg></span><span>Puissance PV estimée</span><strong id="capacityRange">À compléter</strong><small id="capacityCorridor"></small></article>
             <article class="simSummaryMetric"><span class="simMetricIcon"><svg aria-hidden="true"><use href="#sim-bolt"/></svg></span><span>Production annuelle</span><strong id="annualProduction">À compléter</strong><small>Estimation indicative</small></article>
             <article class="simSummaryMetric"><span class="simMetricIcon simGold"><svg aria-hidden="true"><use href="#sim-tag"/></svg></span><span>Investissement estimé · CAPEX</span><strong id="resultInvestmentRange" class="simPendingValue">À préciser</strong><small>Équipements et installation · à confirmer par devis</small></article>
-            <article class="simSummaryMetric simMarketingMetric"><span class="simMetricIcon simGold"><svg aria-hidden="true"><use href="#sim-finance"/></svg></span><span>Économie annuelle estimée</span><strong id="resultAnnualSavings" class="simPendingValue">À préciser</strong><small>ACI + potentiel ACC · année 1</small></article>
-            <article class="simSummaryMetric simMarketingMetric"><span class="simMetricIcon"><svg aria-hidden="true"><use href="#sim-bars"/></svg></span><span>Gain cumulé · 25 ans</span><strong id="resultNetGain25Years" class="simPendingValue">À préciser</strong><small>CAPEX et charges estimés déduits</small></article>
+            <article class="simSummaryMetric simMarketingMetric"><span class="simMetricIcon simGold"><svg aria-hidden="true"><use href="#sim-finance"/></svg></span><span>Économie annuelle · scénario central</span><strong id="resultAnnualSavings" class="simPendingValue">À préciser</strong><small>ACI + potentiel ACC · année 1 · à confirmer sur facture</small></article>
+            <article class="simSummaryMetric simMarketingMetric"><span class="simMetricIcon"><svg aria-hidden="true"><use href="#sim-bars"/></svg></span><span>Gain net estimé · scénario central · 25 ans</span><strong id="resultNetGain25Years" class="simPendingValue">À préciser</strong><small>CAPEX et charges estimés déduits · avant impôts</small></article>
           </div>
           <div class="simResultDetails">
             <section class="simResultPanel simPotentialPanel" aria-labelledby="resultTechnicalHeading">

@@ -1,7 +1,7 @@
 import { hasHouseNumber, normalizeSiteAddressSuggestion, siteAddressAutocompleteUrl } from './site-address.mjs';
 import { CR010_SIZING_VERSION, estimateSolarCapacity, PRO_SIMULATOR_TILT_ANGLES, solarRoofPlanes } from './pro-simulator-estimation.mjs?v=20261012-7';
 import { installRoofMapInteractions } from './roof-map-interactions.mjs?v=20261012-9';
-import { projectTimingLabel, paybackWindow, carbonEquivalenceKm, formatGainRange } from './simulator-presentation.mjs?v=20261012-7';
+import { projectTimingLabel, paybackWindow, carbonEquivalenceKm, formatGainRange } from './simulator-presentation.mjs?v=20261012-8';
 import { requestSolarPreview } from './solar-preview-request.mjs?v=20261012-7';
 import { resolveAnnualConsumption, resolveBuildingConsumptionBenchmark, resolveElectricityPrice, resolvePowerBand } from './prestudy-building-benchmarks.mjs';
 import { findInvalidControl, qualificationErrorMessage } from './simulator-validation.mjs';
@@ -807,21 +807,18 @@ function renderResult(input, production = null) {
   const annualSavings = yearOneAci != null && yearOneAcc != null
     && Number.isFinite(Number(yearOneAci)) && Number.isFinite(Number(yearOneAcc))
     ? Number(yearOneAci) + Number(yearOneAcc) : null;
-  const aciPriceCorridor = input.aciAvoidablePriceCorridor;
-  const annualSavingsLow = financial?.scenarioCorridor?.annualSavingsYear1Eur?.low ?? annualSavings;
-  const annualSavingsHigh = financial?.scenarioCorridor?.annualSavingsYear1Eur?.high ?? annualSavings;
-  $('resultAnnualSavings').textContent = annualSavingsLow != null && annualSavingsHigh != null
-    ? annualSavingsLow === annualSavingsHigh
-      ? `${numberFormat(annualSavingsLow / 1000, 1)} k€/an`
-      : `${numberFormat(annualSavingsLow / 1000, 1)}–${numberFormat(annualSavingsHigh / 1000, 1)} k€/an`
+  $('resultAnnualSavings').textContent = annualSavings != null
+    ? `${numberFormat(annualSavings / 1000, 1)} k€/an`
     : 'À préciser';
   $('resultAnnualSavings').classList.toggle('simPendingValue', annualSavings == null);
-  // Old API responses remain usable as a reference point, never a fabricated range.
-  const netGainLow = financial?.scenarioCorridor?.netGainsEur?.low ?? financial?.netGainsEur ?? null;
-  const netGainHigh = financial?.scenarioCorridor?.netGainsEur?.high ?? financial?.netGainsEur ?? null;
-  $('resultNetGain25Years').textContent = netGainLow != null && netGainHigh != null
-    ? formatGainRange(Number(netGainLow), Number(netGainHigh)) : 'À préciser';
-  $('resultNetGain25Years').classList.toggle('simPendingValue', netGainLow == null || netGainHigh == null);
+  // The prominent customer-facing KPI is the coherent reference scenario.
+  // The server's low/high sensitivity corridor remains available for internal analysis,
+  // but combining unvalidated extremes is not presented as a forecast.
+  const netGainCentral = financial?.netGainsEur != null && Number.isFinite(Number(financial.netGainsEur))
+    ? Number(financial.netGainsEur) : null;
+  $('resultNetGain25Years').textContent = netGainCentral != null
+    ? formatGainRange(netGainCentral) : 'À préciser';
+  $('resultNetGain25Years').classList.toggle('simPendingValue', netGainCentral == null);
   const gridPrice = input.electricityPrice;
   const gridCorridor = gridPrice?.corridorEurPerKwh;
   $('resultGridPrice').textContent = gridCorridor
@@ -862,9 +859,7 @@ function renderResult(input, production = null) {
   $('resultCarbonNote').textContent = 'Ordre de grandeur indicatif, sans bilan carbone détaillé ni prise en compte du cycle de vie de l’installation.';
   $('resultProjectionTitle').textContent = financialReady ? 'Projection propriétaire indicative disponible' : 'Votre rentabilité reste à préciser';
   $('resultProjectionSummary').textContent = financialReady
-    ? netGainLow != null && netGainHigh != null
-      ? `Gain net estimé après CAPEX : ${numberFormat(netGainLow / 1000)}–${numberFormat(netGainHigh / 1000)} k€ sur 25 ans. Projection indicative ; l’ACC reste un potentiel sans contrat confirmé.`
-      : `Gain net estimé après CAPEX : ${numberFormat(Number(financial.netGainsEur) / 1000)} k€ sur 25 ans. Projection indicative, à confirmer avec un conseiller.`
+    ? `Scénario central : gain net estimé après CAPEX de ${formatGainRange(netGainCentral)} sur 25 ans. Projection indicative, avant impôts et à confirmer sur facture et devis ; l’ACC reste un potentiel sans contrat confirmé.`
     : financial?.reason === 'AVOIDED_TARIFF_REQUIRED'
       ? 'Le coût de production et le potentiel ACC sont estimés ; le tarif évité de votre facture est nécessaire pour calculer les gains et le TRI.'
       : 'Un conseiller pourra confirmer les flux avec un profil horaire et des devis.';

@@ -13,10 +13,12 @@ test('deployed simulator accepts map-derived azimuths, including the Muret pair 
     estimateSolarCapacity({ ...input, orientation: 180 }).referenceKwp, 'pitched capacity is not an artificial orientation-yield correction');
 });
 
-test('public summary displays complete server scenarios, with a central fallback for older API versions', () => {
+test('public summary displays the central server scenario, without presenting sensitivity extremes as a forecast', () => {
   const source = readFileSync(new URL('../../public-simulator/pro-simulator.mjs', import.meta.url), 'utf8');
-  assert.match(source, /scenarioCorridor\?\.netGainsEur\?\.low/);
-  assert.match(source, /scenarioCorridor\?\.annualSavingsYear1Eur\?\.low/);
+  const financialSummary = source.slice(source.indexOf('  const annualSavings ='), source.indexOf('  const gridPrice ='));
+  assert.match(financialSummary, /financial\?\.netGainsEur/);
+  assert.match(financialSummary, /annualSavings \/ 1000/);
+  assert.doesNotMatch(financialSummary, /scenarioCorridor/);
   assert.doesNotMatch(source, /Number\(gainsBeforeCapex\) - budget\.(high|low)Eur/);
   assert.match(source, /avoided_electricity_price_low_eur_kwh/);
   assert.match(source, /financial_model_version: '2026-10-12.1'/);
