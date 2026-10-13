@@ -95,7 +95,7 @@ test('usable-area slider and roof orientation sit side by side with values align
 test('simulator layout refreshes cached styles and keeps building illustrations in a visible frame', () => {
   const html = readFileSync(new URL('../../public-simulator/index.html', import.meta.url), 'utf8');
   const css = readFileSync(new URL('../../public-simulator/pro-simulator-design.css', import.meta.url), 'utf8');
-  assert.match(html, /pro-simulator-design\.css\?v=20261012-11/);
+  assert.match(html, /pro-simulator-design\.css\?v=20261012-12/);
   assert.match(css, /\.simBuildingChoices \.simBuildingArt \{\s*height: clamp\(58px, 8vw, 105px\);\s*aspect-ratio: 16 \/ 9;/);
 });
 
@@ -122,7 +122,7 @@ test('public simulator direct DOM bindings exist and IDs are unique', () => {
   for (const [, id] of js.matchAll(/\$\('([^']+)'\)/g)) assert.ok(ids.includes(id), `missing DOM binding: ${id}`);
 });
 
-test('summary restores the server CAPEX corridor between production and savings', () => {
+test('summary presents the server reference CAPEX between production and savings, not its wide corridor', () => {
   const html = readFileSync(new URL('../../public-simulator/index.html', import.meta.url), 'utf8');
   const js = readFileSync(new URL('../../public-simulator/pro-simulator.mjs', import.meta.url), 'utf8');
   const metrics = html.slice(html.indexOf('<div class="simSummaryMetrics">'), html.indexOf('<div class="simResultDetails">'));
@@ -130,20 +130,24 @@ test('summary restores the server CAPEX corridor between production and savings'
   assert.deepEqual(ids, ['capacityRange', 'annualProduction', 'resultInvestmentRange', 'resultAnnualSavings', 'resultNetGain25Years']);
   const budgetCode = js.slice(js.indexOf('  const budget = production?.installation_budget;'), js.indexOf("  $('resultUsableArea').textContent"));
   const render = new Function('production', '$', 'numberFormat', budgetCode);
-  const element = { textContent: '', classList: { toggle(name, pending) { assert.equal(name, 'simPendingValue'); this.pending = pending; } } };
+  const elements = Object.fromEntries(['resultInvestmentRange', 'resultInvestmentNote', 'resultFinancialCapex'].map((id) => [id, {
+    textContent: '', classList: { toggle(name, pending) { assert.equal(name, 'simPendingValue'); this.pending = pending; } }
+  }]));
   const format = (value) => new Intl.NumberFormat('fr-FR').format(value);
-  const budget = { status: 'ASSUMPTION', scope: 'EQUIPMENT_AND_INSTALLATION', rangeBasis: 'CAPACITY_AND_INSTALLATION_TYPE_REFERENCE', lowEur: 184560, referenceEur: 201000, highEur: 230700 };
-  const run = (production) => render(production, (id) => { assert.equal(id, 'resultInvestmentRange'); return element; }, format);
+  const budget = { status: 'ASSUMPTION', scope: 'EQUIPMENT_AND_INSTALLATION', rangeBasis: 'CAPACITY_AND_INSTALLATION_TYPE_REFERENCE', lowEur: 184560, referenceEur: 201000, referenceEurPerKwp: 1000, highEur: 230700 };
+  const run = (production) => render(production, (id) => elements[id], format);
   run({ installation_budget: budget });
-  assert.equal(element.textContent, '185–231 k€');
-  assert.equal(element.classList.pending, false);
-  for (const invalid of [{ ...budget, lowEur: null }, { ...budget, highEur: Infinity }, { ...budget, referenceEur: 300000 }, { ...budget, scope: 'OTHER' }, { ...budget, status: 'UNKNOWN' }]) {
+  assert.equal(elements.resultInvestmentRange.textContent, '201 k€');
+  assert.equal(elements.resultInvestmentNote.textContent, `Référence indicative : ${format(1000)} €/kWc · à confirmer par devis`);
+  assert.equal(elements.resultFinancialCapex.textContent, `${format(201000)} € · ${format(1000)} €/kWc`);
+  assert.equal(elements.resultInvestmentRange.classList.pending, false);
+  for (const invalid of [{ ...budget, lowEur: null }, { ...budget, highEur: Infinity }, { ...budget, referenceEur: 300000 }, { ...budget, referenceEurPerKwp: null }, { ...budget, scope: 'OTHER' }, { ...budget, status: 'UNKNOWN' }]) {
     run({ installation_budget: invalid });
-    assert.equal(element.textContent, 'À préciser');
-    assert.equal(element.classList.pending, true);
+    assert.equal(elements.resultInvestmentRange.textContent, 'À préciser');
+    assert.equal(elements.resultInvestmentRange.classList.pending, true);
   }
   run(null);
-  assert.equal(element.textContent, 'En attente');
+  assert.equal(elements.resultInvestmentRange.textContent, 'En attente');
 });
 
 test('automobile equivalence matches requested copy with a tree, dynamic km and accessible caveat', () => {

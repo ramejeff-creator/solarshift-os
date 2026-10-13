@@ -753,15 +753,19 @@ function renderResult(input, production = null) {
   const budget = production?.installation_budget;
   const budgetReady = budget?.status === 'ASSUMPTION' && budget.scope === 'EQUIPMENT_AND_INSTALLATION'
     && ['CAPACITY_AND_INSTALLATION_TYPE_REFERENCE', 'CAPACITY_CORRIDOR_AT_FIXED_UNIT_COST'].includes(budget.rangeBasis)
-    && [budget.lowEur, budget.referenceEur, budget.highEur].every((value) => typeof value === 'number' && Number.isFinite(value) && value > 0)
+    && [budget.lowEur, budget.referenceEur, budget.highEur, budget.referenceEurPerKwp].every((value) => typeof value === 'number' && Number.isFinite(value) && value > 0)
     && budget.lowEur <= budget.referenceEur && budget.referenceEur <= budget.highEur;
-  const budgetRange = budgetReady
-    ? `${numberFormat(Math.round(budget.referenceEur / 1000))} k€ · corridor ${numberFormat(Math.round(budget.lowEur / 1000))}–${numberFormat(Math.round(budget.highEur / 1000))} k€`
+  const budgetReference = budgetReady
+    ? `${numberFormat(Math.round(budget.referenceEur))} € · ${numberFormat(budget.referenceEurPerKwp)} €/kWc`
     : production ? 'À préciser' : 'En attente';
   $('resultInvestmentRange').textContent = budgetReady
-    ? `${numberFormat(Math.round(budget.lowEur / 1000))}–${numberFormat(Math.round(budget.highEur / 1000))} k€`
+    ? `${numberFormat(Math.round(budget.referenceEur / 1000))} k€`
     : production ? 'À préciser' : 'En attente';
   $('resultInvestmentRange').classList.toggle('simPendingValue', !budgetReady);
+  $('resultInvestmentNote').textContent = budgetReady
+    ? `Référence indicative : ${numberFormat(budget.referenceEurPerKwp)} €/kWc · à confirmer par devis`
+    : 'Tarif de référence moyen · à confirmer par devis';
+  $('resultFinancialCapex').textContent = budgetReady ? budgetReference : 'À préciser';
   $('resultUsableArea').textContent = `${numberFormat(input.usableArea)} m²`;
   const buildingLabels = { offices: 'Bureaux & tertiaire', logistics: 'Stockage & logistique', industry: 'Industrie & atelier', retail: 'Commerce & grande surface', public: 'Équipement public', other: 'Autre bâtiment professionnel' };
   const externalSurfaceLabels = { parking: 'Parking', terrain: 'Terrain', agriculture: 'Surface agricole' };
@@ -776,7 +780,6 @@ function renderResult(input, production = null) {
   $('resultSpecificYield').textContent = production && input.siteKind !== 'land'
     ? `${numberFormat(Number(production.annual_kwh_kwc) * input.shadeFactor)} kWh/kWc/an · estimation indicative`
     : 'À calculer / qualifier';
-  $('resultFinancialCapex').textContent = budgetReady ? budgetRange : 'À préciser';
   const financial = production?.financial_preview;
   const financialReady = financial?.status === 'ASSUMPTION';
   const lcoe = Number(financial?.lcoeEurPerKwh);
