@@ -29,7 +29,8 @@ export function appendSituationPlan(host, snapshot, { identity = () => ({}), act
     invalidate(); controller = new AbortController(); const run = generation; prepare.disabled = true; status.textContent = 'Préparation du fond IGN en haute définition…';
     try {
       const [paper, orientation] = format.value.split(':');
-      const result = await requestJson(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ geometry: snapshot.parcel.geometry, base: base.value, format: paper, orientation, scale: Number(scale.value), cadastre: cadastre.checked }), signal: controller.signal, timeoutMs: 35000,
+      // This public, unauthenticated geographic endpoint reads JSON text and needs no CORS preflight.
+      const result = await requestJson(endpoint, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body: JSON.stringify({ geometry: snapshot.parcel.geometry, base: base.value, format: paper, orientation, scale: Number(scale.value), cadastre: cadastre.checked }), signal: controller.signal, timeoutMs: 35000,
         fetcher: async (...args) => {
           let r;
           try { r = await fetch(...args); }

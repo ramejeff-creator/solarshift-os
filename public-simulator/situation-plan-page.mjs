@@ -1,6 +1,6 @@
 import { cartographicObservation, requestJson } from './prospecting-data.mjs';
 import { normalizeSiteAddressSuggestion, siteAddressAutocompleteUrl, parseCoordinatePair } from './site-address.mjs';
-import { appendSituationPlan } from './situation-plan-ui.mjs?v=20261020-2';
+import { appendSituationPlan } from './situation-plan-ui.mjs?v=20261020-3';
 const $ = id => document.getElementById(id), status = $('planLookupStatus'), choices = $('planChoices'), result = $('planResult');
 const params = new URLSearchParams(location.search);
 let version = 0, controller, selectedAddress = params.get('label')?.slice(0, 500) || '';
