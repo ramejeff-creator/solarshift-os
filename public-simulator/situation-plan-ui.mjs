@@ -30,7 +30,13 @@ export function appendSituationPlan(host, snapshot, { identity = () => ({}), act
     try {
       const [paper, orientation] = format.value.split(':');
       const result = await requestJson(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ geometry: snapshot.parcel.geometry, base: base.value, format: paper, orientation, scale: Number(scale.value), cadastre: cadastre.checked }), signal: controller.signal, timeoutMs: 35000,
-        fetcher: async (...args) => { const r = await fetch(...args); if (!r.ok) { const payload = await r.json().catch(() => null); throw new Error(payload?.error || 'Fond IGN indisponible.'); } return r; } });
+        fetcher: async (...args) => {
+          let r;
+          try { r = await fetch(...args); }
+          catch (error) { throw new Error(`Connexion au service de plan impossible (${error.message}). Réessayez.`); }
+          if (!r.ok) { const payload = await r.json().catch(() => null); throw new Error(payload?.error || `Fond IGN indisponible (HTTP ${r.status}).`); }
+          return r;
+        } });
       if (!current(run)) return;
       if (result.state !== 'AVAILABLE' || result.crs !== 'EPSG:2154' || !/^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(result.image || '')) throw new Error('Fond IGN invalide.');
       const image = el('img'); image.alt = 'Plan de situation à l’échelle : fond IGN et parcelle en rouge.'; image.src = result.image;
