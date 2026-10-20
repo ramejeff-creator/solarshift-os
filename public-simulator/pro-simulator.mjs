@@ -518,6 +518,12 @@ function readLocation() {
   if (selectedAddress) return selectedAddress;
   return null;
 }
+$('situationPlanLink').addEventListener('click', () => {
+  const location = readLocation(), firstRoof = roofMapShapes?.getLayers?.()[0], center = firstRoof?.getBounds?.().getCenter();
+  const url = new URL('./situation-plan.html', window.location.href);
+  if (location) { url.searchParams.set('lat', String(center?.lat ?? location.latitude)); url.searchParams.set('lon', String(center?.lng ?? location.longitude)); url.searchParams.set('label', location.label || ''); }
+  $('situationPlanLink').href = url.href;
+});
 function updateContinueLabel() {
   $('continueLabel').textContent = readLocation() || !$('siteAddress').value.trim()
     ? 'Continuer'

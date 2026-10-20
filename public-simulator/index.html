@@ -178,6 +178,7 @@
                 <div id="roofContourEditor" class="simMapActions" hidden><strong>Correction du contour</strong><button id="saveRoofContour" class="simButton simButtonPrimary" type="button">Enregistrer le contour</button><button id="cancelRoofContour" class="simButton simButtonQuiet" type="button">Annuler la correction</button></div>
                 <p id="roofMapHint" class="simMapHint"><svg aria-hidden="true"><use href="#sim-bulb"/></svg><span>Cliquez une fois sur chaque toiture ou zone à ajouter pour proposer son contour. Pour le corriger, cliquez une seconde fois dessus.</span></p>
                 <p id="roofDetectionStatus" class="simFieldHint" role="status" aria-live="polite"></p>
+                <p><a id="situationPlanLink" class="simButton simButtonSecondary" href="./situation-plan.html" target="_blank" rel="noopener">Plan de situation HD à l’échelle</a></p>
               </div>
               <aside class="simSiteSummary" aria-label="Résumé du site"><h3>Votre site</h3><span class="simBuildingArt building-offices" data-summary-building-art aria-hidden="true"></span><p><span id="summaryBuildingLabel">Type de bâtiment</span><strong id="summaryBuilding">À choisir</strong></p><p><span>Installation</span><strong id="summaryRoof">À choisir</strong></p><label class="simField simManualArea" for="roofArea"><span id="areaLabel">Surface totale de toiture (m²)</span><input id="roofArea" name="roofArea" type="number" min="20" max="1000000" step="1" inputmode="decimal" placeholder="Ex. 1 200 m²"><small id="areaHelp">Mesurée sur la carte ou indiquée si vous la connaissez.</small></label><p class="simSummaryArea"><span id="summaryAreaLabel">Surface de toiture tracée</span><strong id="summaryArea">À mesurer</strong></p><div class="simAdvice"><svg aria-hidden="true"><use href="#sim-bulb"/></svg><p><strong>Et après ?</strong><span id="summaryAdvice">Vous préciserez la pente, l’orientation et l’ombrage pour affiner votre estimation.</span></p></div></aside>
             </div>
@@ -403,6 +404,6 @@
   </main>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
-  <script type="module" src="./pro-simulator.mjs?v=20261012-10"></script>
+  <script type="module" src="./pro-simulator.mjs?v=20261020-plan-hd"></script>
 </body>
 </html>

@@ -37,4 +37,5 @@
     ? '/__local/enedis-synthetic-profile-preview'
     : `${project.url}/functions/v1/enedis-synthetic-profile-preview`;
   config.prospectingOwnerEndpoint = `${project.url}/functions/v1/prospecting-owner-details`;
+  config.situationPlanEndpoint = `${project.url}/functions/v1/situation-plan`;
 })();
