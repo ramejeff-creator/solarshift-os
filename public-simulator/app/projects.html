@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OZENO · Espace commercial</title>
+  <link rel="icon" type="image/png" href="./exec-d2eda8f0-968b-466f-b6ab-7ba649808352.png">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="./ozeno-theme.css">
+  <link rel="stylesheet" href="./project-hub.css">
+  <script src="./runtime-config.js"></script>
+  <script src="./app-auth-gate.js"></script>
+</head>
+<body class="ozenoWorkspace ozenoDashboard">
+  <header class="hubTopbar">
+    <a class="hubBrand" href="./projects.html" aria-label="OZENO, portefeuille projets">
+      <span class="hubBrandCopy">
+        <img class="hubLogoWordmark" src="./ozeno-wordmark.png" alt="OZENO">
+        <small>Plateforme de transition énergétique</small>
+      </span>
+    </a>
+    <label class="hubGlobalSearch" id="hubGlobalSearchWrap">
+      <span class="hubSearchIcon" aria-hidden="true">⌕</span>
+      <span class="hubVisuallyHidden">Rechercher dans les projets</span>
+      <input id="hubSearch" type="search" placeholder="Rechercher un projet, un client, une adresse…" autocomplete="off">
+      <span class="hubSearchHint" aria-hidden="true">Projets</span>
+    </label>
+    <nav class="ozenoHeaderNavigation" aria-label="Compte et préférences"></nav>
+  </header>
+
+  <div class="hubAdminShell">
+    <aside class="hubSidebar" aria-label="Espace commercial">
+      <p class="hubSidebarCaption">ESPACE COMMERCIAL</p>
+      <nav class="hubSidebarNav" aria-label="Modules commerciaux">
+        <p class="hubNavSection">PORTFEUILLE</p>
+        <a class="hubNavItem isActive" href="./projects.html" aria-current="page" data-hub-module="projects">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"></rect><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"></rect><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"></rect><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"></rect></svg>
+          <span class="hubNavLabel">Projets</span><span class="hubSidebarCount" id="hubSidebarProjectCount">—</span>
+        </a>
+        <a class="hubNavItem" href="#prospection" data-hub-module="prospection">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m15.5 15.5 5 5M8 10.5h5M10.5 8v5"></path></svg>
+          <span class="hubNavLabel">Outils prospection</span><span class="hubComingSoon">Nouveau</span>
+        </a>
+
+        <p class="hubNavSection">SUIVI COMMERCIAL</p>
+        <a class="hubNavItem" href="#planning" data-hub-module="planning">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"></rect><path d="M7.5 3v4M16.5 3v4M3.5 9.5h17M8 13h3M8 16.5h7"></path></svg>
+          <span class="hubNavLabel">Planning</span><span class="hubComingSoon">À venir</span>
+        </a>
+        <a class="hubNavItem" href="#revenus" data-hub-module="revenus">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M15.5 8.5c-.7-.8-1.8-1.2-3.3-1.2-1.7 0-2.8.8-2.8 2s1.1 1.8 2.8 2.1 2.8.9 2.8 2.2-1.2 2.1-3 2.1c-1.5 0-2.8-.5-3.6-1.4M12 5.5v13"></path></svg>
+          <span class="hubNavLabel">Revenus</span><span class="hubComingSoon">À venir</span>
+        </a>
+
+        <p class="hubNavSection">RÉSEAU</p>
+        <a class="hubNavItem" href="#clients" data-hub-module="clients">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"></circle><path d="M3.5 20v-1.7a5.5 5.5 0 0 1 11 0V20zM16 5.2a3 3 0 0 1 0 5.7M17 14a4.7 4.7 0 0 1 3.5 4.5V20h-3"></path></svg>
+          <span class="hubNavLabel">Clients</span><span class="hubComingSoon">À venir</span>
+        </a>
+        <a class="hubNavItem" href="#installateurs" data-hub-module="installateurs">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 4l9 6.5M5.5 9v11h13V9M9 20v-6h6v6"></path><path d="m15 6 1.5-2.5 2.2 1.2L17 7"></path></svg>
+          <span class="hubNavLabel">Installateurs</span><span class="hubComingSoon">À venir</span>
+        </a>
+        <a class="hubNavItem" href="#contact-ozeno" data-hub-module="contact-ozeno">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16v11H9l-5 3v-14Z"></path><path d="M8 9h8M8 12.5h5"></path></svg>
+          <span class="hubNavLabel">Contact Ozeno</span><span class="hubComingSoon">À venir</span>
+        </a>
+        <a class="hubNavItem" href="./franchise.html">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"></circle><circle cx="17.5" cy="9" r="2.4"></circle><path d="M3.5 20v-1.7a5.5 5.5 0 0 1 11 0V20zM15.5 15.5a4.5 4.5 0 0 1 5 4.5"></path></svg>
+          <span class="hubNavLabel">Espace franchisé</span><span class="hubComingSoon">Aperçu</span>
+        </a>
+
+        <p class="hubNavSection">RESSOURCES</p>
+        <a class="hubNavItem" href="#fiches-techniques" data-hub-module="fiches-techniques">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.5h14v17H5zM8 7h8M8 10.5h8M8 14h5"></path><path d="m15.5 17 1.5 1.5 3-3"></path></svg>
+          <span class="hubNavLabel">Fiches techniques</span><span class="hubComingSoon">À venir</span>
+        </a>
+        <a class="hubNavItem" href="#references" data-hub-module="references">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4.5h6a3 3 0 0 1 3 3V20a3 3 0 0 0-3-2.5H4zM20 4.5h-4a3 3 0 0 0-3 3M13 20a3 3 0 0 1 3-2.5h4v-13h-4"></path></svg>
+          <span class="hubNavLabel">Références</span><span class="hubComingSoon">À venir</span>
+        </a>
+        <a class="hubNavItem" href="#documentations" data-hub-module="documentations">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h8l4 4V20H6zM14 3.5V8h4M9 12h6M9 15.5h6"></path></svg>
+          <span class="hubNavLabel">Documentations</span><span class="hubComingSoon">À venir</span>
+        </a>
+        <a class="hubNavItem" href="#blog-conseils" data-hub-module="blog-conseils">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4.5h6a3 3 0 0 1 3 3V20a3 3 0 0 0-3-2.5H4zM20 4.5h-4a3 3 0 0 0-3 3"></path><path d="m16 13 4.5-4.5a1.4 1.4 0 0 1 2 2L18 17l-3 1z"></path></svg>
+          <span class="hubNavLabel">Blog et conseils</span><span class="hubComingSoon">À venir</span>
+        </a>
+      </nav>
+      <div class="hubSidebarFooter"><span class="hubSidebarStatusDot" aria-hidden="true"></span><span>Votre espace commercial</span></div>
+    </aside>
+
+    <main class="hubDashboard">
+      <div id="hubPortfolioView">
+        <div class="hubDashboardIntro">
+          <div>
+            <p class="ozenoEyebrow">ESPACE COMMERCIAL / PORTEFEUILLE</p>
+            <h1>Tableau de bord</h1>
+            <p>Retrouvez vos dossiers et poursuivez leur qualification.</p>
+          </div>
+          <button type="button" class="hubPrimary" id="hubNewProject">＋ Nouveau projet</button>
+        </div>
+
+        <section class="hubPortfolioStats" aria-label="Vue d’ensemble du portefeuille">
+          <article class="hubStatCard"><span class="hubStatIcon" aria-hidden="true">✓</span><div><p>Projets validés</p><strong id="hubValidatedProjects">—</strong></div></article>
+          <article class="hubStatCard"><span class="hubStatIcon draft" aria-hidden="true">◷</span><div><p>Projets en cours</p><strong id="hubInProgressProjects">—</strong><small>Brouillons compris</small></div></article>
+          <article class="hubStatCard"><span class="hubStatIcon cloud" aria-hidden="true">↗</span><div><p>Projets en attente</p><strong id="hubPendingProjects">—</strong><small>Formulaire web non connecté</small></div></article>
+          <article class="hubStatCard"><span class="hubStatIcon prospecting" aria-hidden="true">⌕</span><div><p>Projets en prospection</p><strong id="hubProspectingProjects">—</strong></div></article>
+        </section>
+        <p id="hubCommissionPotential" class="hubMapPrivacyHint">Commissions travaux potentielles : à renseigner · distinctes du CA facturé.</p>
+
+        <section class="hubProjectPanel" aria-labelledby="hubProjectsHeading">
+          <div class="hubToolbar">
+            <div class="hubToolbarTitle"><p class="hubSectionEyebrow">SUIVI DES DOSSIERS</p><h2 id="hubProjectsHeading">Projets <small id="hubProjectCount">Chargement…</small></h2><p class="hubMapPrivacyHint">Statut commercial modifiable · « Supprimé » est réversible : le dossier et son historique sont conservés.</p><p class="hubMapPrivacyHint">La vue carte charge des tuiles Esri, qui reçoit la zone géographique consultée.</p></div>
+            <label class="hubFilterLabel"><span class="hubVisuallyHidden">Filtrer les projets</span><select id="hubFilter"><option value="all">Tous les projets</option></select></label>
+            <div class="hubViewToggle" role="group" aria-label="Mode d’affichage des projets">
+              <button type="button" id="hubShowProjectList" aria-pressed="true">Liste</button>
+              <button type="button" id="hubShowProjectMap" aria-pressed="false">Carte</button>
+            </div>
+          </div>
+          <div id="hubProjectListView">
+            <div class="hubTableScroll">
+            <table class="hubProjects">
+              <thead><tr><th scope="col">Projet / site</th><th scope="col">Client</th><th scope="col">Installateur</th><th scope="col">Étape du dossier</th><th scope="col">Statut commercial</th><th scope="col">Installation prévue</th><th scope="col">Commission OZENO potentielle</th><th scope="col">Modifié</th><th scope="col"><span class="hubVisuallyHidden">Action</span></th></tr></thead>
+              <tbody id="hubProjectsBody"></tbody>
+            </table>
+            </div>
+            <p class="hubEmpty" id="hubEmpty" hidden></p>
+          </div>
+          <div id="hubProjectMapView" hidden>
+            <div class="hubMapLegend" aria-label="Légende des statuts">
+              <span><i class="hubMapDot progress" aria-hidden="true"></i>En cours / brouillon</span>
+              <span><i class="hubMapDot validated" aria-hidden="true"></i>Validé</span>
+              <span><i class="hubMapDot archived" aria-hidden="true"></i>Abandonné / supprimé</span>
+            </div>
+            <div id="hubProjectMap" class="hubMap" role="region" aria-label="Carte des projets OZENO"></div>
+            <p id="hubProjectMapEmpty" class="hubEmpty" hidden>Aucun projet affiché ne possède de coordonnées cartographiques.</p>
+            <p class="hubPrivacyNote">Les projets sont repérés par statut commercial : validé en bleu, en cours / brouillon en orange, abandonné ou supprimé en gris.</p>
+          </div>
+        </section>
+        <p class="hubMuted hubDashboardFootnote">Les dossiers en prospection et en cours sont classés séparément du statut commercial. Les demandes du formulaire de simulation ne sont pas encore raccordées à cette liste.</p>
+      </div>
+
+      <section class="hubProspecting" id="hubProspectingView" aria-labelledby="hubProspectingTitle" hidden>
+        <div class="hubDashboardIntro">
+          <div>
+            <p class="ozenoEyebrow">ESPACE COMMERCIAL / PROSPECTION</p>
+            <h1 id="hubProspectingTitle">Repérer les toitures à proximité</h1>
+            <p>Repérez les bâtiments puis consultez leur fiche : consommation publiée, bâtiment, parcelles et urbanisme.</p>
+          </div>
+        </div>
+        <section class="hubProjectPanel" aria-label="Critères de prospection">
+          <div class="hubProspectingControls">
+            <label><span>Projet de référence (facultatif)</span><select id="hubProspectingProject"><option value="">Aucun projet sélectionné</option></select></label>
+            <label class="hubProspectingLocationField"><span>Adresse, lieu ou coordonnées GPS</span><div class="hubProspectingLocationRow"><div class="hubProspectingAutocomplete"><input id="hubProspectingLocation" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="hubProspectingSuggestions" autocomplete="off" placeholder="Adresse, ville ou 48.95990, 1.82077"><div id="hubProspectingSuggestions" class="hubProspectingSuggestions" role="listbox" hidden></div></div><button type="button" class="hubSecondary" id="hubProspectingPickMap" disabled>Placer sur la carte</button></div></label>
+            <label><span>Rayon de recherche</span><select id="hubProspectingRadius"><option value="250">250 m</option><option value="500" selected>500 m</option><option value="1000">1 km</option><option value="2000">2 km</option><option value="5000">5 km</option></select></label>
+            <label class="hubProspectingMinAreaField"><span>Surface toiture minimum (m²)</span><input id="hubProspectingMinArea" type="number" min="1" max="100000" step="1" required aria-describedby="hubProspectingMinAreaError" placeholder="Ex. 500"><small id="hubProspectingMinAreaError" role="alert" hidden></small></label>
+            <button type="button" class="hubPrimary" id="hubProspectingSearch" disabled>Recherche</button>
+          </div>
+          <p id="hubProspectingLocationHint" class="hubProspectingLocationHint" role="status" aria-live="polite">Choisissez un projet, une adresse / un lieu dans les suggestions ou saisissez des coordonnées GPS (latitude, longitude).</p>
+          <p class="hubDataCaveat"><strong>À lire avant utilisation :</strong> OpenStreetMap fournit ici des contours de bâtiments et une emprise au sol approximative. Ce n’est pas une mesure de toiture exploitable, ni une vérification de l’entreprise occupante. Les surfaces devront être contrôlées sur l’imagerie ou lors d’une visite.</p>
+          <p id="hubProspectingState" class="hubProspectingState" role="status" aria-live="polite">Sélectionnez un projet ou une adresse / un lieu, puis lancez la recherche.</p>
+        </section>
+        <section class="hubProspectingResults" id="hubProspectingResults" hidden aria-label="Carte et résultats de prospection">
+          <div class="hubProspectingMapColumn">
+            <div id="hubProspectingMap" class="hubMap hubProspectingMap" role="region" aria-label="Carte des bâtiments proches"></div>
+            <p class="hubPrivacyNote">Les surfaces sont estimées à partir des contours au sol : la surface de toiture reste à vérifier. Les consommations sont des agrégats publics Enedis à l’adresse, pas des relevés individuels. Seuls les propriétaires et contacts nécessitent un compte interne autorisé. Les résultats ne sont pas enregistrés dans le portefeuille.</p>
+          </div>
+          <div class="hubCandidatePanel">
+            <div class="hubCandidateHeading"><h2>Bâtiments repérés</h2><span id="hubCandidateCount">0</span></div>
+            <label class="hubCandidateSort"><span>Trier par</span><select id="hubProspectingSort"><option value="surface">Surface estimée décroissante</option><option value="consumptionDesc">Consommation décroissante</option><option value="consumptionAsc">Consommation croissante</option></select></label>
+            <p class="hubMuted" id="hubProspectingSortState" role="status" aria-live="polite">Tri par surface estimée décroissante.</p>
+            <ol class="hubCandidates" id="hubCandidates"></ol>
+          </div>
+        </section>
+        <section id="hubProspectingSheet" class="hubProjectPanel hubProspectingSheet" aria-label="Fiche détaillée du bâtiment sélectionné" hidden></section>
+      </section>
+
+      <section class="hubModulePlaceholder" id="hubModulePlaceholder" aria-labelledby="hubModuleTitle" hidden>
+        <p class="ozenoEyebrow">ESPACE COMMERCIAL / MODULE</p>
+        <div class="hubModuleCard">
+          <span class="hubModuleIcon" aria-hidden="true">✦</span>
+          <div><span class="hubModuleBadge">EN PRÉPARATION</span><h1 id="hubModuleTitle">Module</h1><p id="hubModuleDescription">Cette rubrique sera disponible dans une prochaine étape.</p></div>
+          <button type="button" class="hubSecondary" id="hubBackToProjects">Retour aux projets</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="./project-hub.js"></script>
+</body>
+</html>

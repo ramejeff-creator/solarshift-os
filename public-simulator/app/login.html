@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>Connexion · OZENO</title>
+  <script>
+    (() => {
+      const url = new URL(window.location.href);
+      const sensitive = (key) => /^(?:email|password|passwd|token|access_token|refresh_token|apikey|api_key)$/i.test(key);
+      let unsafe = [...url.searchParams.keys()].some(sensitive);
+      const next = url.searchParams.get('next');
+      if (next) {
+        try {
+          const target = new URL(next, url);
+          for (const key of [...target.searchParams.keys()]) {
+            if (sensitive(key)) { target.searchParams.delete(key); unsafe = true; }
+          }
+          url.searchParams.set('next', `${target.pathname}${target.search}${target.hash}`);
+        } catch { url.searchParams.delete('next'); }
+      }
+      for (const key of [...url.searchParams.keys()]) {
+        if (sensitive(key) || !['next', 'reason'].includes(key)) url.searchParams.delete(key);
+      }
+      if (unsafe) {
+        window.__OZENO_UNSAFE_LOGIN_LINK = true;
+        window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
+      }
+    })();
+  </script>
+  <link rel="icon" type="image/png" href="./exec-d2eda8f0-968b-466f-b6ab-7ba649808352.png">
+  <link rel="stylesheet" href="./ozeno-theme.css">
+  <script src="./runtime-config.js"></script>
+  <script type="module" src="./login.js"></script>
+  <style>
+    body{min-height:100vh;margin:0;display:grid;place-items:center;background:#f2f6f3;color:#073d35;font:16px system-ui,-apple-system,"Segoe UI",sans-serif}
+    .loginCard{box-sizing:border-box;width:min(440px,calc(100% - 32px));padding:32px;background:#fff;border:1px solid #d5e4da;border-radius:18px;box-shadow:0 14px 40px #092e2417}
+    .loginBrand{display:flex;align-items:center;gap:12px;margin-bottom:26px}.loginBrand img{width:54px;height:auto}.loginBrand strong{display:block;font-size:25px;letter-spacing:.02em}.loginBrand small{color:#607b70}
+    h1{margin:0 0 8px;font-size:25px}.loginIntro{margin:0 0 24px;color:#607b70;line-height:1.5}
+    form{display:grid;gap:14px}label{display:grid;gap:6px;font-weight:650}input{box-sizing:border-box;width:100%;padding:12px;border:1px solid #c9dbd0;border-radius:8px;font:inherit}input:focus{outline:3px solid #a9d8c0;border-color:#1c875b}
+    button{border:0;border-radius:8px;background:#06453c;color:#fff;padding:13px 16px;font:inherit;font-weight:700;cursor:pointer}button:disabled{opacity:.65;cursor:wait}.loginStatus{min-height:22px;margin:14px 0 0;color:#9a5110;font-size:14px}.loginFoot{margin:18px 0 0;color:#71867c;font-size:12px;line-height:1.5}.envBadge{display:inline-block;margin-bottom:18px;padding:5px 9px;border-radius:999px;background:#e8f3ed;color:#22634a;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+  </style>
+</head>
+<body>
+  <main class="loginCard">
+    <div class="loginBrand"><img src="./ozeno-wordmark.png" alt=""><div><strong>OZENO</strong><small>Plateforme de transition énergétique</small></div></div>
+    <span class="envBadge" id="environmentBadge">Environnement de test</span>
+    <h1>Connexion</h1>
+    <p class="loginIntro">Connectez-vous avec le compte qui vous a été attribué pour accéder à l’espace de test.</p>
+    <form id="loginForm" novalidate>
+      <label for="loginEmail">Adresse e-mail<input id="loginEmail" name="email" type="email" autocomplete="username" required></label>
+      <label for="loginPassword">Mot de passe<input id="loginPassword" name="password" type="password" autocomplete="current-password" required></label>
+      <button id="loginSubmit" type="submit">Se connecter</button>
+    </form>
+    <p id="loginStatus" class="loginStatus" role="status" aria-live="polite"></p>
+    <p class="loginFoot">Les comptes sont créés par un administrateur. Les brouillons enregistrés dans ce navigateur restent locaux à cet appareil.</p>
+  </main>
+</body>
+</html>

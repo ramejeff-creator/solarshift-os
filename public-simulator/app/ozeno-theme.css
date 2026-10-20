@@ -1,0 +1,492 @@
+/* OZENO commercial workbench — a presentation layer, independent of the engines. */
+.ozenoWorkspace {
+  --ink: #163b35;
+  --pine: #073f39;
+  --green: #167363;
+  --gold: #ffd34e;
+  --pale: #f3f7f5;
+  --line: #dce6e1;
+  margin: 0;
+  color: var(--ink);
+  background: #f3f6f4;
+  font: 14px/1.5 "Segoe UI", system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.ozenoWorkspace [hidden] { display: none !important; }
+.ozenoWorkspace h1, .ozenoWorkspace h2, .ozenoWorkspace h3 { color: var(--pine); letter-spacing: -.025em; line-height: 1.25; }
+.ozenoWorkspace h2 { font-size: 23px; font-weight: 650; }
+.ozenoWorkspace h3 { font-size: 18px; font-weight: 650; }
+.ozenoWorkspace p { line-height: 1.55; }
+.ozenoWorkspace .hint { font-size: 13px; }
+.ozenoWorkspace .fine { font-size: 13px; line-height: 1.55; }
+.ozenoWorkspace :is(.hint, .fine) { color: #62786e; }
+.ozenoWorkspace :is(button, a, input, select, textarea):focus-visible { outline: 3px solid #b2d8c8; outline-offset: 3px; }
+.ozenoWorkspace > header {
+  min-height: 78px;
+  padding: 13px max(26px, calc((100vw - 1440px) / 2));
+  gap: 12px;
+  background: #fff;
+  color: var(--pine);
+  border-bottom: 1px solid var(--line);
+}
+.ozenoWorkspace .brandMark { width: 43px; height: 43px; }
+.ozenoWorkspace .brandName { font-size: 26px; line-height: 1.1; letter-spacing: .065em; }
+.ozenoWorkspace .brandSub { color: #698477; font-size: 10px; letter-spacing: .025em; }
+.ozenoHeaderNavigation { display: flex; align-items: center; gap: 28px; margin-left: auto; }
+.ozenoHeaderNavigation a { color: #61746b; text-decoration: none; font-weight: 600; font-size: 13px; padding: 11px 0; }
+.ozenoHeaderNavigation a:hover { color: var(--pine); }
+.ozenoHeaderNavigation .ozenoHeaderCurrent { color: var(--pine); border-bottom: 3px solid var(--gold); }
+.ozenoHeaderUnavailable { color: #9aa8a0; font-weight: 600; font-size: 13px; padding: 11px 0; cursor: not-allowed; }
+.ozenoEnvironment { background: #fff6d6; color: #78601b; border-radius: 30px; padding: 7px 13px; font-size: 11px; font-weight: 650; white-space: nowrap; }
+.ozenoWorkspace .layout { max-width: 1492px; padding: 28px 26px 60px; grid-template-columns: 264px minmax(0, 1fr); gap: 22px; }
+.ozenoWorkspace .layout > section { min-width: 0; }
+.ozenoWorkspaceIntro { grid-column: 1/-1; display: flex; align-items: center; justify-content: space-between; gap: 28px; padding: 6px 0 8px; }
+.ozenoEyebrow { color: #789086; font-size: 10px; font-weight: 700; letter-spacing: .12em; margin: 0 0 9px; }
+.ozenoWorkspaceIntro h1 { font-size: 32px; font-weight: 650; margin: 0 0 9px; }
+.ozenoWorkspaceIntro > div > p:last-child { margin: 0; color: #718378; font-size: 13px; }
+.ozenoSiteContext { display: grid; gap: 3px; border-left: 3px solid var(--gold); padding-left: 17px; max-width: 40%; }
+.ozenoSiteContext > span { text-transform: uppercase; letter-spacing: .08em; color: #77877e; font-size: 10px; }
+.ozenoSiteContext > strong { font-size: 15px; overflow-wrap: anywhere; font-weight: 650; }
+.ozenoSiteContext > small { color: #74867b; font-size: 11px; }
+.ozenoWorkspace .auditJourney {
+  top: 78px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0;
+  padding: 8px;
+  margin: 0;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 5px 22px #15362b06;
+  overflow: visible;
+}
+.ozenoWorkspace .auditProgress { display: none; }
+.ozenoWorkspace .auditJourney :is(a, button) {
+  display: grid;
+  grid-template-columns: 31px 1fr;
+  gap: 0 10px;
+  align-items: center;
+  min-width: 0;
+  border: 0;
+  padding: 11px 15px;
+  background: transparent;
+  border-radius: 7px;
+  color: #76867b;
+}
+.ozenoWorkspace .auditJourney :is(a, button) > strong { font-size: 10px; grid-column: 2; font-weight: 400; }
+.ozenoWorkspace .auditJourney :is(a, button) > span:not(.ozenoStepNumber) { grid-column: 2; font-size: 12px; line-height: 1.3; }
+.ozenoWorkspace .auditJourney .ozenoStepNumber { grid-column: 1; grid-row: 1/3; display: grid; place-items: center; width: 31px; height: 31px; border: 1px solid #d8e3dc; border-radius: 50%; font-size: 11px; font-weight: 600; }
+.ozenoWorkspace .auditJourney :is(a, button).current {
+  background: var(--pine) !important;
+  color: #fff !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
+.ozenoWorkspace .auditJourney .current .ozenoStepNumber { border-color: var(--gold); background: var(--gold); color: var(--pine); }
+.ozenoWorkspace .auditJourney a.active:not(.current) { border-color: transparent !important; color: #76867b !important; }
+.ozenoWorkspace .stageAnchor { scroll-margin-top: 190px; }
+.ozenoWorkspace :is(#ozeno-summary, #audit-efficiency) { scroll-margin-top: 190px; }
+.ozenoWorkspace .card { border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 4px 18px #183a2d04; padding: 25px; margin-bottom: 22px; }
+.ozenoWorkspace .projects { align-self: start; position: sticky; top: 187px; padding: 21px; max-height: calc(100vh - 210px); overflow-y: auto; scrollbar-width: thin; }
+.ozenoWorkspace .projects h2 { font-size: 19px; margin-bottom: 9px; }
+.ozenoProjectTitleRow { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin-bottom: 10px; }
+.ozenoWorkspace .projects .ozenoProjectTitleRow h2 { margin: 0; }
+.ozenoWorkspace .projects .ozenoProjectStatus { padding: 4px 9px; font-size: 10px; }
+.ozenoWorkspace .projects .ozenoProjectAddress { display: block; margin: -5px 0 12px; color: #6a8175; font-size: 12px; line-height: 1.45; overflow-wrap: anywhere; }
+.ozenoProjectIdentity { margin: -4px 0 14px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 7px; background: #fbfdfb; }
+.ozenoProjectIdentity summary { color: var(--pine); font-size: 12px; font-weight: 650; cursor: pointer; }
+.ozenoProjectIdentity dl { display: grid; gap: 6px; margin: 9px 0 2px; }
+.ozenoProjectIdentityRow { display: grid; grid-template-columns: minmax(82px, .8fr) minmax(0, 1.2fr); gap: 6px; font-size: 11px; line-height: 1.4; }
+.ozenoProjectIdentityRow dt { color: #72867b; }
+.ozenoProjectIdentityRow dd { margin: 0; color: #315b4b; overflow-wrap: anywhere; }
+.ozenoWorkspace .decision > #dashAddress { display: none; }
+.ozenoWorkspace .projects :is(.hint, .fine, .addressRecognition, .temporaryStudyNote, .projectFeedback, .siteLocationInfo) { font-size: 13px; line-height: 1.5; }
+.ozenoWorkspace .projects > .hint { margin-bottom: 18px; }
+.ozenoWorkspace .projectPicker { color: #426052; font-size: 12px; }
+.ozenoWorkspace .projectPicker select { font-size: 12px; padding: 10px 8px; min-height: 42px; }
+.ozenoWorkspace .projects .newProject { border-top-color: var(--line); padding-top: 18px; }
+.ozenoWorkspace .newProject > b { display: block; font-size: 13px; margin-bottom: 9px; }
+.ozenoWorkspace .projects .newProject input { font-size: 13px; width: 100%; box-sizing: border-box; }
+.ozenoWorkspace .projects :is(.temporaryStudyNote, .projectFeedback) { border-radius: 5px; }
+.ozenoWorkspace .projects button { border-left-width: 1px; padding: 9px 10px; font-size: 13px; }
+.ozenoWorkspace .projects :is(.siteAddressLabel, .siteGpsFields > label) { display: block; font-size: 13px; margin-bottom: 5px; }
+.ozenoWorkspace .siteGpsFields { margin-top: 18px; }
+.ozenoWorkspace .siteGpsFields .fine { margin: 5px 0; }
+.ozenoWorkspace .siteGpsFields #useSiteGps { width: auto; margin-top: 8px; }
+.ozenoWorkspace .siteMapPick #pickSiteOnMap { width: auto; justify-self: start; }
+.ozenoWorkspace .siteMapPick :is(#findReverseAddress, #confirmReverseAddress) { width: auto; justify-self: start; }
+.ozenoWorkspace .siteLocationInfo { margin: 18px 0; padding-left: 11px; border-left: 3px solid var(--gold); color: #49695c; background: transparent; }
+.ozenoWorkspace .projects h2 { overflow-wrap: anywhere; }
+.ozenoWorkspace .projects button.action { color: #fff; background: var(--pine); font-weight: 650; }
+.ozenoWorkspace .projects button.action:hover { color: #fff; background: #146758; }
+.ozenoWorkspace #audit-roof > h2 { margin-bottom: 9px; }
+.ozenoWorkspace #audit-roof > .hint { max-width: 760px; margin-bottom: 17px; }
+.ozenoWorkspace .map { height: clamp(390px, 46vw, 545px); border-radius: 10px; border: 1px solid #d6e2d9; }
+.ozenoWorkspace .leaflet-control { box-shadow: 0 3px 12px #13372e20; }
+.ozenoWorkspace .result { padding: 11px 14px; font-size: 12px; line-height: 1.5; border-left-width: 3px; border-radius: 6px; background: #fffaf0; }
+.ozenoWorkspace .result.ok { background: #f0f7f2; }
+.ozenoWorkspace .roofSurfaceHeader { margin: 23px 0 10px; }
+.ozenoWorkspace .roofSurfaceHeader b { font-size: 17px; font-weight: 650; }
+.ozenoWorkspace .roofSurfaceHeader .fine { max-width: 720px; margin-top: 6px; }
+.ozenoWorkspace .roofDetectionStatus:empty { min-height: 0; margin: 0; }
+.ozenoWorkspace .roofSurface { padding: 18px; border-radius: 9px; background: #fbfcfb; border-color: var(--line); }
+.ozenoWorkspace .roofSurfaceTitle { padding-bottom: 11px; margin-bottom: 9px; border-bottom: 1px solid #e5ece7; }
+.ozenoWorkspace .roofSurfaceTitle > b { font-size: 13px; font-weight: 650; }
+.ozenoWorkspace .roofSurface .form { gap: 16px; }
+.ozenoWorkspace #roofSurfaceGeneral { background: #f2f7f4; padding: 18px; }
+.ozenoWorkspace #roofSurfaceGeneral h3 { font-size: 16px; }
+.ozenoWorkspace #roofMapFeedback { margin: 12px 0 16px; }
+.ozenoWorkspace #roofMapFeedback > .fine { margin: 8px 0; }
+.ozenoWorkspace #roofMapFeedback > .roofModeNote { margin: 8px 0 0; }
+.ozenoWorkspace #roofSurfaceGeneral label.roofRatioSlider { display: grid; gap: 8px; }
+.ozenoWorkspace .roofRatioHeading { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.ozenoWorkspace .roofRatioHeading output { color: var(--green); font-weight: 700; white-space: nowrap; }
+.ozenoWorkspace #roofRatio { display: block; width: 100%; min-height: 24px; margin: 0; cursor: pointer; }
+.ozenoWorkspace #roofRatioHelp { font-size: 11px; line-height: 1.5; }
+.ozenoWorkspace #roofSurfaceGeneral label.roofRatioSlider[hidden] { display: none; }
+.ozenoWorkspace label { font-size: 13px; font-weight: 600; color: #39574a; }
+.ozenoWorkspace :is(input, select, textarea) {
+  background: #fff;
+  color: #1c4034;
+  min-height: 41px;
+  padding: 10px 11px;
+  font: 13px/1.4 "Segoe UI", system-ui, sans-serif;
+  border: 1px solid #cbd9d1;
+  border-radius: 6px;
+  transition: border-color .15s, box-shadow .15s;
+}
+.ozenoWorkspace :is(input, textarea)::placeholder { color: #92a397; font-weight: 400; }
+.ozenoWorkspace :is(input, select, textarea):hover:not(:disabled) { border-color: #89ae9c; }
+.ozenoWorkspace :is(input, select, textarea):focus { border-color: #27836a; }
+.ozenoWorkspace input[readonly] { background: #f0f4f1; color: #678171; }
+.ozenoWorkspace :is(input, select):disabled { background: #f1f4f2; color: #7c8b81; cursor: not-allowed; }
+.ozenoWorkspace input:is([type=checkbox], [type=radio]) { min-height: 0; accent-color: var(--green); }
+.ozenoWorkspace input[type=range] { padding: 0; accent-color: var(--green); border: 0; background: transparent; }
+.ozenoWorkspace .action { background: var(--pine); border-radius: 7px; font-size: 13px; font-weight: 600; padding: 11px 17px; }
+.ozenoWorkspace .action:hover { background: #126657; }
+.ozenoWorkspace :is(.secondary, .roofProposeAzimuth, .manualSiteLocationButton) { min-height: 36px; padding: 8px 12px; border: 1px solid #b8d0c2; border-radius: 6px; color: var(--pine); background: #fff; font: 600 12px/1.35 "Segoe UI", system-ui, sans-serif; cursor: pointer; }
+.ozenoWorkspace button:disabled { opacity: .55; cursor: not-allowed; }
+.ozenoWorkspace .roofAzimuthControl { align-items: stretch; }
+.ozenoWorkspace .roofAzimuthControl input { margin-top: 0; }
+.ozenoWorkspace :is(.roofAzimuthHelpButton, .financeHelpButton) { padding: 0; min-height: 0; color: #3c8a72; }
+.ozenoWorkspace :is(.roofAzimuthHelpBubble, .financeHelpBubble) { font-weight: 400; line-height: 1.6; border-radius: 8px; padding: 14px; box-shadow: 0 8px 30px #153d3026; }
+.ozenoWorkspace :is(.roofExpertSettings, .financePreviewDetails, .reportOptional, .efficiencyCee) { border-color: var(--line); background: #f8faf8; border-radius: 8px; padding: 14px 17px; }
+.ozenoWorkspace details > summary { font-size: 13px; color: #335b48; }
+.ozenoWorkspace .pill { font-size: 9px; font-weight: 650; padding: 5px 10px; letter-spacing: .04em; background: #edf5ef; color: #4c7d65; white-space: nowrap; }
+.ozenoWorkspace #roofEstimate { background: #fff; border: 0; border-top: 1px solid var(--line); border-radius: 0; margin: 27px 0 0; padding: 24px 0 0; scroll-margin-top: 190px; }
+.ozenoWorkspace #roofEstimate > h3 { color: #678473; font-size: 10px; text-transform: uppercase; letter-spacing: .12em; margin-bottom: 8px; }
+.ozenoWorkspace #roofEstimate .sectionTitle { align-items: center; margin-bottom: 12px; }
+.ozenoWorkspace #roofEstimate .sectionTitle h2 { margin: 0; }
+.ozenoWorkspace #roofPvgisAssumptions { padding: 9px 12px; background: #f8faf8; border-radius: 5px; font-size: 11px; margin-top: 9px; }
+.ozenoWorkspace .metrics { gap: 12px; }
+.ozenoWorkspace #roofEstimate .roofMetrics { margin-top: 19px; gap: 12px; }
+.ozenoWorkspace .metric { background: #f7faf8; border: 1px solid #e3eae4; padding: 17px 14px; border-radius: 8px; min-width: 0; }
+.ozenoWorkspace .metric > b { font-size: 11px; font-weight: 600; color: #628271; min-height: 30px; }
+.ozenoWorkspace #multipleHorizon { display: inline; margin: 0; color: inherit; font-size: 10px; font-weight: inherit; line-height: inherit; white-space: nowrap; }
+.ozenoWorkspace .metric > span { font-size: clamp(17px, 1.5vw, 22px); font-weight: 650; line-height: 1.3; color: var(--pine); margin: 7px 0 4px; font-variant-numeric: tabular-nums; }
+.ozenoWorkspace .metric small { font-size: 10px !important; line-height: 1.45; color: #83978a !important; }
+.ozenoWorkspace .productionStudyEmbedded { margin: 24px 0 0; padding: 20px 0 0; border: 0; border-top: 1px solid var(--line); border-radius: 0; box-shadow: none; }
+.ozenoWorkspace .productionStudyEmbedded h3 { font-size: 17px; }
+.ozenoWorkspace .productionCurve { padding: 14px 10px 4px; border: 0; border-radius: 8px; background: #fafcfb; }
+.ozenoWorkspace .curveGrid line { stroke: #e3ece6; }
+.ozenoWorkspace .curveAxis text { fill: #869a8c; font-size: 10px; }
+.ozenoWorkspace #profileBars .profileBar { fill: #5aaa8d; opacity: .55; rx: 4px; transition: fill .15s, opacity .15s; }
+.ozenoWorkspace #profileBars .profileBar:is(:hover, :focus-visible) { fill: #167363; opacity: .8; }
+.ozenoWorkspace .legendProductionBars { background: #5aaa8d !important; opacity: .55; }
+.ozenoWorkspace .profileP50 { stroke: #e6b527; stroke-width: 3; }
+.ozenoWorkspace #profilePoints circle { fill: #e6b527; r: 4px; stroke-width: 2; }
+.ozenoWorkspace .curveLegend { font-size: 11px; color: #6f8477; margin: 12px 0; }
+.ozenoWorkspace .legendP50 { background: #e6b527; }
+.ozenoWorkspace :is(.curveTooltip, .dashboardProfileTooltip) { border-radius: 7px; background: var(--pine); color: #fff; padding: 9px 12px; box-shadow: 0 5px 18px #193e3326; font-size: 12px; z-index: 25; }
+.ozenoWorkspace .curveTooltip { max-width: calc(100% - 16px); white-space: normal; width: max-content; }
+.ozenoWorkspace #studyStatus { font-size: 11px; color: #5a7f68; padding: 10px 12px; border-left: 2px solid #b5d6c3; background: #f4f8f5; border-radius: 4px; }
+.ozenoWorkspace .financeGroup { border-color: var(--line); background: #fafcfb; padding: 18px; gap: 15px; }
+.ozenoWorkspace .financeGroup legend { color: #345c49; font-size: 13px; font-weight: 650; }
+.ozenoWorkspace .earlySolarProjectType > h2 { margin: 0; }
+.ozenoWorkspace .financeFundingMode { border-color: var(--line); }
+.ozenoWorkspace .financeFundingOptions label { background: #fff; min-height: 52px; border-color: var(--line); }
+.ozenoWorkspace .financeFundingOptions label:has(input:checked) { border-color: #3d8e73; background: #f0f7f3; }
+.ozenoWorkspace .financeEnergyReference .enedisConsumptionLookup { border: 0; background: #f0f5f2; padding: 13px; }
+.ozenoWorkspace .financeProductionSource { font-size: 12px; }
+.ozenoWorkspace .allocationStatus { background: #fffaf0; border-color: #e5c772; font-size: 11px; }
+.ozenoWorkspace .allocationVolume { color: #3d8666; font-size: 11px; font-weight: 400; }
+.ozenoWorkspace .mixValidation { font-size: 11px; }
+.ozenoWorkspace .efficiencyImpact > .sectionTitle h2 { font-size: 23px; }
+.ozenoWorkspace .efficiencyValue { border-color: var(--line); background: #f4f8f5; border-radius: 8px; }
+.ozenoWorkspace .decision { background: #073f39; border-radius: 13px; padding: 28px; box-shadow: 0 10px 26px #063c3110; }
+.ozenoWorkspace .decision h2 { color: #fff; font-size: 28px; font-weight: 600; }
+.ozenoWorkspace .decision .eyebrow { color: var(--gold); font-size: 10px; letter-spacing: .13em; }
+.ozenoWorkspace .previewNotice { padding: 6px 10px; margin: 8px 0 15px; font-size: 11px; background: #ffffff12; color: #b6d5c4; border: 1px solid #ffffff1c; }
+.ozenoWorkspace .decision .muted { color: #c4ded1; font-size: 13px; }
+.ozenoWorkspace .decisionGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 20px 0 17px; }
+.ozenoWorkspace .decisionGrid > div { display: grid; grid-template-rows: minmax(2.8em, auto) minmax(1.5em, auto) minmax(2.8em, auto); align-content: start; padding: 16px 13px; border: 1px solid #ffffff1f; background: #ffffff07; border-radius: 8px; }
+.ozenoWorkspace .decisionGrid > div > small { min-height: 2.8em; font-size: 11px; line-height: 1.4; }
+.ozenoWorkspace .decisionGrid b { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 .25em; min-height: 1.5em; color: var(--gold); font-weight: 600; font-size: 22px; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.ozenoWorkspace .decisionMetricNumber { white-space: nowrap; }
+.ozenoWorkspace .decisionMetricUnit { color: #d4e5dc; font-size: .54em; font-weight: 600; white-space: nowrap; }
+.ozenoWorkspace .decisionMetricSuffix { color: #a8cbbc; font-size: .58em; font-weight: 500; }
+.ozenoWorkspace .decisionGrid > div > em { min-height: 2.8em; line-height: 1.4; }
+.ozenoWorkspace .decisionGrid > div > em[hidden] { display: none !important; }
+.ozenoWorkspace .decisionMetricHelp { display: inline-flex; align-items: center; justify-content: center; width: auto; height: auto; margin-left: 3px; border: 0; border-radius: 0; color: #c4ded1; font-size: 12px; line-height: 1; cursor: help; vertical-align: middle; }
+.ozenoWorkspace .decision small { color: #a8cbbc; font-size: 11px; }
+.ozenoWorkspace .decision em { color: #81b3a0; font-size: 10px; }
+.ozenoWorkspace .decisionRevenue { padding: 18px; background: #ffffff04; border-color: #ffffff1c; border-radius: 9px; }
+.ozenoWorkspace .decisionAnalysisRow { grid-column: 1 / -1; width: 100%; }
+.ozenoWorkspace .decisionProductionProfile { width: 100%; }
+.ozenoWorkspace .decisionBottom > .actions { grid-column: 1 / -1; }
+.ozenoWorkspace .decisionRevenue { width: 100%; }
+.ozenoWorkspace .decisionRevenueHeading { align-items: start; }
+.ozenoWorkspace .decisionRevenueHeading > b { font-size: 16px; color: #fff; font-weight: 600; margin: 0; }
+.ozenoWorkspace .decisionRevenueHeading small { font-size: 10px; max-width: 520px; text-align: right; }
+.ozenoWorkspace .decisionEnergyAllocation { color: #8dbaa6; font-size: 11px; margin: 10px 0 16px; }
+.ozenoWorkspace .decisionRevenueGrid { gap: 10px; }
+.ozenoWorkspace .decisionRevenueGrid > div { padding: 12px; background: #ffffff06; border-radius: 7px; }
+.ozenoWorkspace .decisionRevenueGrid b { font-size: 18px; color: var(--gold); font-weight: 600; }
+.ozenoWorkspace .decisionRevenueTotal { border-color: #e9cb5f6b; }
+.ozenoWorkspace .decisionFinanceMetrics { margin-top: 14px; padding: 12px 13px; border: 1px solid #ffffff14; border-radius: 8px; background: #ffffff05; }
+.ozenoWorkspace .decisionFinanceMetrics > b { display: block; margin-bottom: 9px; color: #fff; font-size: 12px; font-weight: 600; }
+.ozenoWorkspace .decisionFinanceMetricGrid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.ozenoWorkspace .decisionFinanceMetricGrid > div { min-width: 0; padding: 8px 9px; border-radius: 6px; background: #ffffff06; }
+.ozenoWorkspace .decisionFinanceMetricGrid small { display: block; min-height: 26px; color: #a8cbbc; font-size: 9px; line-height: 1.4; }
+.ozenoWorkspace .decisionFinanceMetricGrid strong { display: block; margin-top: 3px; color: var(--gold); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.ozenoWorkspace .decisionFinanceCaveat { display: block; margin-top: 9px; color: #8dbaa6; font-size: 9px; line-height: 1.4; }
+.ozenoWorkspace .decisionRevenueVisual { background: transparent; border-top: 1px solid #ffffff14; padding: 18px 0 0; margin-top: 18px; gap: 23px; }
+.ozenoWorkspace .revenueDonut { width: 90px; height: 90px; }
+.ozenoWorkspace .revenueDonut:before { inset: 14px; background: #073f39; }
+.ozenoWorkspace .revenueDonut span { font-size: 10px; color: #a8cbbc; }
+.ozenoWorkspace .revenueChartTitle { max-width: 90px; font-size: 11px; color: #b5d5c3; }
+.ozenoWorkspace .decisionAnalysisRow { border-top-color: #ffffff1c; gap: 16px; }
+.ozenoWorkspace :is(.decisionProductionProfile, .decisionPerformancePanel) { background: #ffffff06; padding: 17px; border: 1px solid #ffffff12; border-radius: 8px; }
+.ozenoWorkspace .decisionProductionProfile > b { color: #fff; font-size: 16px; font-weight: 600; }
+.ozenoWorkspace .decisionProductionProfile .bars { height: 92px; gap: 7px; margin: 20px 0 0; }
+.ozenoWorkspace .bars i { background: #ffd34e; border-radius: 3px 3px 0 0; }
+.ozenoWorkspace .bars i:is(:hover, :focus-visible) { background: #fff0a6; }
+.ozenoSummaryMonths { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 7px; color: #7aab97; font-size: 9px; text-align: center; margin: 5px 0 2px; }
+.ozenoWorkspace .decisionProductionDetails { margin: 0; }
+.ozenoWorkspace .decisionProductionDetailsLabel { display: block; margin: 0 0 4px; color: #a8cbbc; font-size: 9px; }
+.ozenoWorkspace .decisionProductionValues { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 7px; color: #d4e5dc; font-size: 9px; line-height: 1.25; font-variant-numeric: tabular-nums; text-align: center; }
+.ozenoWorkspace .decisionProductionValues > span { min-width: 0; overflow: hidden; text-overflow: clip; white-space: nowrap; }
+.ozenoWorkspace .decisionPerformancePanel > b { font-size: 27px; font-weight: 600; color: var(--gold); }
+.ozenoWorkspace .decisionBottom > .actions { border-top-color: #ffffff1c; }
+.ozenoWorkspace .decisionBottom > .actions > b { color: #fff; font-size: 17px; font-weight: 600; }
+.ozenoWorkspace .decisionStatus { padding: 17px; border-radius: 8px; }
+.ozenoWorkspace .decisionStatus.pending { background: #fff8e3; }
+.ozenoWorkspace .decisionStatus > small { color: #9a884e; font-size: 9px; }
+.ozenoWorkspace .decisionStatus strong { font-size: 16px; }
+.ozenoWorkspace .decisionStatus span { font-size: 12px; }
+.ozenoWorkspace .decisionStatus span b { color: inherit; font-size: inherit; }
+.ozenoWorkspace .reportPreview { border-color: var(--line); }
+@media (min-width: 1500px) { .ozenoWorkspace .layout { grid-template-columns: 280px minmax(0, 1fr); gap: 28px; } }
+@media (max-width: 1100px) {
+  .ozenoHeaderNavigation { gap: 18px; }
+  .ozenoWorkspace .layout { grid-template-columns: 230px minmax(0, 1fr); padding: 20px; gap: 18px; }
+  .ozenoWorkspace .card { padding: 20px; }
+  .ozenoWorkspace .auditJourney :is(a, button) { padding: 11px 8px; gap: 0 7px; }
+  .ozenoWorkspace .auditJourney :is(a, button) > span:not(.ozenoStepNumber) { font-size: 11px; }
+  .ozenoWorkspace #roofEstimate .roofMetrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ozenoWorkspace .decisionGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ozenoWorkspace .metric > b { min-height: 0; }
+  .ozenoWorkspace #roofSurfaceGeneral .form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ozenoWorkspace .decisionRevenueGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ozenoWorkspace .decisionFinanceMetricGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ozenoWorkspace .decision { padding: 23px; }
+}
+@media (max-width: 820px) {
+  .ozenoWorkspace > header { min-height: 68px; padding: 12px 18px; }
+  .ozenoWorkspace .brandName { font-size: 23px; }
+  .ozenoWorkspace .brandMark { width: 37px; height: 37px; }
+  .ozenoWorkspace .brandSub { font-size: 9px; }
+  .ozenoWorkspace .decisionGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ozenoHeaderNavigation { gap: 15px; }
+  .ozenoHeaderNavigation a { font-size: 11px; }
+  .ozenoHeaderNavigation a:nth-child(2), .ozenoHeaderNavigation .ozenoEnvironment { display: none; }
+  .ozenoWorkspace .layout { grid-template-columns: 1fr; padding: 18px; }
+  .ozenoWorkspaceIntro { gap: 14px; }
+  .ozenoWorkspaceIntro h1 { font-size: 27px; }
+  .ozenoWorkspaceIntro > div > p:last-child { font-size: 12px; }
+  .ozenoWorkspace .projects { position: static; max-height: none; margin: 0; }
+  .ozenoWorkspace .auditJourney { top: 68px; display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 5px; padding: 6px; }
+  .ozenoWorkspace .auditJourney :is(a, button) { flex: 0 0 150px; }
+  .ozenoWorkspace .stageAnchor, .ozenoWorkspace :is(#roofEstimate, #ozeno-summary, #audit-efficiency) { scroll-margin-top: 160px; }
+  .ozenoWorkspace .map { height: 420px; }
+}
+@media (max-width: 700px) {
+  .ozenoWorkspace .layout { padding: 14px; gap: 14px; }
+  .ozenoWorkspaceIntro { display: block; padding: 5px 0 3px; }
+  .ozenoSiteContext { max-width: 100%; margin-top: 18px; }
+  .ozenoWorkspaceIntro h1 { font-size: 26px; }
+  .ozenoEyebrow { font-size: 9px; }
+  .ozenoWorkspace .auditJourney { background: #fff !important; padding: 6px !important; gap: 5px !important; }
+  .ozenoWorkspace .auditJourney :is(a, button) { min-width: 146px !important; padding: 10px 9px !important; }
+  .ozenoWorkspace .auditJourney :is(a, button) > .ozenoStepNumber { font-size: 11px !important; }
+  .ozenoWorkspace .card { padding: 17px; margin-bottom: 17px; }
+  .ozenoWorkspace .map { height: 330px; }
+  .ozenoWorkspace h2 { font-size: 21px; }
+  .ozenoWorkspace .roofSurface { padding: 14px; }
+  .ozenoWorkspace .roofSurface .form, .ozenoWorkspace #roofSurfaceGeneral .form { grid-template-columns: 1fr; }
+  .ozenoWorkspace .metric { padding: 13px 10px; }
+  .ozenoWorkspace .metric > b { font-size: 10px; }
+  .ozenoWorkspace .metric > span { font-size: 17px; }
+  .ozenoWorkspace #roofEstimate .sectionTitle { align-items: flex-start; }
+  .ozenoWorkspace #roofEstimate .sectionTitle .pill { max-width: 100px; white-space: normal; text-align: center; }
+  .ozenoWorkspace .decision { padding: 19px; }
+  .ozenoWorkspace .decision h2 { font-size: 24px; }
+  .ozenoWorkspace .decisionGrid > div { padding: 12px; }
+  .ozenoWorkspace .decisionGrid b { font-size: 18px; }
+  .ozenoWorkspace .decisionProductionValues { gap: 2px; font-size: 8px; }
+  .ozenoWorkspace .ozenoSummaryMonths { gap: 2px; }
+  .ozenoWorkspace .decisionRevenue { padding: 13px; }
+  .ozenoWorkspace .decisionRevenueHeading { flex-direction: column; }
+  .ozenoWorkspace .decisionRevenueHeading small { max-width: none; text-align: left; }
+  .ozenoWorkspace .decisionFinanceMetricGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ozenoWorkspace .decisionRevenueVisual { gap: 14px; flex-wrap: wrap; }
+  .ozenoWorkspace .revenueChartTitle { width: 100%; max-width: none; margin: 0; }
+  .ozenoWorkspace .revenueLegend { min-width: 140px; }
+  .ozenoWorkspace .revenueDonut { width: 82px; height: 82px; }
+  .ozenoWorkspace .decisionAnalysisRow { grid-template-columns: 1fr; }
+  .ozenoWorkspace .financeGroup { padding: 13px; }
+  .ozenoWorkspace .sectionTitle { flex-wrap: wrap; }
+  .ozenoWorkspace :is(.roofAzimuthHelpBubble, .financeHelpBubble) { position: fixed; left: 16px; right: 16px; top: auto; bottom: 20px; width: auto; max-width: none; z-index: 1300; }
+  .ozenoWorkspace #profileMonths text { font-size: 20px; }
+  .ozenoWorkspace #productionScale text { font-size: 16px; }
+}
+@media (prefers-reduced-motion: reduce) { .ozenoWorkspace * { transition: none !important; scroll-behavior: auto !important; } }
+@media print {
+  .ozenoWorkspace > header, .ozenoWorkspaceIntro, .ozenoWorkspace .auditJourney { display: none !important; }
+  .ozenoWorkspace .layout { display: block; padding: 0; }
+  .ozenoWorkspace .card.reportEditor { padding: 0; border: 0; box-shadow: none; }
+}
+
+/* Refined professional workbench: technical clarity with a little more depth. */
+.ozenoWorkspace {
+  background:
+    radial-gradient(ellipse at 82% 0%, #eaf4ef 0, transparent 32rem),
+    linear-gradient(180deg, #f7f9f8 0, #f0f4f2 100%);
+}
+.ozenoWorkspace > header {
+  box-shadow: 0 4px 18px #153b2d08;
+}
+.ozenoWorkspace .layout {
+  max-width: 1580px;
+  padding-top: 32px;
+  gap: 24px;
+}
+.ozenoWorkspaceIntro {
+  position: relative;
+  padding: 5px 4px 12px 17px;
+  border-left: 3px solid var(--gold);
+}
+.ozenoWorkspaceIntro h1 {
+  font-size: clamp(28px, 2.3vw, 35px);
+  letter-spacing: -.04em;
+}
+.ozenoSiteContext {
+  padding: 12px 16px;
+  border: 1px solid #dce9e1;
+  border-left: 3px solid var(--gold);
+  border-radius: 10px;
+  background: linear-gradient(135deg, #fff, #f2f8f4);
+  box-shadow: 0 5px 16px #153b2d08;
+}
+.ozenoWorkspace .auditJourney {
+  border-radius: 14px;
+  box-shadow: 0 8px 24px #153b2d0a;
+}
+.ozenoWorkspace .auditJourney :is(a, button) {
+  transition: background .16s ease, color .16s ease, transform .16s ease;
+}
+.ozenoWorkspace .auditJourney :is(a, button):hover:not(.current) {
+  background: #f1f7f3;
+  transform: translateY(-1px);
+}
+.ozenoWorkspace .card {
+  border-color: #dfe8e3;
+  border-radius: 15px;
+  box-shadow: 0 7px 22px #183a2d08, 0 1px 2px #183a2d05;
+}
+.ozenoWorkspace .projects {
+  border-top: 3px solid #2a8a6b;
+  background: linear-gradient(180deg, #fff 0, #fbfdfb 100%);
+  box-shadow: 0 9px 26px #183a2d0b;
+}
+.ozenoWorkspace .projects button {
+  border-radius: 9px;
+  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+}
+.ozenoWorkspace .projects button:hover {
+  transform: translateX(2px);
+  box-shadow: 0 4px 12px #143c2e0d;
+}
+.ozenoWorkspace .sectionTitle {
+  margin-bottom: 9px;
+}
+.ozenoWorkspace .sectionTitle h2,
+.ozenoWorkspace #audit-roof > h2 {
+  letter-spacing: -.035em;
+}
+.ozenoWorkspace .metric {
+  border-color: #e1ebe5;
+  border-radius: 11px;
+  background: linear-gradient(145deg, #fff 0, #f6faf7 100%);
+  box-shadow: inset 0 1px #fff;
+}
+.ozenoWorkspace .decision {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #0d574b;
+  border-radius: 16px;
+  background: radial-gradient(ellipse at 88% 0%, #14594d 0, transparent 35%), linear-gradient(130deg, #073a35, #0a4b40 70%, #0c5545);
+  box-shadow: 0 14px 34px #063c3120;
+}
+.ozenoWorkspace .decision::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--gold);
+  content: "";
+}
+.ozenoWorkspace .decisionGrid > div,
+.ozenoWorkspace .decisionRevenueGrid > div,
+.ozenoWorkspace .decisionFinanceMetricGrid > div {
+  border-radius: 9px;
+  transition: background .16s ease, border-color .16s ease;
+}
+.ozenoWorkspace .productionStudyEmbedded,
+.ozenoWorkspace #roofEstimate {
+  border-top-color: #e1eae5;
+}
+.ozenoWorkspace .productionCurve {
+  border: 1px solid #e4ece7;
+  background: linear-gradient(180deg, #fbfdfc, #f6faf7);
+  border-radius: 11px;
+}
+.ozenoWorkspace :is(.action, .secondary, .roofProposeAzimuth, .manualSiteLocationButton) {
+  transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.ozenoWorkspace :is(.action, .secondary, .roofProposeAzimuth, .manualSiteLocationButton):hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px #153b2d12;
+}
+.ozenoWorkspace :is(input, select, textarea) {
+  border-radius: 8px;
+}
+@media (max-width: 820px) {
+  .ozenoWorkspace .layout { padding-top: 21px; }
+  .ozenoWorkspaceIntro { border-left: 0; padding-left: 0; }
+  .ozenoSiteContext { max-width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ozenoWorkspace *, .simUseCaseArt { transition: none !important; }
+}
+/* Project study: distinguish an examined candidate from the explicit selection. */
+.enedisSyntheticPicker .syntheticCandidate[aria-pressed="true"] {
+  background: #d6efe1 !important;
+  border-color: #08734c !important;
+  box-shadow: inset 0 0 0 1px #08734c;
+}
+.enedisSyntheticPicker .syntheticCandidate[aria-busy="true"] { cursor: progress; }
+#consumptionReferenceGroup, #productionConsumptionPanel { overflow: visible; }
+#consumptionReferenceGroup .financeHelpBubble { left: 0; right: auto; }
+#consumptionReferenceGroup .financeHelpButton { cursor: pointer; }
+#audit-finance input[aria-invalid="true"] { border: 2px solid #b83931; }

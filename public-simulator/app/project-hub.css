@@ -1,0 +1,344 @@
+/* Project navigation and intake: scoped to the OZENO workbench. */
+.ozenoWorkspace .hubNavigation { gap: 19px; }
+.ozenoWorkspace .hubMenu { position: relative; margin: 0; border: 0; padding: 0; background: none; }
+.hubMenu summary { color: var(--pine); font-size: 13px; font-weight: 650; cursor: pointer; padding: 11px 0; white-space: nowrap; list-style: none; }
+.hubMenu summary::-webkit-details-marker { display: none; }
+.hubMenu summary::after { content: '⌄'; margin-left: 7px; color: #72887f; }
+.ozenoWorkspace .hubNavigation .hubAccountMenu { max-width: min(220px, 25vw); }
+.ozenoWorkspace .hubNavigation .hubAccountMenu > summary { overflow: hidden; text-overflow: ellipsis; }
+.hubMenuItems { position: absolute; right: 0; top: calc(100% + 9px); min-width: 220px; display: grid; padding: 7px; border: 1px solid var(--line); background: #fff; border-radius: 9px; box-shadow: 0 12px 32px #153d3620; z-index: 1500; }
+.ozenoWorkspace .hubMenuItems button { border: 0; background: #fff; color: var(--pine); text-align: left; padding: 11px; font: inherit; font-size: 13px; border-radius: 5px; cursor: pointer; }
+.ozenoWorkspace .hubMenuItems button:hover { background: #eff6f2; }
+.hubNotice { margin: 0 0 16px; grid-column: 1/-1; border-left: 3px solid #2b9379; background: #eaf5ef; color: #165447; padding: 10px 14px; border-radius: 6px; font-size: 12px; overflow-wrap: anywhere; }
+.hubNotice[data-error="true"] { background: #fff6e7; border-left-color: #cf8b22; color: #725016; }
+.ozenoWorkspace .hubDialog { width: min(600px, calc(100vw - 32px)); max-height: calc(100dvh - 40px); padding: 0; border: 1px solid var(--line); border-radius: 14px; color: var(--ink); background: #fff; box-shadow: 0 24px 90px #032e3850; box-sizing: border-box; overflow-y: auto; font: inherit; }
+.hubDialog::backdrop { background: #052f2a65; backdrop-filter: blur(2px); }
+.hubDialogHead { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 15px; border-bottom: 1px solid var(--line); padding: 18px 24px; background: #fff; }
+.ozenoWorkspace .hubDialogHead h2 { margin: 0; font-size: 22px; }
+.ozenoWorkspace .hubClose { border: 0; background: transparent; color: #6b8276; font: inherit; font-size: 28px; line-height: 1; padding: 4px 7px; cursor: pointer; }
+.hubDialog form, #hubProfileIdentity { padding: 20px 24px; }
+.hubFields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 18px; }
+.hubFields .hubFull { grid-column: 1/-1; }
+.hubFields #hubActivityQualification { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 18px; min-width: 0; margin: 0; border: 1px solid #d7e5dc; border-radius: 8px; padding: 12px 14px 14px; background: #f7faf8; }
+.hubFields #hubActivityQualification legend { padding: 0 5px; color: var(--pine); font-size: 12px; font-weight: 700; }
+.hubFields #hubActivityQualification label { align-content: start; }
+.hubFields #hubActivityDetails[hidden], .hubFields #hubActivityQualification[hidden] { display: none; }
+.hubFields label, #hubLoginForm label { display: grid; gap: 6px; font-size: 12px; font-weight: 650; }
+.hubFields small { font-weight: 400; color: #728479; line-height: 1.5; }
+.hubAddressSuggestions { display: grid; gap: 5px; max-height: 220px; overflow-y: auto; }
+.hubAddressSuggestions[hidden] { display: none; }
+.ozenoWorkspace .hubAddressSuggestions button { width: 100%; border: 1px solid #d6e3dc; border-radius: 6px; padding: 9px 10px; background: #fff; color: var(--pine); text-align: left; font: inherit; font-size: 12px; cursor: pointer; }
+.ozenoWorkspace .hubAddressSuggestions button:hover, .ozenoWorkspace .hubAddressSuggestions button:focus-visible { background: #eff7f2; border-color: #83b49a; outline: 2px solid #257b5833; }
+.ozenoWorkspace .hubDialog :is(input, select), .hubToolbar :is(input, select) { width: 100%; min-height: 42px; border: 1px solid #cbdad2; background: #fff; color: var(--ink); border-radius: 6px; padding: 9px 11px; box-sizing: border-box; font: inherit; font-size: 13px; }
+.ozenoWorkspace .hubDialog input[readonly] { background: #f6f8f7; color: #5c7367; }
+.hubMuted { font-size: 12px; color: #698173; line-height: 1.6; }
+.hubActions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 21px; }
+.hubLeaveActions { flex-wrap: wrap; padding: 0 24px 22px; }
+#hubLeaveDialog > .hubMuted { margin: 20px 24px 0; }
+.ozenoWorkspace .hubDiscard { display: inline-flex; align-items: center; justify-content: center; border: 1px solid #e5c8bd; border-radius: 6px; padding: 11px 16px; color: #8a3929; background: #fff; font: inherit; font-size: 13px; cursor: pointer; }
+.ozenoWorkspace .hubDiscard:hover { background: #fff7f4; }
+.ozenoWorkspace :is(.hubPrimary, .hubSecondary, .hubOpen) { display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--pine); border-radius: 6px; padding: 11px 16px; font: inherit; font-size: 13px; font-weight: 650; cursor: pointer; text-decoration: none; }
+.ozenoWorkspace .hubPrimary { background: var(--pine); color: #fff; }
+.ozenoWorkspace .hubPrimary:hover { background: #146758; }
+.ozenoWorkspace .hubPrimary:disabled { opacity: .55; cursor: wait; }
+.ozenoWorkspace .hubSecondary, .ozenoWorkspace .hubOpen { color: var(--pine); background: #fff; border-color: #ccdcd2; }
+.hubFormError { font-size: 12px; color: #a13d25; }
+#hubShareState, #hubProfileState { margin: 20px 24px; }
+.ozenoWorkspace #hubShareLink { margin: 0 24px; width: calc(100% - 48px); }
+#hubShareDialog .hubActions { margin: 20px 24px; }
+#hubProfileIdentity:empty { display: none; }
+.hubBrand { display: flex; align-items: flex-start; gap: 0; color: var(--pine); text-decoration: none; }
+.hubBrandCopy { display: block; min-width: 0; }
+.hubLogoWordmark { display: block; width: 190px; height: auto; max-height: 43px; object-fit: contain; object-position: left center; }
+.hubBrand small { display: block; color: #698477; font-size: 10px; }
+.hubBrandMark { display: block; width: 34px; height: 34px; background: var(--gold); border-radius: 34px 0 0 0; }
+.ozenoDashboard > header { display: flex; position: sticky; top: 0; z-index: 1200; box-sizing: border-box; }
+.hubDashboard { max-width: 1440px; margin: 0 auto; padding: 35px 28px 70px; }
+.hubDashboardIntro { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin: 0 0 28px; }
+.hubDashboardIntro h1 { font-size: 32px; margin: 0 0 8px; font-weight: 650; }
+.hubDashboardIntro p:last-child { margin: 0; font-size: 13px; color: #728479; }
+.hubProjectPanel { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 22px; }
+.hubToolbar { display: flex; align-items: center; gap: 16px; margin-bottom: 23px; }
+.hubToolbar h2 { margin: 0 auto 0 0; font-size: 20px; }
+.hubToolbar h2 small { display: block; font-size: 11px; font-weight: 400; color: #728479; margin-top: 3px; }
+.hubToolbar .hubSearch { flex: 0 1 360px; }
+.hubTableScroll { overflow-x: auto; }
+.hubProjects { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+.hubProjects th { color: #728479; font-size: 11px; font-weight: 600; padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.hubProjects td { padding: 18px 12px; border-bottom: 1px solid #edf2ef; vertical-align: middle; }
+.hubProjects tbody tr:hover { background: #f8fbf9; }
+.hubProjects td small { display: block; margin-top: 5px; color: #728479; font-size: 11px; max-width: 260px; }
+.hubProjectLink { color: var(--pine); font-weight: 650; text-decoration: none; }
+.hubProjectLink:hover { text-decoration: underline; }
+.hubStatus { display: inline-block; padding: 5px 9px; background: #e9f4ef; color: #227358; border-radius: 4px; font-size: 11px; white-space: nowrap; }
+.hubStatus.local { background: #fff5d6; color: #846215; }
+.hubEmpty { text-align: center; color: #728479; padding: 36px 16px; }
+.hubVisuallyHidden { position: fixed; inset: 0 auto auto 0; width: 1px; height: 1px; margin: 0; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); clip-path: inset(50%); white-space: nowrap; }
+@media (max-width: 1100px) {
+  .ozenoWorkspace .hubNavigation { gap: 16px; }
+  .ozenoWorkspace .hubNavigation > a[href="#audit-efficiency"], .ozenoWorkspace .hubNavigation > a[href="#ozeno-summary"] { display: none; }
+  .ozenoWorkspace .hubNavigation .ozenoEnvironment { display: none; }
+}
+@media (max-width: 640px) {
+  .ozenoWorkspace > header:has(.hubNavigation) { flex-wrap: wrap; }
+  .ozenoWorkspace .hubNavigation { width: 100%; gap: 18px; margin: 0; justify-content: space-between; }
+  .ozenoWorkspace .hubNavigation > a[href="#audit-roof"] { display: none; }
+  .ozenoWorkspace .hubNavigation .hubDashboardLink { display: block; }
+  .hubMenuItems { min-width: 195px; right: 0; }
+  .hubNavigation > .hubMenu:first-of-type .hubMenuItems { left: 0; right: auto; }
+  .hubDialogHead, .hubDialog form, #hubProfileIdentity { padding: 17px; }
+  .hubLeaveActions { padding: 0 17px 17px; }
+  #hubLeaveDialog > .hubMuted { margin: 17px 17px 0; }
+  .hubFields { grid-template-columns: 1fr; gap: 13px; }
+  .hubFields #hubActivityQualification { grid-template-columns: 1fr; }
+  .hubDashboard { padding: 25px 16px 45px; }
+  .hubDashboardIntro { align-items: flex-start; flex-direction: column; }
+  .hubDashboardIntro h1 { font-size: 28px; }
+  .hubProjectPanel { padding: 14px; }
+  .hubToolbar { flex-wrap: wrap; gap: 12px; }
+  .hubToolbar h2 { width: 100%; }
+  .hubToolbar label { flex: 1; min-width: 0; }
+  .hubToolbar .hubSearch { flex: 1 0 100%; }
+  .hubProjects { min-width: 780px; }
+}
+
+/* Commercial administration shell, inspired by the supplied workspace reference. */
+.ozenoDashboard { min-height: 100vh; background: #f3f6f4; }
+.ozenoDashboard > header.hubTopbar {
+  display: grid;
+  grid-template-columns: 250px minmax(220px, 1fr) auto;
+  align-items: center;
+  gap: 28px;
+  min-height: 74px;
+  padding: 10px 30px;
+  background: #fff;
+  border-bottom: 1px solid #dce6e1;
+}
+.hubTopbar .hubBrand { min-width: 0; }
+.hubTopbar .hubBrand strong { color: var(--pine); }
+.hubGlobalSearch { display: flex; align-items: center; gap: 11px; width: min(100%, 680px); min-width: 0; padding: 0 13px; border: 1px solid #e2e9e5; border-radius: 8px; background: #f8faf9; color: #6f8378; }
+.hubGlobalSearch:focus-within { border-color: #8db9a4; background: #fff; box-shadow: 0 0 0 3px #e0efe7; }
+.hubGlobalSearch .hubSearchIcon { font-size: 23px; line-height: 1; }
+.ozenoWorkspace .hubGlobalSearch input { flex: 1; min-width: 0; min-height: 42px; padding: 8px 0; border: 0; outline: 0; background: transparent; box-shadow: none; font-size: 13px; }
+.ozenoWorkspace .hubGlobalSearch input:focus-visible { outline: 0; }
+.hubSearchHint { flex: 0 0 auto; color: #94a39a; font-size: 10px; }
+.ozenoDashboard .ozenoHeaderNavigation { justify-content: flex-end; margin-left: 0; }
+.ozenoDashboard .hubMenu summary { padding: 10px 12px; }
+.hubAdminShell { display: grid; grid-template-columns: 250px minmax(0, 1fr); min-height: calc(100vh - 74px); }
+.hubSidebar { display: flex; flex-direction: column; min-width: 0; padding: 26px 13px 16px; background: #073f39; color: #dbece4; }
+.hubSidebarCaption { margin: 0 12px 17px; color: #87b2a1; font-size: 10px; font-weight: 700; letter-spacing: .13em; }
+.hubSidebarNav { display: grid; align-content: start; gap: 3px; }
+.hubNavSection { margin: 18px 12px 7px; color: #83a99b; font-size: 9px; font-weight: 700; letter-spacing: .12em; }
+.hubNavSection:first-child { margin-top: 0; }
+.hubSidebarNav .hubNavItem { display: flex; align-items: center; gap: 11px; min-height: 43px; padding: 0 11px; border-radius: 7px; color: #dcebe4; text-decoration: none; font-size: 13px; transition: background .15s, color .15s; }
+.hubSidebarNav .hubNavItem:hover { color: #fff; background: #ffffff12; }
+.hubSidebarNav .hubNavItem.isActive { color: #073f39; background: #e7f2ed; font-weight: 650; }
+.hubSidebarNav .hubNavItem svg { width: 18px; height: 18px; flex: 0 0 18px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.hubNavLabel { min-width: 0; flex: 1; }
+.hubSidebarCount { min-width: 20px; padding: 2px 5px; border-radius: 10px; background: #ffffff18; color: #eaf4ef; font-size: 10px; text-align: center; font-variant-numeric: tabular-nums; }
+.hubNavItem.isActive .hubSidebarCount { background: #d4e9de; color: #245e4c; }
+.hubComingSoon { flex: 0 0 auto; color: #a7c5b7; font-size: 9px; white-space: nowrap; }
+.hubSidebarFooter { display: flex; align-items: center; gap: 9px; margin-top: auto; padding: 18px 12px 4px; color: #a8c9ba; font-size: 11px; }
+.hubSidebarStatusDot { width: 7px; height: 7px; border-radius: 50%; background: #6bc89a; box-shadow: 0 0 0 3px #6bc89a22; }
+.hubDashboard { width: 100%; max-width: none; min-width: 0; box-sizing: border-box; margin: 0; padding: 38px clamp(22px, 4.5vw, 64px) 54px; }
+.hubDashboard > .hubNotice { margin: 0 0 25px; }
+.hubDashboardIntro { align-items: center; margin-bottom: 25px; }
+.hubDashboardIntro h1 { margin: 0 0 6px; color: #073f39; font-size: 30px; letter-spacing: -.035em; }
+.hubDashboardIntro p:last-child { color: #718378; }
+.hubDashboardIntro .ozenoEyebrow { margin-bottom: 7px; }
+.ozenoWorkspace .hubDashboardIntro .hubPrimary { min-height: 45px; padding-inline: 19px; box-shadow: 0 3px 8px #073f3918; }
+.hubPortfolioStats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 15px; margin: 0 0 23px; }
+.hubStatCard { display: flex; align-items: center; gap: 14px; min-height: 87px; padding: 15px 18px; border: 1px solid #dce6e1; border-radius: 10px; background: #fff; box-shadow: 0 3px 12px #163b3506; }
+.hubStatIcon { display: grid; place-items: center; width: 42px; height: 42px; flex: 0 0 42px; border-radius: 9px; background: #e8f4ee; color: #18725d; font-size: 21px; }
+.hubStatIcon.cloud { background: #eef3fb; color: #5279a5; }
+.hubStatIcon.draft { background: #fff5dc; color: #987522; }
+.hubStatIcon.prospecting { background: #f3edfa; color: #7653a3; }
+.hubStatCard p { margin: 0 0 2px; color: #708479; font-size: 11px; }
+.hubStatCard strong { color: #123f36; font-size: 23px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.hubStatCard small { display: block; margin-top: 2px; color: #718378; font-size: 9px; line-height: 1.25; }
+@media (max-width: 1040px) { .hubPortfolioStats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.hubProjectPanel { padding: 22px 24px 8px; border-radius: 10px; box-shadow: 0 4px 16px #163b3506; }
+.hubToolbar { align-items: end; gap: 16px; margin-bottom: 15px; }
+.hubToolbarTitle { margin-right: auto; }
+.hubSectionEyebrow { margin: 0 0 4px; color: #87988e; font-size: 9px; font-weight: 700; letter-spacing: .12em; }
+.hubToolbar h2 { color: #073f39; font-size: 18px; }
+.hubToolbar h2 small { display: inline; margin: 0 0 0 7px; font-size: 11px; }
+.hubMapPrivacyHint { margin: 3px 0 0; color: #718378; font-size: 10px; line-height: 1.4; }
+.hubFilterLabel { flex: 0 0 190px; }
+.ozenoWorkspace .hubToolbar select { min-height: 39px; font-size: 12px; }
+.hubProjects { min-width: 900px; }
+.hubProjects th { padding: 12px 11px; background: #f8faf9; color: #74867c; font-size: 10px; }
+.hubProjects th:first-child { border-radius: 5px 0 0; }
+.hubProjects th:last-child { border-radius: 0 5px 0 0; }
+.hubProjects td { padding: 15px 11px; color: #284b3e; font-size: 12px; }
+.hubProjects tbody tr:hover { background: #f3f8f5; }
+.hubProjects td small { font-size: 10px; }
+.hubStatus { border-radius: 20px; padding: 5px 10px; font-weight: 600; }
+.hubStatus.cloud { background: #e9f2ff; color: #386594; }
+.hubStatus.local { background: #fff4d5; color: #82631d; }
+.hubStatus.validated { background: #e8f1ff; color: #2463a0; }
+.hubStatus.progress { background: #fff3df; color: #986018; }
+.hubStatus.abandoned, .hubStatus.deleted { background: #edf0ee; color: #5f7068; }
+.ozenoWorkspace .hubProjects .hubCommercialStatusSelect { width: auto; min-width: 142px; max-width: 190px; min-height: 34px; padding: 6px 26px 6px 9px; border-radius: 18px; font-size: 11px; font-weight: 650; cursor: pointer; }
+.ozenoWorkspace .hubProjects .hubCommercialStatusSelect:disabled { opacity: .65; cursor: wait; }
+.ozenoWorkspace .hubProjects .hubCommercialStatusSelect.validated { border-color: #c6d8ef; background-color: #e8f1ff; color: #2463a0; }
+.ozenoWorkspace .hubProjects .hubCommercialStatusSelect.progress { border-color: #f0d9b5; background-color: #fff3df; color: #986018; }
+.ozenoWorkspace .hubProjects .hubCommercialStatusSelect.abandoned, .ozenoWorkspace .hubProjects .hubCommercialStatusSelect.deleted { border-color: #d7dfda; background-color: #edf0ee; color: #5f7068; }
+.ozenoWorkspace .hubProjects .hubOpen { min-height: 34px; padding: 7px 13px; font-size: 11px; }
+.hubDashboardFootnote { margin: 17px 2px 0; font-size: 11px; }
+.hubModulePlaceholder { max-width: 880px; margin: 0 auto; }
+.hubModuleCard { display: grid; grid-template-columns: 58px minmax(0, 1fr) auto; align-items: center; gap: 20px; margin-top: 20px; padding: 32px; border: 1px solid #dce6e1; border-radius: 12px; background: #fff; box-shadow: 0 8px 28px #163b3508; }
+.hubModuleIcon { display: grid; place-items: center; width: 54px; height: 54px; border-radius: 13px; background: #e9f4ef; color: #14715b; font-size: 25px; }
+.hubModuleBadge { color: #84621d; font-size: 9px; font-weight: 750; letter-spacing: .12em; }
+.hubModuleCard h1 { margin: 5px 0 7px; color: #073f39; font-size: 25px; }
+.hubModuleCard p { max-width: 530px; margin: 0; color: #6e8176; font-size: 13px; }
+.hubModuleCard .hubSecondary { white-space: nowrap; }
+
+@media (max-width: 1050px) {
+  .ozenoDashboard > header.hubTopbar { grid-template-columns: 220px minmax(180px, 1fr) auto; gap: 17px; padding-inline: 20px; }
+  .hubAdminShell { grid-template-columns: 224px minmax(0, 1fr); }
+  .hubDashboard { padding-inline: 24px; }
+  .hubComingSoon { font-size: 8px; }
+}
+@media (max-width: 760px) {
+  .ozenoDashboard > header.hubTopbar { grid-template-columns: 1fr auto; gap: 10px 16px; min-height: 68px; padding: 9px 16px; }
+  .hubTopbar .hubBrand strong { font-size: 22px; }
+  .hubTopbar .brandMark { width: 37px; height: 37px; }
+  .hubGlobalSearch { grid-column: 1 / -1; grid-row: 2; width: 100%; box-sizing: border-box; }
+  .ozenoDashboard .ozenoHeaderNavigation { grid-column: 2; grid-row: 1; }
+  .hubAdminShell { grid-template-columns: minmax(0, 1fr); }
+  .hubSidebar { padding: 10px 12px; }
+  .hubSidebarCaption, .hubNavSection, .hubSidebarFooter { display: none; }
+  .hubSidebarNav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; overflow: visible; }
+  .hubSidebarNav .hubNavItem { min-width: 0; min-height: 42px; gap: 7px; padding-inline: 8px; font-size: 10px; }
+  .hubSidebarNav .hubNavItem svg { width: 16px; height: 16px; flex-basis: 16px; }
+  .hubNavLabel { overflow-wrap: anywhere; line-height: 1.2; }
+  .hubComingSoon { display: none; }
+  .hubDashboard { padding: 25px 16px 40px; }
+  .hubPortfolioStats { gap: 10px; }
+  .hubStatCard { gap: 9px; min-height: 74px; padding: 11px; }
+  .hubStatIcon { width: 34px; height: 34px; flex-basis: 34px; font-size: 17px; }
+  .hubStatCard p { font-size: 10px; }
+  .hubStatCard strong { font-size: 20px; }
+  .hubProjectPanel { padding: 16px 15px 6px; }
+  .hubModuleCard { grid-template-columns: 48px minmax(0, 1fr); padding: 22px; gap: 14px; }
+  .hubModuleIcon { width: 46px; height: 46px; }
+  .hubModuleCard .hubSecondary { grid-column: 1 / -1; justify-self: start; }
+}
+@media (max-width: 520px) {
+  .hubLogoWordmark { width: min(170px, 42vw); max-height: 38px; }
+  .hubTopbar .hubBrand small { font-size: 9px; }
+  .hubSearchHint { display: none; }
+  .hubDashboardIntro { align-items: flex-start; flex-direction: column; }
+  .hubDashboardIntro h1 { font-size: 27px; }
+  .hubPortfolioStats { grid-template-columns: 1fr; }
+  .hubStatCard { min-height: 61px; }
+  .hubToolbar { align-items: stretch; flex-direction: column; }
+  .hubToolbarTitle { width: 100%; }
+  .hubFilterLabel { flex: 1 1 auto; width: 100%; }
+  .hubModuleCard { grid-template-columns: 1fr; }
+}
+
+/* Project map and first-phase roof prospecting. */
+.hubViewToggle { display: inline-flex; flex: 0 0 auto; padding: 3px; border: 1px solid #d5e1da; border-radius: 7px; background: #f5f8f6; }
+.ozenoWorkspace .hubViewToggle button { min-height: 33px; padding: 6px 12px; border: 0; border-radius: 5px; background: transparent; color: #557065; font: inherit; font-size: 12px; cursor: pointer; }
+.ozenoWorkspace .hubViewToggle button[aria-pressed="true"] { background: #fff; color: var(--pine); box-shadow: 0 1px 4px #173e351c; font-weight: 650; }
+.hubMapLegend { display: flex; flex-wrap: wrap; gap: 14px 22px; margin: 0 0 12px; color: #60766a; font-size: 11px; }
+.hubMapLegend > span { display: inline-flex; align-items: center; gap: 7px; }
+.hubMapDot { width: 10px; height: 10px; border-radius: 50%; box-shadow: 0 0 0 2px #fff, 0 0 0 3px #b7c7be; }
+.hubMapDot.progress { background: #e79631; }
+.hubMapDot.validated { background: #3988dc; }
+.hubMapDot.archived { background: #aebbb5; }
+.hubMap { z-index: 0; width: 100%; height: clamp(340px, 54vh, 620px); border: 1px solid #d8e3dc; border-radius: 8px; background: #e9efec; }
+.hubProspecting { max-width: 1440px; margin: 0 auto; }
+.hubProspecting .hubDashboardIntro { margin-bottom: 20px; }
+.hubProspecting .hubProjectPanel { padding: 22px 24px; }
+.hubProspectingControls { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr) minmax(0, .65fr) minmax(0, .8fr) minmax(160px, .9fr); align-items: end; gap: 13px; }
+.hubProspectingLocationRow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 7px; }
+.hubProspectingLocationRow .hubSecondary { min-height: 42px; padding: 8px 10px; white-space: nowrap; font-size: 11px; }
+.hubProspectingLocationRow .hubSecondary:disabled { opacity: .55; cursor: not-allowed; }
+.hubProspectingResults.hubProspectingPicking .hubProspectingMap { cursor: crosshair; outline: 3px solid #0b8068; outline-offset: -3px; }
+.hubProspectingControls > * { min-width: 0; }
+.hubProspectingControls label { display: grid; gap: 7px; color: #284b3e; font-size: 11px; font-weight: 650; }
+.ozenoWorkspace .hubProspectingControls :is(input, select) { width: 100%; min-height: 42px; border: 1px solid #cbdad2; border-radius: 6px; padding: 9px 11px; background: #fff; color: var(--ink); box-sizing: border-box; font: inherit; font-size: 12px; }
+.ozenoWorkspace .hubProspectingControls input[aria-invalid="true"] { border-color: #b42318; background: #fff7f6; box-shadow: 0 0 0 2px #b4231820; }
+.ozenoWorkspace .hubProspectingControls .hubProspectingMinAreaField small { color: #b42318; font-size: 11px; font-weight: 600; line-height: 1.35; }
+.ozenoWorkspace .hubProspectingControls .hubProspectingMinAreaField small[hidden] { display: none; }
+.ozenoWorkspace .hubProspectingControls .hubPrimary { box-sizing: border-box; justify-self: stretch; width: 100%; max-width: 100%; min-width: 0; min-height: 42px; padding-inline: 9px; font-size: 13px; line-height: 1.25; white-space: normal; overflow-wrap: anywhere; }
+.ozenoWorkspace .hubProspectingControls .hubPrimary:disabled { opacity: .55; cursor: not-allowed; }
+.hubProspectingAutocomplete { position: relative; }
+.hubProspectingSuggestions { position: absolute; z-index: 1200; top: calc(100% + 4px); right: 0; left: 0; display: grid; max-height: 280px; overflow: auto; padding: 4px; border: 1px solid #cbdad2; border-radius: 7px; background: #fff; box-shadow: 0 10px 26px #163d3026; }
+.hubProspectingSuggestions[hidden] { display: none; }
+.ozenoWorkspace .hubProspectingSuggestion { width: 100%; padding: 10px; border: 0; border-radius: 4px; background: #fff; color: #174b3d; text-align: left; font: inherit; font-size: 12px; cursor: pointer; }
+.ozenoWorkspace .hubProspectingSuggestion:hover, .ozenoWorkspace .hubProspectingSuggestion:focus-visible { background: #edf6f1; outline: 0; }
+.hubProspectingLocationHint { min-height: 16px; margin: 7px 0 0; color: #61796c; font-size: 11px; }
+.hubDataCaveat { margin: 18px 0 10px; padding: 12px 14px; border-left: 3px solid #d69a27; border-radius: 5px; background: #fff8e9; color: #6a571f; font-size: 11px; line-height: 1.55; }
+.hubPrivacyNote { margin: 8px 0 0; color: #718378; font-size: 10px; line-height: 1.55; }
+.hubProspectingState { margin: 14px 0 0; color: #17614f; font-size: 12px; }
+.hubProspectingResults { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(270px, .8fr); gap: 18px; margin-top: 18px; }
+.hubProspectingMap { height: min(66vh, 660px); min-height: 430px; }
+.hubCandidatePanel { min-width: 0; padding: 19px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+.hubCandidateHeading { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.hubCandidateHeading h2 { margin: 0; color: #073f39; font-size: 17px; }
+.hubCandidateHeading > span { display: grid; place-items: center; min-width: 27px; height: 27px; padding: 0 6px; border-radius: 20px; background: #e9f4ef; color: #17614f; font-size: 11px; font-weight: 700; }
+.hubCandidatePanel > .hubMuted { margin: 6px 0 14px; }
+.hubCandidates { display: grid; gap: 7px; max-height: min(60vh, 580px); margin: 0; padding: 0 3px 0 0; overflow: auto; list-style: none; }
+.ozenoWorkspace .hubCandidate { display: flex; width: 100%; min-height: 54px; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 11px; border: 1px solid #d8e4dc; border-radius: 7px; background: #fff; color: #174b3d; text-align: left; font: inherit; cursor: pointer; }
+.ozenoWorkspace .hubCandidate:hover, .ozenoWorkspace .hubCandidate:focus-visible { border-color: #2e9279; background: #f2f8f4; outline: 2px solid #cde7da; }
+.hubCandidate strong { font-size: 12px; }
+.hubCandidate span { color: #73877c; font-size: 10px; text-align: right; }
+.hubMapPopup { display: grid; gap: 5px; min-width: 155px; }
+.hubMapPopup p { margin: 0; color: #60766a; font-size: 11px; }
+.hubMapPopup > a { margin-top: 5px; color: #17614f; font-size: 11px; font-weight: 650; }
+#hubProjectMapView[hidden], #hubProspectingResults[hidden], #hubProspectingView[hidden] { display: none; }
+.ozenoWorkspace .hubCandidateDetails { border: 0; background: none; color: #17614f; padding: 5px 11px; cursor: pointer; font: inherit; font-size: 11px; text-decoration: underline; }
+.hubCandidateCard { border: 1px solid #d8e4dc; border-radius: 7px; background: #fff; min-width: 0; }
+.hubCandidateCard:focus-within { outline: 2px solid #cde7da; }
+.ozenoWorkspace .hubCandidateCard .hubCandidate { border: 0; border-radius: 7px 7px 0 0; box-sizing: border-box; }
+.hubCandidateFooter { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; justify-content: space-between; padding: 0 9px 7px; }
+.ozenoWorkspace .hubCandidateCreateProject { width: calc(100% - 18px); margin: 0 9px 9px; padding: 7px 9px; border: 1px solid #cfe0d5; border-radius: 6px; background: #f3f8f5; color: #17614f; cursor: pointer; font: 600 11px system-ui,sans-serif; }
+.ozenoWorkspace .hubCandidateCreateProject:hover { background: #e8f4ee; }
+.hubCandidateConsumption { color: #61796c; font-size: 10px; overflow-wrap: anywhere; }
+.ozenoWorkspace .hubCandidateFooter .hubCandidateDetails { padding: 4px 0; }
+.hubCandidateSort { display: grid; gap: 6px; margin: 12px 0; font-size: 11px; color: #61796c; }
+.hubCandidateSort select { width: 100%; min-width: 0; padding: 8px; border: 1px solid #cbdad2; border-radius: 6px; background: #fff; color: #174b3d; }
+.hubProspectingSheet { margin-top: 18px; scroll-margin-top: 95px; }
+.hubProspectingSheet[hidden] { display: none; }
+.hubSheetHeading { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.hubSheetHeading h2 { flex: 1 1 260px; margin: 0; font-size: 20px; }
+.hubSheetGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.hubSheetBlock { min-width: 0; border: 1px solid #d8e4dc; border-radius: 8px; padding: 17px; }
+.hubSheetBlock h3 { margin: 0 0 12px; font-size: 15px; }
+.hubSheetFields { margin: 12px 0; }
+.hubSheetFields + .hubSheetFields { border-top: 1px solid #d8e4dc; padding-top: 12px; }
+.hubSheetField { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 12px; padding: 6px 0; font-size: 12px; }
+.hubSheetField dt { color: #61796c; }
+.hubSheetField dd { margin: 0; overflow-wrap: anywhere; }
+.hubSheetWarning { font-size: 12px; color: #805917; background: #fff8e9; border-radius: 5px; padding: 10px; line-height: 1.5; }
+.hubSheetEnergyTotal { font-size: 23px; color: #073f39; font-weight: 700; }
+.hubSheetBlock a { color: #17614f; overflow-wrap: anywhere; }
+.hubSheetBlock label { display: grid; gap: 8px; font-size: 12px; }
+.hubSheetBlock select { width: 100%; min-width: 0; padding: 9px; border: 1px solid #cbdad2; border-radius: 5px; background: white; color: #174b3d; }
+@media (max-width: 760px) { .hubSheetGrid { grid-template-columns: 1fr; } }
+
+@media (max-width: 1050px) {
+  .hubProspectingControls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hubProspectingControls .hubPrimary { justify-self: stretch; }
+  .hubProspectingResults { grid-template-columns: minmax(0, 1.35fr) minmax(240px, .9fr); }
+}
+@media (max-width: 760px) {
+  .hubToolbar .hubViewToggle { align-self: flex-start; }
+  .hubProspectingResults { grid-template-columns: 1fr; }
+  .hubProspectingMap { height: 48vh; min-height: 330px; }
+  .hubCandidates { max-height: 340px; }
+}
+@media (max-width: 520px) {
+  .hubProspecting .hubProjectPanel { padding: 16px; }
+  .hubProspectingControls { grid-template-columns: 1fr; }
+  .hubProspectingLocationRow { grid-template-columns: 1fr; }
+  .hubProspectingLocationRow .hubSecondary { width: 100%; }
+  .hubProspectingControls .hubPrimary { width: 100%; }
+  .hubMapLegend { gap: 10px 14px; }
+  .hubMap { height: 380px; }
+  .hubProspectingMap { height: 400px; min-height: 0; }
+}

@@ -1,0 +1,40 @@
+/* Reuse the supplied OZENO wordmark without changing the study-page markup. */
+body > header {
+  background: #fff;
+  border-bottom: 1px solid #dce6e1;
+  color: #073f39;
+}
+
+body > header .brandMark {
+  display: none;
+}
+
+body > header .brandName {
+  display: block;
+  width: min(190px, 44vw);
+  height: 43px;
+  overflow: hidden;
+  background: url("./ozeno-wordmark.png") left center / contain no-repeat;
+  color: transparent;
+  font-size: 0;
+  letter-spacing: 0;
+}
+
+body > header .brandSub {
+  margin-top: 2px;
+  color: #698477;
+  font-size: 10px;
+  letter-spacing: .025em;
+}
+
+@media (max-width: 640px) {
+  body > header .brandName {
+    width: min(170px, 42vw);
+    height: 38px;
+  }
+
+  body > header .brandSub {
+    display: block;
+    font-size: 9px;
+  }
+}

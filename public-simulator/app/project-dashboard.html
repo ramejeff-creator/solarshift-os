@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OZENO · Synthèse projet</title>
+  <link rel="stylesheet" href="./project-dashboard.css">
+  <script src="./runtime-config.js"></script>
+  <script src="./app-auth-gate.js"></script>
+</head>
+<body>
+  <header class="dashboardTopbar">
+    <a class="brand" href="./projects.html" aria-label="Retour aux projets"><span class="brandMark">O</span><span>OZENO<small>ESPACE PROJET</small></span></a>
+    <nav aria-label="Navigation projet"><a href="./projects.html">Projets</a><a id="preStudyNav" href="./index.html">Pré-étude</a><a id="workspaceNav" href="./workspace.html">Étape 2 · Rapport final</a></nav>
+  </header>
+  <main class="dashboardShell">
+    <p id="dashboardStatus" class="notice" role="status" aria-live="polite">Chargement du projet…</p>
+    <div id="dashboardContent" hidden>
+      <section class="projectHeading" aria-labelledby="projectName">
+        <div class="headingCopy"><p class="eyebrow">SYNTHÈSE PROJET</p><h1 id="projectName">—</h1><p id="projectAddress" class="address">Adresse à compléter</p>
+          <div class="projectMeta"><span id="scenarioMeta">Scénario à sélectionner</span><span id="scenarioCurrentness" class="statusBadge" data-status="UNKNOWN">À compléter</span><span id="calculationMeta">Dernier calcul : à compléter</span></div>
+        </div>
+        <div class="headingActions"><label id="scenarioPickerWrap" class="scenarioPicker">Version du scénario<select id="scenarioPicker" aria-label="Choisir une version du scénario"></select></label><div id="lifecycleActions" class="actionRow"></div></div>
+      </section>
+
+      <section id="kpiRow" class="kpiRow" aria-label="Indicateurs principaux"></section>
+
+      <div class="dashboardGroups">
+        <section id="technical" class="dashboardCard" aria-labelledby="technicalTitle">
+          <div class="sectionHeading"><div><p class="eyebrow">01 · TECHNIQUE</p><h2 id="technicalTitle">Configuration solaire</h2></div><span id="technicalStatus" class="statusBadge" data-status="UNKNOWN">À compléter</span></div>
+          <div id="technicalSummary" class="technicalSummary"></div>
+          <a class="sectionLink" id="technicalLink" href="#">Voir la configuration <span aria-hidden="true">→</span></a>
+        </section>
+
+        <section id="energy" class="dashboardCard" aria-labelledby="energyTitle">
+          <div class="sectionHeading"><div><p class="eyebrow">02 · ÉNERGIE</p><h2 id="energyTitle">Production & répartition</h2></div><span id="energyStatus" class="statusBadge" data-status="UNKNOWN">À compléter</span></div>
+          <div id="energySummary"></div>
+          <p id="timeSeriesNote" class="quietNote" hidden>Aucune série temporelle canonique disponible pour cette vue ; aucune courbe n’est fabriquée.</p>
+          <a class="sectionLink" id="energyLink" href="#">Voir les données énergie <span aria-hidden="true">→</span></a>
+        </section>
+
+        <section id="finance" class="dashboardCard financeCard" aria-labelledby="financeTitle">
+          <div class="sectionHeading"><div><p class="eyebrow">03 · FINANCE</p><h2 id="financeTitle">Résultats par perspective</h2></div><span id="financeStatus" class="statusBadge" data-status="UNKNOWN">À compléter</span></div>
+          <label id="perspectiveWrap" class="perspectivePicker" hidden>Perspective<select id="perspectivePicker" aria-label="Perspective financière"></select></label>
+          <div id="financeKpis" class="financeKpis"></div>
+          <div id="cashFlowHost"></div>
+          <a class="sectionLink" id="financeLink" href="#">Voir l’analyse financière <span aria-hidden="true">→</span></a>
+        </section>
+
+        <section id="impact" class="dashboardCard impactCard" aria-labelledby="impactTitle">
+          <div class="sectionHeading"><div><p class="eyebrow">04 · IMPACT & AIDES</p><h2 id="impactTitle">Impact annuel & dispositifs</h2></div></div>
+          <div class="impactGrid"><section><h3>Impact carbone</h3><div id="carbonSummary"></div><details id="carbonMethod" class="sourceDisclosure"><summary>Méthode & sources</summary><div id="carbonSourceDetails"></div></details></section>
+            <section><h3>Aides & dispositifs</h3><div id="supportSummary"></div></section></div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <script type="module" src="./project-dashboard.js"></script>
+  <script type="module" src="./project-site-qualification.mjs"></script>
+</body>
+</html>

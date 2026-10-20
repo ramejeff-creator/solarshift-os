@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0d5a47">
+  <title>OZENO · Simulateur solaire professionnel</title>
+  <link rel="icon" type="image/png" href="./exec-d2eda8f0-968b-466f-b6ab-7ba649808352.png">
+  <link rel="stylesheet" href="./pro-simulator.css">
+  <link rel="stylesheet" href="./pro-simulator-design.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css">
+  <script src="./runtime-config.js"></script>
+</head>
+<body class="proSimulator" data-active-step="1">
+  <svg class="simIconLibrary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
+    <symbol id="sim-finance" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="16" cy="7" rx="10" ry="4"/><path d="M6 7v6c0 5 20 5 20 0V7M6 13v6c0 5 20 5 20 0v-6M6 19v6c0 5 20 5 20 0v-6"/></g></symbol>
+    <symbol id="sim-tag" viewBox="0 0 32 32"><path d="m4 17 13-13h11v11L15 28Z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="23" cy="9" r="2" fill="currentColor"/></symbol>
+    <symbol id="sim-trend" viewBox="0 0 32 32"><path d="m3 26 10-10 6 5L29 7m-9 0h9v9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="sim-building" viewBox="0 0 32 32"><path d="M4 28V12l9 4V9l9 4V4l6 3v21ZM9 21v3m6-3v3m6-3v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="sim-leaf" viewBox="0 0 32 32"><path d="M27 5C12 2 3 10 7 20c5 9 18 6 20-15Z" fill="currentColor"/><path d="m6 28 15-17" fill="none" stroke="white" stroke-width="1.5"/></symbol>
+    <symbol id="sim-bolt" viewBox="0 0 32 32"><path d="m18 2-13 17h10l-1 11L28 12H17Z" fill="currentColor"/></symbol>
+    <symbol id="sim-bars" viewBox="0 0 32 32"><rect x="4" y="18" width="6" height="12" rx="2" fill="currentColor"/><rect x="13" y="11" width="6" height="19" rx="2" fill="currentColor"/><rect x="22" y="3" width="6" height="27" rx="2" fill="currentColor"/></symbol>
+    <symbol id="sim-shield" viewBox="0 0 32 32"><path d="m16 3 11 4v9c0 6-11 13-11 13S5 22 5 16V7Z" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="m11 15 4 4 7-8" fill="none" stroke="currentColor" stroke-width="2.4"/></symbol>
+    <symbol id="sim-pin" viewBox="0 0 32 32"><path d="M16 30S5 19 5 12a11 11 0 1 1 22 0c0 7-11 18-11 18Z" fill="currentColor"/><circle cx="16" cy="12" r="4" fill="white"/></symbol>
+    <symbol id="sim-user" viewBox="0 0 32 32"><circle cx="16" cy="9" r="6" fill="currentColor"/><path d="M5 29v-5a11 11 0 0 1 22 0v5Z" fill="currentColor"/></symbol>
+    <symbol id="sim-bulb" viewBox="0 0 32 32"><path d="M10 23c0-5-5-5-5-11a11 11 0 0 1 22 0c0 6-5 6-5 11Z" fill="currentColor"/><path d="M11 26h10m-9 4h8M16 3V0M3 5 0 3m29 2 3-2" stroke="currentColor" stroke-width="2"/><path d="m12 12 4 4 4-4m-4 4v7" fill="none" stroke="white" stroke-width="1.5"/></symbol>
+    <symbol id="sim-calendar" viewBox="0 0 40 40"><rect x="5" y="8" width="30" height="28" rx="4" fill="#dbefe4" stroke="currentColor" stroke-width="2"/><path d="M5 16h30M12 4v8m16-8v8M12 22h4m8 0h4m-16 7h4m8 0h4" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol>
+    <symbol id="sim-clock" viewBox="0 0 40 40"><circle cx="20" cy="20" r="15" fill="#dbefe4" stroke="currentColor" stroke-width="2"/><path d="M20 10v11l7 4" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol>
+    <symbol id="sim-rocket" viewBox="0 0 40 40"><path d="M12 27C10 16 21 6 34 4c0 13-8 25-20 26Z" fill="currentColor"/><circle cx="26" cy="13" r="4" fill="#dcf2e4"/><path d="m12 21-7 2-2 9 10-5m7 2-1 8 9-3 1-8" fill="#67aa83"/><path d="m10 29-5 8 9-5" fill="#ffbd27"/></symbol>
+    <symbol id="sim-directions" viewBox="0 0 40 40"><path d="M20 4v33" stroke="currentColor" stroke-width="4"/><path d="M7 7h23l6 6-6 6H7l-5-6Zm23 15H9l-6 6 6 6h21l6-6Z" fill="currentColor"/></symbol>
+  </defs></svg>
+  <svg class="simFoliage simFoliageLeft" viewBox="0 0 150 800" aria-hidden="true"><path d="M-40 800C100 570 18 430 75 220" fill="none" stroke="#aecb9c" stroke-width="2"/><g fill="#82b470"><ellipse cx="29" cy="694" rx="23" ry="100" transform="rotate(38 29 694)"/><ellipse cx="25" cy="541" rx="20" ry="90" transform="rotate(40 25 541)"/><ellipse cx="42" cy="398" rx="21" ry="92" transform="rotate(44 42 398)"/><ellipse cx="61" cy="275" rx="17" ry="70" transform="rotate(31 61 275)"/></g><g fill="#fff1c5"><ellipse cx="59" cy="626" rx="19" ry="84" transform="rotate(40 59 626)"/><ellipse cx="20" cy="452" rx="23" ry="85" transform="rotate(38 20 452)"/><ellipse cx="54" cy="182" rx="18" ry="70" transform="rotate(35 54 182)"/></g></svg>
+  <svg class="simFoliage simFoliageRight" viewBox="0 0 150 800" aria-hidden="true"><use href="#sim-edge-leaves"/><path d="M-40 800C100 570 18 430 75 220" fill="none" stroke="#aecb9c" stroke-width="2"/><g fill="#8cb879"><ellipse cx="29" cy="694" rx="23" ry="100" transform="rotate(38 29 694)"/><ellipse cx="25" cy="541" rx="20" ry="90" transform="rotate(40 25 541)"/><ellipse cx="42" cy="398" rx="21" ry="92" transform="rotate(44 42 398)"/><ellipse cx="61" cy="275" rx="17" ry="70" transform="rotate(31 61 275)"/></g><g fill="#fff1c5"><ellipse cx="59" cy="626" rx="19" ry="84" transform="rotate(40 59 626)"/><ellipse cx="20" cy="452" rx="23" ry="85" transform="rotate(38 20 452)"/></g></svg>
+  <div id="simFileProtocolNotice" class="simFileNotice" role="alert" hidden>
+    Le simulateur a été ouvert comme un fichier local : la recherche d’adresse et le calcul ne peuvent pas démarrer ainsi.
+    Ouvrez la <a href="http://127.0.0.1:3000/pro-simulator.html">version de prévisualisation fonctionnelle</a>.
+  </div>
+  <script>
+    if (window.location.protocol === 'file:') {
+      document.body.classList.add('simNeedsServer');
+      document.getElementById('simFileProtocolNotice').hidden = false;
+    }
+  </script>
+  <header class="simTopbar">
+    <a class="simBrand" href="./projects.html" aria-label="OZENO, retour à l’espace professionnel">
+      <img src="./ozeno-wordmark.png" alt="OZENO">
+      <span>Plateforme de transition énergétique</span>
+    </a>
+    <a class="simTopLink" href="./projects.html"><svg aria-hidden="true"><use href="#sim-user"/></svg>Se connecter</a>
+  </header>
+  <div class="simProgressBand">
+    <nav class="simProgress" aria-label="Progression du simulateur">
+      <div class="simProgressTrack"><span id="progressFill"></span></div>
+      <ol>
+        <li class="isCurrent" data-progress-step="1" aria-current="step"><span>1</span><b>Adresse</b></li>
+        <li data-progress-step="2"><span>2</span><b>Surface</b></li>
+        <li data-progress-step="3"><span>3</span><b>Qualification</b></li>
+        <li data-progress-step="4"><span>4</span><b>Usage énergie</b></li>
+        <li data-progress-step="5"><span>5</span><b>Résultat</b></li>
+      </ol>
+    </nav>
+  </div>
+
+  <main class="simShell">
+    <section class="simIntro" aria-labelledby="simTitle">
+      <div class="simIntroCopy">
+        <p id="simHeroEyebrow" class="simEyebrow">ÉTAPE 1 SUR 5</p>
+        <h1 id="simTitle" aria-label="Évaluez le potentiel solaire de votre site professionnel">Évaluez le potentiel solaire de votre site <em>professionnel</em></h1>
+        <p id="simHeroDescription">Obtenez une première estimation du potentiel solaire de votre site en quelques minutes, gratuitement et sans engagement.</p>
+        <p class="simScopeNote">Pour les bâtiments professionnels, parkings, terrains et surfaces agricoles ; hors maisons individuelles.</p>
+      </div>
+      <div class="simIntroArt" aria-hidden="true">
+        <img src="./assets/simulator/solar-building-hero.png" width="1860" height="850" alt="" fetchpriority="high">
+      </div>
+      <aside class="simHeroNote"><span class="simRoundIcon"><svg aria-hidden="true"><use href="#sim-leaf"/></svg></span><div><h2 id="simHeroNoteTitle">Le solaire, un atout pour votre activité</h2><p id="simHeroNoteText">Explorez le potentiel de votre site et préparez votre projet en toute simplicité.</p></div></aside>
+    </section>
+
+    <aside class="simBenefits" aria-label="Les avantages du simulateur">
+      <div><span class="simRoundIcon simGoldIcon"><svg aria-hidden="true"><use href="#sim-bolt"/></svg></span><p><strong>Rapide</strong><span>Quelques étapes simples pour une première estimation.</span></p></div>
+      <div><span class="simRoundIcon"><svg aria-hidden="true"><use href="#sim-bars"/></svg></span><p><strong>Des données de référence</strong><span>Une estimation fondée sur les données solaires PVGIS.</span></p></div>
+      <div><span class="simRoundIcon"><svg aria-hidden="true"><use href="#sim-leaf"/></svg></span><p><strong>Sans engagement</strong><span>Explorez le potentiel avant d’aller plus loin.</span></p></div>
+    </aside>
+    <section class="simCard" aria-labelledby="simTitle">
+      <form id="simulatorForm" novalidate>
+        <section class="simStep" data-step="1" aria-labelledby="stepHeading">
+          <div class="simStepHeading">
+            <span class="simStepIcon" aria-hidden="true"><svg><use href="#sim-pin"/></svg></span>
+            <div><h2 id="stepHeading" tabindex="-1">Où se trouve votre site ?</h2><p>Indiquez l’adresse du site pour estimer son potentiel solaire.</p></div>
+          </div>
+          <div id="simAddressField" class="simField simAddressField">
+            <label for="siteAddress">Adresse du site</label>
+            <div class="simAddressInputRow">
+              <input id="siteAddress" name="address" type="search" autocomplete="street-address" placeholder="Adresse, code postal, ville…" aria-describedby="addressHelp addressStatus" required>
+              <button id="useMyLocation" class="simLocationButton" type="button" aria-label="Utiliser ma position actuelle" title="Ma position">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"/><circle cx="12" cy="9" r="2.4"/></svg>
+                <span>Ma position</span>
+              </button>
+            </div>
+            <span id="addressSuggestions" class="simSuggestions" role="listbox" aria-label="Suggestions d’adresses" hidden></span>
+            <small id="addressHelp">Saisissez la rue et la commune. Le numéro n’est pas toujours référencé ; vous pourrez vérifier le bâtiment sur la carte.</small>
+            <span id="addressStatus" class="simStatus" role="status" aria-live="polite"></span>
+          </div>
+          <details class="simCoordinates">
+            <summary>J’ai déjà les coordonnées GPS</summary>
+            <div class="simCoordinateFields">
+              <label for="latitude">Latitude<input id="latitude" name="latitude" inputmode="decimal" type="number" min="-90" max="90" step="any" placeholder="43.6045"></label>
+              <label for="longitude">Longitude<input id="longitude" name="longitude" inputmode="decimal" type="number" min="-180" max="180" step="any" placeholder="1.4442"></label>
+            </div>
+            <p>Si vous les saisissez, les coordonnées GPS remplacent l’adresse pour le calcul.</p>
+          </details>
+          <div class="simStepActions"><span class="simPrivacy">Estimation gratuite, sans engagement et sans coordonnées de contact.</span><button class="simButton simButtonPrimary" type="button" data-next><span id="continueLabel">Continuer</span> <span aria-hidden="true">→</span></button></div>
+        </section>
+
+        <section class="simStep" data-step="2" aria-labelledby="roofHeading" hidden>
+          <div class="simStepHeading">
+            <span class="simStepIcon" aria-hidden="true">⌂</span>
+            <div><p class="simEyebrow">ÉTAPE 2 SUR 5</p><h2 id="roofHeading">Caractérisez votre site et votre installation</h2><p>Commencez par choisir un bâtiment ou une surface extérieure ; les choix suivants s’adaptent à votre projet.</p></div>
+          </div>
+          <fieldset class="simChoiceGroup">
+            <legend data-number="1">Nature du site <small>Votre projet concerne un bâtiment ou une surface extérieure ?</small></legend>
+            <div class="simSiteKindChoices">
+              <label class="simChoiceCard"><input type="radio" name="siteKind" value="building" required checked><span class="simSiteKindIcon" aria-hidden="true"><img src="./assets/simulator/site-kind-building.png" alt=""></span><b>Bâtiment professionnel</b><small>Installation sur une toiture.</small></label>
+              <label class="simChoiceCard"><input type="radio" name="siteKind" value="land" required><span class="simSiteKindIcon" aria-hidden="true"><img src="./assets/simulator/site-kind-exterior.png" alt=""></span><b>Surface extérieure</b><small>Parking pour ombrière, terrain ou surface agricole.</small></label>
+            </div>
+          </fieldset>
+          <fieldset class="simChoiceGroup simBuildingDetails" id="buildingDetails">
+            <legend>Type de bâtiment <small>Choisissez la catégorie qui correspond le mieux à votre activité.</small></legend>
+            <div class="simBuildingChoices">
+              <label class="simChoiceCard"><input type="radio" name="buildingUse" value="offices"><span class="simBuildingArt building-offices" aria-hidden="true"></span><b>Bureaux & tertiaire</b><small>Immeubles de bureaux, sièges sociaux, etc.</small></label>
+              <label class="simChoiceCard"><input type="radio" name="buildingUse" value="logistics"><span class="simBuildingArt building-logistics" aria-hidden="true"></span><b>Stockage & logistique</b><small>Entrepôts, plateformes logistiques, etc.</small></label>
+              <label class="simChoiceCard"><input type="radio" name="buildingUse" value="industry"><span class="simBuildingArt building-industry" aria-hidden="true"></span><b>Industrie & atelier</b><small>Sites de production et ateliers.</small></label>
+              <label class="simChoiceCard"><input type="radio" name="buildingUse" value="retail"><span class="simBuildingArt building-retail" aria-hidden="true"></span><b>Commerce & grande surface</b><small>Magasins, centres commerciaux et enseignes.</small></label>
+              <label class="simChoiceCard"><input type="radio" name="buildingUse" value="public"><span class="simBuildingArt building-public" aria-hidden="true"></span><b>Équipement public</b><small>Écoles, mairies, équipements sportifs, etc.</small></label>
+              <label class="simChoiceCard"><input type="radio" name="buildingUse" value="other"><span class="simBuildingArt building-other" aria-hidden="true"></span><b>Autre bâtiment professionnel</b><small>Hôtels, santé, tertiaire spécialisé, etc.</small></label>
+            </div>
+          </fieldset>
+          <div class="simBuildingSubtypes" id="buildingSubtypeControls" hidden>
+            <label class="simField" id="warehouseSubtypeField" hidden for="warehouseSubtype">Votre site comporte-t-il du froid ou de la réfrigération ?
+              <select id="warehouseSubtype" name="warehouseSubtype"><option value="unknown">Je ne sais pas</option><option value="dry">Non</option><option value="cold">Oui</option></select>
+            </label>
+            <label class="simField" id="industryScheduleField" hidden for="industrySchedule">Rythme d’activité
+              <select id="industrySchedule" name="industrySchedule"><option value="UNKNOWN">Je ne sais pas</option><option value="DAYTIME">Journée</option><option value="TWO_SHIFT">2×8</option><option value="THREE_SHIFT">3×8</option></select>
+            </label>
+          </div>
+          <fieldset class="simChoiceGroup simInstallationGroup">
+            <legend data-number="2">Type d’installation <small>Précisez la toiture ou l’installation envisagée.</small></legend>
+            <fieldset class="simChoiceGroup simExternalSurfaceGroup" hidden>
+              <legend>Quelle est la nature de cette surface ?</legend>
+              <div class="simPansChoices">
+                <label class="simPillChoice"><input type="radio" name="externalSurfaceType" value="parking" required><span aria-hidden="true">▦</span> Parking</label>
+                <label class="simPillChoice"><input type="radio" name="externalSurfaceType" value="terrain" required><span aria-hidden="true">⌖</span> Terrain</label>
+                <label class="simPillChoice"><input type="radio" name="externalSurfaceType" value="agriculture" required>Agricole</label>
+              </div>
+            </fieldset>
+            <fieldset class="simRoofTypeGroup">
+              <legend class="simVisuallyHidden">Type de toiture</legend>
+              <div class="simRoofChoices">
+                <label class="simChoiceCard simRoofCard"><input type="radio" name="roofType" value="flat" required><span class="simSolarArt solar-flat" aria-hidden="true"></span><b>Toit plat</b><small>Panneaux sur supports</small></label>
+                <label class="simChoiceCard simRoofCard"><input type="radio" name="roofType" value="pitched" required><span class="simSolarArt solar-pitched" aria-hidden="true"></span><b>Toiture inclinée</b><small>Un ou deux pans</small></label>
+              </div>
+            </fieldset>
+            <fieldset class="simChoiceGroup simPansGroup" hidden>
+              <legend>Combien de pans de toiture seront équipés ?</legend>
+              <div class="simPansChoices">
+                <label class="simPillChoice"><input type="radio" name="roofPans" value="one" checked><span aria-hidden="true">⌂</span> Un pan</label>
+                <label class="simPillChoice"><input type="radio" name="roofPans" value="two"><span aria-hidden="true">⌂</span> Deux pans</label>
+              </div>
+              <small class="simFieldHint">Pour deux pans, le simulateur répartit la surface à parts égales.</small>
+            </fieldset>
+            <div class="simExternalDetails simDerivedInstallation" id="externalInstallationSummary" hidden aria-live="polite"><p>Installation envisagée : <strong id="externalInstallationLabel">À préciser</strong></p></div>
+          </fieldset>
+          <section class="simMapSection" aria-labelledby="roofMapHeading">
+            <div class="simMapHeading"><div><h3 id="roofMapHeading" data-number="3">Repérez votre toiture ou surface à couvrir</h3><p id="roofMapDescription">Tracez son contour avec le rectangle ou le polygone. Vous pourrez ajuster les points si besoin.</p></div><span class="simMapArea" id="mapAreaOutput">Surface à repérer</span></div>
+            <div class="simMapLayout">
+              <div class="simMapCanvas">
+                <div id="roofMap" class="simRoofMap" role="application" aria-label="Carte satellite pour tracer le contour de la surface" aria-describedby="roofMapHint"></div>
+                <p id="roofMapHint" class="simMapHint"><svg aria-hidden="true"><use href="#sim-bulb"/></svg><span>Cliquez une fois sur chaque toiture ou zone à ajouter pour proposer son contour. Pour le corriger, cliquez une seconde fois dessus.</span></p>
+                <div class="simMapOrientation" id="mapOrientationGroup"><h3 class="simQuestionLabel" data-number="5">Orientation de la toiture <small>(facultatif)</small></h3><output id="orientationStatus" class="simOrientationResult" role="status" aria-live="polite">Non renseignée · hypothèse sud appliquée à l’estimation.</output><button type="button" id="pickRoofOrientation" class="simButton simButtonQuiet">Repérer l’orientation sur la carte</button><p class="simPanExplanation">Pour un toit incliné, cliquez du faîtage vers le bas de pente. Si vous ne savez pas, l’estimation gardera l’hypothèse indiquée.</p></div>
+                <p id="roofDetectionStatus" class="simFieldHint" role="status" aria-live="polite"></p>
+              </div>
+              <aside class="simSiteSummary" aria-label="Résumé du site"><h3>Votre site</h3><span class="simBuildingArt building-offices" data-summary-building-art aria-hidden="true"></span><p><span id="summaryBuildingLabel">Type de bâtiment</span><strong id="summaryBuilding">À choisir</strong></p><p><span>Installation</span><strong id="summaryRoof">À choisir</strong></p><label class="simField simManualArea" for="roofArea"><span id="areaLabel">Emprise au sol du bâtiment (m²)</span><input id="roofArea" name="roofArea" type="number" min="20" max="1000000" step="1" inputmode="decimal" placeholder="Ex. 1 200 m²"><small id="areaHelp">Emprise au sol mesurée sur le contour de la carte.</small></label><p class="simSummaryArea"><span id="summaryAreaLabel">Emprise du bâtiment tracée</span><strong id="summaryArea">À mesurer</strong></p><div class="simAdvice"><svg aria-hidden="true"><use href="#sim-bulb"/></svg><p><strong>Et après ?</strong><span id="summaryAdvice">Vous préciserez la pente, l’orientation et l’ombrage pour affiner votre estimation.</span></p></div></aside>
+            </div>
+            <div id="roofContourEditor" class="simMapActions" hidden><strong>Correction du contour</strong><button id="saveRoofContour" class="simButton simButtonPrimary" type="button">Enregistrer le contour</button><button id="cancelRoofContour" class="simButton simButtonQuiet" type="button">Annuler la correction</button></div>
+            <p class="simFieldHint">La surface tracée reste une estimation : le contour peut inclure des zones non équipables.</p>
+          </section>
+          <p id="areaError" class="simInlineError" hidden>Tracez le toit sur la carte ou indiquez sa surface pour continuer.</p>
+          <p id="roofConfigError" class="simInlineError" hidden>Choisissez le type de surface et complétez les choix demandés dans les cadres rouges.</p>
+          <div class="simStepActions"><button class="simButton simButtonQuiet" type="button" data-back>← Retour</button><button class="simButton simButtonPrimary" type="button" data-next>Continuer vers la qualification <span aria-hidden="true">→</span></button></div>
+        </section>
+
+        <section class="simStep" data-step="3" aria-labelledby="detailsHeading" hidden>
+          <div class="simStepHeading simCompactHeading">
+            <span class="simStepIcon" aria-hidden="true">☀</span>
+            <div><p class="simEyebrow">ÉTAPE 3 SUR 5</p><h2 id="detailsHeading">Qualification technique</h2><p id="detailsDescription">Quelques repères simples pour affiner l’estimation de votre toiture.</p></div>
+          </div>
+          <p id="unsupportedQualificationNotice" class="simScopeNotice" hidden>La qualification détaillée de ce type d’installation n’est pas encore prise en charge. Vous pourrez poursuivre sans inventer d’hypothèses techniques.</p>
+
+          <div class="simDetailsLayout"><div class="simTechnicalFields">
+          <div class="simFieldGrid simAreaGrid simUsableCard simQuestion">
+            <label class="simField" for="usablePercent"><span class="simQuestionLabel" data-number="1">Part de toiture exploitable</span> <output id="usableOutput">65 %</output>
+              <input id="usablePercent" name="usablePercent" type="range" min="30" max="90" step="5" value="65">
+              <small>Hypothèse indicative par défaut : 65 %, modifiable. Aucune détection automatique des obstacles n’est réalisée ici.</small>
+            </label>
+          </div>
+
+
+          <fieldset class="simChoiceGroup simQuestion" id="roofPitchGroup">
+            <legend id="tiltLegend" data-number="2">Inclinaison de la toiture</legend>
+            <p class="simPanExplanation">Choisissez la plage qui ressemble le plus à la pente du toit. Une estimation suffit.</p>
+            <div class="simTiltChoices">
+              <label class="simIconChoice"><input type="radio" name="tiltBand" value="0-6" required><span class="simTiltGlyph" aria-hidden="true"><i></i></span><b>0 à 6°</b><small>Toit presque plat</small></label>
+              <label class="simIconChoice"><input type="radio" name="tiltBand" value="7-14"><span class="simTiltGlyph" aria-hidden="true"><i></i></span><b>7 à 14°</b><small>Pente faible</small></label>
+              <label class="simIconChoice"><input type="radio" name="tiltBand" value="15-30"><span class="simTiltGlyph" aria-hidden="true"><i></i></span><b>15 à 30°</b><small>Pente moyenne</small></label>
+              <label class="simIconChoice"><input type="radio" name="tiltBand" value="30plus"><span class="simTiltGlyph" aria-hidden="true"><i></i></span><b>Plus de 30°</b><small>Pente forte</small></label>
+            </div>
+            <p id="tiltRecommendation" class="simRecommendation" hidden></p>
+          </fieldset>
+
+
+          <fieldset class="simChoiceGroup simQuestion">
+            <legend data-number="4">Ombrage proche</legend>
+            <div class="simShadeChoices">
+              <label class="simPillChoice"><input type="radio" name="shade" value="none" required><span aria-hidden="true">☀</span> Aucun ou très faible</label>
+              <label class="simPillChoice"><input type="radio" name="shade" value="some"><span aria-hidden="true">◐</span> Quelques ombres</label>
+              <label class="simPillChoice"><input type="radio" name="shade" value="high"><span aria-hidden="true">☁</span> Ombres importantes</label>
+            </div>
+          </fieldset>
+
+          <fieldset class="simChoiceGroup simQuestion">
+            <legend data-number="5">Matériau de couverture <span class="simOptional">facultatif</span></legend>
+            <div class="simMaterialChoices">
+              <label class="simMaterialChoice"><input type="radio" name="material" value="metal"><span class="simMaterialGlyph metal" aria-hidden="true"></span><b>Acier</b></label>
+              <label class="simMaterialChoice"><input type="radio" name="material" value="slate"><span class="simMaterialGlyph slate" aria-hidden="true"></span><b>Ardoise</b></label>
+              <label class="simMaterialChoice"><input type="radio" name="material" value="bitumen"><span class="simMaterialGlyph bitumen" aria-hidden="true"></span><b>Bitume</b></label>
+              <label class="simMaterialChoice"><input type="radio" name="material" value="membrane"><span class="simMaterialGlyph membrane" aria-hidden="true"></span><b>Membrane</b></label>
+              <label class="simMaterialChoice"><input type="radio" name="material" value="fiber"><span class="simMaterialGlyph fiber" aria-hidden="true"></span><b>Fibrociment</b></label>
+              <label class="simMaterialChoice"><input type="radio" name="material" value="tile"><span class="simMaterialGlyph tile" aria-hidden="true"></span><b>Tuiles</b></label>
+              <label class="simMaterialChoice"><input type="radio" name="material" value="other"><span class="simMaterialGlyph other" aria-hidden="true">···</span><b>Autre</b></label>
+            </div>
+            <small class="simFieldHint">Le matériau aide à qualifier le site ; il n’influence pas le calcul de production.</small>
+          </fieldset>
+
+          <p id="unsupportedRoofNotice" class="simScopeNotice" hidden>Ce type d’installation n’est pas encore couvert par le modèle d’estimation. Aucune puissance ni production ne sera déduite.</p>
+          <p id="formError" class="simError" role="alert" hidden></p>
+          </div><aside class="simRecap" aria-label="Rappel de votre projet">
+            <h3>Rappel de votre projet</h3>
+            <div class="simRecapRow"><span class="simBuildingArt building-offices" data-summary-building-art aria-hidden="true"></span><p><span data-summary-site-label>Type de bâtiment</span><strong data-summary-building>À choisir</strong></p></div>
+            <div class="simRecapRow"><span class="simSolarArt solar-flat" data-summary-roof-art aria-hidden="true"></span><p><span data-summary-installation-label>Type de toiture</span><strong data-summary-roof>À choisir</strong></p></div>
+            <p class="simRecapArea"><span data-summary-area-label>Surface de toiture</span><strong data-summary-area>À mesurer</strong></p>
+            <div class="simRoofPreview" data-roof-preview aria-label="Aperçu de votre toiture sur la carte"></div>
+            <div class="simAdvice"><svg aria-hidden="true"><use href="#sim-bulb"/></svg><p><strong>Un doute sur ces informations ?</strong>Ces éléments peuvent être estimés. Un professionnel pourra les vérifier lors de l’étude.</p></div>
+          </aside></div>
+          <div class="simStepActions"><button class="simButton simButtonQuiet" type="button" data-back>← Retour</button><button class="simButton simButtonPrimary" type="button" data-next>Continuer vers l’usage <span aria-hidden="true">→</span></button></div>
+        </section>
+
+        <section class="simStep" data-step="4" aria-labelledby="usageHeading" hidden>
+          <div class="simStepHeading">
+            <span class="simStepIcon" aria-hidden="true">☀</span>
+            <div><p class="simEyebrow">ÉTAPE 4 SUR 5</p><h2 id="usageHeading">Quel usage envisagez-vous ?</h2><p>Votre réponse qualifie le besoin ; elle ne constitue pas une décision économique.</p></div>
+          </div>
+          <div class="simDetailsLayout"><div>
+          <fieldset class="simChoiceGroup simUseCases">
+            <legend data-number="1">Quel usage de l’électricité produite ?</legend>
+            <div class="simUseCaseChoices">
+              <label class="simChoiceCard"><input type="radio" name="usageMode" value="self-consumption" required><span class="simSolarArt solar-self" aria-hidden="true"></span><div><b>Autoconsommation</b><small>Une partie de la production pourrait être utilisée sur le site. Aucun matching temporel n’est réalisé ici.</small></div></label>
+              <label class="simChoiceCard"><input type="radio" name="usageMode" value="full-sale"><span class="simSolarArt solar-sale" aria-hidden="true"><svg class="simUseCaseArt" viewBox="0 0 420 230" focusable="false"><defs><linearGradient id="flowSaleRoof" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#16785d"/><stop offset="1" stop-color="#39a77c"/></linearGradient><marker id="flowSaleArrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 8 4 0 8Z" fill="#188765"/></marker></defs><circle cx="83" cy="49" r="25" fill="#ffc746"/><path d="M83 10v-7m0 92v-7M44 49h-8m94 0h-8M56 22l-6-6m66 66-6-6m0-54 6-6m-66 66-6 6" stroke="#efae24" stroke-width="4" stroke-linecap="round"/><path d="M26 177 102 130l94 38-79 49Z" fill="#d9eee2" stroke="#9bc9ad" stroke-width="2"/><path d="m62 158 41-26 63 27-43 27Z" fill="url(#flowSaleRoof)"/><path d="m78 164 41-27m-19 34 41-27m-21 35 41-27m-70-11 42 20m-23-31 42 20" stroke="#d7f0e7" stroke-width="1.5"/><path d="M54 177v-38l49-31 57 26v41l-53 31Z" fill="#fff" stroke="#9eb6aa" stroke-width="2"/><path d="m54 139 49-31 57 26-53 34Z" fill="#edf5ef" stroke="#9eb6aa" stroke-width="2"/><path d="M76 157v-11m17 1v-11m34 25v-13m14-1v-12" stroke="#83a69a" stroke-width="5"/><path d="M104 169v-17l17 9v18" fill="#d4e9df" stroke="#8eac9e" stroke-width="2"/><path d="M193 157c36-23 53-32 76-33" fill="none" stroke="#188765" stroke-width="5" stroke-linecap="round" marker-end="url(#flowSaleArrow)"/><path d="m304 71 32 18 30-18m-30 18v93m-26-74-24 85m82-85 25 85m-81-48h46m-60 30h74m-91 17h108" fill="none" stroke="#426f8b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="m296 82 40 23 40-23m-40 23v-16" fill="none" stroke="#426f8b" stroke-width="3"/><circle cx="336" cy="50" r="13" fill="#e8f5ee" stroke="#a4c9b4" stroke-width="2"/><path d="M336 42v16m-6-11 6 4 6-4" fill="none" stroke="#17835f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><text x="68" y="222" fill="#537365" font-size="11" font-family="system-ui,sans-serif" font-weight="700" letter-spacing="1.2">PRODUCTION</text><text x="292" y="205" fill="#537365" font-size="11" font-family="system-ui,sans-serif" font-weight="700" letter-spacing="1.2">RÉSEAU PUBLIC</text></svg></span><div><b>Vente en totalité</b><small>Toute l’électricité produite est vendue au réseau, sans consommation sur place.</small></div></label>
+              <label class="simChoiceCard"><input type="radio" name="usageMode" value="undecided"><span class="simSolarArt solar-self" aria-hidden="true"></span><div><b>Je ne sais pas encore</b><small>Vous pourrez comparer les options lors d’une étude.</small></div></label>
+            </div>
+            <small class="simFieldHint">Le partage d’énergie et les économies seront des estimations annuelles, sans profil horaire ni contrat ACC confirmé.</small>
+            <p id="usageError" class="simError" role="alert" hidden>Choisissez un usage, ou « Je ne sais pas encore », pour afficher la synthèse indicative.</p>
+          </fieldset>
+          <label class="simField simConsumptionField" for="annualConsumption">Consommation annuelle du site <span class="simOptional">facultatif</span>
+            <input id="annualConsumption" name="annualConsumption" type="number" min="0" max="1000000000" step="1000" inputmode="numeric" placeholder="kWh/an, si vous le connaissez">
+            <small id="consumptionBenchmarkNote">Si vous ne la connaissez pas, une fourchette indicative pourra être estimée selon le bâtiment et son emprise mesurée sur la carte. Cette estimation annuelle ne mesure pas l’autoconsommation simultanée.</small>
+          </label>
+          <fieldset class="simChoiceGroup simConsumptionField" id="subscribedPowerGroup">
+            <legend>Puissance souscrite <span class="simOptional">facultatif</span></legend>
+            <label class="simField" for="subscribedPowerKva">Puissance exacte, si vous la connaissez
+              <input id="subscribedPowerKva" type="number" min="1" max="100000" step="1" inputmode="numeric" placeholder="kVA">
+            </label>
+            <label class="simField" for="subscribedPowerBand">Sinon, choisissez une tranche estimative
+              <select id="subscribedPowerBand"><option value="">Je ne sais pas</option><option value="LE_36_KVA">≤ 36 kVA</option><option value="37_100_KVA">37–100 kVA</option><option value="101_250_KVA">101–250 kVA</option><option value="GT_250_KVA_BT">&gt; 250 kVA</option><option value="HTA">HTA / grande puissance</option></select>
+            </label>
+            <small id="powerBenchmarkNote">La tranche proposée reste une hypothèse SolarShift, à confirmer sur facture.</small>
+          </fieldset>
+          <label class="simField simConsumptionField" for="avoidedElectricityPrice">Prix moyen du kWh acheté au réseau <span class="simOptional">facultatif</span>
+            <input id="avoidedElectricityPrice" name="avoidedElectricityPrice" type="number" min="0.001" max="10" step="0.001" inputmode="decimal" placeholder="€/kWh, indiqué sur la facture">
+            <small id="priceBenchmarkNote">Sans saisie, le benchmark SolarShift fournit un corridor de prix réseau et une composante ACI évitable, selon la puissance estimée.</small>
+          </label>
+          <label class="simField simConsumptionField" for="electricityPriceBasis">Base du prix saisi
+            <select id="electricityPriceBasis"><option value="HT">HT</option><option value="TTC">TTC</option></select>
+            <small>Un prix TTC n’est pas comparé directement aux hypothèses financières HT ; il reste à convertir ou confirmer.</small>
+          </label>
+          <fieldset class="simChoiceGroup">
+            <legend data-number="2">Quand souhaitez-vous lancer votre projet ? <span class="simOptional">facultatif</span></legend>
+            <div class="simTimelineChoices">
+              <label class="simIconChoice"><input type="radio" name="projectTiming" value="asap"><span class="simChoiceIcon" aria-hidden="true"><svg><use href="#sim-rocket"/></svg></span><b>Dès que possible</b><small>Je souhaite avancer rapidement.</small></label>
+              <label class="simIconChoice"><input type="radio" name="projectTiming" value="3-6-months"><span class="simChoiceIcon" aria-hidden="true"><svg><use href="#sim-calendar"/></svg></span><b>Dans 3 à 6 mois</b><small>Projet à court terme.</small></label>
+              <label class="simIconChoice"><input type="radio" name="projectTiming" value="later"><span class="simChoiceIcon" aria-hidden="true"><svg><use href="#sim-clock"/></svg></span><b>Dans plus de 6 mois</b><small>J’anticipe pour plus tard.</small></label>
+              <label class="simIconChoice"><input type="radio" name="projectTiming" value="unknown"><span class="simChoiceIcon" aria-hidden="true"><svg><use href="#sim-directions"/></svg></span><b>Je ne sais pas encore</b><small>Je souhaite d’abord une estimation.</small></label>
+            </div>
+          </fieldset>
+          </div><aside class="simRecap" aria-label="Rappel de votre site">
+            <h3>Rappel de votre site</h3><div class="simRoofPreview" data-roof-preview aria-label="Aperçu de la surface sur la carte"></div>
+            <p class="simRecapArea"><span data-summary-area-label>Surface de toiture</span><strong data-summary-area>À mesurer</strong></p>
+            <div class="simRecapRow"><span class="simBuildingArt building-offices" data-summary-building-art aria-hidden="true"></span><p><span data-summary-site-label>Type de bâtiment</span><strong data-summary-building>À choisir</strong></p></div>
+            <div class="simRecapRow"><span class="simSolarArt solar-flat" data-summary-roof-art aria-hidden="true"></span><p><span data-summary-installation-label>Installation</span><strong data-summary-roof>À choisir</strong></p></div>
+          </aside></div>
+          <div class="simStepActions"><button class="simButton simButtonQuiet" type="button" data-back>← Retour</button><span class="simPrivacy">Vos résultats sont accessibles sans email ni téléphone.</span><button id="calculateButton" class="simButton simButtonPrimary" type="button" data-next><span id="calculateSpinner" class="simButtonSpinner" aria-hidden="true" hidden></span><span id="calculateLabel">Voir ma synthèse</span><span aria-hidden="true">→</span></button></div>
+        </section>
+
+      </form>
+
+      <section id="resultStep" class="simStep" data-step="5" aria-labelledby="resultHeading" hidden>
+        <div class="simStepHeading">
+          <span class="simStepIcon" aria-hidden="true">✦</span>
+            <div><p class="simEyebrow">APERÇU INDICATIF · NON CANONIQUE</p><h2 id="resultHeading">Votre première estimation</h2><p class="simResultSubtitle">À confirmer par une étude et un scénario canoniques.</p><p id="resultLocation" class="simResultLocation"></p></div>
+        </div>
+        <div id="resultStatus" class="simResultStatus" role="status" aria-live="polite">Calcul PVGIS en cours…</div>
+        <button id="retryEstimateButton" class="simButton simButtonQuiet" type="button" hidden>Relancer le calcul solaire</button>
+        <div id="resultContent" hidden>
+          <div class="simSummaryMetrics">
+            <article class="simSummaryMetric"><span>Puissance estimée</span><strong id="capacityRange">À compléter</strong><small id="capacityCorridor"></small></article>
+            <article class="simSummaryMetric"><span>Production annuelle estimée</span><strong id="annualProduction">À compléter</strong><small>Selon PVGIS · pré-étude non canonique</small></article>
+            <article class="simSummaryMetric"><span>Budget équipements et installation</span><strong id="installationBudget" class="simPendingValue">À compléter</strong><small id="installationBudgetRange">Fourchette à confirmer par devis</small></article>
+            <article class="simSummaryMetric"><span>Coût de production du kWh solaire</span><strong id="resultSolarKwhCost" class="simPendingValue">À préciser</strong><small id="resultLcoeNote">Estimation sur 25 ans · CAPEX et OPEX estimés</small></article>
+            <article class="simSummaryMetric"><span>TRI indicatif propriétaire</span><strong id="resultIndicativeIrr" class="simPendingValue">À préciser</strong><small id="resultIrrNote">Renseignez le tarif d’électricité évité pour estimer le TRI</small></article>
+            <article class="simSummaryMetric"><span>CO₂ évité par an</span><strong id="resultAnnualCarbon" class="simPendingValue">À préciser</strong><small>Méthode carbone à valider</small></article>
+          </div>
+          <div class="simResultDetails">
+            <section class="simResultPanel" aria-labelledby="resultTechnicalHeading">
+              <h3 id="resultTechnicalHeading">Synthèse technique</h3>
+              <dl class="simResultFacts">
+                <div><dt id="resultGrossAreaLabel">Emprise au sol du bâtiment mesurée sur la carte</dt><dd id="resultGrossArea">À compléter</dd></div>
+                <div><dt>Surface exploitable estimée</dt><dd id="resultUsableArea">À compléter</dd></div>
+                <div><dt>Hypothèse de surface exploitable</dt><dd id="resultUsableAssumption">À préciser</dd></div>
+                <div><dt>Site / activité</dt><dd id="resultBuildingUse">À compléter</dd></div>
+                <div><dt>Installation</dt><dd id="resultInstallationType">À compléter</dd></div>
+                <div><dt>Orientation</dt><dd id="resultOrientation">À compléter</dd></div>
+                <div><dt>Ombrage proche</dt><dd id="resultShade">À compléter</dd></div>
+                <div><dt>Productible spécifique estimé</dt><dd id="resultSpecificYield">À compléter</dd></div>
+              </dl>
+              <p class="simResultFootnote">Les paramètres déclarés et l’hypothèse de surface exploitable ne remplacent pas une visite technique.</p>
+            </section>
+            <section class="simResultPanel" aria-labelledby="resultFinancialHeading">
+              <h3 id="resultFinancialHeading">Synthèse financière</h3>
+              <dl class="simResultFacts simFinancialFacts">
+                <div><dt>Profil retenu</dt><dd id="resultFinanceProfile">Propriétaire exploitant · fonds propres</dd></div>
+                <div><dt>Horizon et financement</dt><dd id="resultFinanceHorizon">25 ans · 100 % fonds propres</dd></div>
+                <div><dt>CAPEX équipements et installation</dt><dd id="resultFinancialCapex">À préciser</dd></div>
+                <div><dt>Économie ACI estimée · année 1</dt><dd id="resultAciSavings">À préciser</dd></div>
+                <div><dt>Potentiel ACC estimé · année 1</dt><dd id="resultAccPotential">À préciser</dd></div>
+                <div><dt>Charges d’exploitation estimées · année 1</dt><dd id="resultAnnualOpex">À préciser</dd></div>
+              </dl>
+              <p class="simResultFootnote">Aperçu financier estimatif : ACI valorisée à partir du tarif évité saisi ; ACC valorisée à 0,12 €/kWh comme potentiel, sans contrat confirmé. La répartition repose sur des volumes annuels, pas sur un profil horaire. CAPEX et OPEX restent des hypothèses à confirmer avec un conseiller et des devis.</p>
+            </section>
+          </div>
+          <section class="simAnnualComparison" aria-labelledby="resultAnnualComparisonHeading">
+            <p id="resultAnnualComparisonHeading">Production annuelle estimée comparée à la consommation saisie</p>
+            <strong id="resultAnnualComparison">Consommation non renseignée : comparaison indisponible.</strong>
+            <small>Une comparaison de volumes annuels ne mesure ni la coïncidence horaire ni l’autoconsommation réelle.</small>
+          </section>
+          <div class="simResultDetails simResultCharts">
+            <section id="simProductionPanel" class="simResultPanel simProductionPanel" aria-labelledby="resultProductionHeading" hidden>
+              <h3 id="resultProductionHeading">Profil de production mensuel</h3>
+              <p>Production solaire estimée pour le site · kWh/mois.</p>
+              <div id="simMonthlyChart" class="simMonthlyChart" role="img" aria-label="Production solaire estimée pour chacun des douze mois"></div>
+            </section>
+            <section class="simResultPanel simLongTermPanel" aria-labelledby="resultLongTermHeading">
+              <h3 id="resultLongTermHeading">Projection indicative sur 25 ans</h3>
+              <p>Estimation propriétaire avant impôts, avec CAPEX et OPEX hypothétiques.</p>
+              <div class="simProjectionPlaceholder"><span aria-hidden="true">↗</span><strong id="resultProjectionTitle">Votre rentabilité reste à préciser</strong><p id="resultProjectionSummary">Renseignez la consommation annuelle et le tarif évité pour estimer les flux. Un conseiller pourra ensuite confirmer la projection.</p></div>
+            </section>
+          </div>
+          <section id="simUnsupportedResult" class="simScopeNotice" hidden>La puissance et la production restent <strong>à compléter</strong> : ce type d’installation n’est pas encore couvert par le modèle d’estimation.</section>
+          <section class="simEstimateLimits" aria-labelledby="estimateLimitsHeading"><h3 id="estimateLimitsHeading">À retenir</h3><p id="resultEstimateSummary">Cette estimation indicative ne remplace pas une étude technique, énergétique ou financière.</p><p id="resultRoofType"></p><p id="resultUsage"></p><p class="simMethodDetails"><strong>Sources et hypothèses</strong> Production PVGIS, CAPEX selon le corridor de puissance et paramètres financiers génériques du modèle. L’économie ACI dépend du tarif évité saisi ; le potentiel ACC repose sur des volumes annuels théoriques, sans profil horaire ni contrat confirmé. Aides, fiscalité et carbone restent à confirmer.</p></section>
+          <section class="simProjectNext"><div><p class="simEyebrow">POUR LA SUITE</p><h3>Faire étudier le projet</h3><p>Votre estimation n’est pas enregistrée. La suite ouvre l’espace projets ; elle ne crée ni projet ni dossier.</p></div><a id="convertEstimateButton" class="simButton simButtonPrimary" href="./projects.html">Transformer cette estimation en projet <span aria-hidden="true">→</span></a></section>
+        </div>
+        <div class="simStepActions"><button class="simButton simButtonQuiet" type="button" data-back>← Modifier les données</button><button id="printEstimateButton" class="simButton simButtonQuiet" type="button">Imprimer ma synthèse</button><button id="restartButton" class="simButton simButtonQuiet" type="button">Nouvelle estimation</button></div>
+      </section>
+    </section>
+    <p class="simFooterNote">OZENO · Simulateur d’aide à la pré-étude solaire pour les sites professionnels</p>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+  <script type="module" src="./pro-simulator.mjs"></script>
+</body>
+</html>

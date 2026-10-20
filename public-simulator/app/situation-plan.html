@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>OZENO · Plan de situation HD</title>
+<link rel="stylesheet" href="./parcel-qualification.css"><script src="./runtime-config.js?v=20261020-plan-hd"></script>
+<style>body{margin:0;background:#f4f8f6;color:#173d34;font:16px/1.5 system-ui,sans-serif}main{max-width:1100px;margin:32px auto;padding:24px;background:#fff;border:1px solid #dce5e1;border-radius:14px}h1{font-size:26px}label{display:block;margin:12px 0}input[type=text]{box-sizing:border-box;padding:10px;border:1px solid #b7c9c0;border-radius:6px;max-width:100%;width:550px;font:inherit}button{font:inherit;padding:10px 15px;margin:5px;border:1px solid #a9bfb3;border-radius:6px;background:#f7faf8;color:#173d34;cursor:pointer}button:disabled{opacity:.5;cursor:default}a{color:#075746}.situationPlanMap{max-width:100%}@media(max-width:600px){main{margin:8px;padding:14px}}</style></head>
+<body><main><a href="./index.html">← Revenir au simulateur OZENO</a><h1>Plan de situation HD à l’échelle</h1>
+<p>Retrouvez la parcelle, confirmez-la, puis préparez votre plan IGN ou aérien avec le cadastre. Ce repérage ne crée ni ne modifie un dossier projet.</p>
+<label>Nom du site<br><input id="planSiteName" type="text" maxlength="85" value="Site à qualifier"></label>
+<label>Adresse, coordonnées ou référence cadastrale<br><input id="planSiteLookup" type="text" maxlength="500" placeholder="Adresse, latitude, longitude ou identifiant cadastral complet"></label>
+<p>Pour un repère situé sur une voie, utilisez un point dans la parcelle ou sa référence complète (14 caractères).</p>
+<button id="planFindParcel" type="button">Rechercher la parcelle</button><p id="planLookupStatus" role="status"></p><div id="planChoices"></div><div id="planResult"></div>
+<p>France métropolitaine · sources IGN / Géoplateforme et DGFiP · plan de repérage, sans valeur de bornage.</p>
+</main><script type="module" src="./situation-plan-page.mjs?v=20261020-3"></script></body></html>

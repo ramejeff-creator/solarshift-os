@@ -1,0 +1,626 @@
+/* CR-UX-012 E: visual treatment only for the existing Finance, Efficacité and Synthèse modules. */
+body.prestudyShell #audit-finance.prestudyChapterE,
+body.prestudyShell #audit-efficiency.prestudyChapterE,
+body.prestudyShell #ozeno-summary.prestudyChapterE,
+body.prestudyShell .reportEditor.prestudyChapterE {
+  --e-ink: #243448;
+  --e-muted: #526273;
+  --e-line: #dce3ea;
+  color: var(--e-ink);
+  border: 1px solid var(--e-line);
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: none;
+}
+
+body.prestudyShell #audit-finance.prestudyChapterE {
+  padding: 20px;
+  margin-bottom: 34px;
+}
+
+body.prestudyShell .prestudyEHeading {
+  margin: 20px 0 10px;
+  color: var(--e-ink);
+  font-size: 18px;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+body.prestudyShell #audit-finance.prestudyChapterE > .prestudyEHeading:first-of-type { margin-top: 16px; }
+body.prestudyShell #audit-finance.prestudyChapterE :is(#investmentGroup, .financePreviewDetails) > .prestudyEHeading { grid-column: 1 / -1; }
+
+body.prestudyShell #audit-finance.prestudyChapterE #financeOwnershipChoice {
+  padding: 14px;
+  border: 1px solid var(--e-line);
+  border-radius: 3px;
+  background: #f7f8fa;
+}
+
+body.prestudyShell #audit-finance.prestudyChapterE #investmentGroup {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--e-line);
+}
+
+body.prestudyShell #audit-finance.prestudyChapterE #investmentGroup > .financeInvestmentCostRow,
+body.prestudyShell #audit-finance.prestudyChapterE #investmentGroup > .financeFundingConfiguration,
+body.prestudyShell #audit-finance.prestudyChapterE #investmentGroup > #irveInvestmentGroup {
+  padding: 14px;
+  border: 1px solid var(--e-line);
+  border-radius: 3px;
+  background: #f7f8fa;
+}
+
+body.prestudyShell #audit-finance.prestudyChapterE #investmentGroup > .financeInvestmentCostRow { grid-column: 1 / -1; }
+body.prestudyShell #audit-finance.prestudyChapterE #investmentGroup > .financeFundingConfiguration { margin-top: 14px; }
+body.prestudyShell #audit-finance.prestudyChapterE #investmentGroup > #irveInvestmentGroup { margin-top: 14px; }
+body.prestudyShell #audit-finance.prestudyChapterE .financeRevenueGroups {
+  margin-top: 18px;
+  padding: 14px;
+  border: 1px solid var(--e-line);
+  border-radius: 3px;
+  background: #f7f8fa;
+}
+body.prestudyShell #audit-finance.prestudyChapterE #shareGroup { border-top-color: var(--e-line); }
+body.prestudyShell #audit-finance.prestudyChapterE .financePreviewMetrics {
+  margin-top: 0;
+  padding: 14px;
+  border: 1px solid var(--e-line);
+  border-radius: 3px;
+  background: #fff;
+}
+
+body.prestudyShell #audit-finance.prestudyChapterE > .sectionTitle h2,
+body.prestudyShell #audit-efficiency.prestudyChapterE .sectionTitle h2,
+body.prestudyShell #ozeno-summary.prestudyChapterE > h2,
+body.prestudyShell .reportEditor.prestudyChapterE .sectionTitle h2 {
+  color: var(--e-ink);
+  font-size: 24px;
+  line-height: 1.3;
+  letter-spacing: -.025em;
+}
+
+body.prestudyShell #audit-finance.prestudyChapterE > .hint,
+body.prestudyShell #audit-efficiency.prestudyChapterE > .hint,
+body.prestudyShell .reportEditor.prestudyChapterE > .hint {
+  color: var(--e-muted);
+  line-height: 1.6;
+}
+
+body.prestudyShell #audit-finance.prestudyChapterE .financePreviewDetails {
+  margin: 20px 0;
+  padding: 16px 0 0;
+  border: 0;
+  border-top: 1px solid var(--e-line);
+  border-radius: 0;
+  background: transparent;
+}
+
+body.prestudyShell #audit-finance.prestudyChapterE .financePreviewDetails > summary {
+  min-height: 44px;
+  color: var(--e-ink);
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+body.prestudyShell #audit-finance.prestudyChapterE .financePreviewDetails > .fine,
+body.prestudyShell #audit-finance.prestudyChapterE .financePreviewDetails > p {
+  color: var(--e-muted);
+  line-height: 1.6;
+}
+
+body.prestudyShell #audit-finance.prestudyChapterE :is(.financeGroup, .financeFundingMode, .financeHorizonControl) {
+  min-width: 0;
+  margin: 18px 0 0;
+  padding: 14px 0 0;
+  border: 0;
+  border-top: 1px solid var(--e-line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+body.prestudyShell #audit-finance.prestudyChapterE :is(.financeGroup, .financeFundingMode, .financeHorizonControl) > legend {
+  padding: 0 8px 0 0;
+  color: var(--e-ink);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+body.prestudyShell #audit-finance.prestudyChapterE :is(.financeGroup, .financeFundingMode) > :is(p, small),
+body.prestudyShell #audit-finance.prestudyChapterE .financeGroup .fine {
+  color: var(--e-muted);
+  line-height: 1.55;
+}
+
+body.prestudyShell #audit-finance.prestudyChapterE .financeFundingOptions label,
+body.prestudyShell #audit-finance.prestudyChapterE .financeChannelCard,
+body.prestudyShell #audit-finance.prestudyChapterE .enedisLookupResult {
+  border: 1px solid var(--e-line);
+  border-radius: 3px;
+  background: #f7f8fa;
+  box-shadow: none;
+}
+
+body.prestudyShell #audit-finance.prestudyChapterE :is(input:not([type=checkbox]):not([type=radio]):not([type=range]), select, textarea) {
+  min-height: 44px;
+  border: 1px solid #78889a;
+  border-radius: 3px;
+  background: #fff;
+  color: var(--e-ink);
+}
+
+body.prestudyShell #audit-finance.prestudyChapterE :is(input[readonly], output) {
+  background: #eef1f4 !important;
+  color: #35465a !important;
+}
+
+body.prestudyShell #audit-finance.prestudyChapterE :is(.metric, .decisionFinanceMetricGrid > div) {
+  border: 1px solid var(--e-line);
+  border-radius: 3px;
+  background: #f7f8fa;
+  box-shadow: none;
+}
+
+body.prestudyShell #audit-finance.prestudyChapterE :is(.metric b, .metric span) { color: var(--e-ink); }
+body.prestudyShell #audit-finance.prestudyChapterE :is(.metric small, .financeProductionSource, .financeBenchmarkNote) { color: var(--e-muted); }
+body.prestudyShell #audit-finance.prestudyChapterE .financeProductionSource { background: #f2f5f7; border-radius: 3px; }
+body.prestudyShell #audit-finance.prestudyChapterE .financeMethodNote { border-radius: 3px; }
+
+body.prestudyShell #audit-finance.prestudyChapterE :is(button:not(.financeHelpButton), .action, .secondary) {
+  border-radius: 3px;
+}
+
+body.prestudyShell #audit-efficiency.prestudyChapterE {
+  padding: 20px;
+  margin: 0 0 34px;
+}
+
+body.prestudyShell #audit-efficiency.prestudyChapterE .prestudyEHeading { margin: 16px 0 10px; }
+body.prestudyShell #audit-efficiency.prestudyChapterE .efficiencyGrid > .prestudyEHeading { grid-column: 1 / -1; }
+body.prestudyShell #audit-efficiency.prestudyChapterE .efficiencySourceField {
+  padding-top: 10px;
+  border-top: 1px solid var(--e-line);
+}
+body.prestudyShell #audit-efficiency.prestudyChapterE .efficiencyCee .prestudyEHeading { grid-column: 1 / -1; }
+body.prestudyShell #audit-efficiency.prestudyChapterE .efficiencyStatus {
+  padding: 10px 12px;
+  border-left: 3px solid #7b8793;
+  background: #f2f4f6;
+}
+body.prestudyShell #audit-efficiency.prestudyChapterE .efficiencyStatus.error {
+  border-left-color: #a42a22;
+  background: #fbf1f0;
+}
+
+body.prestudyShell #audit-efficiency.prestudyChapterE :is(.efficiencyCee, .efficiencyValue) {
+  border: 1px solid var(--e-line);
+  border-radius: 3px;
+  background: #f7f8fa;
+}
+
+body.prestudyShell #audit-efficiency.prestudyChapterE .efficiencyCee summary,
+body.prestudyShell #audit-efficiency.prestudyChapterE .efficiencyValue b {
+  color: var(--e-ink);
+}
+
+body.prestudyShell #audit-efficiency.prestudyChapterE :is(.fine, .hint, .efficiencyValue small) {
+  color: var(--e-muted);
+  line-height: 1.6;
+}
+
+body.prestudyShell #audit-efficiency.prestudyChapterE :is(input, select, textarea) {
+  min-height: 44px;
+  border: 1px solid #78889a;
+  border-radius: 3px;
+  background: #fff;
+  color: var(--e-ink);
+}
+
+body.prestudyShell #audit-efficiency.prestudyChapterE .efficiencyValue span { color: #174e3b; }
+body.prestudyShell #audit-efficiency.prestudyChapterE .efficiencyStatus.error { color: #8b231c; }
+
+body.prestudyShell #ozeno-summary.prestudyChapterE {
+  overflow: visible;
+  padding: 20px;
+  border: 1px solid var(--e-line);
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: none;
+  color: var(--e-ink);
+}
+
+body.prestudyShell #ozeno-summary.prestudyChapterE::before { display: none; }
+body.prestudyShell #ozeno-summary.prestudyChapterE > h2 { margin-bottom: 12px; }
+body.prestudyShell #ozeno-summary.prestudyChapterE > :is(.decisionGrid, .decisionMore, .decisionBottom) { color: var(--e-ink); }
+body.prestudyShell #ozeno-summary.prestudyChapterE .prestudyEHeading { margin: 18px 0 10px; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionGrid > div[hidden] { display: none !important; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .eyebrow { color: #735700; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .muted { color: var(--e-muted); }
+
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionGrid > div {
+  border: 1px solid var(--e-line);
+  border-radius: 3px;
+  background: #fff;
+  box-shadow: none;
+  padding: 16px;
+}
+
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionGrid :is(small, em) { color: var(--e-muted); font-size: 13px; line-height: 1.5; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionGrid b { color: var(--e-ink); font-size: 22px; }
+
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionProductionProfile > b,
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionRevenueHeading > b,
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionBottom > .actions > b {
+  color: var(--e-ink);
+}
+
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetrics {
+  grid-column: 1 / -1;
+  margin-top: 16px;
+  padding: 14px;
+  border: 1px solid var(--e-line);
+  border-radius: 3px;
+  background: #fff;
+  color: var(--e-ink);
+}
+
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetrics > b { color: var(--e-ink); font-size: 16px; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid > div {
+  border: 1px solid var(--e-line);
+  border-radius: 3px;
+  background: #f7f8fa;
+}
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid small { color: var(--e-muted); font-size: 12px; line-height: 1.45; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid strong { color: var(--e-ink); font-size: 16px; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid .decisionMetricUnavailable { display: grid; align-content: start; gap: 4px; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid .decisionMetricUnavailable strong { color: #526273; font-size: 15px; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid .decisionLcoeMethod { margin-top: 5px; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionRevenuePeriodNote {
+  display: block;
+  margin: -2px 0 10px;
+  color: var(--e-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionAnalysisRow {
+  grid-template-columns: minmax(0, 1fr);
+  border-top-color: var(--e-line);
+  gap: 14px;
+}
+
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionProductionProfile,
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionRevenue {
+  border: 1px solid var(--e-line);
+  border-radius: 3px;
+  background: #fff;
+  color: var(--e-ink);
+}
+
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionProductionProfile .bars { background: #f7f8fa; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionProductionProfile .bars[hidden] { display: none !important; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionProductionProfile > small { display: block; color: var(--e-muted); line-height: 1.5; }
+
+body.prestudyShell #ozeno-summary.prestudyChapterE :is(.decisionProductionProfile, .decisionRevenue) :is(small, .revenueChartTitle, .decisionProfileLegendItem, .decisionConsumptionLegend) {
+  color: var(--e-muted);
+}
+
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionRevenueGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionRevenueGrid > div { border-radius: 3px; background: #eef1f4; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionRevenueGrid > .decisionRevenueTotal { grid-column: 1 / -1; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionRevenueGrid small { color: var(--e-muted); font-size: 12px; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionRevenueGrid b { color: var(--e-ink); font-size: 16px; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionEnergyAllocation { color: var(--e-muted); }
+body.prestudyShell #ozeno-summary.prestudyChapterE .revenueLegend > div > small { display: none; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionProductionProfile .bars > i { background: #53677d; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionConsumptionGuide { border-top-color: #207a7a; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionConsumptionLegend { border-color: #207a7a; background: #eef6f6; }
+body.prestudyShell #ozeno-summary.prestudyChapterE :is(.ozenoSummaryMonths, .decisionProductionDetailsLabel, .decisionProductionValues, .decisionProfileLegendItem, .decisionConsumptionLegend) { font-size: 12px; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionBottom > .actions { border-top-color: var(--e-line); }
+body.prestudyShell #ozeno-summary.prestudyChapterE .previewNotice { border-radius: 3px; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionStatus > small { color: #6a5410; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionStatus > span {
+  display: block;
+  margin: 4px 0 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionCashflow {
+  border-color: var(--e-line);
+  border-radius: 3px;
+  background: #f7f8fa;
+  color: var(--e-ink);
+}
+
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionCashflowChart { border-radius: 3px; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionStatus {
+  border: 1px solid var(--e-line);
+  border-radius: 3px;
+  background: #f7f8fa;
+  color: var(--e-ink);
+}
+
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionCashflowHeading > b,
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionCashflowInterpretation { color: var(--e-ink); }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionCashflowHeading small { color: var(--e-muted); font-size: 12px; }
+body.prestudyShell #ozeno-summary.prestudyChapterE :is(.decisionCashflowNote, .decisionCashflowLegend) { color: var(--e-muted); font-size: 12px; }
+
+body.prestudyShell .reportEditor.prestudyChapterE {
+  padding: 20px;
+  border-radius: 4px;
+  box-shadow: none;
+}
+
+body.prestudyShell .reportEditor.prestudyChapterE :is(input, select, textarea) {
+  min-height: 44px;
+  border: 1px solid #78889a;
+  border-radius: 3px;
+  color: var(--e-ink);
+}
+
+body.prestudyShell .reportEditor.prestudyChapterE .reportPreview {
+  border: 1px solid var(--e-line);
+  border-radius: 3px;
+  box-shadow: none;
+}
+
+body.prestudyShell .reportEditor.prestudyChapterE .reportGrid > div { border-radius: 3px; background: #f2f4f7; }
+
+@media (max-width: 1023px) {
+  body.prestudyShell #audit-finance.prestudyChapterE :is(.form, .financeRevenueGroups, .financeInvestmentCostRow, .financeFundingConfiguration, .financeDebtDetails, .financeChannelGrid, #priceGroup, #contractPricingGroup, .irveInvestmentInputs, .contractDiscountInputs, .prestudyBenchmarkControls, .prestudyElectricityBenchmarks) {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  body.prestudyShell #audit-finance.prestudyChapterE .financePreviewMetrics { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  body.prestudyShell #audit-efficiency.prestudyChapterE :is(.efficiencyGrid, .efficiencyResults) { grid-template-columns: minmax(0, 1fr); }
+  body.prestudyShell #ozeno-summary.prestudyChapterE .decisionGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  body.prestudyShell #ozeno-summary.prestudyChapterE #prestudySummaryLcoe,
+  body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid > div:has(#decisionFinanceIrr) { grid-column: 1 / -1; }
+  body.prestudyShell #ozeno-summary.prestudyChapterE .decisionAnalysisRow { grid-template-columns: minmax(0, 1fr); }
+  body.prestudyShell #ozeno-summary.prestudyChapterE .decisionRevenueVisual {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: stretch;
+    align-items: center;
+    gap: 8px;
+  }
+  body.prestudyShell #ozeno-summary.prestudyChapterE .revenueChartTitle { display: block; }
+  body.prestudyShell #ozeno-summary.prestudyChapterE .revenueDonut { justify-self: center; }
+  body.prestudyShell #ozeno-summary.prestudyChapterE .revenueLegend {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: min(100%, 620px);
+    min-width: 0;
+    margin: 0 auto;
+    flex: none;
+    gap: 10px 18px;
+  }
+  body.prestudyShell #ozeno-summary.prestudyChapterE .revenueLegend > div {
+    display: grid;
+    grid-template-columns: 12px minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    align-items: center;
+    min-width: 0;
+    gap: 2px 7px;
+    overflow-wrap: anywhere;
+  }
+  body.prestudyShell #ozeno-summary.prestudyChapterE .revenueLegend > div > i { grid-column: 1; grid-row: 1 / span 2; }
+  body.prestudyShell #ozeno-summary.prestudyChapterE .revenueLegend > div > span { grid-column: 2; min-width: 0; overflow-wrap: anywhere; }
+  body.prestudyShell #ozeno-summary.prestudyChapterE .revenueLegend > div > small { display: block; grid-column: 2; color: var(--e-muted); line-height: 1.35; }
+  body.prestudyShell #ozeno-summary.prestudyChapterE .revenueLegend > div > b { grid-column: 3; grid-row: 1 / span 2; justify-self: end; white-space: nowrap; }
+}
+
+@media (max-width: 690px) {
+  body.prestudyShell #audit-finance.prestudyChapterE,
+  body.prestudyShell #audit-efficiency.prestudyChapterE,
+  body.prestudyShell .reportEditor.prestudyChapterE { padding: 16px; }
+  body.prestudyShell #audit-finance.prestudyChapterE > .sectionTitle,
+  body.prestudyShell #audit-efficiency.prestudyChapterE > .sectionTitle,
+  body.prestudyShell .reportEditor.prestudyChapterE > .sectionTitle { align-items: flex-start; flex-direction: column; }
+  body.prestudyShell #audit-finance.prestudyChapterE .financePreviewMetrics,
+  body.prestudyShell #ozeno-summary.prestudyChapterE .decisionGrid { grid-template-columns: minmax(0, 1fr) !important; }
+  body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid { grid-template-columns: minmax(0, 1fr); }
+  body.prestudyShell #ozeno-summary.prestudyChapterE .revenueLegend { grid-template-columns: minmax(0, 1fr); }
+  body.prestudyShell #audit-finance.prestudyChapterE .financeRevenueGrid,
+  body.prestudyShell #audit-finance.prestudyChapterE .decisionRevenueGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  body.prestudyShell #audit-efficiency.prestudyChapterE .efficiencyResults { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* CR-UX-012 visual finishing: predictable fields, aligned CAPEX labels and clearer result groups. */
+body.prestudyShell :is(#audit-finance.prestudyChapterE, #audit-efficiency.prestudyChapterE, #ozeno-summary.prestudyChapterE) :is(input:not([type=checkbox]):not([type=radio]):not([type=range]), select) {
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+  min-height: 44px;
+  box-sizing: border-box;
+  line-height: 1.35;
+}
+body.prestudyShell :is(#audit-finance.prestudyChapterE, #audit-efficiency.prestudyChapterE) textarea {
+  width: 100%;
+  min-height: 100px;
+  height: auto;
+  box-sizing: border-box;
+}
+body.prestudyShell #audit-finance.prestudyChapterE #investmentGroup .financeInvestmentCostRow { align-items: start; }
+body.prestudyShell #audit-finance.prestudyChapterE #investmentGroup .financeInvestmentCostRow > label {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 24px;
+  grid-template-rows: minmax(24px, auto) 44px auto;
+  align-content: start;
+  align-items: center;
+  gap: 5px 4px;
+  min-width: 0;
+  line-height: 24px;
+}
+body.prestudyShell #audit-finance.prestudyChapterE #investmentGroup .financeInvestmentCostRow > label > input {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  margin: 0;
+}
+body.prestudyShell #audit-finance.prestudyChapterE #investmentGroup .financeInvestmentCostRow > label > .financeHelp {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+  align-self: center;
+  margin: 0;
+}
+body.prestudyShell #audit-finance.prestudyChapterE #investmentGroup .financeInvestmentCostRow > label > small { grid-column: 1 / -1; grid-row: 3; line-height: 1.45; }
+body.prestudyShell #audit-finance.prestudyChapterE .prestudyFinanceValuationHeading { width: 100%; margin-left: 0; text-align: left; justify-self: start; }
+body.prestudyShell #audit-finance.prestudyChapterE .financeHelpButton,
+body.prestudyShell #audit-efficiency.prestudyChapterE .financeHelpButton {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  grid-auto-flow: row;
+}
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid > div:has(#decisionFinanceIrr),
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid > div:has(#dashNetGain),
+body.prestudyShell #ozeno-summary.prestudyChapterE #prestudySummaryLcoe { grid-column: span 2; }
+body.prestudyShell #ozeno-summary.prestudyChapterE #decisionRevenue {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(320px, .9fr);
+  align-items: start;
+  gap: 10px 18px;
+}
+body.prestudyShell #ozeno-summary.prestudyChapterE #decisionRevenue > :is(.decisionRevenueHeading, .decisionRevenuePeriodNote, .decisionEnergyAllocation) { grid-column: 1 / -1; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionRevenueGrid {
+  grid-column: 1;
+  grid-row: 4;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+}
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionRevenueVisual {
+  grid-column: 2;
+  grid-row: 4;
+  display: grid;
+  grid-template-columns: minmax(120px, .8fr) minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+  align-items: center;
+  gap: 12px 16px;
+  min-width: 0;
+  min-height: 100%;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid var(--e-line);
+  border-radius: 3px;
+  background: #f7f8fa;
+}
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionRevenueVisual[hidden] { display: none !important; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .revenueChartTitle { grid-column: 1 / -1; width: auto; max-width: none; margin: 0; color: var(--e-ink); }
+body.prestudyShell #ozeno-summary.prestudyChapterE .revenueDonut { grid-column: 1; grid-row: 2; width: 148px; height: 148px; justify-self: center; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .revenueDonut:before { inset: 20px; background: #f7f8fa; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .revenueLegend {
+  grid-column: 2;
+  grid-row: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  min-width: 0;
+  width: 100%;
+  margin: 0;
+}
+body.prestudyShell #ozeno-summary.prestudyChapterE .revenueLegend > div {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  gap: 2px 8px;
+  min-width: 0;
+  color: var(--e-ink);
+}
+body.prestudyShell #ozeno-summary.prestudyChapterE .revenueLegend > div > i { grid-column: 1; grid-row: 1 / span 2; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .revenueLegend > div > span { grid-column: 2; min-width: 0; color: var(--e-ink); overflow-wrap: anywhere; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .revenueLegend > div > small { display: block; grid-column: 2; color: var(--e-muted); line-height: 1.35; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .revenueLegend > div > b { grid-column: 3; grid-row: 1 / span 2; justify-self: end; color: var(--e-ink); white-space: nowrap; }
+body.prestudyShell #ozeno-summary.prestudyChapterE #decisionRevenue:not(:has(.decisionRevenueVisual:not([hidden]))) .decisionRevenueGrid { grid-column: 1 / -1; grid-row: auto; }
+
+body.prestudyShell #audit-solar.prestudyChapterD > .sectionTitle h2 { display: none; }
+body.prestudyShell #audit-solar.prestudyChapterD > .sectionTitle { justify-content: flex-end; }
+body.prestudyShell #audit-finance.prestudyChapterE #investmentGroup .financeInvestmentCostRow > label {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 4px 5px; line-height: 1.4;
+}
+body.prestudyShell #audit-finance.prestudyChapterE #investmentGroup .financeInvestmentCostRow > label > input { flex: 0 0 100%; }
+body.prestudyShell #audit-finance.prestudyChapterE #investmentGroup .financeInvestmentCostRow > label > small { flex: 0 0 100%; }
+
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-areas:
+    "capex capex capex equity equity equity debt debt debt payback payback payback"
+    "equityIrr equityIrr equityIrr equityIrr projectIrr projectIrr projectIrr projectIrr dscr dscr dscr dscr"
+    "gain gain gain gain gain gain lcoe lcoe lcoe lcoe lcoe lcoe";
+  grid-auto-flow: row;
+}
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid > div:has(> #decisionFinanceCapex) { grid-area: capex; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid > div:has(> #decisionFinanceEquity) { grid-area: equity; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid > div:has(> #decisionFinanceDebt) { grid-area: debt; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid > div:has(> #decisionFinanceIrr) { grid-area: equityIrr; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid > div:has(> #decisionFinancePayback) { grid-area: payback; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid > div:has(> #decisionFinanceProjectIrr) { grid-area: projectIrr; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid > div:has(> #decisionFinanceDscr) { grid-area: dscr; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid > div:has(> #dashNetGain) { grid-area: gain; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid > #prestudySummaryLcoe { grid-area: lcoe; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid > div { min-width: 0; }
+body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid #decisionFinanceDscrNote { overflow-wrap: anywhere; }
+.decisionCashflowLegend .cashflowKeyNegative,
+.decisionCashflowLegend .cashflowKeyPositive { width: 12px; height: 12px; border: 0; border-radius: 2px; }
+.decisionCashflowLegend .cashflowKeyNegative { background: #b64242; }
+.decisionCashflowLegend .cashflowKeyPositive { background: #32845b; }
+.decisionCashflowChart .cashflowBarNegative { fill: #c34b4b; }
+.decisionCashflowChart .cashflowBarPositive { fill: #388c62; }
+
+@media (min-width: 691px) and (max-width: 1199px) {
+  body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid > div:has(#decisionFinanceIrr),
+  body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid > div:has(#dashNetGain),
+  body.prestudyShell #ozeno-summary.prestudyChapterE #prestudySummaryLcoe { grid-column: 1 / -1; }
+  body.prestudyShell #ozeno-summary.prestudyChapterE #decisionRevenue { grid-template-columns: minmax(0, 1fr); }
+  body.prestudyShell #ozeno-summary.prestudyChapterE .decisionRevenueGrid,
+  body.prestudyShell #ozeno-summary.prestudyChapterE .decisionRevenueVisual { grid-column: 1; grid-row: auto; }
+  body.prestudyShell #ozeno-summary.prestudyChapterE .decisionRevenueVisual { min-height: 0; grid-template-columns: 132px minmax(0, 1fr); }
+  body.prestudyShell #ozeno-summary.prestudyChapterE .revenueDonut { width: 128px; height: 128px; }
+  body.prestudyShell #ozeno-summary.prestudyChapterE .revenueLegend { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-areas:
+      "capex capex capex equity equity equity"
+      "debt debt debt payback payback payback"
+      "equityIrr equityIrr equityIrr projectIrr projectIrr projectIrr"
+      "dscr dscr dscr dscr dscr dscr"
+      "gain gain gain lcoe lcoe lcoe";
+  }
+}
+@media (max-width: 690px) {
+  body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid { grid-template-columns: minmax(0, 1fr); }
+  body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid > div { grid-column: 1; }
+  body.prestudyShell #ozeno-summary.prestudyChapterE #decisionRevenue { grid-template-columns: minmax(0, 1fr); }
+  body.prestudyShell #ozeno-summary.prestudyChapterE .decisionRevenueGrid,
+  body.prestudyShell #ozeno-summary.prestudyChapterE .decisionRevenueVisual { grid-column: 1; grid-row: auto; }
+  body.prestudyShell #ozeno-summary.prestudyChapterE .decisionRevenueVisual { grid-template-columns: minmax(0, 1fr); }
+  body.prestudyShell #ozeno-summary.prestudyChapterE .revenueChartTitle { grid-column: 1; }
+  body.prestudyShell #ozeno-summary.prestudyChapterE .revenueDonut { grid-column: 1; grid-row: auto; width: 136px; height: 136px; }
+  body.prestudyShell #ozeno-summary.prestudyChapterE .revenueLegend { grid-column: 1; grid-row: auto; grid-template-columns: minmax(0, 1fr); }
+  body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "capex" "equity" "debt" "payback" "equityIrr" "projectIrr" "dscr" "gain" "lcoe";
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.prestudyShell #audit-finance.prestudyChapterE *,
+  body.prestudyShell #audit-efficiency.prestudyChapterE *,
+  body.prestudyShell #ozeno-summary.prestudyChapterE *,
+  body.prestudyShell .reportEditor.prestudyChapterE * { transition-duration: 0s !important; }
+}

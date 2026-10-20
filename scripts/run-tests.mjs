@@ -14,3 +14,4 @@ await import('../tests/unit/public-simulator-orientation.test.mjs');
 await import('../tests/unit/public-simulator-consistency.test.mjs');
 await import('../tests/unit/public-simulator-reliability.test.mjs');
 await import('../tests/unit/situation-plan.test.mjs');
+await import('../tests/unit/project-transfer.test.mjs');

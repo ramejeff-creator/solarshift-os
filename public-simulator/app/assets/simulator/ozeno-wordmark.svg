@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 66" role="img" aria-label="OZENO">
+  <g fill="#ffb400" transform="translate(31 33)">
+    <ellipse cy="-23" rx="5.2" ry="8.2"/>
+    <ellipse cy="-23" rx="5.2" ry="8.2" transform="rotate(45)"/>
+    <ellipse cy="-23" rx="5.2" ry="8.2" transform="rotate(90)"/>
+    <ellipse cy="-23" rx="5.2" ry="8.2" transform="rotate(135)"/>
+    <ellipse cy="-23" rx="5.2" ry="8.2" transform="rotate(180)"/>
+    <ellipse cy="-23" rx="5.2" ry="8.2" transform="rotate(225)"/>
+    <ellipse cy="-23" rx="5.2" ry="8.2" transform="rotate(270)"/>
+    <ellipse cy="-23" rx="5.2" ry="8.2" transform="rotate(315)"/>
+  </g>
+  <text x="64" y="50" fill="#071b29" font-family="Arial,Helvetica,sans-serif" font-size="49" font-weight="900" letter-spacing="-2">OZENO</text>
+</svg>

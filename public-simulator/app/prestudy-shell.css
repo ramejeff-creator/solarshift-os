@@ -1,0 +1,173 @@
+/* CR-UX-012 C1/C2 : présentation du shell de pré-étude uniquement. */
+body.prestudyShell {
+  --prestudy-top: 138px;
+  --prestudy-rail: 248px;
+  --ink: #24394e;
+  --pine: #24394e;
+  --line: #d7e0e7;
+  background: #f4f6f8;
+  color: #24394e;
+}
+.prestudyShell [hidden] { display: none !important; }
+.prestudyShell > header {
+  display: flex; align-items: center; flex-wrap: nowrap !important;
+  position: sticky; top: 0; z-index: 1300;
+  height: 64px; min-height: 64px; padding: 10px 24px; box-sizing: border-box;
+  border-bottom: 1px solid var(--line); background: #fff; gap: 20px;
+}
+.prestudyShell > header .brandName { width: 132px; height: 40px; font-size: 0; }
+.prestudyShell > header .brandSub, .prestudyShell > header .brandMark { display: none; }
+.prestudyShell .ozenoHeaderNavigation { display: flex; width: auto; gap: 24px; margin-left: auto; }
+.prestudyShell .ozenoHeaderNavigation .hubDashboardLink { display: block; border: 0; }
+.prestudyShell .hubAccountMenu { max-width: 220px; }
+.prestudyShell .hubAccountMenu summary { max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
+.prestudyShell .prestudyProjectBar {
+  position: sticky; top: 64px; z-index: 1250;
+  display: flex; align-items: center; gap: 14px;
+  min-height: 74px; box-sizing: border-box; padding: 10px 24px;
+  border-bottom: 1px solid var(--line); background: #fff;
+}
+.prestudyProjectIdentity { min-width: 0; flex: 0 1 auto; }
+.prestudyShell #prestudyProjectName {
+  display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  border: 0; padding: 0; background: transparent; color: var(--ink); font: 650 18px/1.4 "Segoe UI", sans-serif;
+  text-align: left; cursor: pointer;
+}
+#prestudyProjectMeta, #prestudyProjectAddress { max-width: 60ch; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 12px; color: #536779; }
+#prestudyProjectAddress:empty { display: none; }
+.prestudyBadge { flex: 0 0 auto; white-space: nowrap; padding: 4px 8px; border: 1px solid #e4d8b2; border-radius: 3px; background: #fff9e8; color: #765b16; font-size: 12px; font-weight: 600; }
+#prestudyProgress { white-space: nowrap; font-size: 12px; color: #536779; margin-right: auto; }
+#prestudyPrimaryActions { display: flex; align-items: center; flex: 0 0 auto; gap: 8px; }
+.prestudyShell :is(#prestudyPrimaryActions button, #prestudyActions button, .prestudySummaryLink) {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 9px 12px; min-height: 40px; box-sizing: border-box; border: 1px solid var(--line); border-radius: 4px;
+  background: #fff; color: var(--ink); font: 600 13px/1.35 "Segoe UI", sans-serif; cursor: pointer; text-decoration: none;
+}
+.prestudyShell #prestudySave { background: #24394e; color: #fff; border-color: #24394e; }
+.prestudyShell .prestudyIconButton {
+  flex: 0 0 44px; width: 44px; min-height: 44px; padding: 5px; border: 1px solid var(--line); border-radius: 4px;
+  background: #fff; color: var(--ink); font: 24px/1 "Segoe UI", sans-serif; cursor: pointer;
+}
+.prestudyShell #prestudyNavToggle { display: none; }
+.prestudyShell #prestudyActions {
+  position: absolute; right: 16px; top: calc(100% - 2px); z-index: 1400;
+  width: min(320px, calc(100vw - 24px)); padding: 10px; box-sizing: border-box;
+  background: #fff; color: var(--ink); border: 1px solid var(--line); border-radius: 5px; box-shadow: 0 12px 32px #24394e22;
+}
+#prestudyActions > strong { display: block; margin: 4px 8px 8px; font-size: 12px; }
+.prestudyShell #prestudyActions :is(button, .hubDashboardLink) { display: block; width: 100%; min-height: 44px; text-align: left; border: 0; border-radius: 3px; padding: 12px; box-sizing: border-box; color: var(--ink); font-size: 14px; white-space: nowrap; text-decoration: none; }
+.prestudyShell #prestudyActions :is(button, a):hover { background: #edf2f6; }
+#prestudyActions > div:empty { display: none; }
+.prestudyShell #prestudyMobileGlobal:not(:empty) { border-top: 1px solid var(--line); margin-top: 6px; padding-top: 6px; }
+.prestudyShell #prestudyActions .hubAccountMenu { max-width: none; }
+.prestudyShell #prestudyActions .hubAccountMenu > summary { padding: 12px; min-height: 44px; box-sizing: border-box; max-width: none; }
+.prestudyShell #prestudyActions .hubMenuItems { position: static; box-shadow: none; min-width: 0; border: 0; padding: 0 0 0 10px; }
+.prestudyShell .prestudyNavHost {
+  position: fixed; left: 0; top: var(--prestudy-top); bottom: 0; z-index: 50;
+  width: var(--prestudy-rail); padding: 16px 10px 30px; box-sizing: border-box;
+  background: #fff; border-right: 1px solid var(--line); overflow-y: auto; overscroll-behavior: contain;
+}
+.prestudyChapterLinks { margin: 0 0 14px; }
+.prestudyShell #prestudyRail a { display: block; color: #536779; text-decoration: none; overflow-wrap: anywhere; }
+.prestudyShell #prestudyRail .prestudyChapterLink { padding: 9px 10px; font-size: 13px; font-weight: 650; border-radius: 4px; color: #24394e; }
+.prestudyShell #prestudyRail .prestudySectionLink { margin-left: 18px; padding: 6px 9px; border-left: 2px solid #e4e9ed; font-size: 12px; }
+.prestudyShell #prestudyRail .isCurrentChapter { background: #24394e; color: #fff; }
+.prestudyShell #prestudyRail .isCurrentAnchor:not(.isCurrentChapter) { border-left-color: #d8ac2b; color: #24394e; background: #edf2f6; font-weight: 650; }
+.prestudyShell #prestudyRail a:hover { background: #edf2f6; color: #24394e; }
+.prestudyShell #prestudyRail a.isCurrentChapter:hover { background: #24394e; color: #fff; }
+.prestudyShell main.layout {
+  display: block; max-width: 1450px; min-width: 0; box-sizing: border-box;
+  margin: 0 0 0 var(--prestudy-rail); padding: 24px 28px 60px;
+}
+.prestudyShell .layout > section:not(.ozenoWorkspaceIntro) { min-width: 0; max-width: 100%; }
+.prestudyShell .prestudyChapterTitle { margin: 0 0 22px; color: #24394e; font-size: 27px; line-height: 1.25; }
+.prestudyShell .prestudyChapterTitle:focus,
+.prestudyShell .prestudyChapterTitle:focus-visible { outline: none; box-shadow: none; }
+.prestudyShell .projects { position: static; max-height: none; overflow: visible; }
+.prestudyShell .projects > .ozenoProjectTitleRow, .prestudyShell .projects > .ozenoProjectAddress { display: none; }
+.prestudyShell .card { border-radius: 5px; box-shadow: none; }
+.prestudyAnchor { display: block; height: 0; scroll-margin-top: calc(var(--prestudy-top) + 20px); }
+.prestudyShell :is([data-prestudy-chapter], .prestudyChapterTitle) { scroll-margin-top: calc(var(--prestudy-top) + 20px); }
+.prestudyShell [data-prestudy-chapter] { min-width: 0; }
+.prestudyShell :is(input, select, textarea, fieldset, label) { min-width: 0; max-width: 100%; box-sizing: border-box; }
+.prestudyShell :is(p, h1, h2, h3, small, label) { overflow-wrap: anywhere; }
+.prestudyShell #hubNotice:not([data-error="true"]), .prestudySrOnly { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip-path: inset(50%); white-space: nowrap; }
+.prestudyShell .prestudyUnavailable { padding: 24px; border: 1px solid var(--line); background: #fff; border-radius: 5px; }
+.prestudyShell .prestudyDialog { max-width: 100vw; color: #24394e; padding: 0; background: #fff; border: 1px solid var(--line); box-sizing: border-box; font: 14px/1.5 "Segoe UI", sans-serif; }
+.prestudyDialog::backdrop { background: #172b3e66; }
+body.prestudyShell:has(.prestudyDialog[open]) { overflow: hidden; }
+.prestudyDialogHead { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--line); background: #fff; }
+.prestudyDialogHead h2 { margin: 0; font-size: 18px; }
+.prestudyDialogHead button { width: 44px; min-height: 44px; border: 0; background: #fff; color: #24394e; font-size: 26px; cursor: pointer; }
+.prestudyShell .prestudyNavDialog { margin: 0; width: min(340px, calc(100vw - 24px)); height: 100dvh; max-height: 100dvh; border-radius: 0; border-left: 0; overflow-y: auto; }
+#prestudyDrawerNav { padding: 10px 12px 30px; }
+.prestudyShell .prestudyQuickDialog { inset: 0 0 0 auto; margin: 0; width: min(460px, 100vw); height: 100dvh; max-height: 100dvh; border-radius: 0; overflow-y: auto; }
+#prestudyQuickContent { padding: 14px 24px; }
+#prestudyQuickContent h3 { overflow-wrap: anywhere; }
+#prestudyQuickContent dl { display: grid; gap: 8px; margin: 26px 0; }
+#prestudyQuickContent dt { font-size: 12px; color: #536779; }
+#prestudyQuickContent dd { margin: 0 0 15px; padding-bottom: 12px; border-bottom: 1px solid var(--line); font-size: 18px; }
+.prestudySummaryLink { margin: 0 24px 24px; }
+.prestudyShell :is(a, button, input, select, textarea, summary):focus-visible { outline: 3px solid #567fab; outline-offset: 3px; }
+body.prestudyShell .prestudyChapterFooter {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin: 30px 0 8px; padding-top: 16px; border-top: 1px solid #dce3ea;
+}
+body.prestudyShell .prestudyChapterFooter > button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  flex: 0 0 auto; width: auto !important; max-width: 220px; min-width: 132px; min-height: 44px; padding: 10px 14px;
+  border: 1px solid #8393a3; border-radius: 4px; background: #fff;
+  color: #233b54; font: 650 14px/1.4 "Segoe UI", Arial, sans-serif;
+  text-align: center; cursor: pointer;
+}
+body.prestudyShell .prestudyChapterFooter > .prestudyChapterContinue {
+  border-color: #233b54; background: #233b54; color: #fff;
+}
+body.prestudyShell .prestudyChapterFooter > button:disabled {
+  opacity: .55; cursor: not-allowed;
+}
+body.prestudyShell :is(.prestudyChapterD, #audit-finance.prestudyChapterE) :is(button.roofAzimuthHelpButton, button.pvgisLossHelpButton, button.financeHelpButton) {
+  display: inline-grid; place-items: center; flex: 0 0 24px;
+  width: 24px !important; height: 24px !important; min-width: 24px !important; min-height: 24px !important;
+  padding: 0 !important; border: 0 !important; border-radius: 0;
+  background: transparent !important; box-shadow: none !important; color: #233b54; font: 700 14px/1 system-ui, sans-serif;
+  vertical-align: middle;
+}
+@media (min-width: 691px) and (max-width: 1199px) {
+  body.prestudyShell { --prestudy-rail: 0px; }
+  .prestudyShell main.layout { padding: 20px 18px 50px; }
+  .prestudyShell .prestudyProjectBar { gap: 8px; padding: 10px 16px; }
+  .prestudyShell #prestudyNavToggle { display: block; }
+  .prestudyShell .prestudyNavHost, .prestudyShell #prestudyPrimaryActions { display: none !important; }
+  .prestudyShell main.layout { width: 100%; margin-left: 0 !important; }
+  .prestudyShell #prestudyProgress { display: none; }
+  .prestudyShell .prestudyProjectIdentity { margin-right: auto; }
+  .prestudyShell #prestudyPrimaryActions button { padding: 8px; font-size: 12px; }
+  .prestudyShell #prestudyProjectName { font-size: 16px; }
+  .prestudyShell #prestudyProjectAddress { max-width: 25ch; }
+}
+@media (max-width: 690px) {
+  .prestudyShell > header { height: 56px; min-height: 56px; padding: 8px 16px; }
+  .prestudyShell > header .brandName { width: 116px; height: 40px; }
+  .prestudyShell .ozenoHeaderNavigation { display: none; }
+  .prestudyShell .prestudyProjectBar { top: 56px; min-height: 64px; padding: 8px; gap: 6px; }
+  .prestudyShell #prestudyNavToggle { display: block; }
+  .prestudyShell .prestudyNavHost, .prestudyShell #prestudyPrimaryActions, .prestudyShell #prestudyProgress, .prestudyShell #prestudyProjectAddress { display: none; }
+  .prestudyShell #prestudyProjectName { font-size: 14px; }
+  .prestudyShell .prestudyProjectIdentity { flex: 1 1 auto; margin: 0; }
+  .prestudyShell #prestudyProjectMeta { font-size: 10px; }
+  .prestudyShell .prestudyBadge { font-size: 10px; padding: 4px 5px; }
+  .prestudyShell main.layout { margin-left: 0; padding: 20px 12px 50px; }
+  .prestudyShell .prestudyChapterTitle { font-size: 23px; margin-bottom: 18px; }
+  .prestudyShell .card { padding: 16px; }
+  .prestudyShell .hubDialog { max-width: calc(100vw - 24px); }
+  .prestudyShell .hubDialogHead h2 { font-size: 19px; }
+  .prestudyShell #prestudyActions .hubAccountMenu { width: 100%; }
+  .prestudyShell .prestudySectionLink { min-height: 32px; box-sizing: border-box; }
+  body.prestudyShell .prestudyChapterFooter { gap: 8px; margin-top: 24px; }
+  body.prestudyShell .prestudyChapterFooter > button { min-width: 120px; padding: 9px 10px; }
+}
+@media print {
+  .prestudyShell :is(#prestudyProjectBar, #prestudyNavHost, .prestudyChapterTitle) { display: none; }
+  .prestudyShell main.layout { margin: 0; padding: 0; }
+}

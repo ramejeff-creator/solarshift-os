@@ -1,0 +1,896 @@
+/* OZENO illustrated simulator. Presentation only; existing map and engine stay independent. */
+:root {
+  --sim-ink: #071e2c;
+  --sim-pine: #00583f;
+  --sim-green: #087e58;
+  --sim-muted: #627d96;
+  --sim-line: #e0e7ec;
+  --sim-mint: #e9f6ee;
+  --sim-gold: #ffb400;
+}
+body.proSimulator { position: relative; isolation: isolate; min-height: 100vh; background: linear-gradient(180deg,#fff 60%,#fffef8); color: var(--sim-ink); }
+[hidden] { display: none !important; }
+.simIconLibrary { position: absolute; width: 0; height: 0; overflow: hidden; }
+.simFoliage { position: fixed; z-index: -1; bottom: -85px; width: 110px; height: min(85vh,800px); opacity: .63; pointer-events: none; }
+.simFoliageLeft { left: -58px; }
+.simFoliageRight { right: -58px; transform: scaleX(-1); }
+.simTopbar { display: grid; grid-template-columns: auto minmax(0,1fr) auto; gap: 36px; width: min(1560px,calc(100% - 96px)); height: 91px; margin: auto; padding: 0; background: #fff; border: 0; }
+.simBrand { gap: 15px; }
+.simBrand img { width: 165px; max-height: 55px; }
+.simBrand > span { padding-left: 14px; border-left: 1px solid #dde5e9; font-size: 11px; font-weight: 500; color: var(--sim-muted); line-height: 1.4; }
+.simTopLink { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 42px; padding: 8px 19px; border: 1px solid var(--sim-pine); border-radius: 999px; color: var(--sim-ink); white-space: nowrap; font-size: 12px; }
+.simTopLink svg { width: 17px; height: 17px; color: var(--sim-pine); }
+.simProgress { overflow: visible; max-width: 800px; padding: 0; border: 0; background: transparent; border-radius: 0; }
+.simProgressTrack { display: none; }
+.simProgress ol { display: grid; grid-template-columns: .75fr 1.2fr 1.25fr 1.1fr 1fr; gap: 14px; min-width: 0; }
+.simProgress li { position: relative; flex-direction: row; gap: 9px; padding: 0; background: #fff; }
+.simProgress li:not(:last-child)::after { content: ''; flex: 1; min-width: 10px; height: 1px; margin-left: 1px; background: #d7e7df; }
+.simProgress li > span { flex: 0 0 35px; width: 35px; height: 35px; color: #223e51; background: #fff; border: 1px solid #dee6eb; font-size: 14px; }
+.simProgress li b { max-width: 105px; color: var(--sim-muted); font-size: 10px; font-weight: 500; line-height: 1.4; }
+.simProgress li.isCurrent > span { background: linear-gradient(145deg,#087d57,#004b39); color: #fff; border-color: #006449; box-shadow: none; }
+.simProgress li.isCurrent b { color: var(--sim-pine); font-weight: 800; }
+.simProgress li.isComplete > span { background: #edf7f1; color: var(--sim-pine); border-color: #edf7f1; }
+.simShell { display: grid; grid-template-columns: 280px minmax(0,1fr); column-gap: 38px; width: min(1560px,calc(100% - 96px)); margin: 22px auto 40px; }
+.simIntro { position: relative; grid-column: 1 / -1; display: block; min-height: 405px; margin: 0; padding: 30px 0 22px; }
+.simIntroCopy { position: relative; z-index: 1; width: 49%; }
+.simEyebrow { margin-bottom: 17px; font-size: 11px; font-weight: 700; letter-spacing: .2em; color: #759082; }
+.simIntro h1 { max-width: 730px; margin: 0; color: #061c27; font: 800 clamp(40px,4.2vw,68px)/1.08 Manrope,system-ui,sans-serif; letter-spacing: -.05em; }
+.simIntro h1 em { position: relative; color: var(--sim-gold); font-style: normal; }
+body[data-active-step="1"] .simIntro h1 em::after { position: absolute; right: 40%; bottom: -13px; left: 8%; height: 6px; border-top: 5px solid #ffce56; border-radius: 50%; content: ''; transform: rotate(-2deg); }
+.simIntroCopy > #simHeroDescription { max-width: 560px; margin: 23px 0 8px; color: #5e778d; font-size: clamp(15px,1.3vw,20px); line-height: 1.55; }
+.simIntroCopy > .simScopeNote { max-width: 510px; margin: 7px 0 0; color: #708798; font-size: 11px; }
+.simIntroArt { position: absolute; z-index: 0; right: -40px; bottom: -12px; display: block; width: 65%; pointer-events: none; mask-image: linear-gradient(90deg,transparent,#000 18%); }
+.simIntroArt img { display: block; width: 100%; height: auto; }
+.simHeroNote { position: absolute; z-index: 1; top: 22px; right: 0; display: flex; align-items: flex-start; gap: 14px; width: 285px; padding: 24px 20px; border: 1px solid #fff; border-radius: 23px; background: #edf8f2f5; transform: rotate(-2deg); }
+.simHeroNote h2 { margin: 0 0 10px; color: var(--sim-ink); font: 800 18px/1.2 Manrope,system-ui,sans-serif; letter-spacing: -.025em; }
+.simHeroNote p { margin: 0; color: #5c7890; font-size: 12px; line-height: 1.6; }
+.simRoundIcon { display: grid; place-items: center; flex: 0 0 58px; width: 58px; height: 58px; color: var(--sim-pine); background: linear-gradient(135deg,#e2f4e9,#cce9d7); border-radius: 50%; }
+.simRoundIcon svg { width: 31px; height: 31px; }
+.simGoldIcon { color: #f7b400; background: #fff6d9; }
+.simBenefits { display: flex; flex-direction: column; justify-content: center; gap: 29px; align-self: start; padding: 38px 5px 0 0; }
+.simBenefits > div { display: flex; gap: 20px; align-items: flex-start; }
+.simBenefits p { margin: 1px 0 0; color: var(--sim-muted); font-size: 13px; line-height: 1.45; }
+.simBenefits strong { display: block; margin-bottom: 4px; color: #0b302c; font-size: 16px; line-height: 1.25; }
+.simBenefits p span { display: block; max-width: 190px; }
+.simCard { grid-column: 2; align-self: start; overflow: visible; background: #fff; border: 1px solid #edf0ed; border-radius: 24px; box-shadow: 0 14px 45px #22473609; }
+.simStep { padding: 32px 36px 26px; scroll-margin-top: 20px; }
+.simStepHeading { gap: 23px; margin-bottom: 25px; }
+.simStepIcon { flex: 0 0 64px; height: 64px; border-radius: 17px; background: #e7f4eb; color: var(--sim-pine); }
+.simStepIcon svg { width: 30px; height: 30px; }
+.simStepHeading h2 { color: var(--sim-ink); font: 800 clamp(24px,2.2vw,34px)/1.15 Manrope,system-ui,sans-serif; letter-spacing: -.04em; }
+.simStepHeading p:not(.simEyebrow) { margin-top: 8px; color: #647e94; font-size: 15px; }
+.simStepHeading h2:focus { outline: none; }
+.simAddressField > label { font-size: 12px; color: #315363; }
+.simAddressInputRow { gap: 14px; }
+.simField input,.simCoordinateFields input,.simContactGrid select { min-height: 51px; padding: 12px 15px; border: 1px solid #c6d2df; border-radius: 9px; background: #fff; color: var(--sim-ink); }
+.simAddressInputRow input { min-height: 58px; padding: 14px 18px; font-size: 16px; font-weight: 500; }
+.simField input::placeholder { color: #8093a8; font-weight: 400; }
+.simLocationButton { gap: 10px; min-height: 58px; padding: 12px 22px; background: #f4f9f5; border: 1px solid #37755e; border-radius: 11px; color: var(--sim-pine); font-size: 14px; }
+.simLocationButton svg { width: 22px; height: 22px; }
+.simSuggestions { z-index: 1001; top: 87px; max-height: 280px; }
+.simSuggestions button { font-size: 13px; }
+.simField small,.simFieldHint { font-size: 11px; line-height: 1.45; color: #6c8599; }
+.simAddressField small { max-width: 760px; font-size: 10px; }
+.simStatus { min-height: 15px; font-size: 11px; }
+.simCoordinates { margin-top: 12px; padding: 14px 19px; background: #f0f8f3; border: 0; border-radius: 10px; }
+.simCoordinates summary { color: #284954; font-size: 13px; font-weight: 500; }
+.simCoordinateFields label { color: #315363; }
+.simStepActions { margin-top: 23px; padding-top: 20px; border-top: 1px solid #e8edf0; }
+.simPrivacy { font-size: 11px; color: #75899b; }
+.simButton { min-height: 48px; padding: 12px 24px; border-radius: 999px; font-size: 13px; font-weight: 700; }
+.simButtonPrimary { background: linear-gradient(135deg,#006a4c,#004e39); color: #fff; }
+.simButtonPrimary:hover { background: #00805a; }
+.simButtonPrimary > [aria-hidden] { margin-left: 9px; font-size: 23px; line-height: 1; font-weight: 400; }
+.simButtonQuiet { color: #163c42; border-color: #4e8c76; background: #fff; }
+/* After the address, the form opens out into the illustrated full-width workspace. */
+body:not([data-active-step="1"]) .simShell { display: block; }
+body:not([data-active-step="1"]) .simBenefits { display: none; }
+body:not([data-active-step="1"]) .simIntro { min-height: 220px; padding: 18px 0 22px; }
+body:not([data-active-step="1"]) .simIntroCopy { width: 58%; }
+body:not([data-active-step="1"]) .simIntro h1 { max-width: 950px; font-size: clamp(32px,3.4vw,54px); }
+body:not([data-active-step="1"]) .simIntroCopy > #simHeroDescription { max-width: 600px; margin-top: 10px; font-size: 16px; line-height: 1.5; }
+body:not([data-active-step="1"]) .simIntroArt { width: 51%; right: 12%; bottom: -5px; }
+body:not([data-active-step="1"]) .simHeroNote { top: 0; width: 265px; padding: 21px 18px; transform: none; }
+body:not([data-active-step="1"]) .simHeroNote h2 { font-size: 16px; }
+body:not([data-active-step="1"]) .simHeroNote .simRoundIcon { flex-basis: 45px; width: 45px; height: 45px; }
+body:not([data-active-step="1"]) .simCard { border: 0; box-shadow: none; border-radius: 0; background: transparent; }
+body:not([data-active-step="1"]) .simStep { padding: 15px 0 0; }
+body:not([data-active-step="1"]) .simScopeNote { display: none; }
+.simStep:not([data-step="1"]):not(#resultStep) > .simStepHeading { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.simChoiceGroup { margin-bottom: 24px; }
+.simChoiceGroup legend { color: var(--sim-ink); font: 800 18px/1.3 Manrope,system-ui,sans-serif; margin-bottom: 15px; }
+[data-number]::before { content: attr(data-number); display: inline-grid; place-items: center; width: 34px; height: 34px; margin-right: 13px; border-radius: 50%; color: #fff; background: linear-gradient(145deg,#087d57,#004b39); font: 700 16px/1 Manrope,system-ui,sans-serif; vertical-align: middle; }
+.simChoiceGroup legend small { margin-left: 10px; color: var(--sim-muted); font: 400 12px/1.4 'DM Sans',system-ui,sans-serif; }
+.simOptional { display: inline-block; vertical-align: middle; margin-left: 5px; padding: 2px 6px; border-radius: 5px; background: #edf7f2; color: #71899b; font: 400 10px/1.3 'DM Sans',system-ui,sans-serif; }
+.simChoiceCard,.simIconChoice,.simMaterialChoice { border: 1px solid #dde5ec; border-radius: 10px; background: #fff; transition: border-color .15s,background .15s,box-shadow .15s; }
+.simChoiceCard:hover,.simIconChoice:hover,.simMaterialChoice:hover { border-color: #7eaf95; background: #fafffb; }
+.simChoiceCard:has(input:checked),.simIconChoice:has(input:checked),.simMaterialChoice:has(input:checked) { border-color: #0c7755; box-shadow: inset 0 0 0 .5px #0c7755; background: linear-gradient(145deg,#f3faf5,#eaf7ee); }
+.simChoiceCard:has(input:checked)::after,.simTiltChoices .simIconChoice:has(input:checked)::after { content: '✓'; position: absolute; top: 10px; right: 10px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #00694c; color: #fff; font: 700 16px/1 system-ui,sans-serif; }
+.simBuildingChoices { grid-template-columns: repeat(6,minmax(0,1fr)); gap: 10px; }
+.simSiteKindChoices { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; max-width:760px; }
+.simSiteKindChoices .simChoiceCard { min-height:152px; padding:15px; }
+.simSiteKindIcon { display:grid; place-items:center; width:88px; height:88px; flex:0 0 auto; border-radius:13px; background:transparent; }
+.simSiteKindIcon img { display:block; width:100%; height:100%; object-fit:contain; }
+.simBuildingDetails[hidden],.simExternalDetails[hidden] { display:none !important; }
+.simRoofWorkspace[hidden] { display:none !important; }
+.simExternalDetails { margin:2px 0 22px; padding:14px 16px; border:1px solid #d3e7d9; border-left:4px solid var(--sim-green); border-radius:9px; background:#f3faf5; color:#345c49; font-size:13px; }
+.simExternalDetails p { margin:0; }
+.simExternalDetails strong { color:var(--sim-pine); }
+.simBuildingChoices .simChoiceCard { justify-content: flex-end; min-height: 177px; padding: 12px 10px 14px; gap: 7px; }
+.simChoiceCard b { color: var(--sim-ink); font: 800 13px/1.25 Manrope,system-ui,sans-serif; }
+.simChoiceCard small { max-width: 230px; color: var(--sim-muted); font-size: 11px; line-height: 1.35; font-weight: 400; }
+.simBuildingArt { display: block; flex: 0 0 auto; width: 100%; max-width: 200px; height: auto; aspect-ratio: 16 / 9; background-image: url('./assets/simulator/building-types.png'); background-size: 300% auto; background-repeat: no-repeat; }
+/* 512 × 288 windows in the 1536 × 1024 atlas, with room above roofs and flags. */
+.building-offices { background-position: 0 23.913%; }
+.building-logistics { background-position: 50% 23.913%; }
+.building-industry { background-position: 100% 23.913%; }
+.building-retail { background-position: 0 79.348%; }
+.building-public { background-position: 50% 79.348%; }
+.building-other { background-position: 100% 79.348%; }
+.simSolarArt { display: block; flex: 0 0 auto; width: 100%; height: 145px; background-image: url('./assets/simulator/solar-choices.png'); background-size: 200% 200%; background-repeat: no-repeat; }
+.solar-flat { background-position: 0 0; }
+.solar-pitched { background-position: 100% 0; }
+.solar-self { background-position: 0 100%; }
+.solar-sale { background-position: 100% 100%; }
+.simRoofWorkspace { display: grid; grid-template-columns: 260px minmax(0,1fr); gap: 23px; }
+.simRoofConfiguration .simChoiceGroup legend { font-size: 16px; }
+.simRoofConfiguration legend[data-number]::before { width: 32px; height: 32px; margin-right: 8px; }
+.simRoofChoices { gap: 8px; }
+.simRoofCard { flex-direction: column; justify-content: flex-start; min-height: 210px; padding: 8px 7px 15px; text-align: center; gap: 9px; }
+.simRoofCard .simSolarArt { height: 122px; }
+.simRoofCard small { font-size: 10px; }
+.simPansGroup { margin-top: 16px; }
+.simPansGroup legend { font-size: 13px !important; }
+.simPansChoices { gap: 5px; }
+.simMapSection { margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; }
+.simMapHeading { min-height: 47px; align-items: flex-start; gap: 10px; }
+.simMapHeading h3 { color: var(--sim-ink); font: 800 18px/1.3 Manrope,system-ui,sans-serif; }
+.simMapHeading p { padding-left: 47px; color: var(--sim-muted); font-size: 12px; margin: 4px 0 9px; }
+.simMapArea { margin-top: 3px; background: #edf7f0; color: var(--sim-pine); font-size: 10px; white-space: nowrap; }
+.simMapLayout { grid-template-columns: minmax(0,1fr) 245px; gap: 17px; }
+.simRoofMap { height: 360px; border: 1px solid #d0dfd5; border-radius: 10px; }
+.simRoofMap .leaflet-bar { box-shadow: 0 2px 8px #0002; border: 0; border-radius: 7px; overflow: hidden; }
+.simRoofMap .leaflet-bar a { width: 33px; height: 33px; line-height: 33px; }
+.simSiteSummary { padding: 15px; border: 1px solid #e1ede5; border-radius: 15px; background: #f0f8f3; }
+.simSiteSummary h3 { color: var(--sim-ink); font: 800 15px Manrope,system-ui,sans-serif; }
+.simSiteSummary > .simBuildingArt { width: 150px; height: 75px; margin: 2px auto 0; }
+.simSiteSummary p { margin: 8px 0; padding-bottom: 9px; border-bottom: 1px solid #dce9e0; }
+.simSiteSummary p span { font-size: 10px; }
+.simSiteSummary strong { color: var(--sim-ink); font-size: 12px; }
+.simSiteSummary .simSummaryArea strong { color: #006446; font: 800 25px/1.1 Manrope,system-ui,sans-serif; }
+.simAdvice { display: flex; align-items: flex-start; gap: 12px; padding: 15px 13px; border-radius: 11px; background: #fff8de; }
+.simAdvice > svg { flex: 0 0 25px; width: 25px; height: 30px; color: #ffb600; }
+.simAdvice p { margin: 0; padding: 0; border: 0; color: #5a7487; font-size: 11px; line-height: 1.55; }
+.simAdvice strong { display: block; margin-bottom: 4px; color: var(--sim-ink); font-size: 13px; }
+.simMapActions { align-items: flex-start; margin: 12px 0; }
+.simMapActions .simButton { min-height: 40px; padding: 9px 13px; font-size: 11px; }
+.simMapActions .simFieldHint { padding-top: 3px; font-size: 10px; }
+.simAreaGrid { margin: 10px 0; }
+.simManualArea { max-width: 420px; margin-top: 0; }
+.simManualArea input { min-height: 43px; }
+.simDetailsLayout { display: grid; grid-template-columns: minmax(0,1fr) 300px; gap: 22px; align-items: start; }
+.simTechnicalFields { min-width: 0; }
+.simQuestion { position: relative; min-width: 0; margin: 0 0 13px; padding: 14px 19px 16px; border: 1px solid #e3e9ee; border-radius: 15px; background: #fff; }
+fieldset.simQuestion legend { float: left; width: 100%; margin: 0 0 12px; font-size: 16px; }
+fieldset.simQuestion > div { clear: both; }
+.simQuestion::after { display: block; clear: both; content: ''; }
+.simQuestion [data-number]::before { width: 30px; height: 30px; margin-right: 12px; font-size: 14px; }
+.simQuestionLabel { color: var(--sim-ink); font: 800 16px/1.3 Manrope,system-ui,sans-serif; }
+.simUsableCard { display: block; }
+.simUsableCard .simField { grid-template-columns: minmax(0,1fr) auto; gap: 11px; }
+.simUsableCard output { align-self: center; padding-right: 10px; color: var(--sim-pine); font-size: 16px; }
+.simUsableCard .simField input[type=range] { min-height: 20px; margin: 2px 0; }
+.simUsableCard .simField small { padding-left: 42px; }
+.simTiltChoices { gap: 9px; }
+.simTiltChoices .simIconChoice { min-height: 100px; padding: 10px 5px; }
+.simTiltGlyph { width: 64px; height: 33px; border: 0; }
+.simTiltGlyph::before { bottom: 4px; left: 1px; width: 61px; height: 12px; border: 1px solid #416c9f; border-top: 0; border-radius: 1px; background: repeating-linear-gradient(90deg,transparent 0 14px,#a4c1db 14px 15px),linear-gradient(#4683bd 50%,#94b5d4 50% 56%,#366ca0 56%); transform: rotate(calc(var(--slope) * -1)) skewX(-15deg); transform-origin: left bottom; box-shadow: 0 3px 0 #bbc7cb; }
+.simTiltGlyph::after { position: absolute; z-index: -1; bottom: 0; left: 0; width: 64px; height: 2px; background: #cfdfd6; content: ''; }
+.simIconChoice b { color: var(--sim-ink); font-size: 12px; }
+.simIconChoice small { color: var(--sim-muted); font-size: 10px; }
+.simOrientationChoices { grid-template-columns: repeat(8,minmax(0,1fr)); gap: 7px; }
+.simOrientationChoices .simIconChoice { min-height: 68px; }
+.simOrientationChoices .simIconChoice b { font-size: 11px; }
+.simCompass { width: 29px; height: 29px; font-size: 24px; border-color: #d4e2da; color: #00734e; background: #fff; }
+.simIconChoice:has(input:checked) .simCompass { background: #d9f1e2; }
+.simPillChoice { min-height: 44px; padding: 9px 16px; border-color: #d6e0e5; background: #fff; font-size: 12px; color: #214452; }
+.simPillChoice:has(input:checked) { background: #eff8f1; border-color: #007753; }
+.simMaterialChoices { grid-template-columns: repeat(7,minmax(0,1fr)); }
+.simMaterialChoice { min-height: 76px; padding: 7px 3px; }
+.simMaterialGlyph { width: 34px; height: 31px; border: 0; border-radius: 6px; }
+.simMaterialChoice b { font-size: 10px; color: #213c4e; }
+.simQuestion > .simFieldHint { display: block; margin: 9px 0 0; }
+.simRecommendation { margin: 12px 0 0; padding: 10px 13px; background: #f1f9f4; border-color: #dfede4; font-size: 11px; color: #557263; }
+.simOptionalEnergy { display: block; }
+.simOptionalEnergy input { max-width: 500px; min-height: 44px; margin-left: 42px; width: calc(100% - 42px); }
+.simOptionalEnergy small { margin-left: 42px; }
+.simRecap { overflow: hidden; padding: 20px 17px 17px; border: 1px solid #e0e8ed; border-radius: 19px; background: #fff; }
+.simRecap h3 { margin: 0 0 16px; padding-bottom: 14px; border-bottom: 1px solid #e6ecf0; font: 800 18px/1.3 Manrope,system-ui,sans-serif; color: var(--sim-ink); }
+.simRecapRow { display: flex; align-items: center; gap: 12px; min-height: 70px; padding: 8px 0; border-bottom: 1px solid #e9eef0; }
+.simRecapRow > .simBuildingArt,.simRecapRow > .simSolarArt { flex-basis: 80px; height: 40px; }
+.simRecapRow p { margin: 0; color: var(--sim-muted); font-size: 11px; }
+.simRecapRow strong { display: block; margin-top: 4px; color: #112d3e; font-size: 13px; line-height: 1.4; }
+.simRecapArea { margin: 15px 0; font-size: 12px; color: var(--sim-muted); }
+.simRecapArea strong { display: block; margin-top: 5px; color: var(--sim-pine); font: 800 28px/1.2 Manrope,system-ui,sans-serif; }
+.simRoofPreview { height: 180px; margin: 15px 0; border-radius: 11px; background: #e9f3ec; }
+.simRoofPreview .leaflet-control-attribution { font-size: 7px; }
+.simRecap .simAdvice { margin-top: 16px; }
+.simUseCaseChoices { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; }
+.simUseCaseChoices .simChoiceCard { flex-direction: row; justify-content: flex-start; align-items: center; min-height: 190px; gap: 10px; padding: 16px 12px; text-align: left; }
+.simUseCaseChoices .simSolarArt { width: 43%; height: 150px; }
+.simUseCaseChoices .simChoiceCard > div { min-width: 0; }
+.simUseCaseChoices b { display: block; margin-bottom: 9px; font-size: 17px; line-height: 1.2; letter-spacing: -.03em; }
+.simUseCaseChoices small { display: block; font-size: 12px; line-height: 1.45; }
+.simUseCases > .simFieldHint { display: block; margin-top: 10px; }
+.simTimelineChoices { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px; }
+.simTimelineChoices .simIconChoice { min-height: 173px; gap: 9px; padding: 17px 8px; }
+.simTimelineChoices .simChoiceIcon { width: 66px; height: 66px; border-radius: 50%; color: var(--sim-pine); background: #f0f8f3; }
+.simTimelineChoices .simChoiceIcon svg { width: 43px; height: 43px; fill: initial; stroke: initial; }
+.simTimelineChoices b { font: 800 15px/1.2 Manrope,system-ui,sans-serif; }
+.simTimelineChoices small { font-size: 11px; }
+.simContactLayout { display: grid; grid-template-columns: minmax(0,1fr) 360px; gap: 20px; align-items: stretch; }
+.simContactPanel { min-width: 0; padding: 28px 32px; border: 1px solid #e2e9ed; border-radius: 24px; background: #fff; box-shadow: 0 10px 30px #174a3905; }
+.simContactTitle { display: flex; align-items: center; gap: 21px; margin-bottom: 23px; }
+.simContactTitle h3 { margin: 0 0 5px; color: var(--sim-ink); font: 800 23px/1.3 Manrope,system-ui,sans-serif; }
+.simContactTitle p { margin: 0; color: var(--sim-muted); font-size: 13px; }
+.simContactGrid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 17px 21px; }
+.simContactGrid .simField { display: block; font-size: 13px; color: #244151; }
+.simContactGrid input,.simContactGrid select { display: block; width: 100%; margin-top: 7px; font-size: 15px; font-weight: 400; }
+.simContactGrid .simField:has(select) { grid-column: 1 / -1; }
+.simRequired { color: #bd4545; }
+.simCivilityChoices { display: flex; gap: 12px; }
+.simCivility legend { font: 600 13px/1.4 'DM Sans',system-ui,sans-serif; }
+.simCivility .simPillChoice { min-width: 180px; min-height: 42px; justify-content: flex-start; border-radius: 8px; }
+.simCivility .simPillChoice::before { content: ''; width: 15px; height: 15px; border: 1px solid #8aa2b2; border-radius: 50%; margin-right: 7px; }
+.simCivility .simPillChoice:has(input:checked)::before { background: var(--sim-green); box-shadow: inset 0 0 0 3px #eef8f2; border-color: var(--sim-green); }
+.simContactPrivacy { margin: 21px 0 0; padding: 15px 0 0; border-top: 1px solid #d8e2e9; color: #657c91; font-size: 11px; }
+.simContactPanel .simStepActions { border-top: 0; margin-top: 16px; padding-top: 0; }
+.simReassurance { padding: 28px 24px; border-radius: 22px; background: #f0f8f3; }
+.simReassurance h3 { margin: 0 0 25px; color: var(--sim-ink); font: 800 23px/1.2 Manrope,system-ui,sans-serif; }
+.simReassurance > div { display: flex; align-items: center; gap: 18px; margin: 25px 0; }
+.simReassurance p { margin: 0; color: var(--sim-muted); font-size: 14px; line-height: 1.4; }
+.simReassurance strong { display: block; margin-bottom: 5px; color: #143b3c; font: 800 18px/1.25 Manrope,system-ui,sans-serif; }
+.simResultMetrics { grid-template-columns: 1.1fr 1fr 1fr; gap: 18px; }
+.simResultMetric { min-height: 160px; padding: 25px; border-radius: 18px; background: #f7fbf8; }
+.simPrimaryMetric { background: #eaf6ed; }
+.simResultMetric strong { color: var(--sim-pine); }
+.simChartSection { border-radius: 18px; }
+.simFooterNote { grid-column: 1 / -1; margin-top: 25px; color: #8193a0; font-size: 10px; }
+@media (min-width:1700px) { .simIntro { min-height: 430px; } }
+@media (max-width:1250px) {
+  .simTopbar { gap: 22px; width: calc(100% - 60px); }
+  .simBrand > span { display: none; }
+  .simBrand img { width: 140px; }
+  .simShell { width: calc(100% - 60px); grid-template-columns: 235px minmax(0,1fr); column-gap: 25px; }
+  .simHeroNote { width: 235px; padding: 18px 14px; gap: 10px; }
+  .simHeroNote .simRoundIcon { flex-basis: 44px; width: 44px; height: 44px; }
+  .simHeroNote h2 { font-size: 16px; }
+  .simHeroNote p { font-size: 11px; }
+  .simIntro { min-height: 350px; }
+  .simStep { padding: 28px; }
+  .simBenefits > div { gap: 13px; }
+  .simBenefits .simRoundIcon { flex-basis: 48px; width: 48px; height: 48px; }
+  .simBenefits strong { font-size: 14px; }
+  body:not([data-active-step="1"]) .simHeroNote { width: 220px; }
+  body:not([data-active-step="1"]) .simIntroArt { right: 10%; width: 48%; }
+  body:not([data-active-step="1"]) .simIntroCopy { width: 56%; }
+  .simRoofWorkspace { grid-template-columns: 200px minmax(0,1fr); gap: 15px; }
+  .simRoofChoices { grid-template-columns: 1fr; }
+  .simRoofCard { flex-direction: row; align-items: center; flex-wrap: wrap; justify-content: center; min-height: 160px; gap: 6px; }
+  .simRoofCard .simSolarArt { width: 100%; height: 90px; }
+  .simRoofCard small { flex-basis: 100%; }
+  .simMapLayout { grid-template-columns: minmax(0,1fr) 200px; gap: 12px; }
+  .simBuildingChoices .simChoiceCard { min-height: 165px; }
+  .simChoiceCard b { font-size: 11px; }
+  .simBuildingArt { height: 80px; }
+  .simChoiceCard small { font-size: 10px; }
+  .simDetailsLayout { grid-template-columns: minmax(0,1fr) 260px; gap: 17px; }
+  .simUseCaseChoices .simChoiceCard { min-height: 210px; padding: 13px 9px; gap: 7px; }
+  .simUseCaseChoices .simSolarArt { width: 40%; height: 130px; }
+  .simUseCaseChoices b { font-size: 15px; }
+  .simUseCaseChoices small { font-size: 11px; }
+  .simUseCaseChoices .simChoiceCard { flex-direction: column; text-align: center; }
+  .simUseCaseChoices .simSolarArt { width: 85%; height: 140px; }
+  .simUseCaseChoices b { font-size: 17px; }
+  .simTimelineChoices b { font-size: 13px; }
+  .simContactLayout { grid-template-columns: minmax(0,1fr) 300px; }
+}
+@media (min-width:1001px) and (max-width:1280px) {
+  .simTopbar { grid-template-columns: minmax(0,1fr) auto; height: auto; min-height: 118px; align-items: center; gap: 8px 16px; padding: 12px 0 6px; }
+  .simProgress { grid-row: 2; grid-column: 1 / -1; width: 100%; max-width: none; padding: 6px 0 8px; }
+  .simProgress ol { grid-template-columns: repeat(5,minmax(0,1fr)); gap: clamp(4px,1vw,12px); }
+  .simProgress li:not(:last-child)::after { min-width: 0; }
+  .simProgress li b { max-width: none; }
+}
+@media (max-width:1000px) {
+  .simTopbar { grid-template-columns: 1fr auto; height: auto; min-height: 115px; gap: 10px; padding-top: 14px; }
+  .simBrand > span { display: block; }
+  .simProgress { grid-row: 2; grid-column: 1 / -1; width: 100%; max-width: none; padding: 8px 0 10px; }
+  .simProgress ol { grid-template-columns: repeat(5,minmax(0,1fr)); gap: 12px; }
+  .simShell { margin-top: 14px; grid-template-columns: 190px minmax(0,1fr); gap: 20px; }
+  .simIntroCopy { width: 55%; }
+  .simIntro h1 { font-size: 43px; }
+  .simHeroNote { display: none; }
+  .simIntroArt { width: 57%; right: -20px; bottom: 5px; }
+  .simIntro { min-height: 330px; padding-top: 25px; }
+  .simBenefits { gap: 25px; padding-top: 25px; }
+  .simBenefits > div { flex-direction: column; gap: 9px; }
+  .simBenefits p { font-size: 12px; }
+  .simStep { padding: 24px; }
+  .simStepHeading { gap: 14px; }
+  .simStepHeading p:not(.simEyebrow) { font-size: 13px; }
+  .simStepIcon { flex-basis: 48px; height: 48px; }
+  .simAddressInputRow { gap: 9px; }
+  .simLocationButton { padding: 10px 14px; font-size: 12px; }
+  body:not([data-active-step="1"]) .simIntro { min-height: 200px; }
+  body:not([data-active-step="1"]) .simIntroCopy { width: 65%; }
+  body:not([data-active-step="1"]) .simIntroArt { width: 45%; right: -15px; }
+  body:not([data-active-step="1"]) .simIntroCopy > #simHeroDescription { font-size: 14px; max-width: 490px; }
+  .simBuildingChoices { grid-template-columns: repeat(3,minmax(0,1fr)); }
+  .simBuildingChoices .simChoiceCard { min-height: 165px; }
+  .simBuildingArt { max-width: 170px; height: 85px; }
+  .simRoofWorkspace { grid-template-columns: 180px minmax(0,1fr); }
+  .simMapLayout { grid-template-columns: 1fr; }
+  .simSiteSummary { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; padding: 13px; }
+  .simSiteSummary h3,.simSiteSummary > .simBuildingArt,.simSiteSummary .simAdvice { display: none; }
+  .simSiteSummary p { margin: 0; border: 0; padding: 0; }
+  .simSiteSummary .simSummaryArea strong { font-size: 20px; }
+  .simDetailsLayout { grid-template-columns: 1fr; }
+  .simRecap { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 10px; padding: 14px; background: #f5faf6; }
+  .simRecap h3 { grid-column: 1/-1; padding-bottom: 10px; margin: 0; font-size: 16px; }
+  .simRecapRow { padding: 0; border: 0; }
+  .simRecapRow > .simBuildingArt,.simRecapRow > .simSolarArt { display: none; }
+  .simRecap .simRoofPreview,.simRecap .simAdvice { display: none; }
+  .simRecapArea { margin: 0; }
+  .simRecapArea strong { font-size: 22px; }
+  .simUseCaseChoices .simChoiceCard { flex-direction: row; text-align: left; min-height: 225px; }
+  .simUseCaseChoices .simSolarArt { width: 43%; }
+  .simContactLayout { grid-template-columns: minmax(0,1fr) 245px; gap: 15px; }
+  .simContactPanel { padding: 23px; }
+  .simReassurance { padding: 25px 18px; }
+  .simReassurance .simRoundIcon { flex-basis: 44px; width: 44px; height: 44px; }
+  .simReassurance > div { gap: 12px; }
+  .simReassurance h3 { font-size: 20px; }
+  .simReassurance strong { font-size: 16px; }
+  .simReassurance p { font-size: 12px; }
+  .simContactGrid { grid-template-columns: 1fr; }
+  .simCivility .simPillChoice { min-width: 130px; }
+}
+@media (max-width:700px) {
+  .simFoliage { width: 65px; opacity: .35; }
+  .simFoliageLeft { left: -42px; }.simFoliageRight { right: -42px; }
+  .simTopbar { width: calc(100% - 32px); min-height: 125px; padding-top: 12px; gap: 10px; }
+  .simBrand img { width: 125px; max-height: 40px; }
+  .simBrand > span { display: none; }
+  .simTopLink { min-height: 36px; padding: 7px 12px; font-size: 10px; }
+  .simTopLink svg { width: 13px; height: 13px; }
+  .simProgress { overflow: visible; padding: 8px 0; }
+  .simProgress ol { min-width: 0; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 3px; }
+  .simProgress li { flex-direction: column; gap: 6px; padding: 0; text-align: center; }
+  .simProgress li > span { flex-basis: 29px; width: 29px; height: 29px; font-size: 11px; }
+  .simProgress li b { max-width: 66px; font-size: 8px; font-weight: 500; line-height: 1.2; }
+  .simProgress li:not(:last-child)::after { position: absolute; top: 14px; left: calc(50% + 21px); right: calc(-50% + 21px); min-width: 0; margin: 0; }
+  .simShell { display: block; width: calc(100% - 32px); margin: 8px auto 25px; }
+  .simIntro { min-height: 0; padding: 17px 2px 0; }
+  .simIntroCopy { width: 100%; }
+  .simIntro h1 { max-width: 580px; font-size: clamp(32px,7.5vw,46px); line-height: 1.12; }
+  .simEyebrow { margin-bottom: 11px; font-size: 9px; }
+  body[data-active-step="1"] .simIntro h1 em::after { bottom: -8px; height: 3px; border-top-width: 3px; }
+  .simIntroCopy > #simHeroDescription { margin: 17px 0 5px; font-size: 14px; line-height: 1.5; }
+  .simIntroCopy > .simScopeNote { font-size: 10px; }
+  .simIntroArt { position: relative; right: auto; bottom: auto; width: 100%; max-width: 470px; margin: 5px auto -1px; mask-image: none; }
+  .simIntroArt img { max-height: 175px; object-fit: contain; }
+  .simBenefits { display: none; }
+  .simCard { border-radius: 18px; }
+  .simStep { padding: 22px 18px; }
+  .simStepHeading { gap: 12px; margin-bottom: 20px; }
+  .simStepIcon { flex-basis: 42px; height: 42px; border-radius: 12px; }
+  .simStepIcon svg { width: 23px; height: 23px; }
+  .simStepHeading h2 { font-size: 22px; }
+  .simStepHeading p:not(.simEyebrow) { font-size: 12px; }
+  .simAddressField > label { font-size: 11px; }
+  .simAddressInputRow input { min-height: 49px; padding: 12px; font-size: 13px; }
+  .simLocationButton { width: 49px; min-height: 49px; padding: 10px; }
+  .simLocationButton span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+  .simSuggestions { top: 77px; max-height: 235px; }
+  .simSuggestions button { padding: 12px 9px; font-size: 12px; }
+  .simCoordinates { margin-top: 10px; padding: 13px; }
+  .simCoordinates summary { font-size: 12px; }
+  .simCoordinateFields { grid-template-columns: 1fr; }
+  .simStepActions { gap: 8px; flex-wrap: wrap; margin-top: 22px; }
+  .simStepActions .simButton { flex: 1; min-height: 46px; padding: 11px 13px; font-size: 11px; }
+  .simPrivacy { flex-basis: 100%; font-size: 10px; }
+  body:not([data-active-step="1"]) .simIntro { min-height: 0; padding: 17px 2px 5px; }
+  body:not([data-active-step="1"]) .simIntroCopy { width: 100%; }
+  body:not([data-active-step="1"]) .simIntro h1 { font-size: 32px; }
+  body:not([data-active-step="1"]) .simIntroCopy > #simHeroDescription { margin-top: 10px; font-size: 13px; }
+  body:not([data-active-step="1"]) .simIntroArt { position: relative; right: auto; width: 85%; margin: 4px auto 0; }
+  body:not([data-active-step="1"]) .simIntroArt img { max-height: 115px; }
+  body:not([data-active-step="1"]) .simStep { padding: 12px 0 0; }
+  .simChoiceGroup legend { font-size: 16px; line-height: 1.35; margin-bottom: 13px; }
+  [data-number]::before { width: 29px; height: 29px; margin-right: 8px; font-size: 14px; }
+  .simChoiceGroup legend small { display: block; margin: 7px 0 0 37px; font-size: 11px; }
+  .simBuildingChoices { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+  .simBuildingChoices .simChoiceCard { min-height: 153px; padding: 8px 7px 12px; gap: 6px; }
+  .simChoiceCard b { font-size: 11px; }
+  .simBuildingArt { height: 77px; }
+  .simChoiceCard small { font-size: 10px; }
+  .simChoiceCard:has(input:checked)::after { width: 18px; height: 18px; top: 6px; right: 6px; font-size: 12px; }
+  .simRoofWorkspace { grid-template-columns: 1fr; gap: 8px; }
+  .simRoofChoices { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .simRoofCard { flex-direction: column; min-height: 173px; padding: 8px 7px 13px; }
+  .simRoofCard .simSolarArt { height: 107px; }
+  .simPansGroup { margin-top: 12px; }
+  .simMapHeading { display: block; }
+  .simMapHeading h3 { font-size: 16px; }
+  .simMapHeading p { padding-left: 37px; font-size: 11px; }
+  .simMapArea { display: inline-flex; margin: 2px 0 8px 37px; }
+  .simRoofMap { height: 300px; }
+  .simMapLayout { gap: 10px; }
+  .simSiteSummary { grid-template-columns: 1fr 1fr; }
+  .simSiteSummary p:last-child { grid-column: auto; }
+  .simSiteSummary .simSummaryArea { grid-column: 1/-1; }
+  .simMapActions { align-items: stretch; flex-direction: column; gap: 5px; }
+  .simManualArea { max-width: none; }
+  .simAreaGrid { grid-template-columns: 1fr; }
+  .simQuestion { padding: 13px 12px; margin-bottom: 11px; border-radius: 13px; }
+  fieldset.simQuestion legend,.simQuestionLabel { font-size: 14px; }
+  .simQuestion [data-number]::before { width: 26px; height: 26px; margin-right: 7px; font-size: 12px; }
+  .simUsableCard .simField { grid-template-columns: minmax(0,1fr) auto; gap: 10px; }
+  .simUsableCard output { font-size: 14px; padding: 0; }
+  .simUsableCard small { padding-left: 0 !important; }
+  .simTiltChoices { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 7px; }
+  .simTiltChoices .simIconChoice { min-height: 91px; }
+  .simOrientationChoices { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 6px; }
+  .simOrientationChoices .simIconChoice { min-height: 65px; }
+  .simShadeChoices { display: grid; grid-template-columns: 1fr; gap: 7px; }
+  .simPillChoice { min-height: 42px; font-size: 11px; }
+  .simMaterialChoices { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 6px; }
+  .simMaterialChoice { min-height: 70px; }
+  .simMaterialChoice b { font-size: 9px; }
+  .simOptionalEnergy input { width: 100%; margin-left: 0; }
+  .simOptionalEnergy small { margin-left: 0; }
+  .simRecap { grid-template-columns: 1fr 1fr; padding: 13px; gap: 10px; }
+  .simRecapArea { grid-column: 1/-1; }
+  .simUseCaseChoices { grid-template-columns: 1fr; gap: 9px; }
+  .simUseCaseChoices .simChoiceCard { flex-direction: row; min-height: 170px; padding: 14px 12px; }
+  .simUseCaseChoices .simSolarArt { width: 42%; height: 130px; }
+  .simUseCaseChoices b { font-size: 16px; }
+  .simUseCaseChoices small { font-size: 11px; }
+  .simTimelineChoices { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+  .simTimelineChoices .simIconChoice { min-height: 146px; padding: 12px 8px; gap: 8px; }
+  .simTimelineChoices .simChoiceIcon { width: 53px; height: 53px; }
+  .simTimelineChoices .simChoiceIcon svg { width: 35px; height: 35px; }
+  .simTimelineChoices b { font-size: 13px; }
+  .simTimelineChoices small { font-size: 10px; }
+  .simContactLayout { grid-template-columns: 1fr; gap: 15px; }
+  .simContactPanel { padding: 21px 17px; border-radius: 17px; }
+  .simContactTitle { gap: 13px; }
+  .simContactTitle .simRoundIcon { flex-basis: 48px; width: 48px; height: 48px; }
+  .simContactTitle h3 { font-size: 20px; }
+  .simContactTitle p { font-size: 12px; }
+  .simContactGrid { grid-template-columns: 1fr; gap: 15px; }
+  .simContactGrid input,.simContactGrid select { min-height: 48px; font-size: 16px; }
+  .simCivilityChoices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .simCivility .simPillChoice { min-width: 0; padding: 8px 12px; }
+  .simReassurance { display: grid; grid-template-columns: 1fr 1fr; gap: 17px 13px; padding: 20px 17px; }
+  .simReassurance h3 { grid-column: 1/-1; margin: 0; font-size: 19px; }
+  .simReassurance > div { flex-direction: column; align-items: flex-start; gap: 9px; margin: 0; }
+  .simReassurance strong { font-size: 14px; }
+  .simReassurance p { font-size: 11px; }
+  .simReassurance .simRoundIcon { flex-basis: 39px; width: 39px; height: 39px; }
+  .simReassurance .simRoundIcon svg { width: 23px; height: 23px; }
+  .simResultMetrics { grid-template-columns: 1fr; gap: 10px; }
+  .simResultMetric { min-height: 125px; padding: 20px; }
+  .simPrimaryMetric { grid-column: auto; }
+  .simChartHeader { align-items: flex-start; flex-direction: column; }
+  .simProfessionalNext { padding: 20px; }
+  .simFooterNote { font-size: 9px; line-height: 1.5; }
+}
+@media (max-width:380px) {
+  .simShell { width: calc(100% - 24px); }
+  .simIntro h1 { font-size: 31px; }
+  .simStep { padding: 20px 14px; }
+  .simUseCaseChoices .simChoiceCard { gap: 9px; padding: 12px 9px; }
+  .simUseCaseChoices b { font-size: 14px; }
+}
+@media (prefers-reduced-motion:reduce) { *,*::before,*::after { transition: none !important; scroll-behavior: auto !important; } }
+
+/* Keep the atlas aspect ratio in every card, recap and responsive breakpoint. */
+.simBuildingArt,.simSiteSummary > .simBuildingArt,.simRecapRow > .simBuildingArt { height: auto; aspect-ratio: 16 / 9; }
+.simBuildingChoices .simChoiceCard { justify-content: flex-start; overflow: hidden; }
+.simPanExplanation { clear: both; margin: 12px 0 0; padding: 11px 14px; border-radius: 9px; background: #eef8f2; color: #315e50; font-size: 12px; line-height: 1.6; }
+.simPanExplanation[hidden] { display: none; }
+
+/* Results dashboard: real data only; unavailable indicators are explicit. */
+body[data-view="summary"] { background: #f4f8f5; }
+body[data-view="contact"] .simProgress { display: none; }
+body[data-view="contact"] .simTopbar { grid-template-columns: 1fr auto; }
+#contactPreparation[hidden] { display: none; }
+body[data-view="summary"] .simProgress,body[data-view="summary"] .simHeroNote,body[data-view="summary"] .simScopeNote { display: none; }
+body[data-view="summary"] .simTopbar { grid-template-columns: 1fr auto; min-height: 70px; }
+body[data-view="summary"] .simShell { display: block; }
+body[data-view="summary"] .simIntro { min-height: 205px; padding-top: 28px; }
+body[data-view="summary"] .simIntroCopy { width: 64%; }
+body[data-view="summary"] .simIntro h1 { color: #073d39; font-size: clamp(30px,3.4vw,48px); }
+body[data-view="summary"] .simIntroArt { width: 41%; right: 0; bottom: -10px; }
+body[data-view="summary"] .simIntroCopy > #simHeroDescription { max-width: 740px; font-size: 15px; }
+body[data-view="summary"] .simCard { background: transparent; border: 0; box-shadow: none; overflow: visible; }
+#resultStep { padding: 0; }
+#resultStep > .simStepHeading { margin: 0 0 18px; }
+#resultStep > .simStepHeading .simStepIcon,#resultStep > .simStepHeading h2,#resultStep > .simStepHeading .simEyebrow { display: none; }
+.simSummaryMetrics { display: grid; grid-template-columns: repeat(6,minmax(0,1fr)); gap: 12px; margin-bottom: 18px; }
+.simButtonPrimary.isLoading { outline: 3px solid #f2bd39; outline-offset: 3px; }
+.simButtonSpinner { display: inline-block; width: 14px; height: 14px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: roofDetectionSpin .75s linear infinite; }
+#calculateSpinner[hidden] { display: none; }
+.simResultStatus[hidden] { display: none; }
+.simResultStatus[data-kind="loading"] { display: flex; align-items: center; gap: 10px; }
+.simResultStatus[data-kind="loading"]::before { content: ""; flex: 0 0 15px; width: 15px; height: 15px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: roofDetectionSpin .75s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .simButtonSpinner, .simResultStatus[data-kind="loading"]::before { animation: none; } }
+.simMapCanvas { position: relative; min-width: 0; isolation: isolate; }
+.simMapHint { position: absolute; z-index: 800; top: 12px; left: 60px; right: 60px; display: flex; align-items: center; gap: 10px; margin: 0; padding: 12px 15px; border: 1px solid #e3b448; border-radius: 10px; background: #fff3c4; color: #164a3b; box-shadow: 0 3px 14px #153c2630; font-size: 14px; font-weight: 750; line-height: 1.45; pointer-events: none; }
+.simMapHint > svg { flex: 0 0 26px; width: 26px; height: 26px; color: #a66c00; }
+@media (max-width: 700px) {
+  .simMapCanvas { display: flex; flex-direction: column; gap: 10px; }
+  .simMapHint { position: static; order: -1; padding: 12px; font-size: 13px; box-shadow: none; }
+}
+#roofContourEditor[hidden] { display: none; }
+#roofContourEditor { padding: 12px; border: 1px solid #a8cbb9; border-radius: 10px; background: #f0f8f3; }
+#roofDetectionStatus:empty { display: none; }
+#roofDetectionStatus:not(:empty) { position: absolute; z-index: 801; right: 12px; bottom: 12px; left: 12px; margin: 0; padding: 10px 12px; border: 1px solid #bdd6c8; border-radius: 9px; background: #fff; box-shadow: 0 2px 10px #153c2620; }
+#roofDetectionStatus[data-kind="loading"] { color: #24654c; }
+#roofDetectionStatus[data-kind="loading"]::before { content: ""; display: inline-block; width: 13px; height: 13px; margin-right: 8px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; vertical-align: -2px; animation: roofDetectionSpin .75s linear infinite; }
+@keyframes roofDetectionSpin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { #roofDetectionStatus[data-kind="loading"]::before { animation: none; } }
+#roofDetectionStatus[data-kind="warning"] { color: #805d17; }
+.simRoofMap.leaflet-grab, .simRoofMap .leaflet-interactive { cursor: pointer; }
+.simRoofMap .leaflet-editing-icon { border: 2px solid #087957; border-radius: 50%; background: #fff; }
+.simSummaryMetric { position: relative; display: grid; align-content: start; grid-template-columns: 27px minmax(0,1fr); gap: 10px 8px; min-width: 0; min-height: 125px; padding: 20px 14px 14px; border: 1px solid #edf1ee; border-radius: 13px; background: #fff; box-shadow: 0 4px 18px #153c2610; }
+.simSummaryMetric > svg { width: 25px; height: 25px; color: #ffb400; }
+.simSummaryMetric > span { align-self: center; font-size: 11px; line-height: 1.4; color: #203c46; }
+.simSummaryMetric > strong { grid-column: 1 / -1; color: #063b3d; font: 800 clamp(17px,1.55vw,23px)/1.3 Manrope,system-ui,sans-serif; overflow-wrap: anywhere; }
+.simSummaryMetric > small { grid-column: 1 / -1; color: #6d8190; font-size: 10px; }
+.simSummaryMetric > .simPendingValue { font-size: 19px; font-weight: 650; color: #748b87; }
+.simResultDetails { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; margin:16px 0; }
+.simResultPanel { min-width:0; padding:18px; border:1px solid var(--sim-line); border-radius:12px; background:#fff; }
+.simResultPanel h3 { margin:0 0 12px; color:var(--sim-pine); font:750 17px/1.3 Manrope,system-ui,sans-serif; }
+.simResultPanel > p { margin:0 0 12px; color:var(--sim-muted); font-size:11px; line-height:1.45; }
+.simResultFacts { display:grid; gap:0; margin:0; }
+.simResultFacts > div { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:10px; padding:9px 0; border-bottom:1px solid #e6eee8; }
+.simResultFacts > div:last-child { border-bottom:0; }
+.simResultFacts dt { color:var(--sim-muted); font-size:11px; }
+.simResultFacts dd { min-width:0; margin:0; color:var(--sim-pine); font-size:12px; font-weight:750; overflow-wrap:anywhere; }
+.simResultFootnote { margin:12px 0 0 !important; padding:10px 11px; border-radius:8px; background:#f3f8f4; color:#597267 !important; font-size:10px !important; }
+.simFinancialFacts > div { grid-template-columns:minmax(0,1.55fr) minmax(100px,.8fr); }
+.simFinancialFacts dd { text-align:right; }
+.simAnnualComparison { display:grid; gap:6px; margin:0 0 16px; padding:16px 18px; border:1px solid #cde2d6; border-radius:12px; background:#f2f8f4; }
+.simAnnualComparison > p { margin:0; color:var(--sim-muted); font-size:11px; }
+.simAnnualComparison > strong { color:var(--sim-pine); font-size:15px; line-height:1.45; overflow-wrap:anywhere; }
+.simAnnualComparison > small { color:var(--sim-muted); font-size:10px; line-height:1.45; }
+.simProductionPanel .simMonthlyChart { height:174px; margin-top:12px; }
+.simProductionPanel .simMonthBar { background:linear-gradient(180deg,#8dc8a6,#23805c); }
+.simProjectionPlaceholder { display:grid; place-content:center; align-content:center; gap:10px; min-height:190px; padding:18px; border:1px dashed #dce8e0; border-radius:10px; background:#fafcfb; text-align:center; }
+.simProjectionPlaceholder > span { color:#7cae92; font-size:38px; line-height:1; }
+.simProjectionPlaceholder > strong { color:#3f675a; font-size:14px; }
+.simProjectionPlaceholder > p { max-width:350px; margin:0 auto; color:#71877d; font-size:11px; line-height:1.5; }
+.simSummaryGrid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; margin-bottom: 18px; }
+.simSummaryPanel { min-width: 0; margin: 0; padding: 20px; border: 1px solid #e7eeea; border-radius: 15px; background: #fff; box-shadow: 0 4px 20px #1b3f2610; }
+.simSummaryPanel h3 { margin: 0; color: #143d45; font: 800 19px/1.3 Manrope,system-ui,sans-serif; }
+.simSummaryPanelTitle { display: flex; align-items: center; gap: 13px; margin-bottom: 12px; }
+.simSummaryPanelTitle .simRoundIcon { flex: 0 0 43px; width: 43px; height: 43px; }
+.simSummaryPanelTitle p,.simChartHeader p { margin: 3px 0 0; color: #748595; font-size: 11px; line-height: 1.45; }
+.simTechnicalSummaryBody { display: grid; grid-template-columns: minmax(110px,.7fr) minmax(0,1.3fr); align-items: center; gap: 16px; }
+.simTechnicalSummaryBody > .simSolarArt { width: 100%; height: auto; aspect-ratio: 1; }
+.simSummaryRows { margin: 0; font-size: 12px; }
+.simSummaryRows > div { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,.85fr); gap: 12px; align-items: center; min-height: 35px; padding: 8px 0; border-bottom: 1px solid #edf1ef; }
+.simSummaryRows > div:last-child { border: 0; }
+.simSummaryRows dt { color: #60717f; }
+.simSummaryRows dd { margin: 0; color: #075145; font-weight: 700; }
+.simFinancialRows > div { min-height: 43px; grid-template-columns: minmax(0,1.5fr) minmax(0,1fr); }
+.simFinancialRows dd { text-align: right; }
+.simSummaryBadge { display: inline-block; padding: 5px 9px; background: #fff0c6; color: #6d581b; border-radius: 6px; font-size: 11px; }
+.simSummaryNotice { margin: 12px 0 0; padding: 10px 12px; border-radius: 8px; background: #f3f7f4; color: #688078; font-size: 11px; line-height: 1.5; }
+.simSummaryCharts .simChartHeader { align-items: flex-start; flex-wrap: wrap; gap: 8px; }
+.simSummaryCharts .simChartHeader h3 { font-size: 17px; }
+.simChartKeys { gap: 12px; }
+.simChartKey { font-size: 10px; }
+.simSummaryCharts .simMonthlyChart { height: 205px; margin-top: 15px; }
+.simSummaryCharts .simMonthlyChart .simMonthBar { background: linear-gradient(#8dc8ad,#59a787); }
+.simSummaryCharts .simConsumptionLine { border-color: #b199e8; }
+.simSummaryCharts .simChartConsumption i { background: #b199e8; border: 0; }
+.simChartNote { margin: 12px 0 0; color: #758d84; font-size: 10px; line-height: 1.5; }
+.simSummaryEmpty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 13px; min-height: 215px; padding: 20px; text-align: center; border: 1px dashed #dce8e0; border-radius: 10px; background: #fafcfb; }
+.simSummaryEmpty > svg { width: 44px; height: 44px; color: #86b69b; }
+.simSummaryEmpty strong { color: #3f675a; font-size: 15px; }
+.simSummaryEmpty p { max-width: 370px; margin: 0; color: #71877d; font-size: 12px; }
+.simSummaryBottom { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+.simValueBreakdown { display: flex; align-items: center; gap: 25px; margin-top: 18px; }
+.simEmptyDonut { display: grid; place-items: center; flex: 0 0 125px; width: 125px; height: 125px; border: 17px solid #e7efea; border-radius: 50%; color: #668377; font-size: 12px; }
+.simValueBreakdown ul { margin: 0; padding: 0; list-style: none; color: #637687; font-size: 12px; }
+.simValueBreakdown li { display: flex; align-items: center; gap: 9px; padding: 8px 0; }
+.simValueBreakdown li i { flex: 0 0 9px; height: 9px; border-radius: 50%; background: #3d9679; }
+.simValueBreakdown li:nth-child(2) i { background: #ffc534; }
+.simValueBreakdown li:nth-child(3) i { background: #aa8ee9; }
+.simGainsChart { width: 100%; min-height: 205px; margin-top: 12px; }
+.simGainsChart[hidden] { display: none; }
+.simGainsChart svg { display: block; width: 100%; height: auto; overflow: visible; font: 10px Manrope,system-ui,sans-serif; fill: #73858a; }
+.simGainGrid { stroke: #e1eae5; stroke-dasharray: 4 4; }
+.simGainZero { stroke: #879b91; stroke-width: 1.2; }
+.simGainLine { fill: none; stroke: #087957; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+.simGainDot { fill: #087957; stroke: #fff; stroke-width: 1.5; }
+.simGainInitial { fill: #ffbf1d; stroke: #fff; stroke-width: 1.5; }
+.simValueDonut { display: grid; place-items: center; flex: 0 0 125px; width: 125px; height: 125px; border-radius: 50%; background: conic-gradient(#398b6e var(--aci-angle,0deg),#ffbf1d var(--aci-angle,0deg) 360deg); }
+.simValueDonut > span { display: grid; place-content: center; width: 76px; height: 76px; border-radius: 50%; background: #fff; text-align: center; }
+.simValueDonut > span strong { color: #164a3b; font-size: 15px; }
+.simValueDonut > span small { color: #748595; font-size: 9px; }
+.simValueBreakdown ul span { display: grid; gap: 3px; }
+.simValueBreakdown ul strong { color: #164a3b; font-size: 11px; }
+.simSummaryBottom .simProfessionalNext { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 16px; margin: 0; border-radius: 15px; padding: 27px; background: radial-gradient(ellipse at top right,#28574f,#063e35); color: #fff; }
+.simSummaryBottom .simProfessionalNext h3 { color: #fff; font-size: 23px; }
+.simSummaryBottom .simProfessionalNext p { color: #e0eee7; font-size: 12px; line-height: 1.55; }
+.simSummaryBottom .simProfessionalNext .simEyebrow { color: #ffcf43; }
+.simSummaryBottom #requestStudyButton { background: #ffcc38; border-color: #ffcc38; color: #153b32; }
+#studyPreparation { padding-top: 10px; border-top: 1px solid #ffffff30; }
+#studyPreparation[hidden] { display: none; }
+#printEstimateButton { min-height: 38px; font-size: 12px; }
+@media (max-width:1100px) {
+  .simSummaryMetrics { grid-template-columns: repeat(3,minmax(0,1fr)); }
+  .simSummaryMetric > strong { font-size: 22px; }
+  .simTechnicalSummaryBody { grid-template-columns: 1fr; }
+  .simTechnicalSummaryBody > .simSolarArt { display: none; }
+}
+@media (max-width:700px) {
+  .simRoofCard { flex-wrap: nowrap; }
+  .simRoofCard small { flex-basis: auto; }
+  body[data-view="summary"] .simIntroCopy { width: 100%; }
+  body[data-view="summary"] .simIntro { min-height: 0; }
+  body[data-view="summary"] .simIntroArt { display: none; }
+  body[data-view="summary"] .simIntro h1 { font-size: 32px; }
+  .simSummaryMetrics { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
+  .simSummaryMetric { padding: 14px 12px; min-height: 125px; }
+  .simSummaryMetric > strong { font-size: 20px; }
+  .simSummaryGrid,.simSummaryBottom { grid-template-columns: 1fr; gap: 13px; margin-bottom: 13px; }
+  .simSummaryPanel { padding: 17px 14px; }
+  .simSummaryPanel h3 { font-size: 17px; }
+  .simSummaryRows > div { gap: 9px; }
+  .simSummaryRows dd { font-size: 11px; }
+  .simSummaryCharts .simMonthlyChart { height: 180px; }
+  .simValueBreakdown { gap: 15px; }
+  .simEmptyDonut { flex-basis: 100px; width: 100px; height: 100px; border-width: 13px; }
+  .simValueDonut { flex-basis: 100px; width: 100px; height: 100px; }
+  .simValueDonut > span { width: 62px; height: 62px; }
+  .simValueBreakdown ul { font-size: 11px; }
+  #resultStep > .simStepActions { display: grid; grid-template-columns: 1fr; }
+}
+@media print {
+  .simTopbar,.simProgressBand,.simIntroArt,.simFoliage,.simProfessionalNext,#resultStep > .simStepActions,.simFooterNote { display: none !important; }
+  body[data-view="summary"] .simShell { width: 100%; margin: 0; }
+  body[data-view="summary"] .simIntro { min-height: 0; padding: 0; }
+  body[data-view="summary"] .simIntroCopy { width: 100%; }
+  .simSummaryPanel,.simSummaryMetric { break-inside: avoid; box-shadow: none; }
+  .simSummaryGrid { display: block; }
+  .simSummaryPanel { margin-bottom: 15px; }
+}
+
+/* Energy-allocation cards use their own clean, technical flow diagrams. */
+.simUseCaseChoices .simSolarArt { background: none; }
+.simUseCaseArt { display: none; }
+.simUseCaseChoices .solar-self { background: url('./assets/simulator/autoconsommation-surplus.png') center / contain no-repeat; }
+.simUseCaseChoices .solar-sale { background: url('./assets/simulator/vente-totale.png') center / contain no-repeat; }
+.simUseCaseChoices .simChoiceCard:has(input:checked) .simSolarArt { filter: drop-shadow(0 5px 7px #0d604b12); }
+.simUseCaseChoices .simChoiceCard > div { align-self: center; }
+.simUseCaseChoices .simChoiceCard:hover .simSolarArt { transform: translateY(-2px); }
+.simSummaryCharts .simMonthBarWrap { justify-content: center; gap: 3px; }
+.simSummaryCharts .simMonthBar { width: min(17px,42%); margin: 0; }
+.simSummaryCharts .simMonthlyChart .simMonthBarConsumption { background: linear-gradient(#d3bdf1,#b195dc); }
+.simSummaryCharts .simChartConsumption i { width: 10px; height: 10px; border-radius: 2px; background: #b99ade; }
+@media (max-width:700px) { .simSummaryCharts .simMonthBarWrap { gap: 1px; } }
+
+/* Public qualification V1: concise, explicitly indicative result surface. */
+html, body { max-width: 100%; overflow-x: clip; }
+.simShell, .simCard, .simStep, .simDetailsLayout, .simTechnicalFields { min-width: 0; }
+.simUseCases .simUseCaseArt { display: none; }
+.simUseCases .simChoiceCard { min-height: 88px; }
+.simChoiceGroup:has(.simTimelineChoices) { display: none; }
+#contactStep, .simSummaryGrid, #comparisonCard, .simRecommendation { display: none !important; }
+.simSummaryMetrics { grid-template-columns: repeat(6,minmax(0,1fr)); gap: 13px; margin: 18px 0; }
+.simSummaryMetric { min-height: 120px; align-content: center; }
+.simSummaryMetric > span { font-size: 13px; }
+.simSummaryMetric > strong { font-size: clamp(20px,2.2vw,28px); }
+.simSummaryMetric > small { font-size: 11px; line-height: 1.4; }
+.simScopeNotice, .simEstimateLimits { margin: 15px 0; padding: 16px 18px; border: 1px solid #dbe9df; border-radius: 12px; background: #f6faf7; color: #33564a; line-height: 1.55; }
+.simScopeNotice[hidden] { display: none; }
+.simEstimateLimits h3 { margin: 0 0 7px; color: #143d45; font: 800 18px/1.3 Manrope,system-ui,sans-serif; }
+.simEstimateLimits p { margin: 7px 0; }
+.simEstimateLimits .simMethodDetails { padding-top: 10px; border-top: 1px solid #dbe9df; color: #62776e; font-size: 12px; }
+.simProjectNext { display: flex; align-items: center; justify-content: space-between; gap: 22px; margin: 18px 0 4px; padding: 22px; border-radius: 14px; background: #0d493c; color: #fff; }
+.simProjectNext h3 { margin: 0 0 6px; color: #fff; font: 800 21px/1.3 Manrope,system-ui,sans-serif; }
+.simProjectNext p { margin: 5px 0 0; color: #e1eee8; font-size: 13px; line-height: 1.5; }
+.simProjectNext .simEyebrow { color: #ffcf43; font-size: 11px; font-weight: 750; letter-spacing: .08em; }
+.simProjectNext .simButton { flex: 0 0 auto; min-height: 48px; }
+.simConsumptionField { display: block; max-width: 520px; margin: 16px 0; }
+@media (max-width: 1000px) {
+  .simSummaryMetrics { grid-template-columns: repeat(3,minmax(0,1fr)); }
+  .simProgress { overflow-x: auto; }
+  .simProgress ol { min-width: 610px; }
+}
+@media (max-width: 700px) {
+  .simProgress ol { min-width: 560px; }
+  .simProgress li b { white-space: nowrap; }
+  .simSummaryMetrics { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
+  .simFinancialFacts > div { grid-template-columns:minmax(0,1.2fr) minmax(82px,.8fr); gap:7px; }
+  .simFinancialFacts dt,.simFinancialFacts dd { font-size:10px; }
+  .simSummaryMetric { min-height: 115px; padding: 14px 12px; }
+  .simSummaryMetric > strong { font-size: 20px; }
+  .simProjectNext { align-items: stretch; flex-direction: column; padding: 18px 15px; }
+  .simProjectNext .simButton { width: 100%; white-space: normal; }
+  .simStepActions { flex-wrap: wrap; }
+  .simStepActions > * { min-width: 0; }
+  .simMapLayout { min-width: 0; }
+  .simMapCanvas, .simRoofMap { min-width: 0; max-width: 100%; }
+  .simAddressInputRow { flex-wrap: wrap; }
+  .simAddressInputRow input { min-width: 0; width: 100%; }
+}
+@media (max-width: 390px) {
+  .simShell { width: calc(100% - 20px); margin-inline: auto; }
+  .simCard { padding: 16px 12px; }
+  .simSummaryMetrics { grid-template-columns: 1fr; }
+  .simRoofChoices { grid-template-columns: 1fr; }
+  .simBuildingChoices { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 7px; }
+  .simBuildingChoices .simChoiceCard { min-height: 142px; padding: 7px 5px 9px; gap: 5px; }
+  .simBuildingArt { width: 68%; max-width: 98px; height: auto; aspect-ratio: 16 / 9; }
+  .simBuildingChoices .simChoiceCard b { font-size: 10px; line-height: 1.2; }
+  .simBuildingChoices .simChoiceCard small { font-size: 9px; line-height: 1.3; }
+  .simStepActions .simButton { width: 100%; }
+}
+
+/* Keep the site header limited to its brand and account action; progress is a separate row. */
+.simTopbar { display: flex; grid-template-columns: none; align-items: center; justify-content: space-between; gap: 24px; width: min(1560px,calc(100% - 96px)); height: 82px; min-height: 82px; margin: 0 auto; padding: 0; }
+.simBrand { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 0; }
+.simBrand img { display: block; width: 152px; max-height: 30px; object-fit: contain; object-position: left center; }
+.simBrand > span { display: block; margin-top: 1px; padding: 0; border: 0; font-size: 8px; line-height: 1.2; letter-spacing: .015em; color: #698477; }
+.simProgressBand { width: 100%; border-top: 1px solid #edf1ef; border-bottom: 1px solid #e6eeea; background: #fbfdfb; }
+.simProgress { width: min(900px,calc(100% - 96px)); max-width: none; margin: 0 auto; padding: 11px 0; }
+.simProgress ol { grid-template-columns: repeat(5,minmax(0,1fr)); gap: 12px; }
+.simProgress li { min-width: 0; }
+.simProgress li b { max-width: 125px; }
+@media (max-width:1250px) {
+  .simTopbar { width: calc(100% - 60px); }
+  .simBrand img { width: 152px; }
+}
+@media (max-width:1000px) {
+  .simTopbar { width: calc(100% - 32px); height: 76px; min-height: 76px; padding: 0; }
+  .simProgress { width: calc(100% - 48px); }
+  .simProgress ol { gap: 8px; }
+}
+@media (max-width:700px) {
+  .simSiteKindChoices { grid-template-columns:1fr; }
+  .simSiteKindChoices .simChoiceCard { min-height:168px; }
+  .simResultDetails { grid-template-columns:1fr; }
+  .simResultPanel { padding:14px 12px; }
+  .simAnnualComparison { padding:13px 14px; }
+  .simAnnualComparison > strong { font-size:13px; }
+  .simProductionPanel .simMonthlyChart { height:150px; gap:3px; }
+  .simTopbar { width: calc(100% - 32px); height: 66px; min-height: 66px; }
+  .simBrand img { width: 128px; max-height: 25px; }
+  .simBrand > span { display: block; font-size: 7px; }
+  .simProgressBand { padding: 0; }
+  .simProgress { width: calc(100% - 28px); padding: 10px 0; }
+  .simProgress ol { grid-template-columns: repeat(5,minmax(0,1fr)); gap: 3px; }
+  .simProgress li { flex-direction: column; gap: 5px; text-align: center; }
+  .simProgress li > span { flex-basis: 29px; width: 29px; height: 29px; font-size: 11px; }
+  .simProgress li b { max-width: 68px; font-size: 8px; line-height: 1.2; }
+  .simProgress li:not(:last-child)::after { position: absolute; top: 14px; left: calc(50% + 18px); right: calc(-50% + 18px); min-width: 0; margin: 0; }
+}
+body[data-view="contact"] .simProgressBand,body[data-view="summary"] .simProgressBand { display: none; }
+
+/* Installation pathway aligned with the enlarged-map simulator mockup. */
+body[data-active-step="2"] .simIntro { min-height: 145px; padding-top: 22px; padding-bottom: 12px; }
+body[data-active-step="2"] .simIntroCopy { width: 100%; max-width: 900px; }
+body[data-active-step="2"] .simIntro h1 { max-width: 760px; font-size: clamp(34px,3vw,46px); }
+body[data-active-step="2"] .simIntroCopy > #simHeroDescription { max-width: 760px; margin-top: 6px; font-size: 14px; }
+body[data-active-step="2"] .simIntroArt,body[data-active-step="2"] .simHeroNote { display: none; }
+.simStep:not([data-step="1"]):not(#resultStep) > .simStepHeading { position: static; width: auto; height: auto; overflow: visible; clip-path: none; white-space: normal; margin: 0 0 22px; }
+.simStepHeading .simStepIcon { display: none; }
+.simBuildingChoices { display: grid; grid-template-columns: repeat(6,minmax(0,1fr)); gap: 10px; }
+.simBuildingChoices .simChoiceCard { min-height: 150px; }
+.simInstallationGroup { margin: 4px 0 20px; padding: 0; border: 0; }
+.simInstallationChoices { display: grid; grid-template-columns: minmax(0,1fr) 38px minmax(0,.82fr); gap: 12px; align-items: stretch; }
+.simInstallOption { min-width: 0; padding: 14px; border: 1px solid #dce9e2; border-radius: 13px; background: #f4faf6; }
+.simRoofInstallOption { border-color: #d0e8d9; background: linear-gradient(135deg,#f2faf5,#eaf6ee); }
+.simInstallOptionHeading { display: flex; align-items: center; gap: 9px; color: #155840; font-size: 14px; font-weight: 800; }
+.simInstallOptionHeading input,.simCanopyCard input { width: 19px; height: 19px; accent-color: #087d57; flex: 0 0 auto; }
+.simRoofTypeGroup { margin: 10px 0 0; padding: 0; border: 0; }
+.simRoofChoices { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+.simRoofCard { min-height: 125px; flex-direction: column; justify-content: flex-start; padding: 8px; text-align: center; gap: 5px; }
+.simRoofCard .simSolarArt { height: 75px; }
+.simRoofCard b { font-size: 12px; }
+.simRoofCard small { font-size: 10px; }
+.simInstallationOr { display: grid; place-items: center; color: #667b8b; font-size: 13px; font-weight: 700; }
+.simCanopyInstallOption { display: flex; flex-direction: column; justify-content: center; border-color: #f2e0aa; background: #fff9e8; }
+.simCanopyCard { display: grid; grid-template-columns: 20px minmax(90px,.8fr) minmax(0,1.2fr) 34px; gap: 10px; align-items: center; min-height: 100px; padding: 12px; border: 1px solid #f1dfa8; border-radius: 10px; background: #fff; cursor: pointer; }
+.simCanopyCard:has(input:checked) { outline: 2px solid #087d57; background: #f2faf5; }
+.simCanopyArt { display: grid; place-items: center; min-height: 74px; overflow: hidden; border-radius: 8px; background: linear-gradient(145deg,#e9f5fc,#f6fbfd); }
+.simCanopyArt img { display: block; width: 100%; height: 100%; max-height: 88px; object-fit: contain; }
+.simCanopyText strong,.simCanopyText small { display: block; }
+.simCanopyText strong { color: var(--sim-ink); font: 800 13px/1.3 Manrope,system-ui,sans-serif; }
+.simCanopyText small { margin-top: 4px; color: var(--sim-muted); font-size: 11px; line-height: 1.4; }
+.simCanopyArrow { display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid #e0e8ed; border-radius: 50%; color: #71899b; }
+.simExternalSurfaceGroup { margin: 11px 0 0; padding: 0; border: 0; }
+.simExternalSurfaceGroup[hidden] { display: none !important; }
+.simExternalSurfaceGroup legend { margin-bottom: 7px; color: #526b62; font-size: 11px; font-weight: 700; }
+.simExternalSurfaceGroup .simPansChoices { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); }
+.simExternalSurfaceGroup .simPillChoice { padding: 5px; font-size: 10px; }
+.simInstallationGroup .simExternalSurfaceGroup { margin: 0 0 16px; }
+.simInstallationGroup .simExternalSurfaceGroup legend { margin-left: 0; font-size: 13px; }
+.simRoofWorkspace { display: block; }
+.simMapSection { width: 100%; }
+.simMapLayout { grid-template-columns: minmax(0,1fr) 265px; gap: 16px; }
+.simRoofMap { height: min(56vw,520px); min-height: 390px; }
+.simSiteSummary { align-self: stretch; }
+.simSiteSummary .simManualArea { display: grid; gap: 6px; width: 100%; margin: 12px 0; font-size: 11px; }
+.simSiteSummary .simManualArea input { min-width: 0; width: 100%; min-height: 39px; padding: 9px 11px; }
+.simSiteSummary .simManualArea small { font-size: 10px; line-height: 1.4; }
+.simVisuallyHidden { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0,0,0,0) !important; white-space: nowrap !important; border: 0 !important; }
+@media (max-width:1100px) {
+  .simBuildingChoices { grid-template-columns: repeat(3,minmax(0,1fr)); }
+  .simMapLayout { grid-template-columns: minmax(0,1fr) 220px; }
+  .simRoofMap { min-height: 360px; }
+}
+@media (max-width:850px) {
+  .simInstallationChoices { grid-template-columns: minmax(0,1fr); }
+  .simInstallationOr { min-height: 12px; }
+  .simCanopyInstallOption { min-height: 120px; }
+  .simMapLayout { grid-template-columns: 1fr; }
+  .simSiteSummary { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
+  .simSiteSummary h3,.simSiteSummary > .simBuildingArt { display: none; }
+  .simSiteSummary > p { margin: 0; }
+  .simSiteSummary .simManualArea { grid-column: 1/-1; }
+  .simSiteSummary .simAdvice { grid-column: 1/-1; }
+  .simRoofMap { height: 52vw; min-height: 340px; }
+}
+@media (max-width:600px) {
+  body[data-active-step="2"] .simIntro { min-height: 0; padding: 12px 0 4px; }
+  body[data-active-step="2"] .simIntro h1 { font-size: 28px; }
+  body[data-active-step="2"] .simIntroCopy > #simHeroDescription { margin-top: 5px; font-size: 12px; }
+  .simStep:not([data-step="1"]):not(#resultStep) > .simStepHeading { margin-bottom: 15px; }
+  .simStepHeading h2 { font-size: 21px; }
+  .simBuildingChoices { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 7px; }
+  .simBuildingChoices .simChoiceCard { min-height: 132px; padding: 8px; }
+  .simBuildingArt { height: 65px; }
+  .simInstallationGroup legend small { display: block; margin: 5px 0 0 38px; }
+  .simInstallOption { padding: 11px; }
+  .simRoofCard { min-height: 118px; }
+  .simRoofCard .simSolarArt { height: 66px; }
+  .simCanopyCard { grid-template-columns: 18px 65px minmax(0,1fr) 30px; gap: 8px; padding: 9px; }
+  .simCanopyArt { min-height: 62px; }
+  .simCanopyArt img { max-height: 70px; }
+  .simCanopyText strong { font-size: 12px; }
+  .simExternalSurfaceGroup .simPansChoices { gap: 4px; }
+  .simExternalSurfaceGroup .simPillChoice { font-size: 9px; }
+  .simMapHeading h3 { font-size: 16px; }
+  .simRoofMap { height: 72vw; min-height: 310px; max-height: 430px; }
+  .simSiteSummary { padding: 11px; }
+  .simSiteSummary .simSummaryArea strong { font-size: 20px; }
+}
+
+/* Keep sprite-backed illustrations proportional at tablet and phone widths. */
+.simBuildingChoices .simBuildingArt {
+  height: auto;
+  aspect-ratio: 16 / 9;
+}
+.simRoofCard .simSolarArt {
+  width: min(100%, 148px);
+  height: auto;
+  aspect-ratio: 1 / 1;
+  align-self: center;
+  margin-inline: auto;
+  background-size: 200% 200%;
+}
+.simMapOrientation { display: grid; gap: 9px; margin-top: 12px; padding: 13px 14px; border: 1px solid #d7e7de; border-radius: 10px; background: #f5faf6; }
+.simMapOrientation h3 { margin: 0; }
+.simMapOrientation h3 small { color: #6b8176; font-size: 11px; font-weight: 500; }
+.simOrientationResult { display: block; min-height: 42px; padding: 11px 13px; border: 1px solid #d4e0e8; border-radius: 10px; background: #fff; color: #315363; font: 500 12px/1.5 Manrope,system-ui,sans-serif; }
+.simMapOrientation .simPanExplanation { margin: 4px 0 9px; }
+.simMapOrientation .simButton { justify-self: start; }
+.simPickingOrientation { cursor: crosshair !important; }
