@@ -88,7 +88,7 @@ export async function requestJson(url, { fetcher = fetch, signal, timeoutMs = 12
     })();
     return await Promise.race([work, deadline, cancellation]);
   } catch (error) {
-    if (error.name === 'TypeError') throw new Error(`Connexion à la source impossible : ${error.message}. Réessayez dans un instant.`);
+    if (error.name === 'TypeError') throw new Error('Connexion à la source impossible. Réessayez dans un instant.');
     throw error;
   } finally { clearTimeout(timeout); signal?.removeEventListener('abort', abort); }
 }
