@@ -241,7 +241,7 @@ fieldset.simQuestion > div { clear: both; }
 .simUseCaseChoices .simChoiceCard { flex-direction: row; justify-content: flex-start; align-items: center; min-height: 190px; gap: 10px; padding: 16px 12px; text-align: left; }
 .simUseCaseChoices .simSolarArt { width: 43%; height: 150px; }
 .simUseCaseChoices .simChoiceCard > div { min-width: 0; }
-.simUseCaseChoices b { display: block; margin-bottom: 9px; font-size: 17px; line-height: 1.2; letter-spacing: -.03em; }
+.simUseCaseChoices b { display: block; margin-bottom: 9px; font-size: 15px; line-height: 1.2; letter-spacing: -.03em; overflow-wrap: anywhere; }
 .simUseCaseChoices small { display: block; font-size: 12px; line-height: 1.45; }
 .simUseCases > .simFieldHint { display: block; margin-top: 10px; }
 .simTimelineChoices { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px; }

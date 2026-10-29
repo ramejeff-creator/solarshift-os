@@ -95,7 +95,8 @@ test('usable-area slider and roof orientation sit side by side with values align
 test('simulator layout refreshes cached styles and keeps building illustrations in a visible frame', () => {
   const html = readFileSync(new URL('../../public-simulator/index.html', import.meta.url), 'utf8');
   const css = readFileSync(new URL('../../public-simulator/pro-simulator-design.css', import.meta.url), 'utf8');
-  assert.match(html, /pro-simulator-design\.css\?v=20261012-12/);
+  assert.match(html, /pro-simulator-design\.css\?v=20261029-1/);
+  assert.match(css, /\.simUseCaseChoices b \{[^}]*font-size: 15px;[^}]*overflow-wrap: anywhere;/);
   assert.match(css, /\.simBuildingChoices \.simBuildingArt \{\s*height: clamp\(58px, 8vw, 105px\);\s*aspect-ratio: 16 \/ 9;/);
 });
 
