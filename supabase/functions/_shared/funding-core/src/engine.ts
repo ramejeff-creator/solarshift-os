@@ -255,6 +255,9 @@ export function buildPublicFundingHint(matches: readonly FundingMatch[]): Public
       kind: "POSSIBLE_LEADS",
       title: "Des aides potentielles sont à vérifier",
       subtitle: "Le repérage automatique signale des pistes à examiner selon le site et le montage. Leur éligibilité et leur disponibilité restent à confirmer ; aucune aide n'est garantie et aucune demande n'est déposée.",
+      leads: matches.some(m => ["FUND-PV-001", "FUND-PV-002"].includes(m.programId) && !["EXCLUDED", "CLOSED"].includes(m.status))
+        ? ["Soutien à la production photovoltaïque : puissance cumulée et date de raccordement à vérifier."]
+        : [],
       cta: "Vérifier mon éligibilité",
     };
   return {

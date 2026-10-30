@@ -942,6 +942,7 @@ function fundingDepartmentCode(address) {
 async function requestPublicFundingHint(input) {
   const title = $('resultFundingTitle');
   const subtitle = $('resultFundingSubtitle');
+  const leads = $('resultFundingLeads');
   const requestVersion = ++fundingHintRequestVersion;
   const fallback = {
     title: 'Les aides potentielles restent à vérifier',
@@ -949,6 +950,8 @@ async function requestPublicFundingHint(input) {
   };
   title.textContent = 'Recherche indicative en cours…';
   subtitle.textContent = 'Cette recherche ne modifie pas les estimations financières.';
+  leads.hidden = true;
+  leads.textContent = '';
   const endpoint = window.SOLARSHIFT_CONFIG?.publicFundingHintEndpoint;
   if (!endpoint) {
     title.textContent = fallback.title;
@@ -971,6 +974,10 @@ async function requestPublicFundingHint(input) {
     if (requestVersion !== fundingHintRequestVersion) return;
     title.textContent = typeof hint.title === 'string' ? hint.title : fallback.title;
     subtitle.textContent = typeof hint.subtitle === 'string' ? hint.subtitle : fallback.subtitle;
+    if (Array.isArray(hint.leads) && hint.leads.length) {
+      leads.textContent = `Piste à explorer : ${hint.leads.filter(item => typeof item === 'string').join(' · ')}`;
+      leads.hidden = false;
+    }
   } catch {
     if (requestVersion !== fundingHintRequestVersion) return;
     title.textContent = fallback.title;

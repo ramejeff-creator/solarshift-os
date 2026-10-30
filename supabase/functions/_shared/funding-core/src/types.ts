@@ -126,5 +126,6 @@ export interface PublicFundingHint {
   kind: "POSSIBLE_LEADS" | "MORE_INFORMATION_REQUIRED" | "NOTHING_VERIFIED";
   title: string;
   subtitle: string;
+  leads?: string[];
   cta: "Vérifier mon éligibilité";
 }

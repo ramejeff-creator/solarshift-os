@@ -594,6 +594,8 @@ body[data-view="summary"] .simCard { background: transparent; border: 0; box-sha
 .simFinancialFacts dd { text-align:right; }
 .simAnnualComparison { display:grid; gap:6px; margin:0 0 16px; padding:16px 18px; border:1px solid #cde2d6; border-radius:12px; background:#f2f8f4; }
 .simAnnualComparison > p { margin:0; color:var(--sim-muted); font-size:11px; }
+.simAnnualComparison > #resultFundingHeading { display:flex; align-items:center; gap:8px; }
+.simAnnualComparison > #resultFundingHeading svg { width:18px; height:18px; flex:0 0 18px; color:#d99400; }
 .simAnnualComparison > strong { color:var(--sim-pine); font-size:15px; line-height:1.45; overflow-wrap:anywhere; }
 .simAnnualComparison > small { color:var(--sim-muted); font-size:10px; line-height:1.45; }
 .simProductionPanel .simMonthlyChart { height:174px; margin-top:12px; }

@@ -7,7 +7,7 @@
   <title>OZENO · Simulateur solaire professionnel</title>
   <link rel="icon" type="image/png" href="./exec-d2eda8f0-968b-466f-b6ab-7ba649808352.png">
   <link rel="stylesheet" href="./pro-simulator.css?v=20261012-3">
-  <link rel="stylesheet" href="./pro-simulator-design.css?v=20261029-1">
+  <link rel="stylesheet" href="./pro-simulator-design.css?v=20261030-funding-p2">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css">
   <script src="./runtime-config.js"></script>
@@ -389,9 +389,10 @@
             </section>
           </div>
           <section id="resultFundingHint" class="simAnnualComparison" aria-labelledby="resultFundingHeading" role="status" aria-live="polite">
-            <p id="resultFundingHeading">Aides potentielles</p>
+            <p id="resultFundingHeading"><svg aria-hidden="true"><use href="#sim-bulb"/></svg>Aides potentielles</p>
             <strong id="resultFundingTitle">Recherche indicative en cours…</strong>
             <small id="resultFundingSubtitle">Aucune aide n’est garantie. Les références pilotes restent à vérifier.</small>
+            <small id="resultFundingLeads" hidden></small>
             <small>Cette recherche est automatique et ne dépose aucune demande. Elle ne modifie pas les indicateurs financiers.</small>
           </section>
           <section class="simAnnualComparison" aria-labelledby="resultAnnualComparisonHeading">

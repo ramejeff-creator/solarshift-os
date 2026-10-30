@@ -95,7 +95,7 @@ test('usable-area slider and roof orientation sit side by side with values align
 test('simulator layout refreshes cached styles and keeps building illustrations in a visible frame', () => {
   const html = readFileSync(new URL('../../public-simulator/index.html', import.meta.url), 'utf8');
   const css = readFileSync(new URL('../../public-simulator/pro-simulator-design.css', import.meta.url), 'utf8');
-  assert.match(html, /pro-simulator-design\.css\?v=20261029-1/);
+  assert.match(html, /pro-simulator-design\.css\?v=20261030-funding-p2/);
   assert.match(css, /\.simUseCaseChoices b \{[^}]*font-size: 15px;[^}]*overflow-wrap: anywhere;/);
   assert.match(css, /\.simBuildingChoices \.simBuildingArt \{\s*height: clamp\(58px, 8vw, 105px\);\s*aspect-ratio: 16 \/ 9;/);
 });
@@ -204,11 +204,13 @@ test('public estimate runs an independent indicative Funding hint without changi
   const js = readFileSync(new URL('../../public-simulator/pro-simulator.mjs', import.meta.url), 'utf8');
   const runtime = readFileSync(new URL('../../public-simulator/runtime-config.js', import.meta.url), 'utf8');
   assert.match(html, /id="resultFundingHint"[^>]*aria-live="polite"/);
-  assert.match(html, /Aides potentielles/);
+  assert.match(html, /<p id="resultFundingHeading"><svg aria-hidden="true"><use href="#sim-bulb"\/><\/svg>Aides potentielles<\/p>/);
+  assert.match(html, /id="resultFundingLeads" hidden/);
   assert.match(html, /ne dépose aucune demande/);
   assert.match(runtime, /publicFundingHintEndpoint[^\n]*functions\/v1\/public-funding-hint/);
   assert.match(js, /async function requestPublicFundingHint\(input\)/);
   assert.match(js, /siteDepartmentCode: fundingDepartmentCode\(input\.address\)/);
+  assert.match(js, /hint\.leads\.filter\(item => typeof item === 'string'\)/);
   assert.match(js, /projectMode: \(\{ 'self-consumption': 'ACI'/);
   assert.match(js, /if \(!controller\.signal\.aborted\) void requestPublicFundingHint\(input\)/);
   const request = js.slice(js.indexOf('async function requestPublicFundingHint'), js.indexOf('function clearCalculationTimer'));
