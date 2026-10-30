@@ -1,0 +1,666 @@
+[
+  {
+    "id": "FUND-SUD-001",
+    "version": "pilot-2026-10-28-r1",
+    "name": "Sud PV Plus",
+    "region": "SUD",
+    "family": "PV / ACI / ACC",
+    "instrument": "Subvention investissement",
+    "eligibleBeneficiaries": "Personnes morales privées, hors entreprises individuelles",
+    "eligibleObject": "Autoconsommation PV individuelle ou collective",
+    "conditionsText": "Conception conforme, étude de consommation, seuils et exclusions du règlement",
+    "fundingFormulaText": "ACI 15 % ; ACC ouverte 25 % pour autres bénéficiaires ; plafonds 100 k€ / 130 k€",
+    "reportedStatus": "Ouvert annoncé",
+    "channel": "Région Sud",
+    "source": {
+      "url": "https://www.maregionsud.fr/vos-aides/detail/plan-solaire-sud-pv-plus-en-soutien-de-lautoconsommation-photovoltaique",
+      "checkedAt": "2026-10-28",
+      "publisher": "Région Sud",
+      "verifiedForLiveUse": false
+    },
+    "actionAnyOf": [
+      "PV"
+    ],
+    "rulesCoverage": "targeted"
+  },
+  {
+    "id": "FUND-SUD-002",
+    "version": "pilot-2026-10-28-r1",
+    "name": "Solaire Innov",
+    "region": "SUD",
+    "family": "PV / innovation",
+    "instrument": "Subvention études / innovation",
+    "eligibleBeneficiaries": "Personnes morales privées sauf EI et auto-entrepreneurs",
+    "eligibleObject": "Études multi-énergies et projets solaires innovants",
+    "conditionsText": "Innovation technique/juridique/sociale ou effet structurant",
+    "fundingFormulaText": "Études : jusqu’à 50 % ou 70 % selon bénéficiaire ; assiette limitée à 100 k€",
+    "reportedStatus": "Ouvert annoncé",
+    "channel": "Région Sud",
+    "source": {
+      "url": "https://www.maregionsud.fr/vos-aides/detail/plan-solaire-solaire-innov-en-soutien-de-projets-solaires-innovants",
+      "checkedAt": "2026-10-28",
+      "publisher": "Région Sud",
+      "verifiedForLiveUse": false
+    },
+    "actionAnyOf": [
+      "PV"
+    ],
+    "rulesCoverage": "targeted"
+  },
+  {
+    "id": "FUND-NA-001",
+    "version": "pilot-2026-10-28-r1",
+    "name": "Études et AMO ACC multi-acteurs",
+    "region": "NOUVELLE_AQUITAINE",
+    "family": "ACC / études",
+    "instrument": "Subvention études",
+    "eligibleBeneficiaries": "Structures privées ou publiques non liées à un fournisseur d’énergie",
+    "eligibleObject": "Étude de faisabilité, montage PMO et assistance ACC",
+    "conditionsText": "Projet situé en Nouvelle-Aquitaine ; dépenses d’études éligibles",
+    "fundingFormulaText": "Jusqu’à 50 %, majoration possible de 20 points pour certains projets",
+    "deadline": "2026-12-31",
+    "reportedStatus": "Ouvert annoncé",
+    "channel": "Guide régional",
+    "source": {
+      "url": "https://les-aides.nouvelle-aquitaine.fr/amenagement-du-territoire/etudes-et-assistance-maitrise-douvrage-pour-lautoconsommation-collective-multi-acteurs-delectricite",
+      "checkedAt": "2026-10-28",
+      "publisher": "Guide régional",
+      "verifiedForLiveUse": false
+    },
+    "actionAnyOf": [
+      "ACC_STUDY"
+    ],
+    "rulesCoverage": "targeted"
+  },
+  {
+    "id": "FUND-NA-002",
+    "version": "pilot-2026-10-28-r1",
+    "name": "ACC multi-acteurs – investissement",
+    "region": "NOUVELLE_AQUITAINE",
+    "family": "ACC / investissement",
+    "instrument": "Subvention investissement",
+    "eligibleBeneficiaries": "Structures privées ou publiques non liées à un fournisseur d’énergie",
+    "eligibleObject": "Investissements de production renouvelable partagée dans l’ACC",
+    "conditionsText": "Priorité à la production destinée aux entreprises ; partage >200 MWh/an favorisé",
+    "fundingFormulaText": "Aide sur justification du besoin ; pas de taux forfaitaire universel",
+    "deadline": "2026-12-31",
+    "reportedStatus": "Ouvert annoncé",
+    "channel": "Guide régional",
+    "source": {
+      "url": "https://les-aides.nouvelle-aquitaine.fr/amenagement-du-territoire/autoconsommation-collective-multi-acteurs-delectricite-renouvelable",
+      "checkedAt": "2026-10-28",
+      "publisher": "Guide régional",
+      "verifiedForLiveUse": false
+    },
+    "actionAnyOf": [
+      "PV"
+    ],
+    "rulesCoverage": "targeted"
+  },
+  {
+    "id": "FUND-BR-001",
+    "version": "pilot-2026-10-28-r1",
+    "name": "ACC multi-ENR 2026",
+    "region": "BRETAGNE",
+    "family": "ACC / FEDER",
+    "instrument": "Subvention FEDER",
+    "eligibleBeneficiaries": "PME, acteurs publics et opérateurs éligibles",
+    "eligibleObject": "Autoconsommation collective multi-sources EnR",
+    "conditionsText": "Projet multi-énergies renouvelables, complémentarité des profils et règlement FEDER",
+    "fundingFormulaText": "Maximum 40 % des dépenses éligibles, plafond 500 k€",
+    "deadline": "2027-01-31",
+    "reportedStatus": "Ouvert annoncé",
+    "channel": "AIDEN Bretagne",
+    "source": {
+      "url": "https://www.bretagne.bzh/aides/fiches/autoconsommation-collective-multi-enr-2026/",
+      "checkedAt": "2026-10-28",
+      "publisher": "AIDEN Bretagne",
+      "verifiedForLiveUse": false
+    },
+    "actionAnyOf": [
+      "PV"
+    ],
+    "rulesCoverage": "targeted"
+  },
+  {
+    "id": "FUND-BR-002",
+    "version": "pilot-2026-10-28-r1",
+    "name": "Autoconsommation et stockage innovant 2026",
+    "region": "BRETAGNE",
+    "family": "Stockage / FEDER",
+    "instrument": "Subvention FEDER",
+    "eligibleBeneficiaries": "PME et groupements de PME, autres structures éligibles",
+    "eligibleObject": "EnR autoconsommée avec stockage innovant et EMS",
+    "conditionsText": "Stockage innovant ; batteries électrochimiques seules exclues",
+    "fundingFormulaText": "Maximum 40 % ; plafond 1 M€ ; dépenses éligibles minimales 150 k€",
+    "deadline": "2027-05-31",
+    "reportedStatus": "Ouvert annoncé",
+    "channel": "AIDEN Bretagne",
+    "source": {
+      "url": "https://www.bretagne.bzh/aides/fiches/autoconsommation-et-stockage-innovant-2026/",
+      "checkedAt": "2026-10-28",
+      "publisher": "AIDEN Bretagne",
+      "verifiedForLiveUse": false
+    },
+    "actionAnyOf": [
+      "STORAGE_INNOVATIVE"
+    ],
+    "rulesCoverage": "targeted"
+  },
+  {
+    "id": "FUND-ADEME-001",
+    "version": "pilot-2026-10-28-r1",
+    "name": "Mon parcours économies d’énergie – Booster",
+    "region": "NATIONAL",
+    "family": "Rénovation tertiaire",
+    "instrument": "Subvention ingénierie",
+    "eligibleBeneficiaries": "TPE/PME et ETI privées avec bâtiments tertiaires",
+    "eligibleObject": "MOE ou AMO CPE de rénovation énergétique globale",
+    "conditionsText": "Objectifs d’efficacité énergétique et exigences de cahier des charges",
+    "fundingFormulaText": "Montant selon règlement et catégorie de prestation",
+    "deadline": "2026-12-31",
+    "reportedStatus": "Ouvert annoncé",
+    "channel": "AGIR ADEME",
+    "source": {
+      "url": "https://agirpourlatransition.ademe.fr/entreprises/aides-financieres/catalogue/2026/mon-parcours-economies-denergie-booster-reduire-votre-facture-energetique-et-gagner-en-valeur-verte",
+      "checkedAt": "2026-10-28",
+      "publisher": "AGIR ADEME",
+      "verifiedForLiveUse": false
+    },
+    "actionAnyOf": [
+      "TERTIARY_ENGINEERING"
+    ],
+    "rulesCoverage": "partial"
+  },
+  {
+    "id": "FUND-ADEME-002",
+    "version": "pilot-2026-10-28-r1",
+    "name": "DÉTER – Décarboner le tertiaire",
+    "region": "NATIONAL",
+    "family": "Rénovation tertiaire",
+    "instrument": "AAP études / investissements",
+    "eligibleBeneficiaries": "Entreprises avec patrimoine tertiaire multisite DEET",
+    "eligibleObject": "Efficacité énergétique et chaleur renouvelable",
+    "conditionsText": "5 à 20 sites dans au moins 2 régions administratives",
+    "fundingFormulaText": "Montant selon AAP et étude de faisabilité",
+    "deadline": "2026-12-31",
+    "reportedStatus": "Ouvert annoncé",
+    "channel": "AGIR ADEME",
+    "source": {
+      "url": "https://agirpourlatransition.ademe.fr/entreprises/aides-financieres/catalogue/aap/deter-decarboner-le-tertiaire",
+      "checkedAt": "2026-10-28",
+      "publisher": "AGIR ADEME",
+      "verifiedForLiveUse": false
+    },
+    "actionAnyOf": [
+      "TERTIARY_RENOVATION"
+    ],
+    "rulesCoverage": "targeted"
+  },
+  {
+    "id": "FUND-ADEME-003",
+    "version": "pilot-2026-10-28-r1",
+    "name": "Mon parcours – audit énergétique volontaire industrie",
+    "region": "NATIONAL",
+    "family": "Audit industriel",
+    "instrument": "Subvention audit",
+    "eligibleBeneficiaries": "TPE/PME/ETI industrielles avec NAF éligible",
+    "eligibleObject": "Audit énergétique volontaire industriel",
+    "conditionsText": "Sont exclus les audits réglementaires obligatoires et les locaux tertiaires seuls",
+    "fundingFormulaText": "Montant selon conditions du programme",
+    "deadline": "2026-12-31",
+    "reportedStatus": "Ouvert annoncé",
+    "channel": "AGIR ADEME",
+    "source": {
+      "url": "https://agirpourlatransition.ademe.fr/entreprises/aides-financieres/catalogue/2026/mon-parcours-economies-denergie-audit-energetique-volontaire-en-industrie",
+      "checkedAt": "2026-10-28",
+      "publisher": "AGIR ADEME",
+      "verifiedForLiveUse": false
+    },
+    "actionAnyOf": [
+      "INDUSTRIAL_AUDIT"
+    ],
+    "rulesCoverage": "partial"
+  },
+  {
+    "id": "FUND-ADEME-004",
+    "version": "pilot-2026-10-28-r1",
+    "name": "ACT Pas-à-Pas et ACT Évaluation",
+    "region": "NATIONAL",
+    "family": "Décarbonation / stratégie",
+    "instrument": "Subvention accompagnement",
+    "eligibleBeneficiaries": "Structures tertiaires non industrielles",
+    "eligibleObject": "Stratégie bas carbone et évaluation",
+    "conditionsText": "Prestataire habilité, bilan GES de moins de 2 ans pour ACT Pas-à-Pas",
+    "fundingFormulaText": "Montant selon conditions ADEME",
+    "deadline": "2026-12-31",
+    "reportedStatus": "Ouvert annoncé",
+    "channel": "AGIR ADEME",
+    "source": {
+      "url": "https://agirpourlatransition.ademe.fr/entreprises/aides-financieres/catalogue/2026/mon-parcours-economies-denergie-accompagnements-actr-pas-pas-et-actr-evaluation-des-structures-non-industrielles",
+      "checkedAt": "2026-10-28",
+      "publisher": "AGIR ADEME",
+      "verifiedForLiveUse": false
+    },
+    "actionAnyOf": [
+      "DECARBONISATION_ADVICE"
+    ],
+    "rulesCoverage": "partial"
+  },
+  {
+    "id": "FUND-ADEME-005",
+    "version": "pilot-2026-10-28-r1",
+    "name": "PACTE Industrie",
+    "region": "NATIONAL",
+    "family": "Industrie / études",
+    "instrument": "Subvention études / coaching",
+    "eligibleBeneficiaries": "Entreprises industrielles codes NAF éligibles",
+    "eligibleObject": "Mix énergétique, management énergie, stratégie bas carbone",
+    "conditionsText": "Étude non commencée et prestataire référencé",
+    "fundingFormulaText": "Selon prestations et conditions du programme",
+    "deadline": "2026-12-31",
+    "reportedStatus": "Ouvert annoncé",
+    "channel": "AGIR ADEME",
+    "source": {
+      "url": "https://agirpourlatransition.ademe.fr/entreprises/aides-financieres/catalogue/2026/pacte-industrie-parcours-accompagnement-et-competences-pour-la-transition-energetique-de-lindustrie",
+      "checkedAt": "2026-10-28",
+      "publisher": "AGIR ADEME",
+      "verifiedForLiveUse": false
+    },
+    "actionAnyOf": [
+      "INDUSTRIAL_ENGINEERING"
+    ],
+    "rulesCoverage": "partial"
+  },
+  {
+    "id": "FUND-ADEME-006",
+    "version": "pilot-2026-10-28-r1",
+    "name": "Decarb Flash Artisan",
+    "region": "NATIONAL",
+    "family": "Électrification artisanat",
+    "instrument": "Subvention investissement",
+    "eligibleBeneficiaries": "Micro / petites / moyennes entreprises artisanales NAF éligible",
+    "eligibleObject": "Remplacement d’équipements utilisant des combustibles fossiles",
+    "conditionsText": "Liste limitative d’activités et d’actions financées",
+    "fundingFormulaText": "Montant selon cahier des charges",
+    "deadline": "2027-06-15",
+    "reportedStatus": "Ouvert annoncé",
+    "channel": "AGIR ADEME",
+    "source": {
+      "url": "https://agirpourlatransition.ademe.fr/entreprises/aides-financieres/catalogue/aap/decarb-flash-artisan",
+      "checkedAt": "2026-10-28",
+      "publisher": "AGIR ADEME",
+      "verifiedForLiveUse": false
+    },
+    "actionAnyOf": [
+      "EQUIPMENT_ELECTRIFICATION"
+    ],
+    "rulesCoverage": "partial"
+  },
+  {
+    "id": "FUND-ADEME-007",
+    "version": "pilot-2026-10-28-r1",
+    "name": "Fonds Chaleur – eau chaude solaire",
+    "region": "NATIONAL",
+    "family": "Solaire thermique",
+    "instrument": "Subvention investissement",
+    "eligibleBeneficiaries": "Entreprises et collectivités admissibles",
+    "eligibleObject": "Installations eau chaude solaire thermique",
+    "conditionsText": "Respect de la filière thermique et conditions techniques",
+    "fundingFormulaText": "Selon Fonds Chaleur",
+    "deadline": "2026-12-31",
+    "reportedStatus": "Ouvert annoncé",
+    "channel": "AGIR ADEME",
+    "source": {
+      "url": "https://agirpourlatransition.ademe.fr/entreprises/aides-financieres/catalogue/2026/installation-de-production-deau-chaude-solaire-thermique",
+      "checkedAt": "2026-10-28",
+      "publisher": "AGIR ADEME",
+      "verifiedForLiveUse": false
+    },
+    "actionAnyOf": [
+      "SOLAR_THERMAL"
+    ],
+    "rulesCoverage": "partial"
+  },
+  {
+    "id": "FUND-ADEME-008",
+    "version": "pilot-2026-10-28-r1",
+    "name": "Fonds Chaleur – géothermie / aérothermie",
+    "region": "NATIONAL",
+    "family": "Chaleur / froid",
+    "instrument": "Subvention investissement",
+    "eligibleBeneficiaries": "Entreprises et collectivités admissibles",
+    "eligibleObject": "Chaleur / froid renouvelable géothermique, aérothermique",
+    "conditionsText": "Conditions techniques Fonds Chaleur",
+    "fundingFormulaText": "Selon Fonds Chaleur",
+    "deadline": "2026-12-31",
+    "reportedStatus": "Ouvert annoncé",
+    "channel": "AGIR ADEME",
+    "source": {
+      "url": "https://agirpourlatransition.ademe.fr/entreprises/aides-financieres/catalogue/2026/installations-de-production-de-chaleur-et-de-froid-renouvelable-partir-de-geothermie-de-surface-daerothermie-ou-de-thalassothermie",
+      "checkedAt": "2026-10-28",
+      "publisher": "AGIR ADEME",
+      "verifiedForLiveUse": false
+    },
+    "actionAnyOf": [
+      "GEOTHERMAL"
+    ],
+    "rulesCoverage": "partial"
+  },
+  {
+    "id": "FUND-ADEME-009",
+    "version": "pilot-2026-10-28-r1",
+    "name": "Fonds Chaleur – biomasse bois",
+    "region": "NATIONAL",
+    "family": "Chaleur renouvelable",
+    "instrument": "Subvention investissement",
+    "eligibleBeneficiaries": "Entreprises et collectivités admissibles",
+    "eligibleObject": "Chaufferie biomasse bois",
+    "conditionsText": "Seuils, dimensionnement et filière combustible",
+    "fundingFormulaText": "Selon Fonds Chaleur",
+    "deadline": "2026-12-31",
+    "reportedStatus": "Ouvert annoncé",
+    "channel": "AGIR ADEME",
+    "source": {
+      "url": "https://agirpourlatransition.ademe.fr/entreprises/aides-financieres/catalogue/2026/realisation-dinstallations-de-production-de-chaleur-biomassebois",
+      "checkedAt": "2026-10-28",
+      "publisher": "AGIR ADEME",
+      "verifiedForLiveUse": false
+    },
+    "actionAnyOf": [
+      "BIOMASS_HEAT"
+    ],
+    "rulesCoverage": "partial"
+  },
+  {
+    "id": "FUND-ADEME-010",
+    "version": "pilot-2026-10-28-r1",
+    "name": "Fonds Chaleur – chaleur fatale",
+    "region": "NATIONAL",
+    "family": "Industrie / récupération",
+    "instrument": "Subvention investissement",
+    "eligibleBeneficiaries": "Entreprises et collectivités admissibles",
+    "eligibleObject": "Récupération de chaleur fatale",
+    "conditionsText": "Gisement et valorisation mesurables",
+    "fundingFormulaText": "Selon Fonds Chaleur",
+    "deadline": "2026-12-31",
+    "reportedStatus": "Ouvert annoncé",
+    "channel": "AGIR ADEME",
+    "source": {
+      "url": "https://agirpourlatransition.ademe.fr/entreprises/aides-financieres/catalogue/2026/realisation-dinstallations-de-recuperation-de-chaleur-fatale",
+      "checkedAt": "2026-10-28",
+      "publisher": "AGIR ADEME",
+      "verifiedForLiveUse": false
+    },
+    "actionAnyOf": [
+      "WASTE_HEAT"
+    ],
+    "rulesCoverage": "partial"
+  },
+  {
+    "id": "FUND-ADEME-011",
+    "version": "pilot-2026-10-28-r1",
+    "name": "Contrat Chaleur Renouvelable",
+    "region": "NATIONAL",
+    "family": "Portefeuille thermique",
+    "instrument": "Subvention études / investissement",
+    "eligibleBeneficiaries": "Entreprises, associations et collectivités",
+    "eligibleObject": "Grappe de projets d’énergies renouvelables thermiques",
+    "conditionsText": "Minimum d’installations et volumes cumulés, contrat territorial/patrimonial",
+    "fundingFormulaText": "Selon contrat et règles de filières",
+    "deadline": "2026-12-31",
+    "reportedStatus": "Ouvert annoncé",
+    "channel": "AGIR ADEME",
+    "source": {
+      "url": "https://agirpourlatransition.ademe.fr/entreprises/aides-financieres/catalogue/2026/contrat-chaleur-renouvelable",
+      "checkedAt": "2026-10-28",
+      "publisher": "AGIR ADEME",
+      "verifiedForLiveUse": false
+    },
+    "actionAnyOf": [
+      "RENEWABLE_HEAT_PORTFOLIO"
+    ],
+    "rulesCoverage": "partial"
+  },
+  {
+    "id": "FUND-IRVE-001",
+    "version": "pilot-2026-10-28-r1",
+    "name": "ADVENIR – flottes poids lourds et autocars",
+    "region": "NATIONAL",
+    "family": "IRVE véhicules lourds",
+    "instrument": "Prime IRVE",
+    "eligibleBeneficiaries": "Entreprises privées et personnes publiques éligibles",
+    "eligibleObject": "Recharge véhicules lourds de catégories précisées",
+    "conditionsText": "Catégorie véhicule, puissance, nombre, preuve de flotte et attestation",
+    "fundingFormulaText": "50 % sous certains seuils ; plafonds par point de recharge",
+    "reportedStatus": "Ouvert sous conditions",
+    "channel": "ADVENIR",
+    "source": {
+      "url": "https://advenir.mobi/borne-flottes-poids-lourds/",
+      "checkedAt": "2026-10-28",
+      "publisher": "ADVENIR",
+      "verifiedForLiveUse": false
+    },
+    "actionAnyOf": [
+      "IRVE_HEAVY"
+    ],
+    "rulesCoverage": "targeted"
+  },
+  {
+    "id": "FUND-CEE-001",
+    "version": "pilot-2026-10-28-r1",
+    "name": "BAT-EN-101 – isolation combles/toitures",
+    "region": "NATIONAL",
+    "family": "CEE tertiaire",
+    "instrument": "CEE fiche standardisée",
+    "eligibleBeneficiaries": "Bâtiments tertiaires éligibles",
+    "eligibleObject": "Isolation toiture hors cas particuliers",
+    "conditionsText": "Fiche, version, surfaces, R et antériorité d’engagement",
+    "fundingFormulaText": "Prime contractuelle, aucun montant garanti",
+    "reportedStatus": "Fiche en vigueur",
+    "channel": "Opérateur CEE",
+    "source": {
+      "url": "https://www.ecologie.gouv.fr/politiques-publiques/operations-standardisees-deconomies-denergie",
+      "checkedAt": "2026-10-28",
+      "publisher": "Opérateur CEE",
+      "verifiedForLiveUse": false
+    },
+    "actionAnyOf": [
+      "ROOF_INSULATION"
+    ],
+    "rulesCoverage": "partial"
+  },
+  {
+    "id": "FUND-CEE-002",
+    "version": "pilot-2026-10-28-r1",
+    "name": "BAT-EN-102 – isolation murs",
+    "region": "NATIONAL",
+    "family": "CEE tertiaire",
+    "instrument": "CEE fiche standardisée",
+    "eligibleBeneficiaries": "Bâtiments tertiaires éligibles",
+    "eligibleObject": "Isolation des murs",
+    "conditionsText": "Fiche, version, surfaces et performances",
+    "fundingFormulaText": "Prime contractuelle, aucun montant garanti",
+    "reportedStatus": "Fiche en vigueur",
+    "channel": "Opérateur CEE",
+    "source": {
+      "url": "https://www.ecologie.gouv.fr/politiques-publiques/operations-standardisees-deconomies-denergie",
+      "checkedAt": "2026-10-28",
+      "publisher": "Opérateur CEE",
+      "verifiedForLiveUse": false
+    },
+    "actionAnyOf": [
+      "WALL_INSULATION"
+    ],
+    "rulesCoverage": "partial"
+  },
+  {
+    "id": "FUND-CEE-003",
+    "version": "pilot-2026-10-28-r1",
+    "name": "BAT-EN-103 – isolation planchers",
+    "region": "NATIONAL",
+    "family": "CEE tertiaire",
+    "instrument": "CEE fiche standardisée",
+    "eligibleBeneficiaries": "Bâtiments tertiaires éligibles",
+    "eligibleObject": "Isolation des planchers",
+    "conditionsText": "Fiche, version, surfaces et performances",
+    "fundingFormulaText": "Prime contractuelle, aucun montant garanti",
+    "reportedStatus": "Fiche en vigueur",
+    "channel": "Opérateur CEE",
+    "source": {
+      "url": "https://www.ecologie.gouv.fr/politiques-publiques/operations-standardisees-deconomies-denergie",
+      "checkedAt": "2026-10-28",
+      "publisher": "Opérateur CEE",
+      "verifiedForLiveUse": false
+    },
+    "actionAnyOf": [
+      "FLOOR_INSULATION"
+    ],
+    "rulesCoverage": "partial"
+  },
+  {
+    "id": "FUND-CEE-004",
+    "version": "pilot-2026-10-28-r1",
+    "name": "BAT-EN-107 – isolation toiture terrasse",
+    "region": "NATIONAL",
+    "family": "CEE tertiaire",
+    "instrument": "CEE fiche standardisée",
+    "eligibleBeneficiaries": "Bâtiments tertiaires éligibles",
+    "eligibleObject": "Isolation des toitures terrasses",
+    "conditionsText": "Fiche, version, surfaces et performances",
+    "fundingFormulaText": "Prime contractuelle, aucun montant garanti",
+    "reportedStatus": "Fiche en vigueur",
+    "channel": "Opérateur CEE",
+    "source": {
+      "url": "https://www.ecologie.gouv.fr/politiques-publiques/operations-standardisees-deconomies-denergie",
+      "checkedAt": "2026-10-28",
+      "publisher": "Opérateur CEE",
+      "verifiedForLiveUse": false
+    },
+    "actionAnyOf": [
+      "FLAT_ROOF_INSULATION"
+    ],
+    "rulesCoverage": "partial"
+  },
+  {
+    "id": "FUND-CEE-005",
+    "version": "pilot-2026-10-28-r1",
+    "name": "BAT-TH-111 – chauffe-eau solaire collectif",
+    "region": "NATIONAL",
+    "family": "CEE tertiaire",
+    "instrument": "CEE fiche standardisée",
+    "eligibleBeneficiaries": "Bâtiments tertiaires éligibles",
+    "eligibleObject": "Système solaire thermique collectif",
+    "conditionsText": "Fiche et performance du système",
+    "fundingFormulaText": "Prime contractuelle, aucun montant garanti",
+    "reportedStatus": "Fiche en vigueur",
+    "channel": "Opérateur CEE",
+    "source": {
+      "url": "https://www.ecologie.gouv.fr/politiques-publiques/operations-standardisees-deconomies-denergie",
+      "checkedAt": "2026-10-28",
+      "publisher": "Opérateur CEE",
+      "verifiedForLiveUse": false
+    },
+    "actionAnyOf": [
+      "SOLAR_THERMAL_WATER"
+    ],
+    "rulesCoverage": "partial"
+  },
+  {
+    "id": "FUND-CEE-006",
+    "version": "pilot-2026-10-28-r1",
+    "name": "BAT-TH-116 – gestion technique du bâtiment",
+    "region": "NATIONAL",
+    "family": "CEE tertiaire",
+    "instrument": "CEE fiche standardisée",
+    "eligibleBeneficiaries": "Bâtiments tertiaires éligibles",
+    "eligibleObject": "GTB chauffage, climatisation et auxiliaires",
+    "conditionsText": "Fiche et contrôles versionnés",
+    "fundingFormulaText": "Prime contractuelle, aucun montant garanti",
+    "reportedStatus": "Fiche en vigueur",
+    "channel": "Opérateur CEE",
+    "source": {
+      "url": "https://www.ecologie.gouv.fr/politiques-publiques/operations-standardisees-deconomies-denergie",
+      "checkedAt": "2026-10-28",
+      "publisher": "Opérateur CEE",
+      "verifiedForLiveUse": false
+    },
+    "actionAnyOf": [
+      "BMS"
+    ],
+    "rulesCoverage": "partial"
+  },
+  {
+    "id": "FUND-CEE-007",
+    "version": "pilot-2026-10-28-r1",
+    "name": "BAT-TH-127 – raccordement réseau chaleur",
+    "region": "NATIONAL",
+    "family": "CEE tertiaire",
+    "instrument": "CEE fiche standardisée",
+    "eligibleBeneficiaries": "Bâtiments tertiaires éligibles",
+    "eligibleObject": "Raccordement réseau de chaleur",
+    "conditionsText": "Conditions de raccordement et réseau admissible",
+    "fundingFormulaText": "Prime contractuelle, aucun montant garanti",
+    "reportedStatus": "Fiche en vigueur",
+    "channel": "Opérateur CEE",
+    "source": {
+      "url": "https://www.ecologie.gouv.fr/politiques-publiques/operations-standardisees-deconomies-denergie",
+      "checkedAt": "2026-10-28",
+      "publisher": "Opérateur CEE",
+      "verifiedForLiveUse": false
+    },
+    "actionAnyOf": [
+      "HEAT_NETWORK_CONNECTION"
+    ],
+    "rulesCoverage": "partial"
+  },
+  {
+    "id": "FUND-PV-001",
+    "version": "pilot-2026-10-28-r1",
+    "name": "Contrat S21 EDF OA",
+    "region": "NATIONAL",
+    "family": "PV / soutien production",
+    "instrument": "Soutien à la production",
+    "eligibleBeneficiaries": "Producteurs PV sur bâtiment/ombrière ≤100 kWc pour DCR récentes",
+    "eligibleObject": "Obligation d’achat selon version tarifaire applicable",
+    "conditionsText": "DCR, P+Q, localisation, choix d’autoconsommation, non-cumul",
+    "fundingFormulaText": "Tarif déterminé par version réglementaire et DCR",
+    "reportedStatus": "Régime applicable",
+    "channel": "EDF OA",
+    "source": {
+      "url": "https://www.edf-oa.fr/le-contrat-s21",
+      "checkedAt": "2026-10-28",
+      "publisher": "EDF OA",
+      "verifiedForLiveUse": false
+    },
+    "actionAnyOf": [
+      "PV"
+    ],
+    "rulesCoverage": "targeted"
+  },
+  {
+    "id": "FUND-PV-002",
+    "version": "pilot-2026-10-28-r1",
+    "name": "CRE AOS – 100 à 500 kWc",
+    "region": "NATIONAL",
+    "family": "PV / appel d’offres",
+    "instrument": "Appel d’offres soutien production",
+    "eligibleBeneficiaries": "Producteurs PV admissibles",
+    "eligibleObject": "Centrales >100 et <500 kWc",
+    "conditionsText": "Périodes de candidature et cahier des charges",
+    "fundingFormulaText": "Résultat concurrentiel, non garanti",
+    "deadline": "2026-07-31",
+    "reportedStatus": "Période close",
+    "channel": "CRE plateforme AO",
+    "source": {
+      "url": "https://www.cre.fr/documents/appels-doffres/appel-doffres-portant-sur-la-realisation-et-lexploitation-dinstallations-de-production-delectricite-a-partir-de-lenergie-solaire-centrales-sur-batiments-ou-ombrieres-de-puissance-superieure-a-100-kwc-et-inferieure-a-500-kwc.html",
+      "checkedAt": "2026-10-28",
+      "publisher": "CRE plateforme AO",
+      "verifiedForLiveUse": false
+    },
+    "actionAnyOf": [
+      "PV"
+    ],
+    "rulesCoverage": "targeted"
+  }
+]

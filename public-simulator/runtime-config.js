@@ -27,6 +27,7 @@
   config.supabasePublishableKey = project.key;
   config.sessionStorageKey = `ozeno-supabase-session:${project.name}`;
   config.pvgisEndpoint = localPreview ? '/__local/pvgis' : `${project.url}/functions/v1/pvgis`;
+  config.publicFundingHintEndpoint = localPreview ? '/__local/public-funding-hint' : `${project.url}/functions/v1/public-funding-hint`;
   config.pvgisClimateEndpoint = `${project.url}/functions/v1/pvgis-climate-preview`;
   config.frozenScenarioReportEndpoint = `${project.url}/functions/v1/frozen-scenario-report`;
   config.projectDocumentEndpoint = `${project.url}/functions/v1/upload-project-document`;

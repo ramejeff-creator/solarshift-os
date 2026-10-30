@@ -28,6 +28,7 @@ let searchTimer = null;
 let searchController = null;
 let calculationController = null;
 let calculationTimer = null;
+let fundingHintRequestVersion = 0;
 let roofMap = null;
 let roofMapShapes = null;
 let roofDrawControl = null;
@@ -930,6 +931,52 @@ function mapPvgisError(error) {
   if (error?.name === 'AbortError') return '';
   return error instanceof Error ? error.message : 'Le calcul n’a pas abouti. Vérifiez les données du site puis réessayez.';
 }
+function fundingDepartmentCode(address) {
+  const raw = String(address?.cityCode || address?.postalCode || address?.postcode || '').trim().toUpperCase();
+  const match = raw.match(/^(2[AB]|\d{2,3})/);
+  if (!match) return undefined;
+  if (match[1].startsWith('97') || match[1].startsWith('98')) return match[1].slice(0, 3);
+  if (match[1] === '20') return undefined;
+  return match[1].slice(0, 2);
+}
+async function requestPublicFundingHint(input) {
+  const title = $('resultFundingTitle');
+  const subtitle = $('resultFundingSubtitle');
+  const requestVersion = ++fundingHintRequestVersion;
+  const fallback = {
+    title: 'Les aides potentielles restent à vérifier',
+    subtitle: 'Le repérage est indisponible pour le moment. Les aides dépendent du site, du bénéficiaire et des règles du financeur.'
+  };
+  title.textContent = 'Recherche indicative en cours…';
+  subtitle.textContent = 'Cette recherche ne modifie pas les estimations financières.';
+  const endpoint = window.SOLARSHIFT_CONFIG?.publicFundingHintEndpoint;
+  if (!endpoint) {
+    title.textContent = fallback.title;
+    subtitle.textContent = fallback.subtitle;
+    return;
+  }
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: window.SOLARSHIFT_CONFIG?.supabasePublishableKey || '' },
+      body: JSON.stringify({
+        ...(Number.isFinite(input.referenceKwp) ? { pvKwc: input.referenceKwp } : {}),
+        ...(fundingDepartmentCode(input.address) ? { siteDepartmentCode: fundingDepartmentCode(input.address) } : {}),
+        projectMode: ({ 'self-consumption': 'ACI', 'full-sale-acc': 'ACC', 'full-sale': 'FULL_EXPORT' })[input.usageMode],
+        projectTiming: input.projectTiming || 'unknown'
+      })
+    });
+    if (!response.ok) throw new Error(`funding_hint_http_${response.status}`);
+    const hint = await response.json();
+    if (requestVersion !== fundingHintRequestVersion) return;
+    title.textContent = typeof hint.title === 'string' ? hint.title : fallback.title;
+    subtitle.textContent = typeof hint.subtitle === 'string' ? hint.subtitle : fallback.subtitle;
+  } catch {
+    if (requestVersion !== fundingHintRequestVersion) return;
+    title.textContent = fallback.title;
+    subtitle.textContent = fallback.subtitle;
+  }
+}
 function clearCalculationTimer() {
   if (calculationTimer !== null) window.clearInterval(calculationTimer);
   calculationTimer = null;
@@ -963,6 +1010,7 @@ async function calculate(event) {
     $('retryEstimateButton').hidden = true;
     $('calculateButton').disabled = false;
     showStep(5);
+    void requestPublicFundingHint(input);
     return;
   }
   calculationController?.abort();
@@ -1004,6 +1052,7 @@ async function calculate(event) {
     $('resultStatus').hidden = false;
     $('retryEstimateButton').hidden = false;
   } finally {
+    if (!controller.signal.aborted) void requestPublicFundingHint(input);
     window.clearTimeout(requestTimeout);
     if (calculationController === controller) {
       clearCalculationTimer();
@@ -1052,6 +1101,7 @@ function goBack() {
   if (currentStep > 1) showStep(currentStep - 1);
 }
 function restart() {
+  fundingHintRequestVersion += 1;
   calculationController?.abort(); calculationController = null; clearCalculationTimer(); setCalculationButtonLoading(false);
   cancelRoofDetection();
   form.reset();

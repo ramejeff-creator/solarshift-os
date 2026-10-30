@@ -1,2 +1,5 @@
 [functions.situation-plan]
 verify_jwt = false
+
+[functions.public-funding-hint]
+verify_jwt = false

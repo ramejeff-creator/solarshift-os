@@ -198,3 +198,19 @@ test('qualification accepts exact consumption and reports invalid controls, not 
   assert.doesNotMatch(qualificationErrorMessage(consumption), /Choisissez une option/);
   assert.match(qualificationErrorMessage({ type: 'radio' }), /Choisissez une option/);
 });
+
+test('public estimate runs an independent indicative Funding hint without changing financial outputs', () => {
+  const html = readFileSync(new URL('../../public-simulator/index.html', import.meta.url), 'utf8');
+  const js = readFileSync(new URL('../../public-simulator/pro-simulator.mjs', import.meta.url), 'utf8');
+  const runtime = readFileSync(new URL('../../public-simulator/runtime-config.js', import.meta.url), 'utf8');
+  assert.match(html, /id="resultFundingHint"[^>]*aria-live="polite"/);
+  assert.match(html, /Aides potentielles/);
+  assert.match(html, /ne dépose aucune demande/);
+  assert.match(runtime, /publicFundingHintEndpoint[^\n]*functions\/v1\/public-funding-hint/);
+  assert.match(js, /async function requestPublicFundingHint\(input\)/);
+  assert.match(js, /siteDepartmentCode: fundingDepartmentCode\(input\.address\)/);
+  assert.match(js, /projectMode: \(\{ 'self-consumption': 'ACI'/);
+  assert.match(js, /if \(!controller\.signal\.aborted\) void requestPublicFundingHint\(input\)/);
+  const request = js.slice(js.indexOf('async function requestPublicFundingHint'), js.indexOf('function clearCalculationTimer'));
+  assert.doesNotMatch(request, /result(?:InvestmentRange|IndicativeIrr|AnnualSavings|NetGain25Years)|financial_preview|DSCR/i);
+});

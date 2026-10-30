@@ -1,0 +1,31 @@
+name: Deploy public Funding hint to OZENO Beta
+
+on:
+  push:
+    branches: [codex/pages-simulator-preview]
+    paths:
+      - 'supabase/config.toml'
+      - 'supabase/functions/public-funding-hint/**'
+      - 'supabase/functions/_shared/funding-public-preview.mjs'
+      - 'supabase/functions/_shared/funding-core/**'
+      - '.github/workflows/deploy-public-funding-hint.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-funding-hint-beta
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Deploy the anonymous stateless hint function to Beta
+        run: supabase functions deploy public-funding-hint --project-ref dptympcfznaqcdvtdxok --no-verify-jwt
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
