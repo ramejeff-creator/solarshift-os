@@ -3,3 +3,6 @@ verify_jwt = false
 
 [functions.public-funding-hint]
 verify_jwt = false
+
+[functions.prestudy-funding-leads]
+verify_jwt = true

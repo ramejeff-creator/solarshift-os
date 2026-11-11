@@ -178,6 +178,31 @@ export function evaluateFundingProgram(p: FundingProgram, ctx: FundingProjectCon
         review("COACH_SUBCATEGORY_REVIEW", "work.heavyVehicleCategory", "La classe et l'usage des autocars doivent être confirmés.");
       break;
     }
+    case "FUND-CEE-008": {
+      const eligibleExistingSystems = ["COAL_BOILER", "OIL_BOILER", "GAS_BOILER"];
+      const eligibleReplacementSystems = ["HEAT_NETWORK", "HP_AIR_WATER", "HP_WATER_WATER", "GEOTHERMAL"];
+      if (ctx.work.currentHeatingSystem === undefined || ctx.work.currentHeatingSystem === "UNKNOWN")
+        missing("HEATING_SYSTEM_UNKNOWN", "work.currentHeatingSystem", "Le chauffage remplacé doit être identifié.");
+      else if (!eligibleExistingSystems.includes(ctx.work.currentHeatingSystem))
+        exclude("HEATING_SYSTEM_NOT_COVERED", "work.currentHeatingSystem", "Cette piste concerne le remplacement d'une chaudière charbon, fioul ou gaz.");
+      if (ctx.work.plannedHeatingSystem === undefined || ctx.work.plannedHeatingSystem === "UNKNOWN")
+        missing("HEATING_REPLACEMENT_UNKNOWN", "work.plannedHeatingSystem", "Le système de remplacement envisagé doit être précisé.");
+      else if (!eligibleReplacementSystems.includes(ctx.work.plannedHeatingSystem))
+        exclude("HEATING_REPLACEMENT_NOT_COVERED", "work.plannedHeatingSystem", "Le remplacement envisagé ne correspond pas aux solutions recensées pour cette piste.");
+      else if (ctx.work.plannedHeatingSystem === "HEAT_NETWORK")
+        review("HEAT_NETWORK_CRITERIA_REVIEW", "work.plannedHeatingSystem", "Vérifier l'efficacité du réseau et la fiche tertiaire applicable.");
+      else
+        review("HEAT_REPLACEMENT_NETWORK_REVIEW", "work.plannedHeatingSystem", "Pour une pompe à chaleur ou la géothermie, vérifier les conditions de recours et la justification relative au réseau de chaleur.");
+      if (ctx.work.buildingOlderThanTwoYears === undefined)
+        missing("BUILDING_AGE_UNKNOWN", "work.buildingOlderThanTwoYears", "L'ancienneté du bâtiment est à confirmer.");
+      else if (!ctx.work.buildingOlderThanTwoYears)
+        exclude("BUILDING_TOO_RECENT", "work.buildingOlderThanTwoYears", "La piste vise des bâtiments tertiaires existants depuis plus de deux ans à l'engagement.");
+      if (ctx.timeline.orderOrWorkCommittedBeforeApplication === undefined)
+        missing("WORK_COMMITMENT_UNKNOWN", "timeline.orderOrWorkCommittedBeforeApplication", "Vérifier si le devis, la commande ou les travaux ont été engagés avant l'offre CEE.");
+      else if (ctx.timeline.orderOrWorkCommittedBeforeApplication)
+        review("WORK_ALREADY_COMMITTED", "timeline.orderOrWorkCommittedBeforeApplication", "L'antériorité de l'offre incitative CEE est à vérifier avant tout engagement.");
+      break;
+    }
     case "FUND-PV-001": {
       if (ctx.work.pvKwc === undefined) missing("PV_POWER_UNKNOWN", "work.pvKwc", "Puissance PV requise.");
       if (!ctx.work.dcrDate) missing("DCR_DATE_UNKNOWN", "work.dcrDate", "Date de DCR nécessaire pour choisir le plafond S21 applicable.");

@@ -38,4 +38,5 @@
   config.prospectingOwnerEndpoint = `${project.url}/functions/v1/prospecting-owner-details`;
   config.siteContextEndpoint = localPreview ? '/__local/site-context' : `${project.url}/functions/v1/site-context`;
   config.situationPlanEndpoint = localPreview ? '/__local/situation-plan' : `${project.url}/functions/v1/situation-plan`;
+  config.prestudyFundingLeadsEndpoint = `${project.url}/functions/v1/prestudy-funding-leads`;
 })();

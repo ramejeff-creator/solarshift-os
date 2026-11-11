@@ -12,7 +12,7 @@ export type Action =
   | "GEOTHERMAL" | "BIOMASS_HEAT" | "WASTE_HEAT" | "RENEWABLE_HEAT_PORTFOLIO"
   | "IRVE_HEAVY" | "ROOF_INSULATION" | "WALL_INSULATION"
   | "FLOOR_INSULATION" | "FLAT_ROOF_INSULATION" | "SOLAR_THERMAL_WATER"
-  | "BMS" | "HEAT_NETWORK_CONNECTION";
+  | "BMS" | "HEAT_NETWORK_CONNECTION" | "HEATING_REPLACEMENT";
 
 export type Mode = "ACI" | "ACC" | "FULL_EXPORT";
 export type Support = "NONE" | "S21" | "CRE_AO" | "OTHER_PUBLIC" | "UNKNOWN";
@@ -51,6 +51,9 @@ export interface FundingProjectContext {
     administrativeRegionCount?: number;
     isDEETSubject?: boolean;
     isInnovative?: boolean;
+    currentHeatingSystem?: "COAL_BOILER" | "OIL_BOILER" | "GAS_BOILER" | "PROPANE_BOILER" | "DIRECT_ELECTRIC" | "HEAT_PUMP" | "HEAT_NETWORK" | "BIOMASS" | "OTHER" | "UNKNOWN";
+    plannedHeatingSystem?: "HEAT_NETWORK" | "HP_AIR_WATER" | "HP_WATER_WATER" | "GEOTHERMAL" | "BIOMASS" | "OTHER" | "UNKNOWN";
+    buildingOlderThanTwoYears?: boolean;
   };
   funding: {
     publicProductionSupport?: Support;

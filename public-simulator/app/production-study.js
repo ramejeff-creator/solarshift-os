@@ -513,9 +513,9 @@
   else boot();
 }());
 
-['installer-commission.js', 'installation-cost-reference.js', 'roof-surfaces.js', 'annual-allocation.js', 'financial-assumptions.js', 'equity-cashflow.js', 'finance-controls.js', 'summary-ux.js', 'risk-ux.js', 'commercial-ux.js', 'efficiency-impact-ux.js', 'ozeno-theme.js', 'prestudy-chapters.js', 'prestudy-shell.js', 'project-hub.js'].forEach((file) => {
+['installer-commission.js', 'installation-cost-reference.js', 'roof-surfaces.js', 'annual-allocation.js', 'financial-assumptions.js', 'equity-cashflow.js', 'finance-controls.js', 'summary-ux.js', 'risk-ux.js', 'commercial-ux.js', 'efficiency-impact-ux.js', 'ozeno-theme.js', 'building-energy-prestudy.js', 'prestudy-chapters.js', 'prestudy-shell.js', 'project-hub.js'].forEach((file) => {
   const script = document.createElement('script');
-  script.src = `./${file}`;
+  script.src = `./${file}?v=20261111-envelope-heating`;
   script.async = false;
   document.head.appendChild(script);
 });

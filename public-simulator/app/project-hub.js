@@ -158,7 +158,7 @@
     if (consumption?.dataset.referenceValue) controls.consReferenceValue = consumption.dataset.referenceValue;
     const efficiency = {};
     document.querySelectorAll('#efficiencyImpactForm [name]').forEach((node) => { efficiency[node.name] = node.value; });
-    return { schemaVersion: 1, kind: 'COMMERCIAL_NON_CANONICAL', controls, commercialRemuneration: window.SOLARSHIFT_INSTALLER_COMMISSION_PREVIEW || null, roofs: window.OzenoRoofSurfaces?.captureDraft() || {}, parcelQualification: window.OzenoParcelQualification?.capture() || null, risks: window.OzenoRiskDraft?.capture() || [], financingMode: document.querySelector('[name="financingMode"]:checked')?.value || 'mixed', efficiency };
+    return { schemaVersion: 1, kind: 'COMMERCIAL_NON_CANONICAL', controls, commercialRemuneration: window.SOLARSHIFT_INSTALLER_COMMISSION_PREVIEW || null, roofs: window.OzenoRoofSurfaces?.captureDraft() || {}, parcelQualification: window.OzenoParcelQualification?.capture() || null, risks: window.OzenoRiskDraft?.capture() || [], buildingEnergy: window.OzenoBuildingEnergyPrestudy?.capture() || null, financingMode: document.querySelector('[name="financingMode"]:checked')?.value || 'mixed', efficiency };
   }
   function syncActivityQualification() {
     const form = $('hubSaveForm');
@@ -283,6 +283,7 @@
       if (funding) { funding.checked = true; funding.dispatchEvent(new Event('change', { bubbles: true })); }
       window.OzenoRoofSurfaces?.restoreDraft(preview.roofs);
       window.OzenoRiskDraft?.restore(preview.risks);
+      window.OzenoBuildingEnergyPrestudy?.restore(preview.buildingEnergy);
       await config.parcelQualificationReady;
       window.OzenoParcelQualification?.restore(preview.parcelQualification);
       const roofInputs = new Set(['roofTotal', 'roofRatio', 'panelArea', 'panelWp', 'pvgisSystemLoss', 'manualAzimuth', 'orientation', 'tilt', 'shade', 'roof', 'capexPerKwp', 'aciPrice', 'accPrice']);

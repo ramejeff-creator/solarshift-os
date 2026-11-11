@@ -37,6 +37,10 @@ body.prestudyShell .prestudyChapterD {
 .prestudyShell .prestudyChapterD :is(.roofAzimuthHelpButton, .pvgisLossHelpButton, .financeHelpButton) { min-height: 24px; width: 24px; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
 .prestudyShell .prestudyChapterD :is(.financeGroup, .prestudyBuildingBenchmarkControls) > h2 { font-size: 16px; color: var(--d-ink); margin: 0 0 14px; }
 .prestudyShell .prestudyChapterD .prestudyDPanel > :last-child { margin-bottom: 0; }
+.prestudyShell .prestudyEnvelopeHeating .prestudyEnvelopeGroup { border-top: 1px solid var(--d-line) !important; padding-top: 16px; margin: 18px 0; }
+.prestudyShell .prestudyEnvelopeHeating .prestudyEnvelopeGroup .form { margin-bottom: 4px; }
+.prestudyShell .prestudyEnvelopeHeating .prestudyEnvelopeGroup label[hidden] { display: none !important; }
+.prestudyShell .prestudyEnvelopeHeating > .prestudyDPanel > .fine { padding: 10px 12px; border-left: 3px solid #8795a3; background: #f4f6f8; }
 .prestudyShell .prestudyChapterD summary { color: var(--d-ink); font-size: 14px; font-weight: 650; min-height: 44px; align-content: center; cursor: pointer; }
 .prestudyShell .prestudyChapterD .ozenoProjectIdentity dl { margin-top: 16px; }
 .prestudyShell .prestudyChapterD .ozenoProjectIdentityRow { border-bottom: 1px solid var(--d-line); padding: 7px 0; background: #fff; }

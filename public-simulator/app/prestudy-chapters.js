@@ -124,6 +124,7 @@
     riskEditor = make('div', null, 'prestudyRiskEditor'); riskEditor.id = 'prestudyRiskEditor';
     register.panel.append(riskEditor);
     editorNodes.filter(Boolean).forEach((n) => riskEditor.append(n));
+    window.OzenoBuildingEnergyPrestudy?.mountRisk(root, section);
     const rows = new Map(); let active = selector.value, pending = null, internalChange = false, restoringContext = false;
     const source = $('riskSource'), observation = $('riskObservation'), evidence = $('riskEvidence'), file = $('riskEvidenceFile'), upload = $('riskEvidenceUpload');
     const values = () => JSON.stringify([observation.value, evidence.value, source.value]);
@@ -219,6 +220,7 @@
     presentationHeadingBefore(funding, 'prestudyFinanceFundingHeading', 'Financement');
     presentationHeadingBefore(root?.querySelector('.financeRevenueGroups'), 'prestudyFinanceValuationHeading', 'Valorisation énergétique');
     presentationHeadingBefore(root?.querySelector('.financePreviewMetrics'), 'prestudyFinanceResultsHeading', 'Résultats financiers · aperçu');
+    window.OzenoBuildingEnergyPrestudy?.mountFunding(root);
   }
   function addPreviewMetric(grid, id, label, valueId, noteId, description) {
     if (!grid || $(id)) return;
@@ -274,9 +276,9 @@
   function prepare() {
     if (!$('audit-project') || $('audit-project').classList.contains('prestudyChapterD')) return;
     // Vérifiable avant/après composition : aucune copie de contrôle ni nouvelle valeur métier.
-    const link = make('link'); link.rel = 'stylesheet'; link.href = './prestudy-chapters.css'; document.head.append(link);
+    const link = make('link'); link.rel = 'stylesheet'; link.href = './prestudy-chapters.css?v=20261111-envelope-heating'; document.head.append(link);
     ['audit-project', 'audit-roof', 'audit-solar', 'audit-risk'].forEach((id) => $(id).classList.add('prestudyChapterD'));
-    const phaseEStyle = make('link'); phaseEStyle.id = 'prestudyPhaseEStyles'; phaseEStyle.rel = 'stylesheet'; phaseEStyle.href = './prestudy-phase-e.css'; document.head.append(phaseEStyle);
+    const phaseEStyle = make('link'); phaseEStyle.id = 'prestudyPhaseEStyles'; phaseEStyle.rel = 'stylesheet'; phaseEStyle.href = './prestudy-phase-e.css?v=20261111-envelope-heating'; document.head.append(phaseEStyle);
     ['audit-finance', 'audit-efficiency', 'ozeno-summary'].forEach((id) => $(id)?.classList.add('prestudyChapterE'));
     document.querySelector('.reportEditor')?.classList.add('prestudyChapterE');
     prepareProject(); prepareSurfaces(); preparePerformance(); prepareRisks();

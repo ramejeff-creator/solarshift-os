@@ -54,6 +54,21 @@ body.prestudyShell #audit-finance.prestudyChapterE #investmentGroup > #irveInves
 body.prestudyShell #audit-finance.prestudyChapterE #investmentGroup > .financeInvestmentCostRow { grid-column: 1 / -1; }
 body.prestudyShell #audit-finance.prestudyChapterE #investmentGroup > .financeFundingConfiguration { margin-top: 14px; }
 body.prestudyShell #audit-finance.prestudyChapterE #investmentGroup > #irveInvestmentGroup { margin-top: 14px; }
+body.prestudyShell #audit-finance.prestudyChapterE .prestudyFundingLeads {
+  grid-column: 1 / -1;
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid var(--e-line);
+  border-radius: 3px;
+  background: #f7f8fa;
+}
+body.prestudyShell #audit-finance.prestudyChapterE .prestudyFundingLeads > h3 { margin: 0 0 10px; color: var(--e-ink); font-size: 16px; }
+body.prestudyShell #audit-finance.prestudyChapterE .prestudyFundingLead { margin: 10px 0; padding: 12px; border: 1px solid var(--e-line); background: #fff; }
+body.prestudyShell #audit-finance.prestudyChapterE .prestudyFundingLead h3 { margin: 4px 0 6px; color: var(--e-ink); font-size: 15px; }
+body.prestudyShell #audit-finance.prestudyChapterE .prestudyFundingLead p,
+body.prestudyShell #audit-finance.prestudyChapterE .prestudyFundingLead small { display: block; color: var(--e-muted); line-height: 1.5; }
+body.prestudyShell #audit-finance.prestudyChapterE .prestudyFundingLeadStatus { display: inline-block; color: #745400; background: #fff1c2; border-radius: 99px; padding: 3px 8px; font-size: 12px; font-weight: 700; }
+body.prestudyShell #audit-finance.prestudyChapterE .prestudyFundingLead a { display: inline-block; margin: 0 0 6px; color: #155a92; font-weight: 650; }
 body.prestudyShell #audit-finance.prestudyChapterE .financeRevenueGroups {
   margin-top: 18px;
   padding: 14px;

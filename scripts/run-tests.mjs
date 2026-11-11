@@ -10,6 +10,7 @@ await import('../tests/integration/cr002-rls-lifecycle.test.mjs');
 await import('../tests/unit/risk-register-ux.test.mjs');
 await import('../tests/unit/ui-script-syntax.test.mjs');
 await import('../tests/unit/public-simulator-ux.test.mjs');
+await import('../tests/unit/prestudy-building-energy.test.mjs');
 await import('../tests/unit/public-simulator-orientation.test.mjs');
 await import('../tests/unit/public-simulator-consistency.test.mjs');
 await import('../tests/unit/public-simulator-reliability.test.mjs');

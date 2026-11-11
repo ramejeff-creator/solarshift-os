@@ -615,6 +615,30 @@
     "rulesCoverage": "partial"
   },
   {
+    "id": "FUND-CEE-008",
+    "version": "pilot-2026-11-11-r1",
+    "name": "Coup de pouce Chauffage des bâtiments tertiaires",
+    "region": "NATIONAL",
+    "family": "CEE tertiaire · remplacement chauffage",
+    "instrument": "Prime CEE contractuelle",
+    "eligibleBeneficiaries": "Propriétaires ou gestionnaires de bâtiments tertiaires existants",
+    "eligibleObject": "Remplacement de chaudières charbon, fioul ou gaz par réseau de chaleur, pompe à chaleur ou géothermie selon conditions",
+    "conditionsText": "Fiche BAT applicable, bâtiment existant depuis plus de deux ans, critères réseau et chronologie de l'offre CEE",
+    "fundingFormulaText": "Prime selon offre du signataire CEE, aucun montant garanti",
+    "reportedStatus": "Conditions 2026 à contrôler",
+    "channel": "Signataires de la charte CEE",
+    "source": {
+      "url": "https://www.ecologie.gouv.fr/politiques-publiques/coup-pouce-chauffage-batiments-residentiels-collectifs-tertiaires",
+      "checkedAt": "2026-11-11",
+      "publisher": "Ministère de la Transition écologique",
+      "verifiedForLiveUse": false
+    },
+    "actionAnyOf": [
+      "HEATING_REPLACEMENT"
+    ],
+    "rulesCoverage": "partial"
+  },
+  {
     "id": "FUND-PV-001",
     "version": "pilot-2026-10-28-r1",
     "name": "Contrat S21 EDF OA",
