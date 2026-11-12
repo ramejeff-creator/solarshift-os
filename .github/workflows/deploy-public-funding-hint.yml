@@ -1,4 +1,4 @@
-name: Deploy public Funding hint to OZENO Beta
+name: Deploy Funding functions to OZENO environments
 
 on:
   push:
@@ -15,7 +15,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: public-funding-hint-beta
+  group: funding-functions-environments
   cancel-in-progress: true
 
 jobs:
@@ -26,11 +26,19 @@ jobs:
       - uses: supabase/setup-cli@v1
         with:
           version: latest
-      - name: Deploy the anonymous stateless hint function to Beta
+      - name: Deploy public Funding hint to OZENO
         run: supabase functions deploy public-funding-hint --project-ref rniitydsksjrphulrlct --no-verify-jwt --yes
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-      - name: Deploy authenticated pre-study Funding leads to Beta
+      - name: Deploy authenticated pre-study Funding leads to OZENO
         run: supabase functions deploy prestudy-funding-leads --project-ref rniitydsksjrphulrlct --yes
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      - name: Deploy public Funding hint to OZENO Beta
+        run: supabase functions deploy public-funding-hint --project-ref dptympcfznaqcdvtdxok --no-verify-jwt --yes
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN_BETA }}
+      - name: Deploy authenticated pre-study Funding leads to OZENO Beta
+        run: supabase functions deploy prestudy-funding-leads --project-ref dptympcfznaqcdvtdxok --yes
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN_BETA }}
