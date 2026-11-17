@@ -1016,6 +1016,14 @@ body[data-view="summary"] .simIntro { min-height: 160px; }
   .simHypotheses .simHypothesisGrid { display: grid; }
   .simHypotheses,.simResultPanel,.simSummaryMetric { break-inside: avoid; }
   .simProjectNext { display: none; }
+  #resultStep .simFinanceDetails > .simResultFacts { display: grid !important; }
+  #resultStep .simProjectionDetails > #simProjectionChart { display: block !important; }
+  #resultStep .simFinanceDetails > summary,
+  #resultStep .simProjectionDetails > summary { list-style: none; cursor: default; }
+  #resultStep section[aria-labelledby="resultAnnualComparisonHeading"] {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
   #resultStep .simProductionPanel .simMonthBar {
     background: #177957 !important;
     border: 1px solid #075b4d;
