@@ -1,7 +1,7 @@
 import {
   challengeMfaFactor, enrollMfaPhone, getSession, listMfaFactors,
   sendPasswordRecovery, setRecoveredPassword, signInWithPassword, verifyMfaFactor
-} from './project-hub-client.mjs';
+} from './project-hub-client.mjs?v=20261117-mfa-list-fix';
 
 const form = document.getElementById('loginForm');
 const phoneForm = document.getElementById('phoneForm');

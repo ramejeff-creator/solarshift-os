@@ -229,7 +229,13 @@ export async function signInWithPassword(email, password, storage) {
   storage.setItem(SESSION_KEY, JSON.stringify(session));
   return session;
 }
-export const listMfaFactors = (token) => request('/auth/v1/factors', { token });
+export async function listMfaFactors(token) {
+  // Supabase lists factors on the authenticated user; GET /factors is not supported.
+  const user = await getIdentity(token);
+  const all = Array.isArray(user?.factors) ? user.factors : [];
+  return { all, phone: all.filter(factor => factor.factor_type === 'phone'),
+    totp: all.filter(factor => factor.factor_type === 'totp') };
+}
 export const enrollMfaPhone = (token, phone) => request('/auth/v1/factors', {
   token, method: 'POST', body: { factor_type: 'phone', phone: String(phone).trim(), friendly_name: 'Téléphone professionnel' }
 });

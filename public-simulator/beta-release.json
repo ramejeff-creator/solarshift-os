@@ -285,7 +285,7 @@
     },
     {
       "path": "app/login.js",
-      "sha256": "9a9048fa615c59560b6b5ca0abff3a884c9d021cb0961607afc2d9e6bd011275"
+      "sha256": "ae41ee7dc399cc990987a05d6fcde4c6b4502b0eeb69e0cba549dde20c6d96f9"
     },
     {
       "path": "app/market-opportunities.css",
@@ -497,7 +497,7 @@
     },
     {
       "path": "app/project-hub-client.mjs",
-      "sha256": "8f99801abda35a74dff5429c5a2d6a968129045d50274661208c1cc7974500f0"
+      "sha256": "779f5655b5e7c3aaa55d6b8ba3e80c306079ce2c2f73f88dd60328392e9a45ac"
     },
     {
       "path": "app/project-hub.css",
@@ -857,7 +857,7 @@
     },
     {
       "path": "login.js",
-      "sha256": "9a9048fa615c59560b6b5ca0abff3a884c9d021cb0961607afc2d9e6bd011275"
+      "sha256": "ae41ee7dc399cc990987a05d6fcde4c6b4502b0eeb69e0cba549dde20c6d96f9"
     },
     {
       "path": "market-opportunities.css",
@@ -1069,7 +1069,7 @@
     },
     {
       "path": "project-hub-client.mjs",
-      "sha256": "8f99801abda35a74dff5429c5a2d6a968129045d50274661208c1cc7974500f0"
+      "sha256": "779f5655b5e7c3aaa55d6b8ba3e80c306079ce2c2f73f88dd60328392e9a45ac"
     },
     {
       "path": "project-hub.css",
@@ -1271,5 +1271,6 @@
       "path": "workspace.js",
       "sha256": "ec7cf7047bca0748956cc708ddc3984d639baaef23c93f0a22df322acfb9f02a"
     }
-  ]
+  ],
+  "hotfix": "20261117-mfa-list-fix"
 }
