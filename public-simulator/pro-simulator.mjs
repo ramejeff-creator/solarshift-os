@@ -2,7 +2,7 @@ import { hasHouseNumber, normalizeSiteAddressSuggestion, siteAddressAutocomplete
 import { CR010_SIZING_VERSION, estimateSolarCapacity, PRO_SIMULATOR_TILT_ANGLES, solarRoofPlanes } from './pro-simulator-estimation.mjs?v=20261012-7';
 import { installRoofMapInteractions } from './simulator-roof-map-interactions.mjs';
 import { projectTimingLabel, paybackWindow, carbonEquivalenceKm, formatGainRange } from './simulator-presentation.mjs?v=20261012-8';
-import { requestSolarPreview } from './solar-preview-request.mjs?v=20261012-7';
+import { requestSolarPreview } from './solar-preview-request.mjs?v=20261117-no-cache-1';
 import { resolveAnnualConsumption, resolveBuildingConsumptionBenchmark, resolveElectricityPrice, resolvePowerBand } from './prestudy-building-benchmarks.mjs';
 import { ownerFinancialView } from './simulator-financial-view.mjs';
 import { findInvalidControl, qualificationErrorMessage } from './simulator-validation.mjs';
@@ -782,11 +782,19 @@ function renderOwnerProjectionChart(projection) {
   zero.setAttribute('y1', String(y(0))); zero.setAttribute('y2', String(y(0)));
   zero.setAttribute('stroke', '#b7c9bf'); zero.setAttribute('stroke-dasharray', '4 4');
   svg.append(zero);
-  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  path.setAttribute('d', values.map((value, index) => `${index ? 'L' : 'M'} ${x(index).toFixed(1)} ${y(value).toFixed(1)}`).join(' '));
-  path.setAttribute('fill', 'none'); path.setAttribute('stroke', '#087957'); path.setAttribute('stroke-width', '3');
-  path.setAttribute('stroke-linecap', 'round'); path.setAttribute('stroke-linejoin', 'round');
-  svg.append(path);
+  const barWidth = Math.min(18, (width - left - right) / (rows.length - 1) * 0.62);
+  values.forEach((value, index) => {
+    const bar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    const barX = Math.max(left, Math.min(width - right - barWidth, x(index) - barWidth / 2));
+    const valueY = y(value), zeroY = y(0);
+    bar.setAttribute('x', barX.toFixed(1));
+    bar.setAttribute('y', Math.min(valueY, zeroY).toFixed(1));
+    bar.setAttribute('width', barWidth.toFixed(1));
+    bar.setAttribute('height', Math.max(1, Math.abs(zeroY - valueY)).toFixed(1));
+    bar.setAttribute('rx', '2');
+    bar.setAttribute('fill', value >= 0 ? '#087957' : '#d49a2a');
+    svg.append(bar);
+  });
   for (const year of [0, 5, 10, 15, 20, 25].filter((value) => value < rows.length)) {
     const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     label.setAttribute('x', String(x(year))); label.setAttribute('y', String(height - 8));
@@ -795,7 +803,7 @@ function renderOwnerProjectionChart(projection) {
     svg.append(label);
   }
   const checkpoints = [0, 5, 10, 15, 20, 25].filter((year) => year < rows.length);
-  target.setAttribute('aria-label', `Flux nets cumulés avant IS, en euros : ${checkpoints.map((year) => `année ${year}, ${numberFormat(values[year])} euros`).join('; ')}.`);
+  target.setAttribute('aria-label', `Trésorerie nette cumulée avant IS, en barres et en euros : ${checkpoints.map((year) => `année ${year}, ${numberFormat(values[year])} euros`).join('; ')}.`);
   target.append(svg);
   target.hidden = false;
 }

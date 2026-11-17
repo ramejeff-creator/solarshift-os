@@ -13,7 +13,7 @@ export async function requestSolarPreview(url, { signal, fetchImpl = fetch, wait
   for (let attempt = 0; attempt < 3; attempt++) {
     if (signal?.aborted) throw abortError();
     let response;
-    try { response = await fetchImpl(url, { signal }); }
+    try { response = await fetchImpl(url, { signal, cache: 'no-store' }); }
     catch (error) {
       if (signal?.aborted || error?.name === 'AbortError' || attempt === 2) throw error;
       onRetry(attempt + 1); await waitImpl(500 * 2 ** attempt, signal); continue;
