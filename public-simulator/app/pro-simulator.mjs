@@ -761,13 +761,14 @@ function renderOwnerProjectionChart(projection) {
   const target = $('simProjectionChart');
   target.replaceChildren();
   const rows = projection?.projection;
-  if (!Array.isArray(rows) || rows.length < 2 || rows.some((row) => !Number.isFinite(Number(row.cumulativeNetCashflowEur)))) {
+  const cumulativeValue = (row) => Number(row?.cumulativeNetCashflowEur ?? row?.cumulativeNetGainEur);
+  if (!Array.isArray(rows) || rows.length < 2 || rows.some((row) => !Number.isFinite(cumulativeValue(row)))) {
     target.hidden = true;
     target.setAttribute('aria-label', 'Projection propriétaire indisponible');
     return;
   }
   const width = 720, height = 190, left = 54, right = 14, top = 14, bottom = 30;
-  const values = rows.map((row) => Number(row.cumulativeNetCashflowEur));
+  const values = rows.map(cumulativeValue);
   const minimum = Math.min(0, ...values), maximum = Math.max(0, ...values);
   const span = maximum - minimum || 1;
   const x = (year) => left + year / (rows.length - 1) * (width - left - right);
@@ -859,7 +860,7 @@ function renderResult(input, production = null) {
     ? `${numberFormat(Number(production.annual_kwh_kwc) * input.shadeFactor)} kWh/kWc/an · estimation PVGIS`
     : 'À calculer / qualifier';
   const financialReady = financial?.status === 'ASSUMPTION';
-  renderOwnerProjectionChart(production?.financial_preview?.ownerProjection ?? null);
+  renderOwnerProjectionChart(financial?.ownerProjection ?? financial);
   $('resultGrossArea').textContent = `${numberFormat(input.grossArea)} m²`;
   $('resultGrossAreaLabel').textContent = input.siteKind === 'land' ? 'Surface extérieure mesurée sur la carte' : 'Emprise au sol du bâtiment mesurée sur la carte';
   $('resultUsableAssumption').textContent = `${numberFormat(input.usablePercent)} % de la surface totale · hypothèse modifiable`;
