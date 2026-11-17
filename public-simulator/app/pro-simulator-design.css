@@ -786,9 +786,9 @@ html, body { max-width: 100%; overflow-x: clip; }
 
 /* Keep the site header limited to its brand and account action; progress is a separate row. */
 .simTopbar { display: flex; grid-template-columns: none; align-items: center; justify-content: space-between; gap: 24px; width: min(1560px,calc(100% - 96px)); height: 82px; min-height: 82px; margin: 0 auto; padding: 0; }
-.simBrand { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 0; }
+.simBrand { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 14px; }
 .simBrand img { display: block; width: 152px; max-height: 30px; object-fit: contain; object-position: left center; }
-.simBrand > span { display: block; margin-top: 1px; padding: 0; border: 0; font-size: 8px; line-height: 1.2; letter-spacing: .015em; color: #698477; }
+.simBrand > span { display: block; margin-top: 0; padding-left: 14px; border-left: 1px solid #dde5e9; font-size: 11px; line-height: 1.2; letter-spacing: .015em; color: #698477; white-space: nowrap; }
 .simProgressBand { width: 100%; border-top: 1px solid #edf1ef; border-bottom: 1px solid #e6eeea; background: #fbfdfb; }
 .simProgress { width: min(900px,calc(100% - 96px)); max-width: none; margin: 0 auto; padding: 11px 0; }
 .simProgress ol { grid-template-columns: repeat(5,minmax(0,1fr)); gap: 12px; }
@@ -813,7 +813,7 @@ html, body { max-width: 100%; overflow-x: clip; }
   .simProductionPanel .simMonthlyChart { height:150px; gap:3px; }
   .simTopbar { width: calc(100% - 32px); height: 66px; min-height: 66px; }
   .simBrand img { width: 128px; max-height: 25px; }
-  .simBrand > span { display: block; font-size: 7px; }
+  .simBrand > span { display: block; padding-left: 9px; font-size: 9px; }
   .simProgressBand { padding: 0; }
   .simProgress { width: calc(100% - 28px); padding: 10px 0; }
   .simProgress ol { grid-template-columns: repeat(5,minmax(0,1fr)); gap: 3px; }
@@ -821,6 +821,10 @@ html, body { max-width: 100%; overflow-x: clip; }
   .simProgress li > span { flex-basis: 29px; width: 29px; height: 29px; font-size: 11px; }
   .simProgress li b { max-width: 68px; font-size: 8px; line-height: 1.2; }
   .simProgress li:not(:last-child)::after { position: absolute; top: 14px; left: calc(50% + 18px); right: calc(-50% + 18px); min-width: 0; margin: 0; }
+}
+@media (max-width:520px) {
+  .simBrand { flex-direction: column; align-items: flex-start; gap: 0; }
+  .simBrand > span { margin-top: 1px; padding: 0; border: 0; font-size: 7px; white-space: normal; }
 }
 body[data-view="contact"] .simProgressBand,body[data-view="summary"] .simProgressBand { display: none; }
 
@@ -1157,5 +1161,3 @@ body[data-active-step="2"] .simIntroArt,body[data-active-step="2"] .simHeroNote 
 .simProjectionChart { min-height: 190px; width: 100%; }
 .simProjectionDetails { margin-top: 14px; }
 .simProjectionDetails > summary { cursor: pointer; color: #275e4b; font-weight: 650; }
-@media (min-width:701px){.simBrand>span{white-space:nowrap}}
-@media (max-width:700px){.simBrand>span{white-space:normal}}

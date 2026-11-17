@@ -453,7 +453,7 @@
     },
     {
       "path": "app/pro-simulator-design.css",
-      "sha256": "d462e69ab1946f184a76dc70ecfdb30f62f0847561afbdff19af373c7e9a68c2"
+      "sha256": "11542c7445a9f4f38b52ac0a4ac171daf066c030855ed0b71ed76be7a669cfc1"
     },
     {
       "path": "app/pro-simulator-estimation.mjs",
@@ -465,7 +465,7 @@
     },
     {
       "path": "app/pro-simulator.html",
-      "sha256": "6b434ca57bd3ea1301acbefa5d4335068efb24401be486a4188edf0cad51f877"
+      "sha256": "54f8619667cf7059ae4b098dc9de8e8687a5a32c75a0dc259346164205627a2e"
     },
     {
       "path": "app/pro-simulator.mjs",
@@ -809,7 +809,7 @@
     },
     {
       "path": "index.html",
-      "sha256": "6b434ca57bd3ea1301acbefa5d4335068efb24401be486a4188edf0cad51f877"
+      "sha256": "54f8619667cf7059ae4b098dc9de8e8687a5a32c75a0dc259346164205627a2e"
     },
     {
       "path": "installation-cost-reference.js",
@@ -1025,7 +1025,7 @@
     },
     {
       "path": "pro-simulator-design.css",
-      "sha256": "d462e69ab1946f184a76dc70ecfdb30f62f0847561afbdff19af373c7e9a68c2"
+      "sha256": "11542c7445a9f4f38b52ac0a4ac171daf066c030855ed0b71ed76be7a669cfc1"
     },
     {
       "path": "pro-simulator-estimation.mjs",
@@ -1037,7 +1037,7 @@
     },
     {
       "path": "pro-simulator.html",
-      "sha256": "6b434ca57bd3ea1301acbefa5d4335068efb24401be486a4188edf0cad51f877"
+      "sha256": "54f8619667cf7059ae4b098dc9de8e8687a5a32c75a0dc259346164205627a2e"
     },
     {
       "path": "pro-simulator.mjs",
