@@ -1157,3 +1157,5 @@ body[data-active-step="2"] .simIntroArt,body[data-active-step="2"] .simHeroNote 
 .simProjectionChart { min-height: 190px; width: 100%; }
 .simProjectionDetails { margin-top: 14px; }
 .simProjectionDetails > summary { cursor: pointer; color: #275e4b; font-weight: 650; }
+@media (min-width:701px){.simBrand>span{white-space:nowrap}}
+@media (max-width:700px){.simBrand>span{white-space:normal}}
