@@ -60,7 +60,7 @@
       }
       const session = await client.getSession(window.localStorage);
       if (!session?.access_token) return login();
-      if (assuranceLevel(session) !== 'aal2' && !config.localTestMfaBypass) return login('mfa');
+      if (assuranceLevel(session) !== 'aal2' && !(config.localTestMfaBypass || config.betaTestMfaBypass)) return login('mfa');
       const identity = await client.getIdentity(session.access_token);
       if (!identity?.id) return login();
       window.__SOLARSHIFT_AUTHORIZED = true;

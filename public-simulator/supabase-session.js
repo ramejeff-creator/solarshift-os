@@ -350,7 +350,7 @@
       if (connectionPanel) connectionPanel.hidden = true;
       return;
     }
-    if (sessionAssuranceLevel(session) !== 'aal2' && !config.localTestMfaBypass) {
+    if (sessionAssuranceLevel(session) !== 'aal2' && !(config.localTestMfaBypass || config.betaTestMfaBypass)) {
       const next = `${location.pathname}${location.search}${location.hash}`;
       location.replace(`./login.html?${new URLSearchParams({ next, reason: 'mfa' })}`);
       return;

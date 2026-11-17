@@ -26,6 +26,10 @@ const progressText = document.getElementById('loginProgressText');
 const environment = window.SOLARSHIFT_CONFIG?.environment || 'test';
 const badge = document.getElementById('environmentBadge');
 badge.textContent = environment === 'test' ? 'Environnement de test' : 'Environnement OZENO';
+if (window.SOLARSHIFT_CONFIG?.betaTestMfaBypass) {
+  const intro = document.querySelector('.loginIntro');
+  if (intro) intro.textContent = 'Connectez-vous avec votre adresse e-mail et votre mot de passe. La vérification par SMS est temporairement désactivée sur Beta.';
+}
 
 document.querySelectorAll('[data-visibility-toggle]').forEach((button) => {
   button.addEventListener('click', () => {
@@ -92,7 +96,7 @@ else if (!window.SOLARSHIFT_CONFIG?.supabaseUrl || !window.SOLARSHIFT_CONFIG?.su
 async function completeLogin(session) {
   pendingSession = session;
   hideForms();
-  if (sessionAal(session) === 'aal2' || window.SOLARSHIFT_CONFIG?.localTestMfaBypass) {
+  if (sessionAal(session) === 'aal2' || window.SOLARSHIFT_CONFIG?.localTestMfaBypass || window.SOLARSHIFT_CONFIG?.betaTestMfaBypass) {
     clearProgress('Connexion sécurisée. Ouverture de l’espace…');
     window.location.replace(next);
     return;
@@ -282,7 +286,7 @@ newPasswordForm.addEventListener('submit', async (event) => {
   }
   try {
     const session = await getSession(window.localStorage);
-    if (session?.access_token && sessionAal(session) !== 'aal2' && !window.SOLARSHIFT_CONFIG?.localTestMfaBypass) await completeLogin(session);
+    if (session?.access_token && sessionAal(session) !== 'aal2' && !(window.SOLARSHIFT_CONFIG?.localTestMfaBypass || window.SOLARSHIFT_CONFIG?.betaTestMfaBypass)) await completeLogin(session);
     else if (session?.access_token) window.location.replace(next);
     else {
       form.hidden = false;

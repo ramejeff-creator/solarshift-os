@@ -129,7 +129,7 @@
     },
     {
       "path": "app/app-auth-gate.js",
-      "sha256": "a6c96ae8d19c48049b035fad9c1865e2480a1e35f81acd2393b73a27c28e6e42"
+      "sha256": "a1878f2d0f0c78a430c922d9ee0690b446e14b7bcc843b4cc211a05cd22b93b4"
     },
     {
       "path": "app/assets/simulator/autoconsommation-surplus.png",
@@ -285,7 +285,7 @@
     },
     {
       "path": "app/login.js",
-      "sha256": "ae41ee7dc399cc990987a05d6fcde4c6b4502b0eeb69e0cba549dde20c6d96f9"
+      "sha256": "669186bc7693bf74f7c62aa2fdf3f84c522d579848fd9349667789e1af6e2c6e"
     },
     {
       "path": "app/market-opportunities.css",
@@ -565,7 +565,7 @@
     },
     {
       "path": "app/runtime-config.js",
-      "sha256": "f1412c9bc9bd414acbdb0b1b8a322eec1b586b66affd5154509be063136c75ab"
+      "sha256": "6717d83034dbee1e31c867138ac9f70fda2540548ddfff52e40de56776445e9a"
     },
     {
       "path": "app/scenario-report.html",
@@ -625,7 +625,7 @@
     },
     {
       "path": "app/supabase-session.js",
-      "sha256": "ba22c78ee227a72d08cb9f491fa779b29bac9638e79f6a9101ae8956e30f6e24"
+      "sha256": "0769af4cfc410a1e392e0954a57f12edf7eda97ab63b45b36ac30a458d706e85"
     },
     {
       "path": "app/vendor/leaflet/images/layers-2x.png",
@@ -701,7 +701,7 @@
     },
     {
       "path": "app-auth-gate.js",
-      "sha256": "a6c96ae8d19c48049b035fad9c1865e2480a1e35f81acd2393b73a27c28e6e42"
+      "sha256": "a1878f2d0f0c78a430c922d9ee0690b446e14b7bcc843b4cc211a05cd22b93b4"
     },
     {
       "path": "assets/simulator/autoconsommation-surplus.png",
@@ -857,7 +857,7 @@
     },
     {
       "path": "login.js",
-      "sha256": "ae41ee7dc399cc990987a05d6fcde4c6b4502b0eeb69e0cba549dde20c6d96f9"
+      "sha256": "669186bc7693bf74f7c62aa2fdf3f84c522d579848fd9349667789e1af6e2c6e"
     },
     {
       "path": "market-opportunities.css",
@@ -1137,7 +1137,7 @@
     },
     {
       "path": "runtime-config.js",
-      "sha256": "f1412c9bc9bd414acbdb0b1b8a322eec1b586b66affd5154509be063136c75ab"
+      "sha256": "6717d83034dbee1e31c867138ac9f70fda2540548ddfff52e40de56776445e9a"
     },
     {
       "path": "scenario-report.html",
@@ -1197,7 +1197,7 @@
     },
     {
       "path": "supabase-session.js",
-      "sha256": "ba22c78ee227a72d08cb9f491fa779b29bac9638e79f6a9101ae8956e30f6e24"
+      "sha256": "0769af4cfc410a1e392e0954a57f12edf7eda97ab63b45b36ac30a458d706e85"
     },
     {
       "path": "vendor/leaflet/images/layers-2x.png",
@@ -1272,5 +1272,5 @@
       "sha256": "ec7cf7047bca0748956cc708ddc3984d639baaef23c93f0a22df322acfb9f02a"
     }
   ],
-  "hotfix": "20261117-mfa-list-fix"
+  "hotfix": "20261117-beta-password-only-auth"
 }

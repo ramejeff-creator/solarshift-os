@@ -25,6 +25,11 @@
   // Phone MFA is a paid Supabase add-on. Keep the local test preview usable
   // without weakening authentication on any hosted test or production origin.
   config.localTestMfaBypass = localPreview && project.name === 'test';
+  config.betaTestMfaBypass = window.location.protocol === 'https:'
+    && host === 'ramejeff-creator.github.io'
+    && String(window.location.pathname || '').startsWith('/solarshift-os/')
+    && project.name === 'test' && project.url === 'https://dptympcfznaqcdvtdxok.supabase.co';
+
   // Une seule présentation active sur le serveur local : les anciennes URL
   // restent compatibles sans exiger de paramètre dans la barre d’adresse.
   // Un false explicite reste disponible pour une comparaison locale ponctuelle.
