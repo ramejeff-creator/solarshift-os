@@ -1,0 +1,91 @@
+.hubMarketWorkspace{max-width:1440px;margin:0 auto;min-width:0}
+.hubMarketNotice{display:flex;gap:10px;align-items:flex-start;margin:0 0 16px;padding:13px 15px;border:1px solid #ead7a4;border-left:4px solid #d29a28;border-radius:8px;background:#fff8e8;color:#624f24;font-size:12px;line-height:1.55}
+.hubMarketNotice strong{flex:none;color:#795c18}
+.hubMarketPanel{margin:0 0 18px;padding:20px}
+.hubMarketPanel h2{margin:0 0 16px;color:#173f37;font-size:19px}
+.hubMarketPanel h2 small{margin-left:6px;color:#688275;font-size:12px;font-weight:500}
+.hubMarketForm{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.hubMarketForm label,.hubMarketStage{display:flex;min-width:0;flex-direction:column;gap:5px;color:#314f43;font-size:12px;font-weight:650}
+.hubMarketForm input,.hubMarketForm select,.hubMarketToolbar input,.hubMarketToolbar select,.hubMarketStage select{box-sizing:border-box;width:100%;min-width:0;min-height:40px;padding:8px 10px;border:1px solid #c9dacf;border-radius:7px;background:#fff;color:#21483a;font:inherit}
+.hubMarketSource{grid-column:span 2}
+.hubMarketForm button{align-self:end;min-height:40px}
+.hubMarketToolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.hubMarketToolbar h2{flex:1;margin:0}
+.hubMarketFeedToolbar{justify-content:space-between;align-items:center}
+.hubMarketFeedToolbar>div{min-width:0;flex:1}
+.hubMarketFeedToolbar .hubMarketNote{margin:4px 0 0!important}
+.hubMarketFeedToolbar button{flex:none;min-height:39px}
+.hubMarketSourceStates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:0 0 14px}
+.hubMarketSourceState{display:grid;grid-template-columns:1fr auto;gap:3px 8px;padding:9px 11px;border:1px solid #dce8e0;border-radius:8px;background:#f8fbf9;color:#355b4a;font-size:11px}
+.hubMarketSourceState strong{font-size:11px}
+.hubMarketSourceState span{font-weight:700;color:#267553}
+.hubMarketSourceState span.isUnavailable{color:#9a5b0a}
+.hubMarketSourceState small{grid-column:1/-1;color:#74887c;font-size:10px}
+.hubMarketFilters{display:grid;grid-template-columns:minmax(180px,1.4fr) repeat(3,minmax(150px,1fr));gap:9px;margin-bottom:14px}
+.hubMarketFilters input,.hubMarketFilters select{box-sizing:border-box;width:100%;min-width:0;min-height:39px;padding:8px 10px;border:1px solid #c9dacf;border-radius:7px;background:#fff;color:#21483a;font:inherit;font-size:12px}
+.hubMarketManualEntry{margin-top:16px;padding-top:13px;border-top:1px solid #e3ece6;color:#416454;font-size:12px}
+.hubMarketManualEntry summary{cursor:pointer;font-weight:700}
+.hubMarketManualEntry[open] summary{margin-bottom:13px}
+.hubMarketToolbar input{width:min(330px,100%)}
+.hubMarketToolbar select{width:min(250px,100%)}
+.hubMarketCards{display:grid;gap:11px}
+.hubMarketCard{min-width:0;padding:15px 16px;border:1px solid #d9e6de;border-radius:10px;background:#fff}
+.hubMarketCardHead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.hubMarketKicker{color:#688477;font-size:10px;font-weight:750;letter-spacing:.06em;text-transform:uppercase}
+.hubMarketCard h3{margin:5px 0;color:#173f37;font-size:16px;line-height:1.35}
+.hubMarketCard p{margin:0;color:#607b6e;font-size:12px;line-height:1.5}
+.hubMarketStatus{flex:none;padding:5px 9px;border-radius:99px;background:#eef5f1;color:#37684f;font-size:10px;font-weight:700}
+.hubMarketMeta{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:12px;padding-top:10px;border-top:1px solid #edf2ee;color:#627d70;font-size:11px}
+.hubMarketMeta a{color:#176a4d;font-weight:700}
+.hubMarketCorrection{display:inline-block;margin-left:5px;padding:3px 6px;border-radius:99px;background:#fff5df;color:#8a5b08;font-size:9px;font-weight:700;vertical-align:middle}
+.hubMarketHistory{margin-top:9px;color:#526b5f;font-size:10px}
+.hubMarketHistory summary{cursor:pointer;font-weight:700}
+.hubMarketHistory p{margin:5px 0 0;overflow-wrap:anywhere}
+.hubMarketHistory a{color:#176a4d}
+.hubMarketActions{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:12px}
+.hubMarketActions :is(button,a){min-height:34px;padding:7px 11px;font-size:11px}
+.hubMarketStage{max-width:280px;margin-top:12px}
+.hubMarketNote{margin-top:10px!important;color:#768b80!important;font-size:11px!important}
+.hubDceWorkspace{scroll-margin-top:18px;border-top:3px solid #2e8f72!important}
+.hubDceHeader{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:16px}
+.hubDceHeader h2{margin:4px 0!important;font-size:23px!important;overflow-wrap:anywhere}
+.hubDceHeader .hubMarketNote{margin:0!important}
+.hubDceGrid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:14px;align-items:start}
+.hubDcePane{min-width:0;padding:16px;border:1px solid #d9e6de;border-radius:10px;background:#fff}
+.hubDcePane h3{margin:0 0 12px;color:#173f37;font-size:16px}
+.hubDcePane h3:not(:first-child){margin-top:22px;padding-top:16px;border-top:1px solid #e3ece6}
+.hubDceForm{display:grid;gap:11px}
+.hubDceForm label{display:flex;min-width:0;flex-direction:column;gap:5px;color:#314f43;font-size:12px;font-weight:650}
+.hubDceForm input,.hubDceForm select,.hubDceForm textarea,.hubDceFinding select{box-sizing:border-box;width:100%;min-width:0;min-height:39px;padding:8px 10px;border:1px solid #c9dacf;border-radius:7px;background:#fff;color:#21483a;font:inherit}
+.hubDceForm textarea{resize:vertical}
+.hubDceForm input[type=file]{padding:7px;background:#f8faf8}
+.hubDceFormRow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.hubDceForm button{justify-self:start;min-height:38px}
+.hubDceStatus,.hubDceIntro{margin:0;color:#607b6e;font-size:11px;line-height:1.55}
+.hubDceDocuments,.hubDceFindings{display:grid;gap:9px}
+.hubDceDocument,.hubDceFinding{min-width:0;padding:11px;border:1px solid #dfe9e2;border-radius:8px;background:#fbfdfb}
+.hubDceDocumentHead{display:grid;grid-template-columns:35px minmax(0,1fr) auto;gap:9px;align-items:center}
+.hubDceDocumentHead>div{display:grid;gap:3px;min-width:0}
+.hubDceDocumentHead strong{overflow-wrap:anywhere;color:#173f37;font-size:12px}
+.hubDceDocumentHead small,.hubDceVersionMeta,.hubDceFinding small{color:#71857a;font-size:10px;line-height:1.5}
+.hubDceFileIcon{display:grid;width:34px;height:38px;place-items:center;border-radius:6px;background:#eaf3ee;color:#21684e;font-size:9px;font-weight:800}
+.hubDceDocumentHead button,.hubDceOldVersion button{min-height:30px;padding:5px 8px;font-size:10px}
+.hubDceVersionMeta{margin:7px 0 0 44px;overflow-wrap:anywhere}
+.hubDceOlder{margin:9px 0 0 44px;color:#526b5f;font-size:10px}
+.hubDceOlder summary{cursor:pointer;font-weight:700}
+.hubDceOldVersion{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:7px;padding-top:7px;border-top:1px solid #e4ece7}
+.hubDceOldVersion span{overflow-wrap:anywhere}
+.hubDceFinding{display:grid;gap:6px}
+.hubDceFindingTop{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.hubDceFindingKind{padding:4px 7px;border-radius:99px;background:#edf4f0;color:#37684f;font-size:9px;font-weight:750}
+.hubDceFinding select{width:auto;min-height:30px;padding:4px 22px 4px 7px;font-size:10px}
+.hubDceFinding>strong{color:#173f37;font-size:12px;overflow-wrap:anywhere}
+.hubDceFinding p{margin:0;color:#607b6e;font-size:10px;line-height:1.5;overflow-wrap:anywhere}
+.hubDceFinding small{display:block}
+.hubDceSourceLink{padding:0;border:0;background:none;color:#176a4d;font:inherit;text-align:left;text-decoration:underline;cursor:pointer}
+.hubDceWorkspace[hidden]{display:none!important}
+@media(max-width:900px){.hubDceGrid{grid-template-columns:1fr}}
+@media(max-width:560px){.hubDceHeader{flex-direction:column}.hubDceHeader button{width:100%}.hubDceFormRow{grid-template-columns:1fr}.hubDceDocumentHead{grid-template-columns:32px minmax(0,1fr)}.hubDceDocumentHead button{grid-column:2;justify-self:start}.hubDceVersionMeta,.hubDceOlder{margin-left:41px}.hubDceOldVersion{align-items:flex-start;flex-direction:column}}
+@media(max-width:900px){.hubMarketFilters{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.hubMarketForm{grid-template-columns:repeat(2,minmax(0,1fr))}.hubMarketToolbar{align-items:stretch}.hubMarketToolbar h2{flex:1 0 100%}.hubMarketToolbar :is(input,select){width:100%;flex:1 1 100%}.hubMarketSourceStates{grid-template-columns:1fr}}
+@media(max-width:520px){.hubMarketForm,.hubMarketFilters{grid-template-columns:1fr}.hubMarketSource{grid-column:auto}.hubMarketNotice{flex-direction:column}.hubMarketCardHead{flex-direction:column}.hubMarketFeedToolbar{align-items:stretch}.hubMarketFeedToolbar button{width:100%}}

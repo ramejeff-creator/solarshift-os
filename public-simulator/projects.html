@@ -1,23 +1,321 @@
 <!doctype html>
-<html lang="fr">
+<html lang="fr" data-requires-auth>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>OZENO · Espace projets</title>
-  <meta http-equiv="refresh" content="0;url=./app/projects.html">
-  <style>
-    :root { color-scheme: light; font: 16px/1.6 system-ui, sans-serif; color: #173d34; background: #f3f8f4; }
-    body { display: grid; min-height: 100vh; place-items: center; margin: 0; padding: 24px; box-sizing: border-box; }
-    main { max-width: 620px; padding: 32px; border: 1px solid #d4e4d9; border-radius: 18px; background: white; box-shadow: 0 12px 36px #173d3414; }
-    h1 { margin-top: 0; line-height: 1.2; }
-    a { display: inline-block; margin-top: 12px; padding: 10px 16px; border-radius: 8px; color: white; background: #075746; text-decoration: none; font-weight: 700; }
-  </style>
+  <title>OZENO · Espace commercial</title>
+  <link rel="icon" type="image/png" href="./exec-d2eda8f0-968b-466f-b6ab-7ba649808352.png">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="./ozeno-theme.css">
+  <link rel="stylesheet" href="./project-hub.css">
+  <link rel="stylesheet" href="./market-opportunities.css">
+  <script src="./runtime-config.js"></script>
+  <script src="./app-auth-gate.js"></script>
 </head>
-<body>
-  <main>
-    <h1>Espace projets OZENO</h1>
-    <p>Ouverture de vos dossiers, pré-études et études. Une connexion au compte est requise.</p>
-    <a href="./app/projects.html">Accéder aux projets</a>
-  </main>
+<body class="ozenoWorkspace ozenoDashboard">
+  <header class="hubTopbar">
+    <a class="hubBrand" href="./projects.html" aria-label="OZENO, portefeuille projets">
+      <span class="hubBrandCopy">
+        <img class="hubLogoWordmark" src="./ozeno-wordmark.png" alt="OZENO">
+        <small>Plateforme de transition énergétique</small>
+      </span>
+    </a>
+    <label class="hubGlobalSearch" id="hubGlobalSearchWrap">
+      <span class="hubSearchIcon" aria-hidden="true">⌕</span>
+      <span class="hubVisuallyHidden">Rechercher dans les projets</span>
+      <input id="hubSearch" type="search" placeholder="Rechercher un projet, un client, une adresse…" autocomplete="off">
+      <span class="hubSearchHint" aria-hidden="true">Projets</span>
+    </label>
+    <nav class="ozenoHeaderNavigation" aria-label="Compte et préférences"></nav>
+  </header>
+
+  <div class="hubAdminShell">
+    <aside class="hubSidebar" aria-label="Espace commercial">
+      <p class="hubSidebarCaption">ESPACE COMMERCIAL</p>
+      <nav class="hubSidebarNav" aria-label="Modules commerciaux">
+        <p class="hubNavSection">PORTFEUILLE</p>
+        <a class="hubNavItem isActive" href="./projects.html" aria-current="page" data-hub-module="projects">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"></rect><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"></rect><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"></rect><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"></rect></svg>
+          <span class="hubNavLabel">Projets</span><span class="hubSidebarCount" id="hubSidebarProjectCount">—</span>
+        </a>
+        <a class="hubNavItem" href="./projects.html?module=opportunities" data-hub-module="opportunities">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5V5.8a1.8 1.8 0 0 1 1.8-1.8h12.4A1.8 1.8 0 0 1 20 5.8v13.7l-3.5-2.2-4.5 2.2-4.5-2.2z"></path><path d="M8 8h8M8 11.5h6"></path></svg>
+          <span class="hubNavLabel">Opportunités</span>
+        </a>
+        <a class="hubNavItem" href="./projects.html?module=prospection" data-hub-module="prospection">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m15.5 15.5 5 5M8 10.5h5M10.5 8v5"></path></svg>
+          <span class="hubNavLabel">Outils prospection</span><span class="hubComingSoon">Nouveau</span>
+        </a>
+
+        <p class="hubNavSection">SUIVI COMMERCIAL</p>
+        <a class="hubNavItem" href="#planning" data-hub-module="planning">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"></rect><path d="M7.5 3v4M16.5 3v4M3.5 9.5h17M8 13h3M8 16.5h7"></path></svg>
+          <span class="hubNavLabel">Planning</span><span class="hubComingSoon" id="hubPlanningCount">0</span>
+        </a>
+        <a class="hubNavItem" href="#revenus" data-hub-module="revenus">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M15.5 8.5c-.7-.8-1.8-1.2-3.3-1.2-1.7 0-2.8.8-2.8 2s1.1 1.8 2.8 2.1 2.8.9 2.8 2.2-1.2 2.1-3 2.1c-1.5 0-2.8-.5-3.6-1.4M12 5.5v13"></path></svg>
+          <span class="hubNavLabel">Revenus</span><span class="hubComingSoon">À venir</span>
+        </a>
+
+        <p class="hubNavSection">RÉSEAU</p>
+        <a class="hubNavItem" href="#clients" data-hub-module="clients">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"></circle><path d="M3.5 20v-1.7a5.5 5.5 0 0 1 11 0V20zM16 5.2a3 3 0 0 1 0 5.7M17 14a4.7 4.7 0 0 1 3.5 4.5V20h-3"></path></svg>
+          <span class="hubNavLabel">Clients</span><span class="hubComingSoon">À venir</span>
+        </a>
+        <a class="hubNavItem" href="#installateurs" data-hub-module="installateurs">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 4l9 6.5M5.5 9v11h13V9M9 20v-6h6v6"></path><path d="m15 6 1.5-2.5 2.2 1.2L17 7"></path></svg>
+          <span class="hubNavLabel">Partenaires</span><span class="hubComingSoon">Réseau</span>
+        </a>
+        <a class="hubNavItem" href="#contact-ozeno" data-hub-module="contact-ozeno">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16v11H9l-5 3v-14Z"></path><path d="M8 9h8M8 12.5h5"></path></svg>
+          <span class="hubNavLabel">Contact Ozeno</span><span class="hubComingSoon">À venir</span>
+        </a>
+        <a class="hubNavItem" href="./franchise.html">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"></circle><circle cx="17.5" cy="9" r="2.4"></circle><path d="M3.5 20v-1.7a5.5 5.5 0 0 1 11 0V20zM15.5 15.5a4.5 4.5 0 0 1 5 4.5"></path></svg>
+          <span class="hubNavLabel">Espace franchisé</span><span class="hubComingSoon">Aperçu</span>
+        </a>
+
+        <p class="hubNavSection">SERVICES</p>
+        <a class="hubNavItem" href="./projects.html?module=markets" data-hub-module="markets">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V8l8-4 8 4v12M3 20h18M8 10h2M14 10h2M8 14h2M14 14h2M10 20v-3h4v3"></path></svg>
+          <span class="hubNavLabel">Marchés &amp; appels d’offres</span>
+        </a>
+        <a class="hubNavItem" href="./actualites.html">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4.5h16v15H4zM8 8h8M8 11.5h8M8 15h5"></path><path d="m16.5 16.5 1.5 1.5 3-3"></path></svg>
+          <span class="hubNavLabel">Actualités</span><span class="hubComingSoon">3 veilles</span>
+        </a>
+        <p class="hubNavSection">RESSOURCES</p>
+        <a class="hubNavItem" href="#fiches-techniques" data-hub-module="fiches-techniques">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.5h14v17H5zM8 7h8M8 10.5h8M8 14h5"></path><path d="m15.5 17 1.5 1.5 3-3"></path></svg>
+          <span class="hubNavLabel">Fiches techniques</span><span class="hubComingSoon">À venir</span>
+        </a>
+        <a class="hubNavItem" href="#references" data-hub-module="references">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4.5h6a3 3 0 0 1 3 3V20a3 3 0 0 0-3-2.5H4zM20 4.5h-4a3 3 0 0 0-3 3M13 20a3 3 0 0 1 3-2.5h4v-13h-4"></path></svg>
+          <span class="hubNavLabel">Références</span><span class="hubComingSoon">À venir</span>
+        </a>
+        <a class="hubNavItem" href="#documentations" data-hub-module="documentations">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h8l4 4V20H6zM14 3.5V8h4M9 12h6M9 15.5h6"></path></svg>
+          <span class="hubNavLabel">Documentations</span><span class="hubComingSoon">À venir</span>
+        </a>
+        <a class="hubNavItem" href="#blog-conseils" data-hub-module="blog-conseils">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4.5h6a3 3 0 0 1 3 3V20a3 3 0 0 0-3-2.5H4zM20 4.5h-4a3 3 0 0 0-3 3"></path><path d="m16 13 4.5-4.5a1.4 1.4 0 0 1 2 2L18 17l-3 1z"></path></svg>
+          <span class="hubNavLabel">Blog et conseils</span><span class="hubComingSoon">À venir</span>
+        </a>
+      </nav>
+      <div class="hubSidebarFooter"><span class="hubSidebarStatusDot" aria-hidden="true"></span><span>Votre espace commercial</span></div>
+    </aside>
+
+    <main class="hubDashboard">
+      <div id="hubPortfolioView">
+        <div class="hubDashboardIntro">
+          <div>
+            <p class="ozenoEyebrow">ESPACE COMMERCIAL / PORTEFEUILLE</p>
+            <h1>Tableau de bord</h1>
+            <p>Retrouvez vos dossiers et poursuivez leur qualification.</p>
+          </div>
+          <button type="button" class="hubPrimary" id="hubNewProject">＋ Nouveau projet</button>
+        </div>
+
+        <section class="hubPortfolioStats" aria-label="Vue d’ensemble du portefeuille">
+          <article class="hubStatCard"><span class="hubStatIcon" aria-hidden="true">✓</span><div><p>Accords commerciaux obtenus</p><strong id="hubValidatedProjects">—</strong></div></article>
+          <article class="hubStatCard"><span class="hubStatIcon draft" aria-hidden="true">◷</span><div><p>Projets en cours</p><strong id="hubInProgressProjects">—</strong><small>Brouillons compris</small></div></article>
+          <article class="hubStatCard"><span class="hubStatIcon cloud" aria-hidden="true">↗</span><div><p>Projets en attente</p><strong id="hubPendingProjects">—</strong><small>Formulaire web non connecté</small></div></article>
+          <article class="hubStatCard"><span class="hubStatIcon prospecting" aria-hidden="true">⌕</span><div><p>Projets ACC</p><strong id="hubProspectingProjects">—</strong></div></article>
+        </section>
+        <section class="hubProjectPanel" aria-labelledby="hubProjectsHeading">
+          <div class="hubToolbar">
+          <div class="hubToolbarTitle"><p class="hubSectionEyebrow">SUIVI DES DOSSIERS</p><h2 id="hubProjectsHeading">Projets <small id="hubProjectCount">Chargement…</small></h2><p class="hubMapPrivacyHint">Missions d’OZENO cumulables : apport d’affaires, AMO et gestion ACC. Les choix sont synchronisés avec la pré-étude. L’étape commerciale reste distincte ; l’archivage reste réversible.</p><p class="hubMapPrivacyHint">La vue carte charge des tuiles Esri, qui reçoit la zone géographique consultée.</p></div>
+            <label class="hubFilterLabel"><span class="hubVisuallyHidden">Filtrer les projets</span><select id="hubFilter"><option value="all">Tous les projets</option></select></label>
+            <div class="hubViewToggle" role="group" aria-label="Mode d’affichage des projets">
+              <button type="button" id="hubShowProjectList" aria-pressed="true">Liste</button>
+              <button type="button" id="hubShowProjectMap" aria-pressed="false">Carte</button>
+            </div>
+          </div>
+          <div id="hubProjectListView">
+            <div class="hubTableScroll">
+            <table class="hubProjects">
+              <thead><tr><th scope="col">Projet / site</th><th scope="col">Client</th><th scope="col">Installateur</th><th scope="col">Mission d’OZENO</th><th scope="col">Étape du projet</th><th scope="col">Installation prévue</th><th scope="col">Commission OZENO potentielle</th><th scope="col">Modifié</th><th scope="col"><span class="hubVisuallyHidden">Action</span></th></tr></thead>
+              <tbody id="hubProjectsBody"></tbody>
+            </table>
+            </div>
+            <p class="hubEmpty" id="hubEmpty" hidden></p>
+          </div>
+          <div id="hubProjectMapView" hidden>
+            <div class="hubMapLegend" aria-label="Légende des statuts">
+              <span><i class="hubMapDot progress" aria-hidden="true"></i>Qualification en cours</span>
+              <span><i class="hubMapDot validated" aria-hidden="true"></i>Accord obtenu</span>
+              <span><i class="hubMapDot archived" aria-hidden="true"></i>Abandonné / archivé</span>
+            </div>
+            <div id="hubProjectMap" class="hubMap" role="region" aria-label="Carte des projets OZENO"></div>
+            <p id="hubProjectMapEmpty" class="hubEmpty" hidden>Aucun projet affiché ne possède de coordonnées cartographiques.</p>
+            <p class="hubPrivacyNote">Les projets sont repérés par statut commercial : validé en bleu, en cours / brouillon en orange, abandonné ou supprimé en gris.</p>
+          </div>
+        </section>
+        <p class="hubMuted hubDashboardFootnote">La négociation est comprise entre l’envoi de la proposition et la signature. Les projets abandonnés, résiliés ou terminés sont archivés automatiquement ; leur motif reste affiché.</p>
+      </div>
+
+      <section class="hubProspecting" id="hubProspectingView" aria-labelledby="hubProspectingTitle" hidden>
+        <div class="hubDashboardIntro">
+          <div>
+            <p class="ozenoEyebrow">ESPACE COMMERCIAL / PROSPECTION</p>
+            <h1 id="hubProspectingTitle">Repérer les potentiels à proximité</h1>
+            <p>Repérez les bâtiments puis consultez leur fiche : consommation publiée, bâtiment, parcelles et urbanisme.</p>
+          </div>
+        </div>
+        <section id="hubObiModeBar" class="hubObiModeBar" aria-label="Modes de prospection" hidden>
+          <div><p class="hubObiEyebrow">PRÉQUALIFICATION LOCALE</p><strong>Prospection multi-signaux</strong></div>
+          <div class="hubObiModeButtons" role="group" aria-label="Mode de prospection">
+            <button type="button" data-obi-mode="global" aria-pressed="true">Prospection multi-signaux</button>
+            <button type="button" data-obi-mode="tertiary" aria-pressed="false">Rénovation tertiaire</button>
+            <button type="button" data-obi-mode="pv" aria-pressed="false">Photovoltaïque</button>
+          </div>
+        </section>
+        <section class="hubProjectPanel" aria-label="Critères de prospection">
+          <div class="hubProspectingControls">
+            <label><span>Projet de référence (facultatif)</span><select id="hubProspectingProject"><option value="">Aucun projet sélectionné</option></select></label>
+            <label class="hubProspectingLocationField"><span>Adresse, lieu ou coordonnées GPS</span><div class="hubProspectingLocationRow"><div class="hubProspectingAutocomplete"><input id="hubProspectingLocation" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="hubProspectingSuggestions" autocomplete="off" placeholder="Adresse, ville ou 48.95990, 1.82077"><div id="hubProspectingSuggestions" class="hubProspectingSuggestions" role="listbox" hidden></div></div><button type="button" class="hubSecondary" id="hubProspectingPickMap" disabled>Placer sur la carte</button></div></label>
+            <label><span>Rayon de recherche</span><select id="hubProspectingRadius"><option value="250">250 m</option><option value="500" selected>500 m</option><option value="1000">1 km</option><option value="2000">2 km</option><option value="5000">5 km</option></select></label>
+            <label class="hubProspectingMinAreaField"><span>Surface toiture minimum (m²)</span><input id="hubProspectingMinArea" type="number" min="1" max="100000" step="1" required aria-describedby="hubProspectingMinAreaError" placeholder="Ex. 500"><small id="hubProspectingMinAreaError" role="alert" hidden></small></label>
+            <button type="button" class="hubPrimary" id="hubProspectingSearch" disabled>Recherche</button>
+          </div>
+          <p id="hubProspectingLocationHint" class="hubProspectingLocationHint" role="status" aria-live="polite">Choisissez un projet, une adresse / un lieu dans les suggestions ou saisissez des coordonnées GPS (latitude, longitude).</p>
+          <p class="hubDataCaveat"><strong>À lire avant utilisation :</strong> OpenStreetMap fournit ici des contours de bâtiments et une emprise au sol approximative. Ce n’est pas une mesure de toiture exploitable, ni une vérification de l’entreprise occupante. Les surfaces devront être contrôlées sur l’imagerie ou lors d’une visite.</p>
+          <p id="hubProspectingState" class="hubProspectingState" role="status" aria-live="polite">Sélectionnez un projet ou une adresse / un lieu, puis lancez la recherche.</p>
+          <div id="hubProspectingProgressWrap" class="hubProspectingProgressWrap" hidden aria-live="polite">
+            <span id="hubProspectingProgressLabel">Recherche des données…</span>
+            <progress id="hubProspectingProgress" max="100" aria-label="Progression de la recherche"></progress>
+          </div>
+          <p id="hubObiEnergySummary" class="hubObiEnergySummary" hidden role="status" aria-live="polite"></p>
+        </section>
+        <section class="hubProspectingResults" id="hubProspectingResults" hidden aria-label="Carte et résultats de prospection">
+          <div class="hubObiMobileView" role="group" aria-label="Affichage des résultats" hidden>
+            <button type="button" data-obi-mobile-view="map" aria-pressed="true">Carte</button>
+            <button type="button" data-obi-mobile-view="list" aria-pressed="false">Liste</button>
+          </div>
+          <div class="hubProspectingMapColumn">
+            <div id="hubProspectingMap" class="hubMap hubProspectingMap" role="region" aria-label="Carte des emprises candidates proches"></div>
+            <p class="hubPrivacyNote">Les surfaces sont estimées à partir des contours au sol : la surface de toiture reste à vérifier. Les consommations sont des agrégats publics à l’adresse, jamais des relevés attribués au bâtiment. Rien n’est enregistré automatiquement ; l’enregistrement explicite ajoute la fiche à la liste « En prospection » avec vérifications en attente.</p>
+          </div>
+          <div class="hubCandidatePanel">
+            <div class="hubCandidateHeading"><h2 id="hubCandidateTitle">Bâtiments repérés</h2><span id="hubCandidateCount">0</span></div>
+            <label class="hubCandidateSort"><span>Trier par</span><select id="hubProspectingSort"><option value="surface">Surface estimée décroissante</option><option value="consumptionDesc">Consommation décroissante</option><option value="consumptionAsc">Consommation croissante</option></select></label>
+            <p class="hubMuted" id="hubProspectingSortState" role="status" aria-live="polite">Tri par surface estimée décroissante.</p>
+            <section id="hubObiListTools" class="hubObiListTools" aria-label="Affichage des signaux" hidden>
+              <div class="hubObiFilterHeading"><label for="hubObiMapSignal">Filtre sur la carte</label><span class="hubObiFilterInfo"><button type="button" aria-label="Comprendre les filtres de la carte" aria-describedby="hubObiFilterHelp">ⓘ</button><span id="hubObiFilterHelp" role="tooltip">Éco Énergie Tertiaire concerne l’assujettissement réglementaire d’un périmètre tertiaire, à établir avec son activité et sa surface de plancher. Rénovation énergétique concerne des preuves de performance ou de travaux (DPE, audit, travaux) liées au bon bâtiment. L’un ne prouve pas l’autre.</span></span></div>
+              <select id="hubObiMapSignal"><option value="eet">Éco Énergie Tertiaire</option><option value="pv">Potentiel photovoltaïque</option><option value="renovation">Rénovation énergétique</option></select>
+              <p class="hubObiLegend" id="hubObiLegend" hidden></p>
+              <p class="hubMuted" id="hubObiSortState" hidden></p>
+              <p id="hubObiPartialState" class="hubObiPartialState" hidden></p>
+              <p id="hubObiCount" class="hubMuted" aria-live="polite"></p>
+            </section>
+            <ol class="hubCandidates" id="hubCandidates"></ol>
+            <button type="button" id="hubObiMore" class="hubSecondary" hidden>Afficher les 20 suivants</button>
+            <section id="hubObiDetail" class="hubObiDetail" aria-live="polite" hidden></section>
+          </div>
+        </section>
+        <section id="hubProspectingSheet" class="hubProjectPanel hubProspectingSheet" aria-label="Fiche détaillée du bâtiment sélectionné" hidden></section>
+      </section>
+
+      <section class="hubInstallerNetwork" id="hubInstallerNetworkView" aria-label="Réseau de partenaires" hidden></section>
+
+      <section class="hubMarketWorkspace" id="hubMarketNoticesView" aria-labelledby="hubMarketTitle" hidden>
+        <div class="hubDashboardIntro"><div><p class="ozenoEyebrow">ESPACE COMMERCIAL / SERVICES</p><h1 id="hubMarketTitle">Marchés &amp; appels d’offres</h1><p>Repérez les consultations et qualifiez-les avant toute entrée au portefeuille.</p></div></div>
+        <div class="hubMarketNotice"><strong>Veille locale</strong><span>Import à la demande depuis les API publiques BOAMP (DILA) et TED. Résultats partiels : la veille ne couvre pas tous les profils acheteurs. Les avis restent à qualifier par une personne avant leur transfert au portefeuille ; aucune pièce de DCE n’est téléchargée automatiquement.</span></div>
+        <section class="hubProjectPanel hubMarketPanel" aria-label="Veille et filtres des avis">
+          <div class="hubMarketToolbar hubMarketFeedToolbar"><div><h2>Avis à examiner <small id="hubMarketCount">0</small></h2><p id="hubMarketSyncStatus" class="hubMarketNote" role="status">Aucune synchronisation lancée dans ce navigateur.</p></div><button id="hubMarketSync" type="button" class="hubPrimary">Actualiser BOAMP + TED</button></div>
+          <div id="hubMarketSourceStates" class="hubMarketSourceStates" aria-live="polite"></div>
+          <div class="hubMarketFilters"><input type="search" id="hubMarketSearch" placeholder="Rechercher un avis ou un acheteur" aria-label="Rechercher un avis ou un acheteur"><select id="hubMarketSector" aria-label="Filtrer par filière"><option value="all">Toutes les filières</option><option value="pv" selected>Photovoltaïque / ombrières</option><option value="irve">IRVE</option><option value="renovation">Rénovation tertiaire</option><option value="maintenance">Exploitation / maintenance</option><option value="other">Autre / non classé</option></select><select id="hubMarketSource" aria-label="Filtrer par source"><option value="all">Toutes les sources</option><option value="BOAMP">BOAMP</option><option value="TED">TED / JOUE</option><option value="MANUAL">Ajout manuel</option><option value="AW_SOLUTIONS">Alerte AW Solutions</option><option value="APPROCH">À anticiper · APProch</option></select><select id="hubMarketStatus" aria-label="Filtrer par étape"><option value="open">À qualifier et à compléter</option><option value="all">Tous les avis</option><option value="transferred">Transférés au portefeuille</option><option value="closed">Classés sans suite</option><option value="anticipate">À anticiper</option></select><input type="search" id="hubMarketTerritory" placeholder="Territoire / département" aria-label="Filtrer par territoire"><select id="hubMarketDeadline" aria-label="Filtrer par échéance"><option value="all">Toutes les échéances</option><option value="30">Dépôt sous 30 jours</option><option value="unknown">Échéance inconnue</option><option value="expired">Échéance dépassée</option></select></div>
+          <div id="hubMarketNoticeList" class="hubMarketCards" aria-live="polite"></div>
+          <details class="hubMarketManualEntry"><summary>Ajouter manuellement un avis ou une alerte reçue</summary><form id="hubMarketNoticeForm" class="hubMarketForm">
+          <label><span>Intitulé de la consultation</span><input name="title" required maxlength="180" placeholder="Objet publié par l’acheteur"></label>
+          <label><span>Acheteur</span><input name="buyer" required maxlength="140"></label>
+          <label><span>Filière</span><select name="sector"><option value="pv">Photovoltaïque</option><option value="canopy">Ombrières</option><option value="irve">IRVE</option><option value="renovation">Rénovation énergétique tertiaire</option><option value="maintenance">Exploitation / maintenance</option><option value="other">Autre</option></select></label>
+          <label><span>Territoire</span><input name="territory" maxlength="120" placeholder="Ville, département ou région"></label>
+          <label><span>Date limite connue</span><input name="deadline" type="date"></label>
+          <label class="hubMarketSource"><span>Lien de la source officielle</span><input name="sourceUrl" type="url" required placeholder="https://..."></label>
+          <label><span>Source</span><select name="source"><option value="MANUAL">Ajout manuel</option><option value="AW_SOLUTIONS">Alerte AW Solutions</option><option value="APPROCH">À anticiper · APProch</option></select></label>
+          <button type="submit" class="hubPrimary">Enregistrer</button>
+        </form></details>
+        </section>
+      </section>
+
+      <section class="hubMarketWorkspace" id="hubOpportunitiesView" aria-labelledby="hubOpportunitiesTitle" hidden>
+        <div class="hubDashboardIntro"><div><p class="ozenoEyebrow">ESPACE COMMERCIAL / PORTEFEUILLE</p><h1 id="hubOpportunitiesTitle">Opportunités</h1><p>Dossiers passés par une qualification humaine. Le transfert d’un avis reste explicite.</p></div></div>
+        <div class="hubMarketNotice"><strong>Dossier DCE local</strong><span>Les pièces restent dans le stockage de ce navigateur et ne sont transmises à aucun service d’analyse. L’extraction automatique et le partage sécurisé ne sont pas encore raccordés ; les éléments ci-dessous sont relevés et vérifiés par l’équipe.</span></div>
+        <section class="hubProjectPanel hubMarketPanel" aria-label="Opportunités qualifiées"><div class="hubMarketToolbar"><h2>Dossiers qualifiés <small id="hubOpportunityCount">0</small></h2><select id="hubOpportunityStage" aria-label="Filtrer les opportunités"><option value="all">Toutes les étapes</option><option value="DCE_TO_COLLECT">DCE à récupérer</option><option value="DCE_TO_ANALYZE">DCE à analyser</option><option value="GO_NO_GO">Go / no-go</option><option value="RESPONSE_PREP">Réponse en préparation</option><option value="AWARDED">Attribuée</option><option value="LOST">Perdue</option><option value="CLOSED">Clôturée</option></select></div><div id="hubOpportunityList" class="hubMarketCards" aria-live="polite"></div></section>
+        <section class="hubProjectPanel hubMarketPanel hubDceWorkspace" id="hubDceWorkspace" aria-labelledby="hubDceTitle" hidden>
+          <div class="hubDceHeader"><div><p class="hubMarketKicker">PORTEFEUILLE / OPPORTUNITÉ QUALIFIÉE</p><h2 id="hubDceTitle">Dossier DCE</h2><p id="hubDceSubtitle" class="hubMarketNote"></p></div><button class="hubSecondary" type="button" id="hubDceBack">Retour aux opportunités</button></div>
+          <div class="hubMarketNotice"><strong>Traitement local</strong><span>Import, historique de versions et relevé manuel avec référence aux pièces. Aucune pièce n’est envoyée à une IA. Pour cette version locale, les fichiers sont propres à ce profil navigateur : utilisez des documents de test ou anonymisés en attendant un stockage partagé avec contrôle d’accès.</span></div>
+          <div class="hubDceGrid">
+            <section class="hubDcePane" aria-labelledby="hubDceUploadTitle"><h3 id="hubDceUploadTitle">Ajouter des pièces du DCE</h3><form id="hubDceUploadForm" class="hubDceForm"><label><span>Type de pièce</span><select name="documentType"><option value="RC">Règlement de consultation (RC)</option><option value="CCAP">CCAP</option><option value="CCTP">CCTP</option><option value="AE">Acte d’engagement</option><option value="DQE">DQE / bordereau financier</option><option value="ANNEX">Annexe</option><option value="OTHER">Autre pièce</option></select></label><label class="hubDceFile"><span>Fichiers</span><input name="files" type="file" multiple required accept=".pdf,.doc,.docx,.xls,.xlsx,.odt,.ods,.csv,.txt,.png,.jpg,.jpeg"></label><button class="hubPrimary" type="submit">Conserver les pièces</button><p id="hubDceUploadStatus" class="hubDceStatus" role="status" aria-live="polite"></p></form><h3>Pièces et versions</h3><div id="hubDceDocuments" class="hubDceDocuments" aria-live="polite"></div></section>
+            <section class="hubDcePane" aria-labelledby="hubDceFindingsTitle"><h3 id="hubDceFindingsTitle">Exigences et éléments à vérifier</h3><p class="hubDceIntro">Relevez les clauses utiles en recopiant leur référence. Une pièce ou une exigence ne devient pas conforme par sa seule présence.</p><form id="hubDceFindingForm" class="hubDceForm"><label><span>Élément relevé</span><input name="title" required maxlength="240" placeholder="Ex. Visite du site mentionnée au RC"></label><div class="hubDceFormRow"><label><span>Nature</span><select name="kind"><option value="REQUIREMENT">Exigence</option><option value="CRITERION">Critère de jugement</option><option value="INFORMATION">Information</option><option value="QUESTION">Question à poser</option></select></label><label><span>Pièce source</span><select name="documentId" id="hubDceFindingDocument" required><option value="">Ajouter d’abord une pièce</option></select></label></div><div class="hubDceFormRow"><label><span>Page / section</span><input name="reference" required maxlength="120" placeholder="Page 4, § 2.1"></label><label><span>Revue humaine</span><select name="review"><option value="TO_REVIEW">À vérifier</option><option value="CONFIRMED">Confirmé par l’équipe</option><option value="AMBIGUOUS">Ambigu / question à instruire</option></select></label></div><label><span>Note de travail (facultatif)</span><textarea name="note" rows="2" maxlength="800" placeholder="Contexte ou action à prévoir"></textarea></label><button class="hubPrimary" type="submit">Ajouter au relevé</button></form><div id="hubDceFindings" class="hubDceFindings" aria-live="polite"></div></section>
+          </div>
+        </section>
+      </section>
+
+      <section class="hubPlanningView" id="hubPlanningView" aria-labelledby="hubPlanningTitle" hidden>
+        <div class="hubDashboardIntro">
+          <div><p class="ozenoEyebrow">ESPACE COMMERCIAL / SUIVI</p><h1 id="hubPlanningTitle">Planning des actions</h1><p>Planifiez les appels, rendez-vous, visites et relances de vos projets.</p></div>
+        </div>
+        <section class="hubProjectPanel hubPlanningPanel" aria-label="Créer une action planifiée">
+          <h2>Nouvelle action</h2>
+          <form id="hubPlanningForm" class="hubPlanningForm">
+            <label><span>Projet</span><select name="project" required><option value="">Choisir un projet</option></select></label>
+            <label><span>Type d’action</span><select name="type"><option value="CALL">Appel</option><option value="EMAIL">E-mail</option><option value="MEETING">Rendez-vous</option><option value="SITE_VISIT">Visite de site</option><option value="SEND_PROPOSAL">Envoyer une proposition</option><option value="FOLLOW_UP">Relance</option><option value="OTHER">Autre action</option></select></label>
+            <label><span>Date prévue</span><input type="date" name="dueDate" required></label>
+            <fieldset class="hubPlanningTimeField"><legend>Horaire (facultatif)</legend><div><label><span>Début</span><input type="time" name="startTime"></label><label><span>Fin</span><input type="time" name="endTime"></label></div><small>Sans horaire : tâche à faire avant cette date. Avec début et fin : rendez-vous planifié.</small></fieldset>
+            <label class="hubPlanningTitleField"><span>Action à réaliser</span><input type="text" name="title" maxlength="180" required placeholder="Ex. Rappeler le propriétaire"></label>
+            <label class="hubPlanningNotesField"><span>Notes (facultatif)</span><textarea name="notes" maxlength="1200" rows="2" placeholder="Contexte ou éléments à préparer"></textarea></label>
+            <button type="submit" class="hubPrimary">Ajouter au planning</button>
+          </form>
+        </section>
+        <section class="hubProjectPanel hubPlanningListPanel" aria-labelledby="hubPlanningListTitle">
+          <div class="hubPlanningToolbar"><div><p class="hubSectionEyebrow">SUIVI DES ÉCHÉANCES</p><h2 id="hubPlanningListTitle">Actions planifiées</h2></div><div class="hubPlanningToolbarActions"><label><span class="hubVisuallyHidden">Filtrer les actions</span><select id="hubPlanningFilter"><option value="active">À faire</option><option value="done">Terminées</option><option value="cancelled">Annulées</option><option value="all">Toutes</option></select></label><button type="button" class="hubSecondary" id="hubPlanningExport" disabled>Télécharger le calendrier (.ics)</button></div></div>
+          <p class="hubPlanningSyncNote">Dans l’ICS, une action sans horaire apparaît comme « À faire » à son échéance ; avec un début et une fin, elle apparaît comme un créneau planifié. Ce fichier est un export ponctuel.</p>
+          <div id="hubPlanningActions" class="hubPlanningActions" aria-live="polite"></div>
+        </section>
+      </section>
+
+      <dialog class="hubWorkflowDialog" id="hubStageActionDialog" aria-labelledby="hubStageActionTitle">
+        <form id="hubStageActionForm" class="hubWorkflowDialogForm">
+          <p class="hubSectionEyebrow">SUIVI DU PROJET</p>
+          <h2 id="hubStageActionTitle">Planifier la prochaine action</h2>
+          <p id="hubStageActionContext" class="hubWorkflowDialogContext"></p>
+          <p class="hubWorkflowDialogHint">Le changement d’étape est déjà enregistré. La planification est facultative ; si vous ajoutez l’action, sa date prévue est requise. Aucune facturation n’est déclenchée.</p>
+          <label><span>Type d’action</span><select name="type"><option value="FOLLOW_UP">Relance</option><option value="CALL">Appel</option><option value="EMAIL">E-mail</option><option value="MEETING">Rendez-vous</option><option value="SITE_VISIT">Visite de site</option><option value="SEND_PROPOSAL">Envoyer une proposition</option><option value="OTHER">Autre action</option></select></label>
+          <label><span>Action à réaliser</span><input name="title" type="text" maxlength="180" required></label>
+          <label><span>Date prévue</span><input name="dueDate" type="date" required></label>
+          <fieldset class="hubPlanningTimeField"><legend>Horaire (facultatif)</legend><div><label><span>Début</span><input type="time" name="startTime"></label><label><span>Fin</span><input type="time" name="endTime"></label></div><small>Sans horaire : tâche à faire avant cette date. Avec début et fin : rendez-vous planifié.</small></fieldset>
+          <label><span>Notes (facultatif)</span><textarea name="notes" maxlength="1200" rows="2"></textarea></label>
+          <div class="hubWorkflowDialogButtons"><button type="button" class="hubSecondary" data-close-stage-action>Continuer sans planifier</button><button type="submit" class="hubPrimary">Ajouter au planning</button></div>
+        </form>
+      </dialog>
+
+      <dialog class="hubWorkflowDialog" id="hubActionCompletionDialog" aria-labelledby="hubActionCompletionTitle">
+        <form id="hubActionCompletionForm" class="hubWorkflowDialogForm">
+          <p class="hubSectionEyebrow">ACTION RÉALISÉE</p>
+          <h2 id="hubActionCompletionTitle">Enregistrer la date réelle</h2>
+          <p id="hubActionCompletionContext" class="hubWorkflowDialogContext"></p>
+          <p class="hubWorkflowDialogHint">Cette date constate la réalisation de l’action. Elle ne constitue pas un déclencheur de facturation.</p>
+          <label><span>Date réelle de réalisation</span><input name="occurredAt" type="date" required></label>
+          <div class="hubWorkflowDialogButtons"><button type="button" class="hubSecondary" data-close-completion>Annuler</button><button type="submit" class="hubPrimary">Confirmer la réalisation</button></div>
+        </form>
+      </dialog>
+
+      <section class="hubModulePlaceholder" id="hubModulePlaceholder" aria-labelledby="hubModuleTitle" hidden>
+        <p class="ozenoEyebrow">ESPACE COMMERCIAL / MODULE</p>
+        <div class="hubModuleCard">
+          <span class="hubModuleIcon" aria-hidden="true">✦</span>
+          <div><span class="hubModuleBadge">EN PRÉPARATION</span><h1 id="hubModuleTitle">Module</h1><p id="hubModuleDescription">Cette rubrique sera disponible dans une prochaine étape.</p></div>
+          <button type="button" class="hubSecondary" id="hubBackToProjects">Retour aux projets</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="./local-preview-navigation.js?v=20261104-ooi-navigation-1"></script>
+  <script src="./project-hub.js?v=20261116-enedis-prospecting-display-3"></script>
+  <script src="./market-opportunities.js?v=20261104-market-opportunities-2"></script>
 </body>
 </html>

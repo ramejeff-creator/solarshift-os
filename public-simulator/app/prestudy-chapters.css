@@ -21,6 +21,17 @@ body.prestudyShell .prestudyChapterD {
 .prestudyShell .prestudyChapterD :is(.hint, .status, .result, .roofModuleReference, .roofProductionStatus, .pvgisTiltCallout) { background: #f4f6f8; border-radius: 3px; box-shadow: none; }
 .prestudyShell .prestudyChapterD :is(.roofSizingControl, .roofSurface, .prestudyElectricityBenchmarks, .roofInstallerStudy) { border-top: 1px solid var(--d-line) !important; padding-top: 16px; margin-top: 16px; }
 .prestudyShell .prestudyChapterD :is(.prestudyBenchmarkControls, .enedisSyntheticPicker, .enedisConsumptionLookup, .enedisLookupDetails) { border: 0 !important; border-top: 1px solid var(--d-line) !important; border-radius: 0 !important; background: transparent !important; padding: 16px 0 0; margin: 16px 0; }
+.prestudyShell .prestudyChapterD .enedisLookupDetails .enedisSyntheticPicker { border:0!important; border-top:0!important; border-radius:0!important; background:transparent!important; padding:8px 0 0!important; margin:8px 0 0!important; }
+.prestudyShell .prestudyChapterD #consumptionReferenceGroup { display: grid; gap: 12px; padding: 18px; border: 1px solid var(--d-line); border-radius: 10px; background: #fff; }
+.prestudyShell .prestudyChapterD #consumptionReferenceGroup > legend { padding: 0 8px; font-size: 1.08rem; }
+.prestudyShell .prestudyChapterD #consumptionReferenceGroup > .fine { margin: 0; }
+.prestudyShell .prestudyChapterD #consumptionReferenceGroup > label { display: grid; gap: 6px; max-width: 560px; }
+.prestudyShell .prestudyChapterD #consumptionReferenceGroup > .prestudyBenchmarkControls { display: grid; gap: 10px; margin: 0; padding-top: 12px; }
+.prestudyShell .prestudyChapterD #consumptionReferenceGroup > .prestudyElectricityBenchmarks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 4px 0 0; padding: 16px; border: 1px solid var(--d-line); border-radius: 8px; background: var(--d-surface, #f7f9f8); }
+.prestudyShell .prestudyChapterD #consumptionReferenceGroup > .prestudyElectricityBenchmarks legend { padding: 0 7px; font-weight: 750; }
+.prestudyShell .prestudyChapterD #consumptionReferenceGroup > .prestudyElectricityBenchmarks label { display: grid; align-content: start; gap: 6px; }
+.prestudyShell .prestudyChapterD #consumptionReferenceGroup > .prestudyElectricityBenchmarks > p { grid-column: 1 / -1; margin: 0; }
+.prestudyShell .prestudyChapterD #productionConsumptionPanel { display: grid; gap: 18px; }
 .prestudyShell .prestudyChapterD .roofSurfaceList { gap: 4px; }
 .prestudyShell .prestudyChapterD .form { gap: 16px; margin: 14px 0; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .prestudyShell .prestudyChapterD label { color: var(--d-ink); font-size: 14px; line-height: 1.5; font-weight: 600; min-width: 0; }
@@ -28,19 +39,26 @@ body.prestudyShell .prestudyChapterD {
   color: var(--d-ink); background: #fff; border: 1px solid #8393a3; border-radius: 4px; min-height: 44px; padding: 10px; font: 14px/1.4 "Segoe UI", Arial, sans-serif;
 }
 .prestudyShell .prestudyChapterD :is(input:not([type=checkbox]):not([type=radio]):not([type=range]), select) { height: 44px; }
+.prestudyShell .prestudyChapterD select {
+  color: #233448 !important;
+  -webkit-text-fill-color: #233448 !important;
+  background-color: #fff !important;
+  color-scheme: light;
+  forced-color-adjust: none;
+  font-family: "Segoe UI", Arial, sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  opacity: 1 !important;
+}
 .prestudyShell .prestudyChapterD textarea { min-height: 100px; height: auto; }
 .prestudyShell .prestudyChapterD :is(input[readonly], output) { background: #f0f3f6 !important; color: var(--d-ink) !important; border-radius: 4px; }
 .prestudyShell .prestudyChapterD input[type=range] { min-height: 44px; accent-color: #233b54; }
 .prestudyShell .prestudyChapterD :is(button:not(.leaflet-control *), .secondary, .action) { background: #fff; color: #233b54; border: 1px solid #8393a3; border-radius: 4px; min-height: 44px; font: 600 14px/1.4 "Segoe UI", Arial, sans-serif; padding: 10px 13px; white-space: normal; }
 .prestudyShell .prestudyChapterD :is(.action, #addRisk, #roofInstallerUpload) { background: #233b54; border-color: #233b54; color: #fff; }
 .prestudyShell .prestudyChapterD button:disabled { opacity: .6; }
-.prestudyShell .prestudyChapterD :is(.roofAzimuthHelpButton, .pvgisLossHelpButton, .financeHelpButton) { min-height: 24px; width: 24px; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.prestudyShell .prestudyChapterD :is(.roofAzimuthHelpButton, .pvgisLossHelpButton, .financeHelpButton) { display:inline-grid!important; place-items:center!important; min-height:20px!important; width:20px!important; height:20px!important; padding:0!important; border:1px solid #87b6a0!important; border-radius:50%!important; background:#fff!important; color:#08734c!important; box-shadow:none!important; font:700 12px/1 system-ui,sans-serif!important; }
 .prestudyShell .prestudyChapterD :is(.financeGroup, .prestudyBuildingBenchmarkControls) > h2 { font-size: 16px; color: var(--d-ink); margin: 0 0 14px; }
 .prestudyShell .prestudyChapterD .prestudyDPanel > :last-child { margin-bottom: 0; }
-.prestudyShell .prestudyEnvelopeHeating .prestudyEnvelopeGroup { border-top: 1px solid var(--d-line) !important; padding-top: 16px; margin: 18px 0; }
-.prestudyShell .prestudyEnvelopeHeating .prestudyEnvelopeGroup .form { margin-bottom: 4px; }
-.prestudyShell .prestudyEnvelopeHeating .prestudyEnvelopeGroup label[hidden] { display: none !important; }
-.prestudyShell .prestudyEnvelopeHeating > .prestudyDPanel > .fine { padding: 10px 12px; border-left: 3px solid #8795a3; background: #f4f6f8; }
 .prestudyShell .prestudyChapterD summary { color: var(--d-ink); font-size: 14px; font-weight: 650; min-height: 44px; align-content: center; cursor: pointer; }
 .prestudyShell .prestudyChapterD .ozenoProjectIdentity dl { margin-top: 16px; }
 .prestudyShell .prestudyChapterD .ozenoProjectIdentityRow { border-bottom: 1px solid var(--d-line); padding: 7px 0; background: #fff; }
@@ -76,21 +94,32 @@ body.prestudyShell .prestudyChapterD {
 .prestudyShell .prestudyChapterD .prestudyDInlineAction a:focus-visible { outline: 3px solid #567fab; outline-offset: 3px; }
 .prestudyShell .prestudyChapterD .siteGpsFields { border-top: 1px solid var(--d-line); padding-top: 16px; margin-top: 18px; }
 .prestudyShell .prestudyChapterD .siteGpsFields #useSiteGps,
-.prestudyShell .prestudyChapterD .siteMapPick :is(#pickSiteOnMap, #findReverseAddress, #confirmReverseAddress) {
+.prestudyShell .prestudyChapterD .siteMapPick #pickSiteOnMap {
   display: inline-flex; align-items: center; justify-content: center; width: auto; min-height: 42px; margin-top: 8px; padding: 9px 15px;
   border: 1px solid #233b54; border-radius: 4px; background: #233b54; color: #fff; font-weight: 650; text-align: center;
 }
-.prestudyShell .prestudyChapterD .siteMapPick :is(#findReverseAddress, #confirmReverseAddress) { background: #fff; color: #233b54; }
 .prestudyShell .prestudyChapterD .roofAzimuthField { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto; align-items: start; gap: 6px; }
-.prestudyShell .prestudyChapterD .roofAzimuthLabelRow { display: flex; align-items: center; flex-wrap: wrap; gap: 0 4px; min-width: 0; }
-.prestudyShell .prestudyChapterD .roofAzimuthField > .roofAzimuthLabelRow > .roofAzimuthLabelText { display: inline; min-width: 0; line-height: 1.5; }
+.prestudyShell .prestudyChapterD .roofAzimuthLabelRow { display: flex; align-items: center; flex-wrap: nowrap; gap: 0 4px; min-width: 0; white-space: nowrap; }
+.prestudyShell .prestudyChapterD .roofAzimuthField > .roofAzimuthLabelRow > .roofAzimuthLabelText { display: inline; min-width: 0; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .prestudyShell .prestudyChapterD .roofAzimuthField .roofAzimuthHelp { display: inline-flex; align-items: center; justify-content: center; margin: 0; align-self: center; }
-.prestudyShell .prestudyChapterD .roofAzimuthField .roofAzimuthHelp > button { border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.prestudyShell .prestudyChapterD .roofAzimuthField .roofAzimuthHelp > button { display: inline-grid; place-items: center; flex: 0 0 22px; width: 22px; height: 22px; min-height: 22px; padding: 0; border: 1px solid #87b6a0; border-radius: 50%; background: #fff; color: #08734c; box-shadow: none; line-height: 1; }
 .prestudyShell .prestudyChapterD .roofAzimuthField > .roofAzimuthControl { grid-column: 1; grid-row: 2; align-self: start; }
 .prestudyShell .prestudyChapterD .roofFieldHelp { width: auto; height: auto; border: 0; border-radius: 0; }
 .prestudyShell .prestudyChapterD .roofSurface .form > label { line-height: 24px; }
+@media (min-width: 1200px) {
+  .prestudyShell .prestudyChapterD #roofEstimate .roofMetrics { grid-template-columns: repeat(5, minmax(0, 1fr)) !important; }
+  .prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface .form > label:not([hidden]) { align-content: start; grid-template-rows: minmax(3.3em, auto) 44px minmax(0, auto); gap: 6px; }
+  .prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface .form > label:not([hidden]) > :is(input, select) { box-sizing: border-box; min-height: 44px; height: 44px; }
+  .prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface .form > label.roofAzimuthField { grid-template-rows: minmax(3.3em, auto) auto; }
+  .prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface .form > label.roofAzimuthField > .roofAzimuthLabelRow { min-height: 44px; }
+  .prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface .form > label.roofAzimuthField > .roofAzimuthControl { min-height: 44px; }
+  .prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface .form > label.roofAzimuthField > small { grid-column: 1 / -1; }
+  .prestudyShell .prestudyChapterD #roofEstimate .roofMetrics .metric :is(b, small) { font-size: 11px !important; line-height: 1.35; }
+  .prestudyShell .prestudyChapterD #roofEstimate .roofMetrics .metric > span { font-size: 18px; line-height: 1.25; }
+  .prestudyShell .prestudyChapterD #roofEstimate .fine { font-size: 12px !important; line-height: 1.45; }
+}
 .prestudyShell .prestudyChapterD .newProject > b { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip-path: inset(50%); white-space: nowrap; }
-.prestudyShell .prestudyChapterD .map { height: clamp(585px, 69vw, 817.5px); border-radius: 0; border: 1px solid var(--d-line); }
+.prestudyShell .prestudyChapterD .map { height: clamp(380px, 34vw, 540px); border-radius: 0; border: 1px solid var(--d-line); }
 .prestudyShell .prestudyChapterD #roofSurfaces { display: block; }
 .prestudyShell .prestudyChapterD .roofSizingTopline { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .prestudyShell .prestudyChapterD .roofSizingControl { padding: 12px 0; }
@@ -100,6 +129,16 @@ body.prestudyShell .prestudyChapterD {
 .prestudyShell .prestudyChapterD .metric > span { color: var(--d-ink); font-size: 21px; }
 .prestudyShell .prestudyChapterD .climateHistoryChart { border: 0; border-radius: 0; }
 .prestudyShell .prestudyChapterD .productionCurve { border: 0; border-radius: 0; background: #fff; }
+.prestudyShell .prestudyChapterD .monthlyProfile > div { min-width: 0; }
+.prestudyShell .prestudyChapterD .monthlyProfile > div > span { display: block; min-width: 0; font-size: 9px !important; line-height: 1.1; white-space: nowrap !important; overflow-wrap: normal; word-break: keep-all; }
+.prestudyShell .prestudyChapterD .productionStudyEmbedded { container-type: inline-size; }
+.prestudyShell .prestudyChapterD .productionValues > span { white-space: nowrap; overflow: hidden; text-overflow: clip; }
+.prestudyShell .prestudyChapterD .productionCurve .curveAxis text { font-size: 10px !important; }
+@container (max-width: 520px) {
+  .prestudyShell .prestudyChapterD .monthlyProfile { gap: 2px !important; }
+  .prestudyShell .prestudyChapterD .monthlyProfile > div > span { font-size: 8px !important; }
+  .prestudyShell .prestudyChapterD .productionValues { font-size: 8px !important; }
+}
 .prestudyShell .prestudyChapterD :is(.roofSurfaceTitle, .roofSurfaceHeader) { color: var(--d-ink); }
 .prestudyShell .prestudyChapterD .riskCoverage { background: transparent; border: 0; padding: 0; margin-bottom: 18px; }
 .prestudyShell .prestudyChapterD .riskMarkers { display: none; }
@@ -108,6 +147,7 @@ body.prestudyShell .prestudyChapterD {
 .prestudyShell .prestudyChapterD .prestudyRiskState { display: grid; gap: 2px; }
 .prestudyShell .prestudyChapterD .prestudyRiskSource { color: var(--d-muted); font-size: 12px; line-height: 1.4; }
 .prestudyShell .prestudyChapterD .prestudyRiskEditor .form { gap: 10px 16px; margin: 0 0 10px; }
+.prestudyShell .prestudyChapterD .prestudyRiskFactorHeading { margin: 0 0 10px; color: var(--d-ink); font-size: 16px; line-height: 1.35; font-weight: 700; }
 .prestudyShell .prestudyChapterD .prestudyRiskEditor :is(.riskActions, .riskEvidencePicker) { margin-top: 8px; }
 .prestudyShell .prestudyChapterD .prestudyRiskEditor { padding: 14px 0; border-bottom: 1px solid #233b54; }
 .prestudyShell .prestudyChapterD .riskFactorMarker { border-radius: 3px; font-size: 12px; }
@@ -117,15 +157,206 @@ body.prestudyShell .prestudyChapterD {
 .prestudyRiskGuard h2 { font-size: 20px; }.prestudyRiskGuard > div { display: flex; flex-wrap: wrap; gap: 10px; }
 .prestudyRiskGuard button { min-height: 44px; border: 1px solid #8393a3; border-radius: 4px; padding: 10px; background: #fff; color: #233b54; cursor: pointer; }
 .prestudyRiskGuard::backdrop { background: #172b3e66; }
-@media (max-width: 820px) { .prestudyShell .prestudyChapterD .map { height: 630px; } }
+/* Surface setup: choose the site nature, then show the matching map workflow. */
+.prestudyShell .prestudyChapterD .prestudySurfaceSelectors {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; gap: 14px; margin: 0 0 24px;
+}
+.prestudyShell .prestudyChapterD .prestudySurfaceSelectors > :is(.earlySolarProjectType, .earlySolarMappingGuide) {
+  min-width: 0; display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 16px 18px;
+}
+.prestudyShell .prestudyChapterD .prestudySurfaceSelectors > :is(.earlySolarProjectType, .earlySolarMappingGuide) h2 {
+  margin: 0; color: var(--d-ink); font-size: 19px; line-height: 1.3; font-weight: 700; letter-spacing: -.2px;
+}
+.prestudyShell .prestudyChapterD .prestudySurfaceSelectors > .earlySolarProjectType .fine {
+  min-height: 2.8em; margin: 0; color: var(--d-muted); font-size: 12px !important; line-height: 1.45;
+}
+.prestudyShell .prestudyChapterD .prestudySurfaceSelectors > .earlySolarProjectType .form { display: block; margin: 0; }
+.prestudyShell .prestudyChapterD .prestudySurfaceSelectors label { display: grid; gap: 6px; color: var(--d-ink); font-size: 13px; line-height: 1.45; font-weight: 600; }
+.prestudyShell .prestudyChapterD .siteMapAttention { display: grid; grid-template-columns: 28px minmax(0, 1fr); align-items: center; gap: 10px; min-height: 3.6em; padding: 12px 14px; border: 1px solid #e9ad21; border-radius: 8px; background: #fff4c7; color: #294b3d; box-shadow: 0 3px 12px #80651d1a; }
+.prestudyShell .prestudyChapterD .siteMapAttentionIcon { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: #f3b51c; color: #704900; font-size: 17px; font-weight: 900; }
+.prestudyShell .prestudyChapterD .siteMapGuidance { margin: 0; padding: 0; color: #294b3d !important; font-size: 13px !important; font-weight: 600; line-height: 1.5; }
+.prestudyShell .prestudyChapterD .prestudyTerrainFacts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 18px; margin: 0; }
+.prestudyShell .prestudyChapterD .prestudyTerrainFact { min-width: 0; padding: 9px 0; border-bottom: 1px solid var(--d-line); }
+.prestudyShell .prestudyChapterD .prestudyTerrainFact dt { color: var(--d-muted); font-size: 12px; }
+.prestudyShell .prestudyChapterD .prestudyTerrainFact dd { margin: 2px 0 0; color: var(--d-ink); font-weight: 650; overflow-wrap: anywhere; }
+.prestudyShell .prestudyChapterD .prestudyTerrainLinks { display: flex; flex-wrap: wrap; gap: 7px; margin: 7px 0 0; font-size: 13px; }
+.prestudyShell .prestudyChapterD .prestudyTerrainLinks a { color: #234c6c; font-weight: 650; }
+.prestudyShell .prestudyChapterD #prestudyIndicativeFundingHint { display: grid; gap: 5px; margin: 12px 0; padding: 13px 15px; border-left: 3px solid #25856a; border-radius: 3px; background: #f2f7f4; color: var(--d-muted); line-height: 1.5; }
+.prestudyShell .prestudyChapterD #prestudyIndicativeFundingHint strong { color: var(--d-ink); }
+.prestudyShell .prestudyChapterD .manualAzimuthLabelRow { display: flex; align-items: center; gap: 4px; min-width: 0; line-height: 1.45; }
+.prestudyShell .prestudyChapterD .manualAzimuthLabelRow .roofFieldHelp { flex: none; display: inline-flex; align-items: center; justify-content: center; margin: 0; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification > .prestudyDPanel {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; gap: 0 18px;
+}
+.prestudyShell .prestudyChapterD .prestudySurfacePriorityNotes {
+  grid-column: 1 / -1; display: grid; gap: 6px; margin: 0 0 18px; padding: 12px 14px;
+  border-left: 3px solid #8795a3; background: #f4f6f8; color: var(--d-muted);
+}
+.prestudyShell .prestudyChapterD .prestudySurfacePriorityNotes p { margin: 0; font-size: 12px !important; line-height: 1.5; }
+.prestudyShell .prestudyChapterD :is(.prestudySurfaceGeneralFields, .prestudySurfaceManualFields) { display: contents; }
+.prestudyShell .prestudyChapterD :is(.prestudySurfaceGeneralFields, .prestudySurfaceManualFields) > :is(h3, p) { display: none; }
+.prestudyShell .prestudyChapterD :is(.prestudySurfaceGeneralFields, .prestudySurfaceManualFields) > .form { display: contents; }
+.prestudyShell .prestudyChapterD #manualAreaSettings[hidden] { display: none !important; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .prestudySurfaceField { min-width: 0; margin: 0 0 18px; font-size: 13px; line-height: 1.45; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .prestudySurfaceTotalField { grid-column: 1; grid-row: 2; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .prestudySurfaceRatioField { grid-column: 2; grid-row: 2; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .prestudySurfaceUsableField { grid-column: 3; grid-row: 2; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .prestudySurfaceMaterialField { grid-column: 1; grid-row: 3; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification :is(.prestudySurfacePitchField, .prestudySurfaceFlatTiltField) { grid-column: 2; grid-row: 3; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .prestudySurfaceOrientationField { grid-column: 3; grid-row: 3; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .prestudySurfaceShadeField { grid-column: 1; grid-row: 4; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .prestudySurfaceConditionField { grid-column: 2; grid-row: 4; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .prestudySurfaceDensityField { grid-column: 1; grid-row: 5; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification #roofSurfaceCards { grid-column: 1 / -1; grid-row: 6; min-width: 0; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification #manualAreaSettings[hidden] ~ #roofSurfaceCards { grid-row: 3; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification #manualAreaSettings[hidden] ~ .prestudySurfaceConditionField { grid-column: 1; grid-row: 7; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface { border-top: 1px solid var(--d-line) !important; padding-top: 14px; margin: 8px 0 0; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface .form {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-areas: "install material shade" "pan-count orientation1 orientation2" "pitch condition density";
+}
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface[data-roof-type="PITCHED"] .form {
+  grid-template-areas: "install material pitch" "pan-count orientation1 orientation2" "shade condition condition";
+}
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface[data-roof-type="FLAT"] .form {
+  grid-template-areas: "install material shade" "orientation1 flat-tilt density" "condition condition condition";
+}
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface[data-roof-type=""] .form {
+  grid-template-areas: "install install install";
+}
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface[data-roof-type]:not([data-roof-type=""]):not([data-roof-type="PITCHED"]):not([data-roof-type="FLAT"]) .form {
+  grid-template-areas: "install install shade" "orientation1 pitch density";
+}
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface[data-roof-type="PITCHED"][data-pan-count="1"] .form {
+  grid-template-areas: "install material pitch" "pan-count orientation1 orientation1" "shade condition condition";
+}
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface .form > .roofGridInstallType { grid-area: install; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface .form > .roofGridMaterial { grid-area: material; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface .form > .roofGridPanCount { grid-area: pan-count; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface .form > .roofGridOrientation1 { grid-area: orientation1; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface .form > .roofGridOrientation2 { grid-area: orientation2; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface .form > .roofGridPitch { grid-area: pitch; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface .form > .roofGridFlatTilt { grid-area: flat-tilt; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface .form > .roofGridShade { grid-area: shade; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface .form > .roofGridDensity { grid-area: density; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface .form > .roofSurfaceConditionInline { grid-area: condition; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface .form > label[hidden] { display: none !important; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface[data-roof-type="PITCHED"][data-pan-count="1"] .roofGridOrientation1 {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 6px 10px;
+}
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface[data-roof-type="PITCHED"][data-pan-count="1"] .roofGridOrientation1 > .roofAzimuthLabelRow { grid-column: 1 / -1; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface[data-roof-type="PITCHED"][data-pan-count="1"] .roofGridOrientation1 > .roofAzimuthControl { grid-column: 1; min-width: 0; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface[data-roof-type="PITCHED"][data-pan-count="1"] .roofGridOrientation1 > .roofAzimuthChoices {
+  grid-column: 2; width: auto; align-self: start; display: grid; grid-template-columns: repeat(2, max-content); gap: 6px;
+}
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface[data-roof-type="PITCHED"][data-pan-count="1"] .roofGridOrientation1 > .roofAzimuthChoices > .fine { grid-column: 1 / -1; grid-row: 2; margin: 0; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface[data-roof-type="PITCHED"][data-pan-count="1"] .roofGridOrientation1 > .roofAzimuthChoices > button { grid-row: 1; }
+.prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface[data-roof-type="PITCHED"][data-pan-count="1"] .roofGridOrientation1 > .roofAzimuthChoices[hidden] { display: none !important; }
+.prestudyShell .prestudyChapterD .roofClearAzimuth { flex: 0 0 auto; border: 1px solid #c98b86; border-radius: 6px; padding: 6px 8px; background: #fff; color: #7d201b; font: inherit; cursor: pointer; }
+.prestudyShell .prestudyChapterD .roofClearAzimuth:hover { background: #fff0ef; }
+@media (max-width: 760px) {
+  .prestudyShell .prestudyChapterD .prestudySurfaceSelectors { grid-template-columns: 1fr; }
+  .prestudyShell .prestudyChapterD #prestudySurfaceQualification > .prestudyDPanel { grid-template-columns: 1fr; }
+  .prestudyShell .prestudyChapterD .prestudyTerrainFacts { grid-template-columns: 1fr; }
+  .prestudyShell .prestudyChapterD #prestudySurfaceQualification .prestudySurfaceField { grid-column: 1; grid-row: auto; }
+  .prestudyShell .prestudyChapterD #prestudySurfaceQualification .prestudySurfacePriorityNotes,
+  .prestudyShell .prestudyChapterD #prestudySurfaceQualification #roofSurfaceCards { grid-column: 1; grid-row: auto; }
+}
+@media (max-width: 820px) { .prestudyShell .prestudyChapterD .map { height: 420px; } }
 @media (max-width: 1023px) {
   .prestudyShell .prestudyChapterD :is(.form, #roofSurfaceGeneral .form, .roofSizingTopline, .roofSurface .form, #manualAreaSettings .form, .roofMetrics, .climateYieldMetrics, .prestudyBenchmarkControls, .prestudyElectricityBenchmarks) { grid-template-columns: 1fr !important; }
+  .prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface[data-roof-type] .form { grid-template-areas: none !important; }
+  .prestudyShell .prestudyChapterD #prestudySurfaceQualification .roofSurface .form > label { grid-area: auto !important; }
   .prestudyShell .prestudyChapterD .prestudyRiskLine { grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; }
   .prestudyRiskLine > strong { grid-column: 1; }.prestudyRiskLine > button { grid-column: 2; grid-row: 1 / 4; }
   .prestudyRiskLine > span { grid-column: 1; }
 }
-@media (max-width: 700px) { .prestudyShell .prestudyChapterD .map { height: 495px; } }
+@media (max-width: 700px) { .prestudyShell .prestudyChapterD .map { height: 360px; } }
 @media (max-width: 690px) {
   .prestudyShell .prestudyChapterD :is(.prestudyDPanel, .prestudyDPanel#roofSurfaceGeneral, .prestudyDPanel.earlySolarProjectType, .prestudyDPanel.roofExpertSettings) { padding: 16px; }
   .prestudyShell .prestudyChapterD .prestudyDHeading { font-size: 18px; margin-top: 24px; }
+  .prestudyShell .prestudyChapterD #consumptionReferenceGroup > .prestudyElectricityBenchmarks { grid-template-columns: 1fr; }
+  .prestudyShell .prestudyChapterD #consumptionReferenceGroup > .prestudyElectricityBenchmarks > p { grid-column: 1; }
+}
+/* Performance: keep the modules aligned and leave the monthly chart in place while data loads. */
+.prestudyShell .prestudyChapterD #consumptionReferenceGroup > legend { margin: 0 0 2px; color: var(--d-ink); font-size: 18px; font-weight: 700; }
+.prestudyShell .prestudyChapterD #consumptionReferenceGroup > label:has(#cons) { max-width: 100%; }
+.prestudyShell .prestudyChapterD #consumptionReferenceGroup > #enedisLookupDetails {
+  margin: 0; padding: 0 14px; border: 1px solid var(--d-line) !important; border-radius: 6px !important; background: #f7f9fb !important;
+}
+.prestudyShell .prestudyChapterD #consumptionReferenceGroup > #enedisLookupDetails > summary { min-height: 48px; }
+.prestudyShell .prestudyChapterD #consumptionReferenceGroup > #enedisLookupDetails[open] { padding-bottom: 12px; }
+.prestudyShell .prestudyChapterD #consumptionReferenceGroup .enedisConsumptionLookup { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px 16px; margin: 0; padding: 10px 0 0; border-top: 1px solid var(--d-line) !important; }
+.prestudyShell .prestudyChapterD #consumptionReferenceGroup .enedisLookupPrompt,
+.prestudyShell .prestudyChapterD #consumptionReferenceGroup .enedisLookupStatus,
+.prestudyShell .prestudyChapterD #consumptionReferenceGroup .enedisLookupResults { grid-column: 1 / -1; margin: 0; }
+.prestudyShell .prestudyChapterD #consumptionReferenceGroup .enedisConsumptionLookup button { grid-column: 2; grid-row: 1; }
+.prestudyShell .prestudyChapterD #consumptionReferenceGroup > .prestudyBenchmarkControls { padding: 14px; border: 1px solid var(--d-line) !important; border-radius: 6px !important; background: #f7f9fb !important; }
+.prestudyShell .prestudyChapterD #consumptionReferenceGroup > .prestudyBenchmarkControls > .prestudyActivityReadout { margin: 0; }
+.prestudyShell .prestudyChapterD #consumptionReferenceGroup > .prestudyElectricityBenchmarks { align-items: start; margin-top: 0; }
+.prestudyShell .prestudyChapterD #consumptionReferenceGroup > .prestudyElectricityBenchmarks > legend { width: auto; margin-bottom: 4px; }
+.prestudyShell .prestudyChapterD #consumptionReferenceGroup > .prestudyElectricityBenchmarks > label { align-content: start; }
+.prestudyShell .prestudyChapterD #consumptionReferenceGroup > .prestudyElectricityBenchmarks > #prestudyPowerStatus,
+.prestudyShell .prestudyChapterD #consumptionReferenceGroup > .prestudyElectricityBenchmarks > #prestudyPriceStatus { align-self: start; }
+.prestudyShell .prestudyChapterD .productionCurve { min-width: 0; padding: 12px 10px 6px; border: 1px solid var(--d-line); border-radius: 6px; }
+.prestudyShell .prestudyChapterD .productionCurve svg { min-height: 230px; }
+.prestudyShell .prestudyChapterD .productionCurve.isPending .curveGrid line { stroke: #e3e9ee; }
+.prestudyShell .prestudyChapterD .productionCurve.isPending .curveAxis text { fill: #718092; }
+.prestudyShell .prestudyChapterD .prestudyProductionPending { margin-top: 8px; }
+.prestudyShell .prestudyChapterD .productionStudy .curveLegend { margin: 10px 0 4px; gap: 10px 18px; }
+@media (max-width: 690px) {
+  .prestudyShell .prestudyChapterD #consumptionReferenceGroup .enedisConsumptionLookup { grid-template-columns: minmax(0, 1fr); }
+  .prestudyShell .prestudyChapterD #consumptionReferenceGroup .enedisConsumptionLookup button { grid-column: 1; grid-row: auto; justify-self: start; }
+  .prestudyShell .prestudyChapterD .productionCurve { padding: 6px 2px 2px; }
+  .prestudyShell .prestudyChapterD .productionCurve svg { min-height: 180px; }
+}
+/* One Leaflet map shared between project localization and solar surface drawing. */
+.prestudyShell .prestudyLocationWorkspace { display:grid; grid-template-columns:minmax(280px,.8fr) minmax(0,1.5fr); gap:24px; align-items:start; }
+.prestudyShell .prestudyLocationFields,.prestudyShell .prestudyLocationMap { min-width:0; }
+.prestudyShell .prestudyLocationMap { position:sticky; top:calc(var(--prestudy-top,138px) + 16px); scroll-margin-top:calc(var(--prestudy-top,138px) + 16px); }
+.prestudyShell .prestudyChapterD .prestudyLocationMap .map { height:clamp(320px,calc(100dvh - var(--prestudy-top,138px) - 140px),660px); width:100%; box-sizing:border-box; }
+.prestudyShell .prestudyLocationFields .newProject { display:block; width:100%; }
+.prestudyShell .prestudyLocationFields .newProject :is(input,button) { max-width:100%; box-sizing:border-box; }
+.prestudyShell .prestudyLocationFields .siteGpsFields { margin:12px 0; padding:0; border:0; }
+.prestudyShell .prestudyLocationFields .siteGpsFields[open] { padding-bottom:12px; }
+.prestudyShell .prestudyLocationFields :is(.siteLocationInfo,.addressSimulationExplanation) { display:none; }
+.prestudyShell .prestudyLocationFields .siteMapPick>button { margin-right:6px; }
+.prestudyShell #map[data-map-purpose=location] .leaflet-draw { display:none!important; }
+.prestudyShell #map[data-map-purpose=location] { cursor:grab!important; }
+.prestudyShell #map:is(.isPickingSiteLocation,.isPickingParcel) { cursor:crosshair!important; }
+@media(max-width:1050px) {
+  .prestudyShell .prestudyLocationWorkspace { grid-template-columns:minmax(0,1fr); }
+  .prestudyShell .prestudyLocationMap { position:static; }
+  .prestudyShell .prestudyChapterD .prestudyLocationMap .map { height:440px; }
+}
+.prestudyShell .prestudyInstallerInfo { margin:14px 0 18px; padding:14px 16px; border:1px solid #d6e3dc; border-radius:10px; background:#f8faf8; }
+.prestudyShell .prestudyInstallerInfo > summary { cursor:pointer; color:#123c32; font-weight:700; }
+.prestudyShell .prestudyInstallerInfo[open] > summary { margin-bottom:10px; }
+.prestudyShell .prestudyInstallerInfoContent { display:grid; gap:10px; }
+.prestudyShell .prestudyInstallerFacts { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin:0; }
+.prestudyShell .prestudyInstallerFacts > div { min-width:0; padding:10px 12px; border:1px solid #e0e9e3; border-radius:8px; background:#fff; }
+.prestudyShell .prestudyInstallerFacts dt { color:#61756c; font-size:12px; }
+.prestudyShell .prestudyInstallerFacts dd { margin:3px 0 0; font-size:14px; font-weight:700; overflow-wrap:anywhere; }
+.prestudyShell .prestudyInstallerInfoContent > p { margin:0; }
+.prestudyShell .prestudyInstallerHorizon .parcelHorizon { margin:0; padding:12px; background:#fff; }
+@media(max-width:600px) { .prestudyShell .prestudyInstallerFacts { grid-template-columns:1fr; } }
+
+/* CR-UX-013 P2 — rendre explicite l'écart entre production estimée et flux non calculés. */
+.prestudyShell .prestudyChapterD .prestudyEnergyFlowNotice {
+  display: grid; gap: 10px; margin: 0; padding: 16px 18px;
+  border: 1px solid #d9e5dd; border-left: 4px solid #c18a18; border-radius: 8px;
+  background: #f8faf8; color: var(--d-ink, #233448);
+}
+.prestudyShell .prestudyChapterD .prestudyEnergyFlowNotice > p { margin: 0; max-width: 920px; }
+.prestudyShell .prestudyChapterD .prestudyEnergyFlowHeader { display: flex; flex-wrap: wrap; gap: 8px; }
+.prestudyShell .prestudyChapterD .prestudyEnergyFlowBadge {
+  display: inline-flex; align-items: center; min-height: 28px; padding: 4px 10px;
+  border: 1px solid #cfe0d5; border-radius: 99px; background: #edf6ef;
+  color: #24583f; font-size: 12px; font-weight: 700; line-height: 1.3;
+}
+.prestudyShell .prestudyChapterD .prestudyEnergyFlowBadge.isUnavailable {
+  border-color: #ead49d; background: #fff6dc; color: #725400;
+}
+@media (max-width: 600px) {
+  .prestudyShell .prestudyChapterD .prestudyEnergyFlowNotice { padding: 13px; }
 }

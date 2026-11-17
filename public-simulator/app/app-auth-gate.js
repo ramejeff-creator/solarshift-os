@@ -1,7 +1,8 @@
 (function installAppAuthenticationGate() {
   const config = window.SOLARSHIFT_CONFIG || {};
   const sessionKey = config.sessionStorageKey;
-  if (config.environment !== 'test' || !sessionKey || /(?:^|\/)login\.html$/i.test(window.location.pathname)) return;
+  const explicitlyProtectedPage = document.documentElement.hasAttribute('data-requires-auth');
+  if ((config.environment !== 'test' && !explicitlyProtectedPage) || !sessionKey || /(?:^|\/)login\.html$/i.test(window.location.pathname)) return;
 
   window.__SOLARSHIFT_AUTHORIZED = false;
   const authorized = new Promise((resolve) => { window.__SOLARSHIFT_AUTH_RESOLVE = resolve; });
@@ -37,11 +38,29 @@
     window.location.replace(`./login.html?${query.toString()}`);
   };
 
+  function assuranceLevel(session) {
+    try {
+      const payload = session.access_token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+      return JSON.parse(atob(payload)).aal || 'aal1';
+    } catch { return 'aal1'; }
+  }
+
   (async () => {
     try {
       const client = await import('./project-hub-client.mjs');
+      const callback = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+      if (callback.get('access_token') && callback.get('refresh_token')) {
+        const session = {
+          access_token: callback.get('access_token'),
+          refresh_token: callback.get('refresh_token'),
+          expires_at: Math.floor(Date.now() / 1000) + Number(callback.get('expires_in') || 3600)
+        };
+        window.localStorage.setItem(sessionKey, JSON.stringify(session));
+        window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
+      }
       const session = await client.getSession(window.localStorage);
       if (!session?.access_token) return login();
+      if (assuranceLevel(session) !== 'aal2' && !config.localTestMfaBypass) return login('mfa');
       const identity = await client.getIdentity(session.access_token);
       if (!identity?.id) return login();
       window.__SOLARSHIFT_AUTHORIZED = true;

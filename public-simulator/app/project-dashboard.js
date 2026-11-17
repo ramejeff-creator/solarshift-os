@@ -14,6 +14,24 @@ let accessToken = null;
 let projectData = null;
 let scenarioData = null;
 let selectedPerspective = params.get('perspective');
+let ooiVisuals = null;
+const OOI_LOCAL_PREVIEW = ['localhost', '127.0.0.1', '::1', '[::1]'].includes(location.hostname.toLowerCase())
+  && (config.OOI_VISUAL_PREVIEW_ENABLED === true || params.get('OOI_VISUAL_PREVIEW_ENABLED') === 'true');
+const previewHref = (href) => {
+  const localHost = ['localhost', '127.0.0.1', '::1', '[::1]'].includes(location.hostname.toLowerCase());
+  const previewEnabled = config.OOI_VISUAL_PREVIEW_ENABLED === true
+    || new URLSearchParams(location.search).get('OOI_VISUAL_PREVIEW_ENABLED') === 'true';
+  if (!localHost || !previewEnabled) return href;
+  const url = new URL(href, location.href);
+  url.searchParams.set('OOI_VISUAL_PREVIEW_ENABLED', 'true');
+  return `${url.pathname}${url.search}${url.hash}`;
+};
+const projectRouteHref = (href, hash = null) => {
+  const url = new URL(href || './workspace.html', location.href);
+  if (projectId) url.searchParams.set('projectId', projectId);
+  if (hash) url.hash = hash;
+  return previewHref(`${url.pathname}${url.search}${url.hash}`);
+};
 
 const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 const fmt = (value, unit = '', maximumFractionDigits = 1) => value == null || !Number.isFinite(Number(value))
@@ -38,11 +56,17 @@ async function getFunction(name, query) {
 }
 
 function setLinks(href) {
-  $('workspaceNav').href = href;
-  $('preStudyNav').href = `./index.html?projectId=${encodeURIComponent(projectId)}`;
-  $('technicalLink').href = `${href.split('#')[0]}#solarAreaSummary`;
-  $('energyLink').href = href;
-  $('financeLink').href = href;
+  const workspaceRoute = projectRouteHref(href);
+  const workspaceNav = $('workspaceNav');
+  workspaceNav.setAttribute('href', workspaceRoute);
+  workspaceNav.onclick = (event) => {
+    event.preventDefault();
+    location.assign(projectRouteHref(href));
+  };
+  $('preStudyNav').setAttribute('href', previewHref(`./index.html?projectId=${encodeURIComponent(projectId)}`));
+  $('technicalLink').setAttribute('href', projectRouteHref(href, 'solarAreaSummary'));
+  $('energyLink').setAttribute('href', projectRouteHref(href, 'scenarioPanel'));
+  $('financeLink').setAttribute('href', projectRouteHref(href, 'scenarioPanel'));
 }
 
 function renderScenarioPicker(scenarios, active) {
@@ -77,6 +101,20 @@ function renderTechnical(model) {
   $('technicalSummary').innerHTML = `${lines.map(([label, value]) => `<div class="summaryLine"><span>${esc(label)}</span><strong>${esc(value)}</strong></div>`).join('')}${areas.length ? areas.map((area) => `<article class="areaSummary"><h4>${esc(area.name || areaKind(area.area_kind))}</h4><p>Surface exploitable · ${esc(fmt(area.usable_area_estimate_m2, 'm²'))}</p><p>Orientation · ${esc(orientation(area.orientation_deg))}　 Pente · ${esc(orientation(area.tilt_deg))}</p><p>Statut · ${esc(area.provenance?.inputStatus === 'USER_PROVIDED' ? 'À qualifier' : 'À confirmer')}</p></article>`).join('') : '<p class="quietNote">Aucune zone solaire renseignée pour cette configuration.</p>'}`;
 }
 
+function temporalEnergyDistribution(model) {
+  if (!OOI_LOCAL_PREVIEW || !ooiVisuals) return { markup: '', note: '' };
+  const run = model.canonicalRun;
+  const decisionRow = (model.scenarioData?.calculatedKpis || []).find((item) => item.calculation_run_id === run?.id && item.kpi_code === 'cr011_scenario_decision');
+  const decision = decisionRow?.value_json;
+  const eligible = model.currentness === 'VERIFIED' && model.inputsCurrent === true && run?.status === 'SUCCEEDED'
+    && decision?.status === 'READY' && decision?.allocation_method === 'TEMPORAL_MATCHING' && decision?.decision_maturity === 'CANONICAL';
+  if (!eligible) return { markup: '', note: '' };
+  const options = { eligible, method: decision.allocation_method, maturity: decision.decision_maturity,
+    matching: decision.cr009_matching_result, productionKwh: model.energy.productionValue };
+  const markup = ooiVisuals.temporalEnergyDistributionMarkup(options);
+  return { markup, note: markup ? '' : '<p class="ooiEnergyUnavailable">Graphique masqué : résultat temporel ou bilan de conservation incomplet ou incohérent.</p>' };
+}
+
 function renderEnergy(model) {
   const energy = model.energy;
   $('energyStatus').dataset.status = energy.status;
@@ -84,7 +122,8 @@ function renderEnergy(model) {
   const rows = energy.rows.length ? energy.rows.map((row) => row.channel === 'FULL_SALE'
     ? `<div class="allocationRow"><span>${esc(row.label)}</span><strong>Volume = production canonique</strong>${badge(energy.status)}</div>`
     : `<div class="allocationRow"><span>${esc(row.label)}</span><strong>${esc(row.value == null ? 'À compléter' : fmt(row.value, row.unit, 0))}</strong>${badge(row.value == null ? 'UNKNOWN' : energy.status === 'VERIFIED' ? 'VERIFIED' : 'ASSUMPTION')}</div>`).join('') : '<p class="emptyState">Aucune répartition CR-011 liée au run énergétique de cette version.</p>';
-  $('energySummary').innerHTML = `<p class="quietNote">La production annuelle est indiquée dans les KPI principaux.</p><p class="quietNote">Répartition issue de la décision énergétique enregistrée</p><div class="allocationList">${rows}</div><p class="quietNote">${esc(energy.matchingLabel)}</p>`;
+  const distribution = temporalEnergyDistribution(model);
+  $('energySummary').innerHTML = `<p class="quietNote">La production annuelle est indiquée dans les KPI principaux.</p><p class="quietNote">Répartition issue de la décision énergétique enregistrée</p><div class="allocationList">${rows}</div>${distribution.markup}${distribution.note}<p class="quietNote">${esc(energy.matchingLabel)}</p>`;
   $('timeSeriesNote').hidden = false;
 }
 
@@ -156,7 +195,7 @@ function renderImpact(model) {
 
 function renderActions(model) {
   const host = $('lifecycleActions');
-  const workspaceHref = model.actions.workspaceHref;
+  const workspaceHref = previewHref(model.actions.workspaceHref);
   const actions = [];
   if (model.actions.recalculate) actions.push(`<a class="actionButton" href="${esc(workspaceHref)}">Recalculer</a>`);
   if (model.actions.validate) actions.push(`<a class="actionButton" href="${esc(workspaceHref)}">Valider</a>`);
@@ -249,4 +288,12 @@ async function boot() {
   }
 }
 
-boot();
+if (OOI_LOCAL_PREVIEW) {
+  import('./ooi-visual-v04.mjs').then((module) => {
+    ooiVisuals = module;
+    if (!document.getElementById('ooiEnergyVisualStyle')) {
+      const link = document.createElement('link');
+      link.id = 'ooiEnergyVisualStyle'; link.rel = 'stylesheet'; link.href = './ooi-energy-visuals.css'; document.head.append(link);
+    }
+  }).catch((error) => console.warn('OOI aperçu énergie indisponible', error)).finally(boot);
+} else boot();

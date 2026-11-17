@@ -111,25 +111,38 @@
     if (!container || !Array.isArray(values) || values.length !== 12 || !values.every(value => Number.isFinite(value) && value >= 0)) return false;
     const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
     const width = 900, height = 250, left = 48, right = 18, top = 16, bottom = 38;
+    const monthlyLoad = Array.isArray(production.consumptionMonthlyKwh) && production.consumptionMonthlyKwh.length === 12 && production.consumptionMonthlyKwh.every(value => Number.isFinite(value) && value >= 0) ? production.consumptionMonthlyKwh : null;
     const averageConsumption = Number.isFinite(production.consumptionAnnualKwh) && production.consumptionAnnualKwh > 0 ? production.consumptionAnnualKwh / 12 : null;
-    const max = Math.max(...values, averageConsumption || 0, 1);
+    const max = Math.max(...values, ...(monthlyLoad || []), averageConsumption || 0, 1);
     const y = value => top + (height - top - bottom) * (1 - value / max);
-    const svg = svgNode('svg', { viewBox: `0 0 ${width} ${height}`, role: 'img', 'aria-label': 'Profil mensuel de production solaire estimée par PVGIS' });
+    const sourceLabel = production.consumptionProfileType === 'ENEDIS_MEASURED' ? 'Profil Enedis réel' : 'Profil Enedis synthétique';
+    const svg = svgNode('svg', { viewBox: `0 0 ${width} ${height}`, role: 'img', 'aria-label': `Profil mensuel estimé de production solaire PVGIS${monthlyLoad ? ` et ${sourceLabel.toLowerCase()}` : ''}` });
     svg.appendChild(svgNode('line', { x1: left, y1: height - bottom, x2: width - right, y2: height - bottom, class: 'chart-axis' }));
     const slot = (width - left - right) / 12;
     values.forEach((value, index) => {
-      const barWidth = slot * .58, barX = left + slot * index + (slot - barWidth) / 2, barY = y(value);
+      const paired = Boolean(monthlyLoad), barWidth = slot * (paired ? .32 : .58), barX = left + slot * index + (paired ? slot * .12 : (slot - barWidth) / 2), barY = y(value);
       const bar = svgNode('rect', { x: barX, y: barY, width: barWidth, height: Math.max(2, height - bottom - barY), rx: 3, class: 'climate-bar' });
       bar.appendChild(svgNode('title', {}, `${months[index]} · ${Math.round(value).toLocaleString('fr-FR')} kWh`));
       svg.appendChild(bar);
+      if (monthlyLoad) {
+        const loadValue = monthlyLoad[index], loadY = y(loadValue);
+        const loadBar = svgNode('rect', { x: left + slot * index + slot * .54, y: loadY, width: slot * .32, height: Math.max(2, height - bottom - loadY), rx: 3, class: production.consumptionProfileType === 'ENEDIS_MEASURED' ? 'enedis-profile measured' : 'enedis-profile' });
+        loadBar.appendChild(svgNode('title', {}, `${months[index]} · ${sourceLabel}${production.consumptionProfileId ? ` ${production.consumptionProfileId}` : ''} · ${Math.round(loadValue).toLocaleString('fr-FR')} kWh`));
+        svg.appendChild(loadBar);
+      }
       svg.appendChild(svgNode('text', { x: left + slot * index + slot / 2, y: height - 10, 'text-anchor': 'middle' }, months[index]));
     });
-    if (averageConsumption != null) {
+    if (!monthlyLoad && averageConsumption != null) {
       const guideY = y(averageConsumption);
       svg.appendChild(svgNode('line', { x1: left, y1: guideY, x2: width - right, y2: guideY, class: 'consumption-guide' }));
       svg.appendChild(svgNode('text', { x: width - right - 3, y: guideY - 4, 'text-anchor': 'end', class: 'chart-guide-label' }, `Moyenne annuelle ÷ 12 · ${Math.round(averageConsumption).toLocaleString('fr-FR')} kWh/mois`));
     }
-    container.replaceChildren(svg);
+    const legend = document.createElement('div'); legend.className = 'production-chart-legend';
+    const entry = (className, label) => { const item = document.createElement('span'); const swatch = document.createElement('i'); swatch.className = className; item.append(swatch, document.createTextNode(label)); legend.append(item); };
+    entry('solar', 'Production solaire estimée · PVGIS');
+    if (monthlyLoad) entry(production.consumptionProfileType === 'ENEDIS_MEASURED' ? 'load measured' : 'load', `${sourceLabel}${production.consumptionProfileId ? ` · ${production.consumptionProfileId}` : ''} · répartition mensuelle`);
+    else if (averageConsumption != null) entry('average', 'Moyenne annuelle ÷ 12 · simple repère, sans profil mensuel');
+    container.replaceChildren(svg, legend);
     return true;
   }
   function appendClimateChart(container, climate) {
@@ -368,15 +381,30 @@
     const width = 900, height = 250, left = 74, right = 20, top = 20, bottom = 38;
     const rawMin = Math.min(0, ...values), rawMax = Math.max(0, ...values), padding = Math.max(1, (rawMax - rawMin) * .08);
     const min = rawMin - padding, max = rawMax + padding;
-    const x = year => left + (width - left - right) * year / (values.length - 1);
+    const plotWidth = width - left - right;
+    const slotWidth = plotWidth / values.length;
+    const x = year => left + slotWidth * (year + .5);
     const y = amount => top + (max - amount) / (max - min) * (height - top - bottom);
-    const svg = svgNode('svg', { viewBox: `0 0 ${width} ${height}`, role: 'img', 'aria-label': `Trésorerie cumulée estimée des fonds propres avant impôts sur ${values.length - 1} ans, dette incluse` });
+    const svg = svgNode('svg', { viewBox: `0 0 ${width} ${height}`, role: 'img', 'aria-label': `Histogramme de la trésorerie cumulée estimée des fonds propres avant impôts sur ${values.length - 1} ans, dette incluse` });
     [min, 0, max].forEach(amount => {
       const yy = y(amount);
       svg.appendChild(svgNode('line', { x1: left, y1: yy, x2: width - right, y2: yy, class: amount === 0 ? 'cashflow-zero' : 'chart-axis' }));
       svg.appendChild(svgNode('text', { x: left - 8, y: yy + 4, 'text-anchor': 'end' }, `${Math.round(amount).toLocaleString('fr-FR')} €`));
     });
-    svg.appendChild(svgNode('polyline', { points: values.map((amount, year) => `${x(year)},${y(amount)}`).join(' '), class: 'cashflow-line' }));
+    const zeroY = y(0);
+    values.forEach((amount, year) => {
+      const valueY = y(amount);
+      const bar = svgNode('rect', {
+        x: x(year) - slotWidth * .34,
+        y: Math.min(valueY, zeroY),
+        width: slotWidth * .68,
+        height: Math.max(1, Math.abs(valueY - zeroY)),
+        rx: 2,
+        class: amount < 0 ? 'cashflow-bar-negative' : 'cashflow-bar-positive'
+      });
+      bar.appendChild(svgNode('title', {}, `Année ${year} : ${Math.round(amount).toLocaleString('fr-FR')} € cumulés`));
+      svg.appendChild(bar);
+    });
     const crossing = values.findIndex((amount, year) => year > 0 && amount >= 0);
     [...new Set([0, Math.round((values.length - 1) / 2), values.length - 1])].forEach(year => {
       svg.appendChild(svgNode('text', { x: x(year), y: height - 10, 'text-anchor': year === 0 ? 'start' : year === values.length - 1 ? 'end' : 'middle' }, `Année ${year}`));
@@ -791,7 +819,7 @@
     $('reportContent').innerHTML = `
       <section class="report-page cover"><div><span class="eyebrow">OZENO · ${preliminary ? 'Étude préalable' : 'Rapport de scénario figé'}</span><h1>${esc(title)}</h1><p class="muted">${esc(site || titleFact?.value || '')} · lecture ${esc(viewpoint)}</p><p class="reportState ${presentation.provisional ? 'provisional' : 'complete'}" role="status">${esc(presentation.label)}${preliminary ? '' : presentation.unresolvedCount ? ` · ${presentation.unresolvedCount} donnée(s) UNKNOWN ou périmée(s)` : ''}</p></div><div class="coverMeta">${preliminary ? `<div><small>Document</small><br><b>Étude préalable · provisoire</b></div><div><small>Destinataire</small><br><b>${esc(viewpoint)}</b></div>` : `<div><small>Scénario figé</small><br><b>${esc(payload.scenario?.status || 'UNKNOWN')} · v${esc(payload.scenario?.version || '?')}</b></div><div><small>Version du rapport</small><br><b>r${esc(report.report_version)}</b></div>`}<div><small>${preliminary ? 'Édité le' : 'Généré le'}</small><br><b>${esc(new Date(payload.generated_at || report.generated_at).toLocaleDateString('fr-FR'))}</b></div></div><p class="muted">${preliminary ? 'Les indicateurs connus de l’étude sont repris ici. Les coûts et résultats encore estimatifs sont signalés comme hypothèses ; les informations à documenter restent à confirmer.' : 'Document reproductible basé sur un scénario figé. Il restitue les données et leurs sources ; il ne recalcule ni production ni rentabilité.'}</p></section>
       <section class="report-page"><h2 class="pageTitle">${preliminary ? '01 · Synthèse du projet' : 'Synthèse exécutive'}</h2><p class="lead">${preliminary ? `Vue d’ensemble pour le/la ${esc(viewpoint)}. Les chiffres sont ceux affichés dans l’étude au moment de la génération.` : `Lecture adaptée au point de vue ${esc(viewpoint)}. Une économie du propriétaire n’est jamais assimilée à une recette investisseur.`}</p><div id="reportSummaryKpis" class="summaryKpis"></div><div class="summaryDashboard"><article class="summaryPanel"><h3>Production et repères climatiques</h3><div id="reportSummaryClimate" class="reportChart"></div><p class="small">P50/P90 climatiques décrivent l’historique, pas une garantie ni un P90 d’investissement.</p></article><article class="summaryPanel"><h3>Repères du projet</h3><div id="reportSummaryFacts" class="summaryFacts"></div></article></div><div class="notice ${preliminary ? '' : 'unknown'}">${preliminary ? 'Cette synthèse décrit une pré-étude : elle ne constitue pas encore une recommandation d’investissement.' : 'Décision / recommandation : non disponible. Les éléments manquants ne sont ni estimés ni remplacés par un score.'}</div></section>
-      <section class="report-page"><h2 class="pageTitle">${preliminary ? '02 · Performance solaire' : 'Énergie et rendement'}</h2><p class="lead">${preliminary ? 'Production estimée et variabilité observée dans l’historique climatique, lorsqu’elle a été calculée dans l’étude.' : 'Les résultats d’étude externes restent distincts des valeurs climatiques et modélisées. Aucun P90 climatique n’est présenté comme P90 modélisé.'}</p><div class="facts">${energy}</div>${preliminary ? '<h3>Profil mensuel estimé</h3><div id="reportProductionChart" class="reportChart" hidden></div><p class="small">La ligne de consommation, si disponible, représente seulement la consommation annuelle divisée par 12 ; ce n’est pas une courbe de charge réelle et elle ne démontre pas la coïncidence horaire.</p><h3>Variabilité climatique observée</h3><div id="reportClimateChart" class="reportChart" hidden></div><p id="reportClimateNote" class="small"></p>' : ''}<div class="notice">${preliminary ? 'P50 et P90 climatiques décrivent la dispersion des productions historiques PVGIS. Ce ne sont ni des garanties, ni des niveaux de confiance d’investissement. La comparaison annuelle ne permet pas de déduire une coïncidence horaire avec la consommation.' : 'Les résultats sont restitués tels que fournis par le run ou l’étude citée. Ce rapport n’en déduit aucun profil horaire ou coïncidence de consommation.'}</div></section>
+      <section class="report-page"><h2 class="pageTitle">${preliminary ? '02 · Performance solaire' : 'Énergie et rendement'}</h2><p class="lead">${preliminary ? 'Production estimée et variabilité observée dans l’historique climatique, lorsqu’elle a été calculée dans l’étude.' : 'Les résultats d’étude externes restent distincts des valeurs climatiques et modélisées. Aucun P90 climatique n’est présenté comme P90 modélisé.'}</p><div class="facts">${energy}</div>${preliminary ? '<h3>Profil solaire mensuel estimé</h3><div id="reportProductionChart" class="reportChart" hidden></div><p class="small">Le profil Enedis affiché est synthétique, sauf mention « réel » ; il répartit une consommation annuelle par mois et ne représente pas une courbe vérifiée du compteur. À défaut de profil mensuel, seule une moyenne annuelle divisée par 12 peut être affichée. Aucun résultat ne démontre la coïncidence horaire.</p><h3>Variabilité climatique observée</h3><div id="reportClimateChart" class="reportChart" hidden></div><p id="reportClimateNote" class="small"></p>' : ''}<div class="notice">${preliminary ? 'P50 et P90 climatiques décrivent la dispersion des productions historiques PVGIS. Ce ne sont ni des garanties, ni des niveaux de confiance d’investissement. La comparaison annuelle ne permet pas de déduire une coïncidence horaire avec la consommation.' : 'Les résultats sont restitués tels que fournis par le run ou l’étude citée. Ce rapport n’en déduit aucun profil horaire ou coïncidence de consommation.'}</div></section>
       <section class="report-page"><h2 class="pageTitle">${preliminary ? '03 · Configuration et coûts' : 'Technique, CAPEX et OPEX'}</h2><p class="lead">${preliminary ? 'Les surfaces, équipements et coûts sont des hypothèses tant qu’ils ne sont pas confirmés par les pièces et études nécessaires.' : 'Le CAPEX correspond au coût d’investissement hors coût de la dette. Les intérêts éventuels relèvent du financement et ne sont pas incorporés au CAPEX.'}</p><div class="facts">${technical}</div>${preliminary ? '<div class="notice">L’OPEX affiché comme hypothèse est celui utilisé dans le calcul actuel du TRI. Il sera remplacé par une estimation documentée lorsque les coûts d’assurance, de maintenance et les autres frais seront connus.</div>' : `<h3>État des pièces attendues</h3><table class="data-room"><tbody>${required}</tbody></table><ul class="small">${docs}</ul>`}</section>
       <section class="report-page"><h2 class="pageTitle">${preliminary ? '04 · Résultats financiers' : 'Scénario financier'}</h2><p class="lead">${preliminary ? `Estimations reprises de l’étude pour le point de vue ${esc(viewpoint)}. Le rapport restitue les flux calculés dans l’étude, sans les recalculer à la génération.` : `Point de vue : ${esc(viewpoint)}. Aucun KPI n’est réinterprété ; les retours ne sont affichés que si le run canonique identifie le même point de vue. Les économies propriétaire ne remplacent jamais un rendement investisseur.`}</p><div class="facts">${financial}</div>${preliminary ? '<h3>Répartition des ventes et économies · année 1</h3><div id="reportRevenueChart" class="reportChart" hidden></div><h3>Flux cumulés des fonds propres · avant impôts</h3><div id="reportCashflowChart" class="reportChart" hidden></div><div id="reportAnnualCashflow" class="financialSchedule" hidden></div>' : ''}<div class="notice ${preliminary ? '' : 'unknown'}">${preliminary ? 'Résultats indicatifs fondés sur les hypothèses actuellement saisies ; ils ne constituent ni une offre bancaire ni un engagement de rentabilité.' : 'Les sensibilités, charges ou retours absents ne sont pas inventés et restent à confirmer.'}</div></section>
       <section class="report-page"><h2 class="pageTitle">${preliminary ? '05 · Risques et prochaines vérifications' : 'Risques, contrats et décision'}</h2>${preliminary ? '<p class="lead">Les informations ci-dessous reprennent les notes présentes dans le projet ; l’absence de constat dans le brouillon ne signifie pas absence de risque.</p>' : ''}<div class="facts">${risks}</div>${preliminary ? '<h3>À vérifier avant toute décision</h3><ul class="decisionChecks"><li>Confirmer les surfaces, l’état de la toiture et la faisabilité structurelle.</li><li>Remplacer les estimations d’investissement par les devis et conditions de raccordement.</li><li>Documenter l’assurance, la maintenance et les autres frais d’exploitation.</li><li>Vérifier les acteurs, contrats et pièces propres au projet.</li></ul>' : ''}<div class="notice ${presentation.provisional ? 'unknown' : ''}"><b>Statut du rapport : ${esc(presentation.label)}</b>${preliminary ? '<br>Des pièces et données restent à confirmer ; le rapport ne peut pas être publié.' : presentation.unresolvedCount ? `<br>${presentation.unresolvedCount} donnée(s) restent UNKNOWN ou périmée(s).` : ''}</div>${preliminary ? '<p class="small">Le rapport a été édité à la date indiquée en couverture. Il reste modifiable et ne valide aucune donnée du dossier.</p>' : `<div class="gate ${gate.ready ? '' : 'blocked'}"><b>${gate.ready ? 'Prérequis de publication satisfaits' : `Publication bloquée · ${gate.blockers?.length || 0} donnée(s) requise(s) manquante(s)`}</b>${blockers}</div><div class="notice unknown">Aucun score de risque ni avis d’investissement automatique n’est calculé par ce rapport.</div><p class="small">Empreinte du scénario : ${esc(payload.scenario?.frozen_snapshot_hash || 'UNKNOWN')} · Empreinte du rapport : ${esc(report.payload_hash || 'UNKNOWN')} · Moteur de rapport : ${esc(payload.engine_version || 'UNKNOWN')}</p>`}</section>`;
@@ -863,7 +891,7 @@
     if (summaryTitle) summaryTitle.textContent = 'Synthèse · repères du projet';
     const consumption = document.createElement('section');
     consumption.className = 'report-page preStudyConsumptionPage';
-    consumption.innerHTML = '<h2 class="pageTitle">03 · Consommation et adéquation solaire</h2><p class="lead">Le profil présenté est un repère prospectif lorsqu’il est synthétique ; il ne représente pas la courbe réelle du compteur.</p><div class="facts" id="reportLoadFacts"></div><h3>Profil(s) de référence et provenance</h3><div id="reportMatchingProfileSources" class="matchingProvenance" hidden></div><h3>Production et consommation mensuelles</h3><div id="reportMatchingMonthlyChart" class="reportChart" hidden></div><p id="reportMatchingMonthlyUnknown" class="small">Profil mensuel compatible non disponible : aucun matching temporel n’est déduit d’un total annuel seul.</p><h3>Quantités valorisables · corridor de matching</h3><div id="reportMatchingCorridor" class="reportChart" hidden></div><p class="small">Les quantiles de matching sont empiriques et restent distincts des P50/P90 de production.</p>';
+    consumption.innerHTML = '<h2 class="pageTitle">03 · Consommation et adéquation solaire</h2><p class="lead">Le profil présenté est un repère prospectif lorsqu’il est synthétique ; il ne représente pas la courbe réelle du compteur.</p><div class="facts" id="reportLoadFacts"></div><h3>Profil(s) de référence et provenance</h3><div id="reportMatchingProfileSources" class="matchingProvenance" hidden></div><h3>Production et consommation mensuelles</h3><div id="reportMatchingMonthlyChart" class="reportChart" hidden></div><p id="reportMatchingMonthlyUnknown" class="small">Profil mensuel compatible non disponible : aucun matching temporel n’est déduit d’un total annuel seul.</p><h3>Quantités valorisables · corridor de matching</h3><div id="reportMatchingCorridor" class="reportChart" hidden></div><p class="small">Aucun corridor de matching disponible : il nécessite un profil de consommation mensuel compatible et un matching temporel. La consommation annuelle seule ne permet pas de le calculer.</p>';
     const loadFact = solar.querySelector('[data-field-code="energy.load.annual"]');
     if (loadFact) consumption.querySelector('#reportLoadFacts').appendChild(loadFact);
     solar.after(consumption);
@@ -885,8 +913,11 @@
     const profileSources = consumption.querySelector('#reportMatchingProfileSources');
     if (appendMatchingProfileProvenance(profileSources, payload.visuals?.matching)) profileSources.hidden = false;
     else profileSources.previousElementSibling.hidden = true;
-    appendMatchingEnergyChart(consumption.querySelector('#reportMatchingMonthlyChart'), payload.visuals?.matching);
-    if (!consumption.querySelector('#reportMatchingMonthlyChart').hidden) consumption.querySelector('#reportMatchingMonthlyUnknown').hidden = true;
+    const monthlyChart = consumption.querySelector('#reportMatchingMonthlyChart');
+    const hasMatchingChart = appendMatchingEnergyChart(monthlyChart, payload.visuals?.matching);
+    const hasProductionChart = !hasMatchingChart && appendProductionChart(monthlyChart, payload.visuals?.production);
+    if (hasMatchingChart || hasProductionChart) monthlyChart.hidden = false;
+    if (hasMatchingChart) consumption.querySelector('#reportMatchingMonthlyUnknown').hidden = true;
     const corridor = consumption.querySelector('#reportMatchingCorridor');
     if (appendMatchingCorridor(corridor, payload.visuals?.matching)) corridor.hidden = false;
     if (appendPricingCases(pricingChart, payload.visuals?.pricing)) { pricingChart.hidden = false; pricingHeading.hidden = false; }

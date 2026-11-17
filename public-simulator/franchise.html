@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OZENO · Espace franchisé</title>
+  <link rel="icon" type="image/png" href="./exec-d2eda8f0-968b-466f-b6ab-7ba649808352.png">
+  <link rel="stylesheet" href="./ozeno-theme.css">
+  <link rel="stylesheet" href="./project-hub.css">
+  <link rel="stylesheet" href="./franchise-dashboard.css">
+  <script src="./runtime-config.js"></script>
+  <script src="./app-auth-gate.js"></script>
+  <script type="module" src="./franchise-dashboard.js"></script>
+</head>
+<body class="ozenoWorkspace ozenoDashboard franchiseDashboard">
+  <header class="hubTopbar">
+    <a class="hubBrand" href="./projects.html" aria-label="Retour à l’espace commercial OZENO">
+      <span class="hubBrandCopy"><img class="hubLogoWordmark" src="./ozeno-wordmark.png" alt="OZENO"><small>Plateforme de transition énergétique</small></span>
+    </a>
+    <div class="franchiseTopbarTitle">Espace franchisé</div>
+    <nav class="ozenoHeaderNavigation" aria-label="Compte et préférences"><span id="franchiseAccountEmail" class="franchiseAccountEmail">Compte</span></nav>
+  </header>
+
+  <div class="hubAdminShell">
+    <aside class="hubSidebar" aria-label="Administration régionale">
+      <p class="hubSidebarCaption">RÉSEAU FRANCHISÉ</p>
+      <nav class="hubSidebarNav" aria-label="Modules franchisé">
+        <p class="hubNavSection">PILOTAGE</p>
+        <a class="hubNavItem isActive" href="#overview" aria-current="page"><span aria-hidden="true">▦</span><span class="hubNavLabel">Vue régionale</span></a>
+        <a class="hubNavItem" href="#projects"><span aria-hidden="true">▤</span><span class="hubNavLabel">Projets</span></a>
+        <p class="hubNavSection">RÉSEAU</p>
+        <a class="hubNavItem" href="#agents"><span aria-hidden="true">♙</span><span class="hubNavLabel">Mandataires</span><span class="hubComingSoon">À relier</span></a>
+        <a class="hubNavItem" href="#applications"><span aria-hidden="true">◷</span><span class="hubNavLabel">Demandes d’accès</span></a>
+        <p class="hubNavSection">ACTIVITÉ</p>
+        <a class="hubNavItem" href="#revenue"><span aria-hidden="true">€</span><span class="hubNavLabel">CA & commissions</span><span class="hubComingSoon">À relier</span></a>
+        <a class="hubNavItem" href="./projects.html"><span aria-hidden="true">↗</span><span class="hubNavLabel">Espace projets</span></a>
+      </nav>
+      <div class="hubSidebarFooter"><span class="hubSidebarStatusDot" aria-hidden="true"></span><span>Accès sécurisé au compte</span></div>
+    </aside>
+
+    <main class="hubDashboard franchiseMain" id="overview">
+      <div class="hubDashboardIntro franchiseIntro">
+        <div>
+          <p class="ozenoEyebrow">ESPACE FRANCHISÉ / PILOTAGE RÉGIONAL</p>
+          <h1>Vue régionale</h1>
+          <p>Suivez l’activité des projets et accompagnez les mandataires de votre secteur.</p>
+        </div>
+        <div class="franchiseIntroActions">
+          <span class="franchiseScopeBadge">Secteur régional · non configuré</span>
+          <button class="hubSecondary" id="franchiseRefresh" type="button">Actualiser</button>
+        </div>
+      </div>
+
+      <section class="franchiseCallout" aria-label="Périmètre des données">
+        <span class="franchiseCalloutIcon" aria-hidden="true">i</span>
+        <div><strong>Périmètre de cette première version</strong><p>Les projets affichés sont ceux que le compte connecté est déjà autorisé à consulter. Le rattachement aux régions et aux mandataires n’existe pas encore dans les données : cette vue ne prétend donc pas représenter un secteur complet.</p></div>
+      </section>
+
+      <p id="franchiseDataState" class="franchiseDataState" role="status" aria-live="polite">Initialisation…</p>
+
+      <section class="franchiseMetricGrid" aria-label="Indicateurs de l’activité accessible">
+        <article class="franchiseMetricCard"><span class="franchiseMetricIcon">▤</span><div><p>Projets accessibles</p><strong id="franchiseMetricProjects">—</strong><small>Au compte connecté · pas encore par région</small></div></article>
+        <article class="franchiseMetricCard"><span class="franchiseMetricIcon progress">◷</span><div><p>Dossiers en cours</p><strong id="franchiseMetricInProgress">—</strong><small>Statut commercial « En cours »</small></div></article>
+        <article class="franchiseMetricCard"><span class="franchiseMetricIcon validated">✓</span><div><p>Dossiers validés</p><strong id="franchiseMetricValidated">—</strong><small>Validation commerciale uniquement</small></div></article>
+        <article class="franchiseMetricCard unknown"><span class="franchiseMetricIcon unknown">♙</span><div><p>Mandataires du secteur</p><strong id="franchiseMetricAgents">Non disponible</strong><small>Rattachement régional à construire</small></div></article>
+        <article class="franchiseMetricCard unknown"><span class="franchiseMetricIcon unknown">€</span><div><p>Commissions OZENO potentielles</p><strong id="franchiseMetricTurnover">À renseigner</strong><small id="franchiseCommissionCoverage">Estimation 8–10 % · distincte du CA facturé</small></div></article>
+      </section>
+
+      <section class="franchiseSectionGrid" aria-label="Suivi du réseau et des revenus">
+        <article class="franchisePanel" id="agents">
+          <div class="franchisePanelHeading"><div><p class="hubSectionEyebrow">VOTRE ÉQUIPE</p><h2>Mandataires</h2></div><span class="franchiseUnknownPill">Donnée à connecter</span></div>
+          <p class="franchisePanelCopy">La liste, les coordonnées, le statut d’activité et le nombre de dossiers par mandataire nécessitent un registre utilisateur relié au secteur.</p>
+          <div class="franchiseActionRow"><button class="hubPrimary" id="franchiseCreateAgent" type="button" disabled title="À activer après mise en place des droits régionaux">＋ Nouveau mandataire</button><button class="hubSecondary" id="franchiseEditMandate" type="button" disabled title="À activer après définition du modèle de mandat">Gérer les mandats</button></div>
+          <small class="franchiseActionHint">Les actions de création et d’édition seront ouvertes après conception des droits régionaux, du processus d’invitation et de la piste d’audit.</small>
+        </article>
+        <article class="franchisePanel" id="applications">
+          <div class="franchisePanelHeading"><div><p class="hubSectionEyebrow">À TRAITER</p><h2>Demandes d’accès</h2></div><span class="franchiseUnknownPill">Non relié</span></div>
+          <div class="franchiseEmptyState"><span aria-hidden="true">◷</span><div><strong>État des inscriptions inconnu</strong><p>Aucun flux de demandes de mandataire n’est enregistré pour le moment. « 0 demande » ne peut donc pas être affirmé.</p></div></div>
+        </article>
+        <article class="franchisePanel franchiseRevenuePanel" id="revenue">
+          <div class="franchisePanelHeading"><div><p class="hubSectionEyebrow">ACTIVITÉ FINANCIÈRE</p><h2>Chiffre d’affaires mensuel</h2></div><span class="franchiseUnknownPill">À construire</span></div>
+          <div class="franchiseChartEmpty"><div class="franchiseChartAxis" aria-hidden="true"><span>€</span><i></i><i></i><i></i></div><p>Les commissions travaux de 8 à 10 % sont facturées à l’installateur, sans effet sur le CAPEX client. Le CA mensuel facturé nécessite des factures et leur période de rattachement ; les estimations ci-dessus ne constituent pas du CA réalisé.</p></div>
+        </article>
+      </section>
+
+      <section class="franchisePanel franchiseProjectsPanel" id="projects" aria-labelledby="franchiseProjectsTitle">
+        <div class="franchiseProjectsToolbar">
+          <div><p class="hubSectionEyebrow">PORTEFEUILLE VISIBLE</p><h2 id="franchiseProjectsTitle">Projets <small id="franchiseProjectCount">Chargement…</small></h2><p>« Validé » désigne ici le statut commercial du dossier, pas une validation technique ou financière.</p></div>
+          <label class="franchiseSearch"><span>Rechercher</span><input id="franchiseSearch" type="search" placeholder="Projet, client, adresse…"></label>
+          <label class="franchiseFilter"><span>Statut commercial</span><select id="franchiseStatusFilter"><option value="ALL">Tous les statuts</option><option value="IN_PROGRESS">En cours</option><option value="VALIDATED">Validé commercialement</option><option value="ABANDONED">Abandonné</option><option value="DELETED">Supprimé</option></select></label>
+          <label class="franchiseFilter"><span>Période de mise à jour</span><select id="franchisePeriodFilter"><option value="0">Toutes les dates</option><option value="30">30 derniers jours</option><option value="90">90 derniers jours</option><option value="365">12 derniers mois</option></select></label>
+        </div>
+        <div class="franchiseTableScroll"><table class="franchiseProjectsTable"><thead><tr><th scope="col">Projet / adresse</th><th scope="col">Statut</th><th scope="col">Ville</th><th scope="col">Mandataire</th><th scope="col">Surface</th><th scope="col">Commission OZENO potentielle</th><th scope="col">Mis à jour le</th><th scope="col"><span class="hubVisuallyHidden">Action</span></th></tr></thead><tbody id="franchiseProjectRows"></tbody></table></div>
+        <p id="franchiseProjectsEmpty" class="hubEmpty" hidden></p>
+      </section>
+      <p class="franchisePrivacyNote">Commissions potentielles calculées sur les bases travaux enregistrées, à confirmer selon l’accord installateur et la base HT. Les projets abandonnés ou supprimés sont exclus du total. Le CA facturé reste indisponible sans données de facturation. Les brouillons locaux et les projets non autorisés à ce compte ne sont pas affichés.</p>
+    </main>
+  </div>
+</body>
+</html>

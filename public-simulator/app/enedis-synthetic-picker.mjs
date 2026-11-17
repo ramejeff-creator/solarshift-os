@@ -24,10 +24,9 @@ export function mountEnedisSyntheticProfilePicker({ container, getAnnualConsumpt
   if (!container || container.dataset.syntheticPickerReady === 'true') return;
   container.dataset.syntheticPickerReady = 'true';
   container.className = 'enedisSyntheticPicker';
-  container.innerHTML = `<h3>Profil de charge synthétique Enedis · facultatif</h3>
-    <p class="fine">Après validation ou sélection de la consommation ci-dessus, le profil fictif le plus proche est chargé automatiquement et le graphique est actualisé. Si la puissance souscrite est renseignée, elle détermine la catégorie Enedis ; sinon, la recherche compare ENT et PRO.</p>
+  container.innerHTML = `<h3>Profil de charge synthétique Enedis · facultatif <span class="financeHelp"><button type="button" class="financeHelpButton" aria-label="À propos du profil de charge synthétique" aria-expanded="false" aria-describedby="syntheticProfileHelp">i</button><span class="financeHelpBubble" id="syntheticProfileHelp" role="tooltip" hidden>Après validation ou sélection de la consommation ci-dessus, le profil fictif le plus proche est chargé automatiquement et le graphique est actualisé. Si la puissance souscrite est renseignée, elle détermine la catégorie Enedis ; sinon, la recherche compare ENT et PRO. Le profil chargé reste une hypothèse de forme de consommation, pas une donnée de compteur.</span></span></h3>
     <p class="fine syntheticConsumptionWarning" data-synthetic-warning role="alert">Validez une consommation annuelle positive pour charger un profil.</p>
-    <p class="fine" data-synthetic-status role="status" aria-live="polite"></p>
+    <p class="fine" data-synthetic-status role="status" aria-live="polite" hidden></p>
     <button type="button" class="secondary" data-synthetic-retry hidden>Réessayer le chargement du profil</button>
     <p class="fine" data-synthetic-provenance hidden></p>`;
 
@@ -35,6 +34,20 @@ export function mountEnedisSyntheticProfilePicker({ container, getAnnualConsumpt
   const warning = $(container, '[data-synthetic-warning]');
   const provenance = $(container, '[data-synthetic-provenance]');
   const retry = $(container, '[data-synthetic-retry]');
+  const help = $(container, '.financeHelp');
+  const helpButton = $(container, '.financeHelpButton');
+  const helpBubble = $(container, '.financeHelpBubble');
+  const setHelpOpen = (open) => {
+    helpBubble.hidden = !open;
+    help.classList.toggle('is-open', open);
+    helpButton.setAttribute('aria-expanded', String(open));
+  };
+  helpButton.addEventListener('click', (event) => { event.preventDefault(); setHelpOpen(helpBubble.hidden); });
+  help.addEventListener('pointerenter', () => setHelpOpen(true));
+  help.addEventListener('pointerleave', () => setHelpOpen(false));
+  help.addEventListener('focusout', (event) => { if (!help.contains(event.relatedTarget)) setHelpOpen(false); });
+  helpButton.addEventListener('keydown', (event) => { if (event.key === 'Escape') setHelpOpen(false); });
+  status.hidden = true;
   let requestSequence = 0;
   let requestedKey = '';
 
@@ -51,10 +64,11 @@ export function mountEnedisSyntheticProfilePicker({ container, getAnnualConsumpt
     window.dispatchEvent(new CustomEvent('ozeno:synthetic-load-profile', { detail: { profile: null } }));
     provenance.hidden = true;
     provenance.textContent = '';
-    if (message) status.textContent = message;
+    if (message) { status.hidden = false; status.textContent = message; }
   }
 
   async function loadProfile(candidate, annualConsumptionKwh, sequence) {
+    status.hidden = false;
     status.textContent = 'Chargement et validation du profil Enedis…';
     try {
       const result = await postPreview(config.enedisSyntheticProfilePreviewEndpoint, {
@@ -68,11 +82,13 @@ export function mountEnedisSyntheticProfilePicker({ container, getAnnualConsumpt
       window.dispatchEvent(new CustomEvent('ozeno:synthetic-load-profile', { detail: { profile } }));
       provenance.textContent = `Profil Enedis fictif ${profile.id} · catégorie ${profile.customerClass.toUpperCase()} · ${number(profile.annualConsumptionKwh)} kWh/an après mise à l’échelle. La sélection rapproche les volumes annuels ; elle ne confirme ni l’activité ni les horaires réels. Le profil n’est pas enregistré au projet.`;
       provenance.hidden = false;
-      status.textContent = 'Profil le plus proche chargé automatiquement. Il reste une hypothèse de forme de consommation, pas une donnée de compteur.';
+      status.textContent = 'Profil synthétique chargé automatiquement. Il illustre la forme de consommation, sans remplacer les données du compteur.';
+      status.hidden = false;
     } catch (error) {
       if (sequence === requestSequence) {
         requestedKey = '';
         retry.hidden = false;
+        status.hidden = false;
         status.textContent = `${error.message} Aucune courbe n’a été retenue. Vous pouvez réessayer ci-dessous.`;
       }
     }
@@ -94,6 +110,7 @@ export function mountEnedisSyntheticProfilePicker({ container, getAnnualConsumpt
     requestedKey = key;
     const sequence = ++requestSequence;
     clearProfile();
+    status.hidden = false;
     status.textContent = knownClass
       ? `Recherche du profil le plus proche dans la catégorie ${knownClass.toUpperCase()} déduite de la puissance souscrite…`
       : 'Puissance souscrite non renseignée : comparaison automatique des profils ENT et PRO…';

@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="fr" data-requires-auth>
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0d3b35"><title>OZENO · Prospection ACC</title>
+  <script src="./runtime-config.js"></script><script src="./app-auth-gate.js"></script>
+  <link rel="stylesheet" href="./vendor/leaflet/leaflet.css"><link rel="stylesheet" href="./acc-prospects.css?v=20261115-prospection-acc-suivi-v5">
+</head>
+<body>
+  <header class="acc-header"><a class="acc-brand" href="./projects.html" aria-label="OZENO, tableau de bord"><img src="./ozeno-wordmark.png" alt="OZENO"><small>Plateforme de transition énergétique</small></a><nav aria-label="Navigation projet"><a id="accBack" href="./index.html#prestudy-project">← Retour à la pré-étude</a><a id="accPrestudy" href="./index.html#prestudy-project">Pré-étude</a></nav></header>
+  <main class="acc-shell">
+      <span id="accProjectLabel" hidden></span>
+    <p id="accState" class="acc-notice" role="status" aria-live="polite" hidden></p>
+    <div id="accApp" hidden>
+      <section class="acc-kpis" id="accSummary" aria-label="Pistes repérées, retenues et à vérifier"></section>
+      <div class="acc-workspace-tabs" role="tablist" aria-label="Prospection et suivi ACC">
+        <button id="accTabResults" class="is-active" type="button" role="tab" aria-controls="accResultsView" aria-selected="true">Carte et résultats</button>
+        <button id="accTabFollowup" type="button" role="tab" aria-controls="accFollowupView" aria-selected="false">Mon suivi <span id="accFollowupCount">0</span></button>
+        <button id="accSave" type="button" class="acc-save-button" disabled hidden>Enregistrer</button>
+      </div>
+      <div id="accResultsView" role="tabpanel" aria-labelledby="accTabResults">
+      <section class="acc-panel acc-search-panel" aria-label="Recherche et filtres de proximité">
+        <div class="acc-search-grid">
+          <label class="acc-query">Rechercher un établissement<input id="accQuery" type="search" placeholder="Nom, activité ou adresse" autocomplete="off"></label>
+          <label class="acc-radius-control" for="accRadius"><span>Rayon · actualisé automatiquement</span><output id="accRadiusOutput" for="accRadius">1 km</output><input id="accRadius" type="range" min="500" max="5000" step="500" value="1000" aria-label="Rayon de prospection, de 500 mètres à 5 kilomètres"><small>500 m <span>5 km</span></small></label>
+          <div class="acc-search-actions"><button id="accSearch" class="acc-primary" type="button">Rechercher</button><button id="accAdd" type="button">＋ Ajouter une piste</button></div>
+        </div>
+        <div class="acc-search-options"><div id="accSearchState" class="acc-search-state" role="status" aria-live="polite">Les établissements sont des pistes à vérifier. Les consommations et producteurs PV ne sont pas confirmés par cette recherche.</div></div>
+        <button id="accCancelSearch" type="button" hidden>Annuler la recherche</button>
+        <div id="accSearchProgress" class="acc-search-progress" role="progressbar" aria-label="Recherche de proximité en cours" hidden><div class="acc-progress-track"><span></span></div><p id="accSearchPhase" role="status" aria-live="polite">Recherche en cours…</p></div>
+      </section>
+      <div class="acc-layout" id="accLayout">
+        <section class="acc-panel acc-map-panel" aria-label="Carte des établissements">
+          <div class="acc-panel-heading"><div><h2>Établissements à proximité</h2><p>Les repères restent à vérifier avant toute prise de contact.</p></div></div>
+          <div class="acc-map-wrap" id="accMapWrap"><div id="accMap" aria-label="Carte du projet et des établissements"></div><p id="accMapState" class="acc-muted"></p><p class="acc-map-key"><span class="acc-dot acc-dot-project"></span> Site du projet <span class="acc-dot acc-dot-retained"></span> Retenue pour l’étude <span class="acc-dot acc-dot-candidate"></span> Activité candidate <span class="acc-dot acc-dot-radius"></span> Rayon indicatif</p></div>
+          <p class="acc-map-caption">Périmètre indicatif · éligibilité ACC à confirmer.</p>
+        </section>
+        <aside class="acc-right-column">
+          <section class="acc-panel acc-prospects-panel" aria-label="Pistes du projet"><div class="acc-panel-heading"><div><h2>Établissements à examiner</h2><p id="accResultsCount" class="acc-muted"></p></div></div><div class="acc-list-toolbar"><label>Activité<select id="accCategory"><option value="">Toutes les activités</option></select></label><label>Statut<select id="accStatus"><option value="">Tous les statuts</option><option value="IDENTIFIED">Repéré</option><option value="SELECTED">Retenu pour l’étude</option><option value="TO_VERIFY">À vérifier</option></select></label><label>Trier<select id="accSort"><option value="distance">Distance</option><option value="name">Nom</option><option value="priority">Priorité</option><option value="energy">Piste énergétique</option></select></label></div><p id="accSortState" class="acc-muted" role="status" aria-live="polite"></p><div id="accList" class="acc-list"></div></section>
+          <section class="acc-panel acc-selected-detail" aria-label="Fiche du candidat sélectionné"><div class="acc-panel-heading"><div><h2>Fiche candidat</h2><p>Qualification et provenance des informations</p></div><span class="acc-source-badge">À confirmer</span></div><div id="accSelectedDetail"><p class="acc-muted">Sélectionnez une piste sur la carte ou dans la liste.</p></div><details class="acc-qualification-checks"><summary><span id="accNextTitle">Points à confirmer avant décision</span></summary><div id="accNextChecks" class="acc-checklist"><p class="acc-muted">Sélectionnez une piste pour afficher les vérifications utiles.</p></div><p id="accProofLine" class="acc-proof-line"></p></details></section>
+        </aside>
+      </div>
+      </div>
+      <section id="accFollowupView" class="acc-followup-view" role="tabpanel" aria-labelledby="accTabFollowup" hidden>
+        <div class="acc-followup-heading"><div><h2>Mon suivi de prospection</h2><p>Les pistes de ce tableau sont rattachées au dossier.</p></div><button id="accFollowupPrint" type="button">Imprimer le suivi</button></div>
+        <div class="acc-followup-filters"><label>Rechercher dans le suivi<input id="accFollowupQuery" type="search" placeholder="Nom, activité ou adresse"></label><label>Avancement<select id="accFollowupStage"><option value="">Toutes les étapes</option><option value="TO_CONTACT">À contacter</option><option value="CONTACTED">Contacté</option><option value="FOLLOW_UP">Relance prévue</option><option value="INTERESTED">Intéressé</option><option value="NO_RESPONSE">Sans suite</option></select></label><label>Qualification ACC<select id="accFollowupQualification"><option value="">Toutes</option><option value="IDENTIFIED">Repéré</option><option value="TO_VERIFY">À vérifier</option><option value="SELECTED">Retenu pour l’étude</option></select></label></div>
+        <div class="acc-followup-layout"><section class="acc-panel acc-followup-table-panel" aria-label="Tableau de suivi des pistes"><div class="acc-panel-heading"><div><h2>Établissements suivis</h2><p id="accFollowupResultsCount" class="acc-muted"></p></div></div><div class="acc-followup-table-wrap"><table class="acc-followup-table"><thead><tr><th>Établissement</th><th>Qualification ACC</th><th>Prospection</th><th>Prochaine action</th></tr></thead><tbody id="accFollowupList"></tbody></table></div></section><section class="acc-panel acc-followup-detail-panel" aria-label="Fiche de suivi sélectionnée"><div class="acc-panel-heading"><div><h2>Fiche de suivi</h2><p>Contact, prochaines étapes et qualification</p></div></div><div id="accFollowupDetail"><p class="acc-muted">Sélectionnez une entreprise dans le tableau.</p></div></section></div>
+        <p class="acc-followup-note">Le suivi est conservé dans le dossier du projet. Les données énergétiques et l’éligibilité ACC restent à confirmer.</p>
+      </section>
+      <aside class="acc-context"><span class="acc-context-icon" aria-hidden="true">i</span><div><strong>Information ACC · pré-étude</strong><p>Une adresse ou une activité ne confirme ni l’accord du site, ni sa consommation, ni l’éligibilité réglementaire du collectif. Ces éléments restent à vérifier.</p><p id="accGeography"></p></div><a href="https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000051294683" target="_blank" rel="noopener noreferrer">Cadre ACC ↗</a></aside>
+    </div>
+  </main>
+  <dialog id="accDialog" aria-labelledby="accDialogTitle"><form id="accForm"><div class="acc-dialog-heading"><div><p class="acc-eyebrow">PISTE DE PROSPECTION</p><h2 id="accDialogTitle">Ajouter un prospect</h2></div><button type="button" id="accClose">Fermer</button></div><input name="id" type="hidden">
+    <fieldset><legend>Prospect</legend><div class="acc-form-grid"><label>Nom de l’établissement<input name="name" maxlength="200" required></label><label>Activité<select name="category"></select></label><label class="acc-wide">Adresse du prospect<input name="address" maxlength="500"></label></div><p id="accLocationNote" class="acc-muted">Le repère cartographique vient de la recherche autour du projet. Il n’est pas modifiable dans cette fiche.</p></fieldset>
+    <fieldset><legend>Qualification de la piste</legend><div class="acc-form-grid"><label>Étape<select name="status"></select></label><label class="acc-checkbox acc-wide"><input name="selected" type="checkbox"> Retenir pour l’étude ultérieure</label><p class="acc-muted acc-wide">Cette sélection ne confirme ni l’éligibilité ACC ni un flux énergétique.</p></div></fieldset>
+    <fieldset><legend>Suivi de prospection</legend><div class="acc-form-grid"><label>Avancement<select name="followUpStage"></select></label><label>Prochaine action<input name="nextAction" maxlength="240" placeholder="Appeler, envoyer un courriel…"></label><label>Date de relance<input name="followUpDate" type="date"></label><label>Contact<input name="contact" maxlength="200" placeholder="Interlocuteur à renseigner"></label><label>Téléphone<input name="phone" type="tel" maxlength="80"></label><label>E-mail<input name="email" type="email" maxlength="254"></label><label class="acc-wide">Notes de suivi<textarea name="notes" maxlength="2000" rows="3"></textarea></label></div></fieldset>
+    <details class="acc-extra"><summary>Consommation et périodes d’activité</summary><div class="acc-form-grid"><label>Consommation annuelle · kWh/an<input name="annualKwh" type="number" step="any" min="0" placeholder="Non renseignée"></label><label>Nature de la donnée<select name="energyQuality"></select></label><label>Référence de la consommation<input name="energySource" maxlength="500" placeholder="Facture, relevé ou méthode d’estimation"></label><label>Date de référence<input name="energyDate" type="date"></label><label>Présence habituelle<select name="schedule"></select></label><label>Saisonnalité / fermeture<select name="seasonality"></select></label></div></details>
+    <details class="acc-extra"><summary>Appréciation commerciale</summary>
+      <p class="acc-muted">Le statut décrit l’avancement déclaré par le mandataire. Les repères ci-dessous ne valent ni accord contractuel ni validation du site.</p>
+      <div class="acc-form-grid">
+        <label>Décideur<select name="appDecisionMaker"></select></label>
+        <label>Occupation du site<select name="appOccupancy"></select></label>
+        <label>Fiabilité de l’appréciation<select name="appCommercialReliability"></select></label>
+        <label class="acc-wide">Éléments à vérifier<textarea name="appCommercialRationale" maxlength="1500" rows="2" placeholder="Informations commerciales et points à confirmer"></textarea></label>
+        <label>Source de l’appréciation<input name="appCommercialReference" maxlength="500" placeholder="Échange, visite ou document"></label>
+        <label>Date de l’appréciation<input name="appCommercialDate" type="date"></label>
+      </div>
+    </details>
+    <details class="acc-extra"><summary>Intérêt énergétique présumé</summary>
+      <p class="acc-muted">Prérempli selon l’activité connue. C’est une piste de prospection, pas une mesure de consommation ni une validation d’éligibilité ACC.</p>
+      <p id="accEnergySuggestionState" class="acc-suggestion-note" role="status"></p>
+      <button id="accUseEnergySuggestion" type="button" hidden>Préremplir selon l’activité</button>
+      <div class="acc-form-grid">
+        <label>Niveau proposé<select name="appEnergyLevel"></select></label>
+        <label>Fiabilité de l’information<select name="appEnergyReliability"></select></label>
+        <label class="acc-wide">Pourquoi ce niveau ?<textarea name="appEnergyRationale" maxlength="1500" rows="3" placeholder="Éléments connus et points à vérifier"></textarea></label>
+        <label>Source de l’avis<input name="appEnergyReference" maxlength="500" placeholder="Échange, visite, facture ou étude"></label>
+        <label>Date de l’avis<input name="appEnergyDate" type="date"></label>
+      </div>
+      <p class="acc-muted">L’appréciation est enregistrée avec la fiche. Elle reste indicative et ne valide ni la consommation ni l’éligibilité ACC.</p>
+    </details>
+    <section aria-label="Aperçu du prospect"><h3>Aperçu</h3><div id="accAppraisalPreview"></div><p class="acc-muted">La fiabilité affichée s’applique à l’appréciation. Une source indiquée ne vaut pas validation énergétique ou contractuelle.</p></section>
+    <p id="accSource" class="acc-muted"></p><p id="accFormState" role="alert"></p><div class="acc-dialog-actions"><button type="submit" class="acc-primary">Conserver la fiche</button></div><p class="acc-muted">Enregistrez ensuite le collectif dans le dossier pour conserver vos modifications.</p>
+  </form></dialog>
+  <script src="./vendor/leaflet/leaflet.js"></script><script type="module" src="./acc-prospects-page.mjs?v=20261115-prospection-acc-suivi-v5"></script>
+</body></html>

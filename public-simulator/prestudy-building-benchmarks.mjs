@@ -40,7 +40,7 @@ function validNonNegative(value) {
   return value !== null && value !== undefined && value !== '' && Number.isFinite(Number(value)) && Number(value) >= 0;
 }
 
-/** Use the map-measured outline as the site's building footprint, not as floor area. */
+/** Use the estimated usable surface for this indicative site consumption reference. */
 export function resolveBuildingConsumptionBenchmark({ buildingUse, subtype = 'unknown', industrySchedule = 'UNKNOWN', areaM2 } = {}) {
   const building = BUILDINGS[buildingUse];
   if (!building || !validNonNegative(areaM2) || Number(areaM2) <= 0) return null;
@@ -61,11 +61,11 @@ export function resolveBuildingConsumptionBenchmark({ buildingUse, subtype = 'un
     intensityRefKwhM2Year: selected.ref,
     intensityHighKwhM2Year: selected.high,
     areaM2: area,
-    areaBasis: 'MAPPED_BUILDING_FOOTPRINT',
-    areaDescription: 'Emprise au sol du bâtiment mesurée sur le contour de la carte ; ce n’est pas la surface de plancher.',
+    areaBasis: 'ESTIMATED_USABLE_ROOF_AREA',
+    areaDescription: 'Surface exploitable estimée après déduction des zones non retenues ; valeur indicative.',
     status: 'ASSUMPTION',
     sourceType: PRESTUDY_BENCHMARK_REFERENCE.sourceType,
-    sourceNote: 'Benchmark SolarShift V1 construit à partir de références publiques ; valeur indicative, non mesurée et non officielle.',
+    sourceNote: 'Référence indicative construite à partir de données publiques ; valeur estimative et non mesurée.',
     benchmarkId: PRESTUDY_BENCHMARK_REFERENCE.id,
     benchmarkVersion: PRESTUDY_BENCHMARK_REFERENCE.version,
     confidence: selected.confidence,
@@ -113,7 +113,7 @@ export function resolveElectricityPrice({ selectedBand, declaredEurPerKwh, decla
     aciAvoidableCorridorEurPerKwh: Object.freeze({ low: prices.aci[0], ref: prices.aci[1], high: prices.aci[2] }),
     basis: 'HT', status: 'ASSUMPTION', sourceType: 'PUBLIC_TARIFF_BENCHMARK',
     benchmarkVersion: PRESTUDY_BENCHMARK_REFERENCE.version, usableForHtEconomics: true,
-    sourceNote: 'Benchmark SolarShift construit à partir de références publiques ; ne constitue pas un tarif CRE.'
+    sourceNote: 'Référence indicative construite à partir de données publiques ; ne constitue pas un tarif officiel.'
   });
 }
 

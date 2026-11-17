@@ -1,4 +1,5 @@
 (function installEquityCashflow(global) {
+  // Archived pre-tax commercial schedule. Not the active simulator/pre-study financial engine.
   'use strict';
 
   function buildEquityCashflowSchedule(input = {}) {

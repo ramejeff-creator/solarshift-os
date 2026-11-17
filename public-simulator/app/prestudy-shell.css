@@ -1,6 +1,6 @@
 /* CR-UX-012 C1/C2 : présentation du shell de pré-étude uniquement. */
 body.prestudyShell {
-  --prestudy-top: 138px;
+  --prestudy-top: 112px;
   --prestudy-rail: 248px;
   --ink: #24394e;
   --pine: #24394e;
@@ -12,7 +12,8 @@ body.prestudyShell {
 .prestudyShell > header {
   display: flex; align-items: center; flex-wrap: nowrap !important;
   position: sticky; top: 0; z-index: 1300;
-  height: 64px; min-height: 64px; padding: 10px 24px; box-sizing: border-box;
+  width: 100%; max-width: 100vw; min-width: 0;
+  height: 56px; min-height: 56px; padding: 7px clamp(16px, 2vw, 32px); box-sizing: border-box;
   border-bottom: 1px solid var(--line); background: #fff; gap: 20px;
 }
 .prestudyShell > header .brandName { width: 132px; height: 40px; font-size: 0; }
@@ -22,9 +23,10 @@ body.prestudyShell {
 .prestudyShell .hubAccountMenu { max-width: 220px; }
 .prestudyShell .hubAccountMenu summary { max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
 .prestudyShell .prestudyProjectBar {
-  position: sticky; top: 64px; z-index: 1250;
+  position: sticky; top: 56px; z-index: 1250;
   display: flex; align-items: center; gap: 14px;
-  min-height: 74px; box-sizing: border-box; padding: 10px 24px;
+  width: 100%; max-width: 100vw; min-width: 0;
+  min-height: 56px; box-sizing: border-box; padding: 6px clamp(16px, 2vw, 32px);
   border-bottom: 1px solid var(--line); background: #fff;
 }
 .prestudyProjectIdentity { min-width: 0; flex: 0 1 auto; }
@@ -111,6 +113,7 @@ body.prestudyShell:has(.prestudyDialog[open]) { overflow: hidden; }
 .prestudyShell :is(a, button, input, select, textarea, summary):focus-visible { outline: 3px solid #567fab; outline-offset: 3px; }
 body.prestudyShell .prestudyChapterFooter {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  grid-column: 1 / -1; position: static; box-sizing: border-box; clear: both; width: 100%;
   margin: 30px 0 8px; padding-top: 16px; border-top: 1px solid #dce3ea;
 }
 body.prestudyShell .prestudyChapterFooter > button {
@@ -123,20 +126,74 @@ body.prestudyShell .prestudyChapterFooter > button {
 body.prestudyShell .prestudyChapterFooter > .prestudyChapterContinue {
   border-color: #233b54; background: #233b54; color: #fff;
 }
+body.prestudyShell .prestudyRequiredMissing,
+body.prestudyShell .prestudyRequiredMissing:focus {
+  border: 2px solid #b42318 !important;
+  box-shadow: 0 0 0 3px #b4231822 !important;
+}
+body.prestudyShell .prestudyRequiredMissingLabel { color: #8f1f16; }
+body.prestudyShell .prestudyValidationNotice {
+  margin: 16px 0 0;
+  padding: 12px 14px;
+  border: 1px solid #d92d20;
+  border-left: 5px solid #b42318;
+  border-radius: 7px;
+  background: #fff4f2;
+  color: #7a271a;
+}
+body.prestudyShell .prestudyValidationNotice ul { margin: 7px 0 0; padding-left: 20px; }
+body.prestudyShell .prestudyValidationNotice button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #8f1f16;
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  text-decoration: underline;
+  cursor: pointer;
+}
 body.prestudyShell .prestudyChapterFooter > button:disabled {
   opacity: .55; cursor: not-allowed;
 }
 body.prestudyShell :is(.prestudyChapterD, #audit-finance.prestudyChapterE) :is(button.roofAzimuthHelpButton, button.pvgisLossHelpButton, button.financeHelpButton) {
   display: inline-grid; place-items: center; flex: 0 0 24px;
   width: 24px !important; height: 24px !important; min-width: 24px !important; min-height: 24px !important;
-  padding: 0 !important; border: 0 !important; border-radius: 0;
-  background: transparent !important; box-shadow: none !important; color: #233b54; font: 700 14px/1 system-ui, sans-serif;
+  padding: 0 !important; border: 1px solid #87b6a0 !important; border-radius: 50%;
+  background: #fff !important; box-shadow: none !important; color: #08734c; font: 700 13px/1 system-ui, sans-serif;
   vertical-align: middle;
+}
+@media (min-width: 1200px) and (max-width: 2400px) {
+  .prestudyShell .prestudyProjectBar {
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr) auto auto auto auto;
+    grid-template-areas: "identity badge progress actions menu";
+    align-items: center;
+    gap: 8px;
+    min-height: 56px;
+    padding: 5px 18px;
+  }
+  .prestudyShell .prestudyProjectIdentity {
+    grid-area: identity;
+    display: grid;
+    grid-template-columns: minmax(140px, max-content) minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    grid-template-areas: "name meta" "name address";
+    align-items: center;
+    gap: 0 10px;
+  }
+  .prestudyShell #prestudyProjectName { grid-area: name; max-width: 24ch; font-size: 16px; }
+  .prestudyShell #prestudyProjectMeta { grid-area: meta; max-width: 42ch; font-size: 11px; }
+  .prestudyShell #prestudyProjectAddress { grid-area: address; max-width: 42ch; font-size: 11px; }
+  .prestudyShell .prestudyBadge { grid-area: badge; justify-self: end; }
+  .prestudyShell #prestudyProgress { display: block; margin: 0; }
+  .prestudyShell #prestudyPrimaryActions { grid-area: actions; justify-self: end; }
+  .prestudyShell #prestudyActionsToggle { grid-area: menu; width: 36px; min-height: 36px; flex-basis: 36px; }
 }
 @media (min-width: 691px) and (max-width: 1199px) {
   body.prestudyShell { --prestudy-rail: 0px; }
   .prestudyShell main.layout { padding: 20px 18px 50px; }
-  .prestudyShell .prestudyProjectBar { gap: 8px; padding: 10px 16px; }
+  .prestudyShell .prestudyProjectBar { top: 56px; gap: 8px; padding: 8px 16px; }
   .prestudyShell #prestudyNavToggle { display: block; }
   .prestudyShell .prestudyNavHost, .prestudyShell #prestudyPrimaryActions { display: none !important; }
   .prestudyShell main.layout { width: 100%; margin-left: 0 !important; }
@@ -164,7 +221,7 @@ body.prestudyShell :is(.prestudyChapterD, #audit-finance.prestudyChapterE) :is(b
   .prestudyShell .hubDialogHead h2 { font-size: 19px; }
   .prestudyShell #prestudyActions .hubAccountMenu { width: 100%; }
   .prestudyShell .prestudySectionLink { min-height: 32px; box-sizing: border-box; }
-  body.prestudyShell .prestudyChapterFooter { gap: 8px; margin-top: 24px; }
+  body.prestudyShell .prestudyChapterFooter { flex-wrap: wrap; gap: 8px; margin-top: 24px; }
   body.prestudyShell .prestudyChapterFooter > button { min-width: 120px; padding: 9px 10px; }
 }
 @media print {

@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "fixtureStatus": "RECORDED_PUBLIC_OBSERVATIONS_NOT_LIVE",
+  "observedAt": "2026-10-27",
+  "warning": "Référence publique consignée dans le rapport C1 bis. Ce fichier n'est pas un résultat API courant et ne doit jamais être présenté comme une réponse live.",
+  "sourceReport": "docs/obi-001/B1-C1-BIS-DECISION.md",
+  "cases": {
+    "81401972": {
+      "address": "41 boulevard de Joffrery, 31600 Muret",
+      "rnb": [
+        { "id": "7GFB2KH6AS87", "iouApprox": 0.924, "intersectionM2Approx": 1045, "osmCoveredByRnb": 0.961, "rnbCoveredByOsm": 0.961 },
+        { "id": "6TQD9BX8CP45", "iouApprox": 0.024, "intersectionM2Approx": 40, "osmCoveredByRnb": 0.037, "rnbCoveredByOsm": 0.064 }
+      ],
+      "bdnbGroup": {
+        "id": "bdnb-bg-C6E5-GD8W-HQGC",
+        "memberRnbIds": ["7GFB2KH6AS87", "6TQD9BX8CP45"],
+        "usagePrincipal": "Tertiaire",
+        "groupFootprintM2": 1713
+      },
+      "unknown": ["occupant de la construction", "surface de plancher tertiaire", "consommation du site", "EFA/EET", "besoin de rénovation"]
+    },
+    "704399122": {
+      "address": "1 rue de Marclan, 31600 Muret",
+      "rnb": [
+        { "id": "7H8NE2HWD3D1", "iouApprox": 0.975, "intersectionM2Approx": 8462, "osmCoveredByRnb": 0.98, "rnbCoveredByOsm": 0.995 }
+      ],
+      "bdnbGroup": null,
+      "unknown": ["groupe BDNB et usage non établi dans les preuves C1 bis", "occupant de la construction", "surface de plancher tertiaire", "consommation du site", "EFA/EET", "besoin de rénovation"]
+    }
+  }
+}

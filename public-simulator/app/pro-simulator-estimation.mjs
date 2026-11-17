@@ -95,3 +95,4 @@ export function estimateSolarCapacity({ roofType, orientation, tiltBand, grossAr
     layoutWarning: roofType === 'flat' && orientationFamily === 'south' && tilt > 15
   });
 }
+

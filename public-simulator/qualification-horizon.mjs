@@ -2,7 +2,9 @@ import { requestJson, containsPoint } from './prospecting-data.mjs';
 const CONVENTION = 'PVGIS_SOUTH_ZERO_WEST_POSITIVE';
 const finite = n => typeof n === 'number' && Number.isFinite(n);
 export function validHorizon(value, point) {
-  if (!value || value.schemaVersion !== 1 || !value.queryPoint || value.queryPoint.latitude !== point?.latitude || value.queryPoint.longitude !== point?.longitude) return false;
+  const sameStoredPoint = (a, b) => a && b && Number(a.latitude).toFixed(6) === Number(b.latitude).toFixed(6)
+    && Number(a.longitude).toFixed(6) === Number(b.longitude).toFixed(6);
+  if (!value || value.schemaVersion !== 1 || !sameStoredPoint(value.queryPoint, point)) return false;
   if (value.state === 'UNAVAILABLE') return typeof value.error === 'string';
   return value.state === 'AVAILABLE' && value.method === 'PVGIS_5_3_PRINTHORIZON' && value.azimuthConvention === CONVENTION
     && !Number.isNaN(Date.parse(value.retrievedAt))
@@ -44,13 +46,13 @@ export function horizonChartData(horizon, width = 640, height = 240) {
 }
 export function appendHorizon(host, horizon) {
   const make = (tag, text) => { const n = document.createElement(tag); n.textContent = text || ''; return n; };
-  const block = make('section'); block.className = 'parcelHorizon'; block.append(make('h3', 'Masque solaire · relief'));
+  const block = make('section'); block.className = 'parcelHorizon'; block.append(make('h3', 'Masque solaire - relief et courses du soleil'));
   if (!horizon || horizon.state !== 'AVAILABLE') {
     block.append(make('p', horizon?.error || 'Masque du relief non encore consulté.')); host.append(block); return;
   }
   const fmt = n => Number(n).toLocaleString('fr-FR', { maximumFractionDigits: 1 });
   block.append(make('p', `Horizon plein sud : ${fmt(horizon.southHorizonDeg)}° · relief maximal : ${fmt(horizon.maxHorizonDeg)}°.`));
-  const details = make('details'); details.append(make('summary', 'Voir le profil du relief et les courses du soleil'));
+  const details = make('div'); details.className = 'parcelHorizonChart';
   const data = horizonChartData(horizon), ns = 'http://www.w3.org/2000/svg', svg = document.createElementNS(ns, 'svg');
   svg.setAttribute('viewBox', `0 0 ${data.width} ${data.height}`); svg.setAttribute('role', 'img');
   svg.setAttribute('aria-label', `Horizon du relief et hauteurs du soleil les 21 décembre et 21 juin. Axe de gauche à droite : nord, est, sud, ouest, nord. Hauteur en degrés. Relief au sud ${fmt(horizon.southHorizonDeg)} degrés.`);

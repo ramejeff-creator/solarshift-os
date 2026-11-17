@@ -1,0 +1,88 @@
+/* Actualités V10 — styles isolés du reste de l’application. */
+.actualitesMain .oz-news-page-heading{align-items:flex-end;min-width:0}
+.actualitesMain .oz-news-page-heading>div{min-width:0}
+.actualitesMain .oz-news-page-heading h1{margin:5px 0 7px;font-size:30px;line-height:1.15}
+.actualitesMain .oz-news-page-heading p{margin:0;color:#627083;font-size:13px;line-height:1.5}
+.actualitesMain .oz-news-page-heading>.pill{flex:none}
+.actualitesMain .oz-news-intro{margin:0 0 18px;color:#627083;line-height:1.55}
+
+/* Échéances clairement séparées par date, catégorie et intitulé. */
+.actualitesMain .oz-news-deadlines{margin:18px 0 20px;padding:20px 22px;border:1px solid #cfe1d5;border-left:4px solid #3c8966;border-radius:12px;background:#f5faf6}
+.actualitesMain .oz-news-deadlines-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.actualitesMain .oz-news-deadlines-kicker{font-size:10px;font-weight:800;letter-spacing:.1em;color:#54816a}
+.actualitesMain .oz-news-deadlines h2{margin:5px 0 4px;color:#173f35;font-size:19px}
+.actualitesMain .oz-news-deadlines-heading p{margin:0;max-width:780px;color:#597366;font-size:12px;line-height:1.55}
+.actualitesMain .oz-news-deadline-count{flex:none;padding:6px 10px;border-radius:99px;background:#e5f1e9;color:#35674c;font-size:11px;font-weight:750}
+.actualitesMain .oz-news-deadline-list{display:grid;gap:8px;margin:15px 0 0;padding:0;list-style:none}
+.actualitesMain .oz-news-deadline-item{display:grid;grid-template-columns:minmax(120px,180px) minmax(0,1fr) auto;align-items:center;gap:12px;padding:10px 12px;border:1px solid #e0ebe3;border-radius:9px;background:#fff}
+.actualitesMain .oz-news-deadline-date{color:#20553e;font-size:12px;font-weight:800}
+.actualitesMain .oz-news-deadline-copy{min-width:0;color:#304f40;font-size:12px;line-height:1.45}
+.actualitesMain .oz-news-deadline-copy strong{display:block;color:#183f33;font-size:12px}
+.actualitesMain .oz-news-deadline-copy span{color:#64796d}
+.actualitesMain .oz-news-deadline-copy .oz-news-deadline-type{display:inline-flex;margin-right:6px;padding:3px 7px;border-radius:99px;background:#edf4ef;color:#4c6f59;font-size:9px;font-weight:750;white-space:nowrap}
+.actualitesMain .oz-news-deadline-open,.actualitesMain .oz-news-deadline-toggle{border:0;background:none;padding:7px;color:#176a4d;font-size:11px;font-weight:750;text-decoration:underline;text-underline-offset:3px;white-space:nowrap;cursor:pointer}
+.actualitesMain .oz-news-deadline-empty{margin:12px 0 0;color:#698273;font-size:12px}
+
+/* Filtres, navigation du fil et grille de cartes. */
+.actualitesMain .oz-news-toolbar{display:flex;align-items:flex-end;gap:24px;flex-wrap:wrap;margin:24px 0 12px;padding:18px 20px;border:1px solid var(--line,#d8e5de);border-radius:13px;background:#fff}
+.actualitesMain .oz-news-view{display:flex;gap:4px;padding:4px;border-radius:9px;background:#f0f5f2}
+.actualitesMain .oz-news-view button{border:0;border-radius:7px;padding:10px 14px;background:transparent;color:#526e63;font:inherit;font-weight:700;white-space:nowrap;cursor:pointer}
+.actualitesMain .oz-news-view button[aria-pressed=true]{background:#174b3d;color:#fff;box-shadow:0 2px 6px #153e3614}
+.actualitesMain .oz-news-view button span{margin-left:5px;font-size:11px;opacity:.85}
+.actualitesMain .oz-news-filter{display:flex;min-width:220px;flex-direction:column;gap:5px}
+.actualitesMain .oz-news-filter label{color:#607e70;font-size:11px;font-weight:700}
+.actualitesMain .oz-news-filter select{box-sizing:border-box;width:100%;max-width:100%;padding:9px 30px 9px 11px;border:1px solid #cadbd1;border-radius:7px;background:#fff;color:#204f3e;font:inherit}
+.actualitesMain .oz-news-results{display:flex;justify-content:space-between;gap:15px;margin:16px 0 12px;padding:0 2px;color:#5d7a6d;font-size:12px}
+.actualitesMain .oz-news-results p{margin:0;font-weight:700}
+.actualitesMain .oz-news-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;width:100%;min-width:0;align-items:stretch}
+.actualitesMain .oz-news-card{display:flex;min-width:0;box-sizing:border-box;flex-direction:column;gap:12px;overflow-wrap:anywhere;padding:22px;border:1px solid #d8e5dd;border-radius:14px;background:#fff;box-shadow:0 3px 12px #214f3a03}
+.actualitesMain .oz-news-meta{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px 10px;color:#657487;font-size:10px;letter-spacing:.04em}
+.actualitesMain .oz-news-category{display:inline-flex;align-items:center;padding:5px 9px;border-radius:999px;background:#eef5f2;color:#397457;font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+.actualitesMain .oz-news-category.aides{color:#8b601a}
+.actualitesMain .oz-news-meta-status{padding:4px 7px;border-radius:99px;background:#f2f5f3;color:#587064;font-size:9px;font-weight:750;letter-spacing:0;text-transform:none}
+.actualitesMain .oz-news-meta time{color:#6b8276;letter-spacing:0;white-space:nowrap}
+.actualitesMain .oz-news-card h2{margin:0;color:#163f35;font-size:19px;line-height:1.3}
+.actualitesMain .oz-news-card .oz-news-summary{margin:0;color:#567365;font-size:13px;line-height:1.65}
+.actualitesMain .oz-news-badges{display:flex;flex-wrap:wrap;gap:6px}
+.actualitesMain .oz-news-badges span{padding:4px 9px;border-radius:99px;background:#eff5f1;color:#3e6856;font-size:10px;font-weight:650}
+.actualitesMain .oz-news-implication{padding:11px 12px;border-radius:9px;background:#f1f6f8;color:#294457;font-size:12px;line-height:1.5}
+.actualitesMain .oz-news-implication strong{display:block;margin:0 0 4px;color:#173f51;font-size:10px;letter-spacing:.05em;text-transform:uppercase}
+.actualitesMain .oz-news-implication p{margin:0;color:#37566a;font-size:12px;line-height:1.55}
+.actualitesMain .oz-news-detail{margin-top:2px;padding-top:11px;border-top:1px solid #e8eee9}
+.actualitesMain .oz-news-detail summary{color:#1a6a4f;font-size:12px;font-weight:750;cursor:pointer}
+.actualitesMain .oz-news-detail section{display:grid;gap:12px;padding-top:14px;color:#4c6a5b;font-size:12px;line-height:1.6}
+.actualitesMain .oz-news-detail section p{margin:0;color:#4c6a5b;font-size:12px}
+.actualitesMain .oz-news-detail section strong{display:block;margin-bottom:4px;color:#284e3d;font-size:10px;letter-spacing:.04em;text-transform:uppercase}
+.actualitesMain .oz-news-sources{display:flex;flex-wrap:wrap;gap:6px 15px;margin-top:auto;padding-top:3px;font-size:11px;line-height:1.6}
+.actualitesMain .oz-news-sources a{color:#176a4d;text-decoration:underline;text-underline-offset:3px}
+.actualitesMain .oz-news-empty{padding:45px 20px;border:1px dashed #b9d0c1;border-radius:13px;background:#fbfdfb;text-align:center}
+.actualitesMain .oz-news-empty h2{margin:0 0 8px;font-size:18px}
+.actualitesMain .oz-news-empty p{color:#698273;font-size:13px}
+.actualitesMain .oz-news-empty button,.actualitesMain .oz-news-pagination button{padding:9px 14px;border:1px solid #bad1c2;border-radius:7px;background:#fff;color:#225f45;cursor:pointer}
+.actualitesMain .oz-news-pagination{display:flex;justify-content:center;align-items:center;gap:22px;margin:22px 0;color:#627c6c;font-size:12px}
+.actualitesMain .oz-news-archive-note{max-width:920px;margin:24px 0 0;color:#73867a;font-size:11px;line-height:1.7}
+.actualitesMain .oz-news-archive-note strong{color:#506f5b}
+.actualitesMain .oz-news-footnote{margin-top:16px;padding:12px 14px;border-radius:10px;background:#f6f7f8;color:#586777;font-size:13px;line-height:1.5}
+.actualitesMain [hidden]{display:none!important}
+
+@media(max-width:900px){
+  .actualitesMain .oz-news-grid{grid-template-columns:minmax(0,1fr)}
+  .actualitesMain .oz-news-deadline-item{grid-template-columns:minmax(0,1fr);gap:5px}
+  .actualitesMain .oz-news-deadline-open{justify-self:start;padding:3px 0}
+}
+@media(max-width:700px){
+  .actualitesMain .oz-news-page-heading{align-items:flex-start;flex-direction:column}
+  .actualitesMain .oz-news-page-heading h1{font-size:25px}
+  .actualitesMain .oz-news-page-heading>.pill{white-space:normal}
+  .actualitesMain .oz-news-deadlines{padding:16px}
+  .actualitesMain .oz-news-deadlines-heading{flex-direction:column}
+  .actualitesMain .oz-news-deadline-item{grid-template-columns:minmax(0,1fr);gap:5px}
+  .actualitesMain .oz-news-deadline-open{justify-self:start;padding:3px 0}
+  .actualitesMain .oz-news-deadline-count{align-self:flex-start}
+  .actualitesMain .oz-news-toolbar{gap:15px;padding:14px}
+  .actualitesMain .oz-news-filter{min-width:0;flex:1 1 100%}
+  .actualitesMain .oz-news-results{display:block}
+  .actualitesMain .oz-news-results>span{display:none}
+  .actualitesMain .oz-news-card .oz-news-meta{align-items:flex-start}
+  .actualitesMain .oz-news-pagination{gap:12px}
+}

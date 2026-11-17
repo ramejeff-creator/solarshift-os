@@ -2,15 +2,23 @@
 export function normalizeAddressReference(source) {
   if (!source || typeof source !== 'object' || Array.isArray(source)) return null;
   const result = {};
-  for (const [key, limit] of Object.entries({ label: 500, address: 500, streetAddress: 500, city: 200, postalCode: 10, cityCode: 10, coordinateSource: 80, precision: 80 })) {
+  for (const [key, limit] of Object.entries({ label: 500, address: 500, streetAddress: 500, city: 200, postalCode: 10, cityCode: 10, coordinateSource: 80, precision: 80, declaredAt: 40 })) {
     result[key] = String(source[key] ?? '').trim();
     if (result[key].length > limit) throw new Error(`La référence d’adresse (${key}) est trop longue.`);
   }
   return result;
 }
 
+export function isLocationOnlyLabel(value) {
+  const label = String(value || '').trim();
+  return /^(?:Repère manuel sur la carte|Position sur la carte|Position GPS|Coordonnées GPS|Votre position actuelle|Adresse postale du site)(?:\b|$)/i.test(label)
+    || /^[-+]?\d{1,2}[.,]\d+\s*[,;\s]\s*[-+]?\d{1,3}[.,]\d+$/.test(label)
+    || /·\s*simulation temporaire$/i.test(label);
+}
+
 const geocodingEndpoint = 'https://data.geopf.fr/geocodage/search';
 
+// Compatibility helpers for saved diagnostics; the pre-study interface does not expose reverse lookup.
 export function reverseGeocodeUrl(latitude, longitude) {
   const lat = Number(latitude), lon = Number(longitude);
   if (!Number.isFinite(lat) || Math.abs(lat) > 90 || !Number.isFinite(lon) || Math.abs(lon) > 180) {
@@ -32,6 +40,42 @@ export function normalizeReverseGeocodeResult(response) {
     ...(Number.isFinite(distanceMeters) && distanceMeters >= 0 ? { distanceMeters } : {}),
     coordinateSource: 'GEOPLATEFORME_REVERSE', precision: 'REVERSE_GEOCODED_ADDRESS'
   };
+}
+
+// Kept for compatibility with existing address-reference validation, not rendered in the pre-study.
+export function nearbyAddressAssessment(candidate, parcel = null) {
+  const cityCode = String(parcel?.cityCode || parcel?.id?.slice(0, 5) || '').toUpperCase();
+  const otherCode = String(candidate?.cityCode || '').toUpperCase();
+  const normalize = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+  const differentCity = cityCode && otherCode ? cityCode !== otherCode
+    : parcel?.city && candidate?.city ? normalize(parcel.city) !== normalize(candidate.city) : false;
+  return {
+    state: differentCity ? 'OTHER_COMMUNE' : 'NEARBY_ONLY',
+    message: differentCity
+      ? `Adresse voisine dans une autre commune (${candidate.city || otherCode}). Elle n’est pas retenue comme adresse du site.`
+      : 'Adresse voisine uniquement : aucun rattachement au bâtiment n’est établi. Pour Enedis, renseignez l’adresse du site ou utilisez une facture avec le PRM/PDL.'
+  };
+}
+
+export function declareSitePostalAddress(config, fields, parcel = null, declaredAt = new Date().toISOString()) {
+  const address = String(fields?.address || '').trim();
+  const postalCode = String(fields?.postalCode || '').trim();
+  const city = String(fields?.city || '').trim();
+  if (address.length < 4 || address.length > 400) throw new Error('Renseignez la voie du site, avec son numéro s’il est connu.');
+  if (!/^\d{5}$/.test(postalCode)) throw new Error('Renseignez un code postal de 5 chiffres.');
+  if (city.length < 2 || city.length > 150) throw new Error('Renseignez la commune du site.');
+  if (nearbyAddressAssessment({ city }, parcel).state === 'OTHER_COMMUNE') {
+    throw new Error(`La commune saisie diffère de celle de la parcelle (${parcel.city}). Vérifiez l’adresse ; le repère et la parcelle sont conservés.`);
+  }
+  const cityCode = parcel?.city ? String(parcel.cityCode || parcel.id?.slice(0, 5) || '') : '';
+  const reference = normalizeAddressReference({
+    address, postalCode, city, cityCode, label: `${address}, ${postalCode} ${city}`,
+    coordinateSource: 'USER_DECLARATION', precision: 'MANUAL_POSTAL_ADDRESS', declaredAt
+  });
+  config.commercialAddressForLookup = reference;
+  config.addressLookupNeedsSelection = false;
+  config.temporaryStudyLabel = reference.label;
+  return reference;
 }
 
 export function prospectingAutocompleteUrls(text) {
@@ -192,8 +236,12 @@ export function captureSiteLocation(config, fallbackAddress = '') {
   const coordinates = config.localProjectCoordinates || config.projectCoordinates;
   const reference = config.addressLookupNeedsSelection ? null : config.commercialAddressForLookup || config.selectedAddressCoordinates;
   const canonical = !config.addressLookupNeedsSelection && !config.localProjectCoordinates && config.projectContextLoaded ? config.projectContext : null;
+  const canonicalAddress = config.projectContextLoaded ? (config.projectSiteContext?.address || config.projectContext?.address) : '';
+  const candidateAddress = [config.temporaryStudyLabel, reference?.label || reference?.address, fallbackAddress]
+    .find(value => value && !isLocationOnlyLabel(value));
+  const address = candidateAddress || canonicalAddress || '';
   return {
-    address: config.temporaryStudyLabel || reference?.label || fallbackAddress,
+    address,
     latitude: coordinates?.latitude ?? null, longitude: coordinates?.longitude ?? null,
     coordinateSource: coordinates?.coordinateSource || coordinates?.source || '',
     addressReference: normalizeAddressReference(reference || (canonical?.address ? {
@@ -205,15 +253,19 @@ export function captureSiteLocation(config, fallbackAddress = '') {
 }
 
 export function restoreSiteLocation(record, project = null) {
-  const savedReference = normalizeAddressReference(record.addressReference || (project?.address && project.address === record.address ? {
+  const recordAddress = isLocationOnlyLabel(record.address) ? String(project?.address || '').trim() : String(record.address || '').trim();
+  const savedReference = normalizeAddressReference((isLocationOnlyLabel(record.address) ? null : record.addressReference) || (project?.address && project.address === record.address ? {
     address: project.address, label: project.address, city: project.city, cityCode: project.city_code,
     postalCode: project.postal_code, coordinateSource: 'PROJECT_CONTEXT', precision: 'ADDRESS'
+  } : isLocationOnlyLabel(record.address) && project?.address ? {
+    address: project.address, label: [project.address, project.postal_code, project.city].filter(Boolean).join(' '), city: project.city,
+    cityCode: project.city_code, postalCode: project.postal_code, coordinateSource: 'PROJECT_CONTEXT', precision: 'ADDRESS'
   } : null));
   const normalizeIdentity = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
-  const projectAddress = String(record.address || '').trim();
+  const projectAddress = recordAddress;
   // A stale structured reference must never take precedence over the address of
   // the dossier currently opened (e.g. a previous project's Muret lookup).
-  const referenceMismatch = Boolean(savedReference?.label && projectAddress
+  const referenceMismatch = Boolean(!isLocationOnlyLabel(record.address) && savedReference?.label && projectAddress
     && normalizeIdentity(savedReference.label) !== normalizeIdentity(projectAddress));
   const reference = referenceMismatch ? null : savedReference;
   const coordinates = record.latitude == null ? null : {
@@ -221,40 +273,83 @@ export function restoreSiteLocation(record, project = null) {
     coordinateSource: record.coordinateSource || 'Source non précisée'
   };
   return {
-    localProjectCoordinates: coordinates, temporaryStudyLabel: record.address || record.name,
+    localProjectCoordinates: coordinates, temporaryStudyLabel: recordAddress || record.name,
     addressLookupNeedsSelection: referenceMismatch,
     // Older drafts keep their label, without inventing a missing commune or address.
-    commercialAddressForLookup: reference || { address: record.address || '', label: record.address || '' },
-    selectedAddressCoordinates: coordinates ? { ...coordinates, ...reference, label: reference?.label || record.address } : null
+    commercialAddressForLookup: reference || { address: recordAddress, label: recordAddress },
+    selectedAddressCoordinates: coordinates ? { ...coordinates, ...reference, label: reference?.label || recordAddress } : null
   };
 }
 
-export function resolveEnedisAddress(config) {
-  if (config.addressLookupNeedsSelection) return null;
+function differentMunicipality(candidate, parcel = null) {
+  const cityCode = String(parcel?.cityCode || parcel?.id?.slice(0, 5) || '').toUpperCase();
+  const otherCode = String(candidate?.cityCode || '').toUpperCase();
+  const normalize = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+  return cityCode && otherCode ? cityCode !== otherCode
+    : Boolean(parcel?.city && candidate?.city && normalize(parcel.city) !== normalize(candidate.city));
+}
+
+function enedisStreetAddress(value) {
+  const text = String(value || '').trim();
+  const match = text.match(/^(.+?),\s*(?:\d{5}|2[AB]\d{3})\s+.+$/i);
+  return (match ? match[1] : text).trim();
+}
+
+export function resolveEnedisAddress(config, parcel = null) {
   const project = config.projectContextLoaded ? config.projectContext : null;
+  const projectSite = config.projectContextLoaded ? config.projectSiteContext : null;
   const source = config.commercialAddressForLookup || config.selectedAddressCoordinates;
-  if (source) {
-    if (['MAP_CLICK', 'CONTOUR_CENTER', 'USER_PROVIDED', 'COORDINATES', 'DEVICE_POSITION', 'POINT_OF_INTEREST'].includes(source.precision) && !source.address && !source.streetAddress) return null;
+  if (source?.precision === 'REVERSE_GEOCODED_ADDRESS') return null;
+  if (source && !['MAP_CLICK', 'CONTOUR_CENTER', 'USER_PROVIDED', 'COORDINATES', 'DEVICE_POSITION', 'POINT_OF_INTEREST', 'MANUAL_MAP_PIN'].includes(source.precision)) {
     const label = String(source.label || '').trim();
     const match = label.match(/^(.+?)[,\s]+(\d{5})\s+(.+)$/);
     const address = String(source.address || source.streetAddress || (match ? match[1] : label)).trim().replace(/[,\s]+$/, '');
     const city = String(source.city || (match ? match[3] : '')).trim();
     const cityCode = String(source.cityCode || '').trim().toUpperCase();
+    if (differentMunicipality({city,cityCode},parcel)) return null;
+    // The project header can hold a more complete postal address than an older
+    // structured geocoding reference (which may contain only the street name).
+    const projectAddress = String(projectSite?.address || project?.address || '').trim();
+    const projectHasNumber = /^\s*\d+(?:\s*(?:bis|ter)|[a-z])?(?=\s|,|$)/i.test(projectAddress);
+    const projectStreet = projectAddress.replace(/^\s*\d+(?:\s*(?:bis|ter)|[a-z])?(?=\s|,|$)\s*/i, '').split(',')[0].trim();
+    const normalizeForMatch = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+    const sourceStreetMatchesProject = Boolean(projectHasNumber && address && !/^\s*\d+\b/.test(address)
+      && normalizeForMatch(address.split(',')[0]) === normalizeForMatch(projectStreet));
+    const projectCity = projectSite?.city || project?.city || '';
+    const projectCityCode = projectSite?.cityCode || project?.city_code || '';
+    const projectPostalCode = projectSite?.postalCode || project?.postal_code || '';
+    const municipalityContext = { city: projectCity, cityCode: projectCityCode };
+    const sameProjectMunicipality = Boolean((project || projectSite) && !differentMunicipality(municipalityContext, parcel)
+      && (!city || !projectCity || normalizeForMatch(city) === normalizeForMatch(projectCity))
+      && (!cityCode || !projectCityCode || cityCode === String(projectCityCode).toUpperCase())
+      && (!(source.postalCode || match?.[2]) || !projectPostalCode || String(source.postalCode || match?.[2]) === String(projectPostalCode)));
+    // Geocoding may return only a street centroid. When that street and commune
+    // match the saved dossier address, search Enedis with the complete address.
+    if (sourceStreetMatchesProject && sameProjectMunicipality && !config.addressLookupNeedsSelection
+      && (/^\d{5}$/.test(String(project.postal_code || '').trim()) || /^(?:\d{5}|2[AB]\d{3})$/i.test(project.city_code || ''))) {
+      return { address: enedisStreetAddress(projectAddress), city: projectCity || city, cityCode: projectCityCode || cityCode, postalCode: projectPostalCode || source.postalCode || match?.[2] || '' };
+    }
     if (address.length >= 4 && (city || /^(?:\d{5}|2[AB]\d{3})$/.test(cityCode))) {
-      return { address, city, cityCode, postalCode: source.postalCode || match?.[2] || '' };
+      return { address: enedisStreetAddress(address), city, cityCode, postalCode: source.postalCode || match?.[2] || '' };
     }
   }
   // The open project's postal address is the lookup identity. Map coordinates can
   // remain provisional or stale without blocking a search against this address.
-  const canonicalAddress = String(project?.address || '').trim();
+  const canonicalAddress = String(projectSite?.address || project?.address || '').trim();
   const sourceAddress = String(source?.address || source?.streetAddress || source?.label || '').trim();
   const normalizeForMatch = (value) => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
   const sourceMatchesProject = Boolean(sourceAddress && canonicalAddress
     && (normalizeForMatch(sourceAddress) === normalizeForMatch(canonicalAddress)
       || normalizeForMatch(sourceAddress).startsWith(`${normalizeForMatch(canonicalAddress)} `)));
-  if (canonicalAddress && (project.city || /^(?:\d{5}|2[AB]\d{3})$/i.test(project.city_code || ''))
-    && (!source || !config.localProjectCoordinates || sourceMatchesProject)) {
-    return { address: canonicalAddress, city: project.city || '', cityCode: project.city_code || '', postalCode: project.postal_code || '' };
+  const sourceIsOnlyLocation = !source || ['MAP_CLICK', 'CONTOUR_CENTER', 'USER_PROVIDED', 'COORDINATES', 'DEVICE_POSITION', 'POINT_OF_INTEREST', 'MANUAL_MAP_PIN'].includes(source.precision)
+    || (!source.address && !source.streetAddress && !/[,\s]+\d{5}\s+/.test(sourceAddress));
+  const projectCity = projectSite?.city || project?.city || '';
+  const projectCityCode = projectSite?.cityCode || project?.city_code || '';
+  const projectPostalCode = projectSite?.postalCode || project?.postal_code || '';
+  if (canonicalAddress && (/^\d{5}$/.test(String(projectPostalCode).trim()) || /^(?:\d{5}|2[AB]\d{3})$/i.test(projectCityCode))
+    && !differentMunicipality({city:projectCity,cityCode:projectCityCode},parcel)
+    && (sourceIsOnlyLocation || !config.localProjectCoordinates || sourceMatchesProject)) {
+    return { address: enedisStreetAddress(canonicalAddress), city: projectCity, cityCode: projectCityCode, postalCode: projectPostalCode };
   }
   // A local draft may contain coordinates but no confirmed postal identity. Never
   // infer a commune from those coordinates or borrow it from an unrelated project.

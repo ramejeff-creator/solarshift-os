@@ -7,7 +7,7 @@ export function sameProjectSite(local, cloud) {
 export function mergeProjectTransfer(local, cloud, provenance = {}) {
   if (!sameProjectSite(local, cloud)) throw new Error('Le nom et l’adresse doivent correspondre au dossier existant.');
   const data = { ...structuredClone(cloud), ...structuredClone(local) };
-  for (const key of ['clientName', 'contactName', 'phone', 'email', 'installerName', 'installationDate']) {
+  for (const key of ['clientName', 'companyName', 'siret', 'contactName', 'phone', 'email', 'installerName', 'installationDate']) {
     if (!String(local[key] || '').trim()) data[key] = cloud[key] || '';
   }
   const old = cloud.preview || {}, next = local.preview || {};

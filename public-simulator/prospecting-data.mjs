@@ -136,7 +136,7 @@ export async function loadParcelBuildings(parcels, options = {}) {
   }
 }
 export function referenceAddressQuery(reference) {
-  if (!reference || (reference.precision && reference.precision !== 'ADDRESS')) return null;
+  if (!reference || (reference.precision && !['ADDRESS', 'USER_CONFIRMED_ADDRESS'].includes(reference.precision))) return null;
   const label = String(reference.label || [reference.address || reference.streetAddress, reference.postalCode, reference.city].filter(Boolean).join(' '))
     .replace(/,/g, ' ').replace(/\s+/g, ' ').trim();
   // A commune, POI or GPS label is not a postal identity. No wildcard/fuzzy neighbor lookup.
@@ -235,6 +235,24 @@ export function buildingAddresses(building) {
     const key = `${normalizeStreet(address.address)}|${address.postalCode}|${address.communeCode}`;
     if (seen.has(key)) return false; seen.add(key); return true;
   });
+}
+
+export function matchingBuildingAddressReference(addresses, reference) {
+  if (!reference || (reference.precision && !['ADDRESS', 'USER_CONFIRMED_ADDRESS'].includes(reference.precision))) return null;
+  const label = String(reference.label || [reference.address || reference.streetAddress, reference.postalCode, reference.city].filter(Boolean).join(' '))
+    .replace(/,/g, ' ').replace(/\s+/g, ' ').trim();
+  const match = label.match(/^(.+?)\s+(\d{5})\s+(.+)$/);
+  if (!match || /[*?%_\\]/.test(label)) return null;
+  const referenceAddress = normalizeStreet(match[1]);
+  const referencePostalCode = match[2];
+  const referenceCity = normalizeStreet(match[3]);
+  const referenceCommuneCode = String(reference.communeCode || reference.cityCode || '').toUpperCase();
+  const matches = (Array.isArray(addresses) ? addresses : []).filter(address =>
+    normalizeStreet(address?.address) === referenceAddress
+    && String(address?.postalCode || '') === referencePostalCode
+    && normalizeStreet(address?.city) === referenceCity
+    && (!referenceCommuneCode || !address?.communeCode || String(address.communeCode).toUpperCase() === referenceCommuneCode));
+  return matches.length === 1 ? matches[0] : null;
 }
 
 // The cadastral API returns every parcel intersecting the searched roof outline.

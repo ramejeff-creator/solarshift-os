@@ -4,24 +4,28 @@
   const config = window.SOLARSHIFT_CONFIG = window.SOLARSHIFT_CONFIG || {};
   const $ = (id) => document.getElementById(id);
 
-  function distanceMeters(a, b) {
-    const radians = Math.PI / 180;
-    const dLat = (b.latitude - a.latitude) * radians;
-    const dLon = (b.longitude - a.longitude) * radians;
-    const lat1 = a.latitude * radians, lat2 = b.latitude * radians;
-    const h = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
-    return 6371000 * 2 * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
+  function pointInRing(latitude, longitude, ring) {
+    if (!Array.isArray(ring) || ring.length < 4) return false;
+    let inside = false;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      const [xi, yi] = ring[i] || [], [xj, yj] = ring[j] || [];
+      if (![xi, yi, xj, yj].every(Number.isFinite)) continue;
+      if ((yi > latitude) !== (yj > latitude)
+        && longitude < ((xj - xi) * (latitude - yi)) / (yj - yi) + xi) inside = !inside;
+    }
+    return inside;
   }
 
-  function currentMapSite() {
-    const coordinates = config.localProjectCoordinates || config.projectCoordinates;
-    if (Number.isFinite(Number(coordinates?.latitude)) && Number.isFinite(Number(coordinates?.longitude))) {
-      return { latitude: Number(coordinates.latitude), longitude: Number(coordinates.longitude) };
-    }
-    const center = window.roofGroup?.getBounds?.().getCenter?.();
-    return center && Number.isFinite(center.lat) && Number.isFinite(center.lng)
-      ? { latitude: center.lat, longitude: center.lng }
-      : null;
+  function roofContainsPoint(latitude, longitude) {
+    return (window.roofGroup?.getLayers?.() || []).some((layer) => {
+      let geometry;
+      try { geometry = layer.toGeoJSON?.().geometry; } catch { return false; }
+      const polygons = geometry?.type === 'Polygon' ? [geometry.coordinates]
+        : geometry?.type === 'MultiPolygon' ? geometry.coordinates : [];
+      return polygons.some((rings) => Array.isArray(rings) && rings.length
+        && pointInRing(latitude, longitude, rings[0])
+        && !rings.slice(1).some((hole) => pointInRing(latitude, longitude, hole)));
+    });
   }
 
   function setMapLocation(latitude, longitude, label, { temporary = true, coordinateSource = 'GEOPLATEFORME', precision = 'ADDRESS', preserveContours = false, centerMap = true } = {}) {
@@ -40,7 +44,8 @@
     if (centerMap) window.solarMap.setView(point, 19);
     if (temporary) {
       config.localProjectCoordinates = { latitude, longitude, coordinateSource, precision };
-      config.temporaryStudyLabel = config.commercialDraftId ? null : label;
+      const savedProject = Boolean(config.projectId || config.commercialDraftId || (config.projectContextLoaded && config.projectContext?.id));
+      config.temporaryStudyLabel = savedProject ? null : label;
       if (preserveContours) window.dispatchEvent(new CustomEvent('ozeno:site-location-updated'));
       else {
         window.roofGroup?.clearLayers();
@@ -48,7 +53,10 @@
         window.dispatchEvent(new CustomEvent('ozeno:project-context-loaded'));
       }
       const dash = $('dashAddress');
-      if (dash) dash.textContent = config.commercialDraftId ? label : `${label} · simulation temporaire`;
+      const postalLabel = config.commercialAddressForLookup?.label || config.projectContext?.address;
+      if (dash) dash.textContent = savedProject
+        ? (postalLabel || label)
+        : `${label} · simulation temporaire`;
     }
   }
 
@@ -58,17 +66,14 @@
     if (!input || !box) return;
     const explanation = document.createElement('p');
     explanation.className = 'fine addressSimulationExplanation';
-    explanation.textContent = 'Localisez le projet par une adresse, des coordonnées GPS ou un clic sur la carte.';
+    explanation.textContent = 'Si la position est inexacte, cliquez sur « Modifier sur la carte », puis repérez le nouvel emplacement sur la carte. Vous pouvez aussi saisir des coordonnées GPS si elles sont connues.';
     box.querySelector('b')?.insertAdjacentElement('afterend', explanation);
     input.addEventListener('ozeno:address-selected', (event) => {
       const coords = event.detail;
       if (!Number.isFinite(coords?.latitude) || !Number.isFinite(coords?.longitude)) return;
-      let preserveContours = Boolean(config.commercialDraftId);
       const existingSurfaces = window.roofGroup?.getLayers?.().length || 0;
-      if (config.commercialDraftId && existingSurfaces) {
-        const previousSite = currentMapSite();
-        if (previousSite && distanceMeters(previousSite, coords) <= 500) preserveContours = true;
-        else {
+      let preserveContours = existingSurfaces > 0 && roofContainsPoint(coords.latitude, coords.longitude);
+      if (existingSurfaces && !preserveContours) {
           const accepted = window.confirm('La carte et les contours du dossier sont encore positionnés ailleurs. Localiser à cette adresse effacera ces contours pour éviter un calcul sur le mauvais site. Continuer ?');
           if (!accepted) {
             config.selectedAddressCoordinates = null;
@@ -83,8 +88,6 @@
             window.OzenoSiteLocationUI?.sync();
             return;
           }
-          preserveContours = false;
-        }
       }
       config.commercialAddressForLookup = coords;
       config.addressLookupNeedsSelection = false;
@@ -93,6 +96,12 @@
         coordinateSource, precision: coords.precision || 'ADDRESS', preserveContours
       });
       window.OzenoSiteLocationUI?.sync();
+      if (Number.isFinite(coords.latitude) && Number.isFinite(coords.longitude)) {
+        window.dispatchEvent(new CustomEvent('ozeno:parcel-address-resolved', { detail: {
+          latitude: coords.latitude, longitude: coords.longitude,
+          coordinateSource, precision: coords.precision || 'ADDRESS', label: coords.label || input.value
+        } }));
+      }
       const temporaryNote = box.querySelector('.temporaryStudyNote');
       if (temporaryNote) {
         temporaryNote.textContent = coordinateSource === 'MANUAL_MAP_PIN'
@@ -127,125 +136,263 @@
     const hint = box?.querySelector('.addressRecognition');
     $('manualSiteLocationButton')?.remove();
     config.manualLocationPickActive = false;
-    input.placeholder = 'Adresse';
-    input.setAttribute('aria-label', 'Adresse du projet');
+    input.placeholder = 'Adresse, ville ou 48.95990, 1.82077';
+    input.setAttribute('aria-label', 'Adresse ou coordonnées GPS du site');
     const addressLabel = document.createElement('label');
     addressLabel.className = 'siteAddressLabel';
     addressLabel.htmlFor = input.id;
-    addressLabel.textContent = 'Adresse';
+    addressLabel.textContent = 'Adresse ou GPS';
     input.insertAdjacentElement('beforebegin', addressLabel);
-    if (hint) hint.textContent = 'Choisissez une suggestion officielle (IGN / Base Adresse Nationale).';
-    const gps = document.createElement('div');
-    gps.className = 'siteGpsFields';
-    gps.innerHTML = '<label for="siteGpsCoordinates">Ou coordonnées GPS</label><input id="siteGpsCoordinates" type="text" placeholder="Latitude, longitude" autocomplete="off" aria-describedby="siteGpsHint"><p id="siteGpsHint" class="fine">Exemple de format : 49.2074, -0.3092.</p><button type="button" id="useSiteGps" class="action">Valider les coordonnées GPS</button><p id="siteGpsStatus" class="fine" role="status"></p>';
-    (box.querySelector('.temporaryStudyNote') || hint || input).insertAdjacentElement('afterend', gps);
-    const mapInfo = document.createElement('p');
-    mapInfo.className = 'siteLocationInfo';
-    mapInfo.textContent = 'Si la position est incorrecte, renseigner de nouvelles coordonnées ou modifier la position directement sur la carte.';
-    gps.insertAdjacentElement('afterend', mapInfo);
+    let addressControl = input.closest('.siteAddressControl');
+    if (!addressControl) {
+      addressControl = document.createElement('div');
+      addressControl.className = 'siteAddressControl';
+      input.before(addressControl);
+      addressControl.append(input);
+    }
+    if (hint) hint.textContent = 'Pour corriger l’emplacement, cliquez sur « Modifier sur la carte », puis sélectionnez le point souhaité. Vous pouvez aussi saisir des coordonnées GPS dans ce champ.';
+
     const mapPick = document.createElement('div');
     mapPick.className = 'siteMapPick';
-    mapPick.innerHTML = '<button type="button" id="pickSiteOnMap" class="secondary">Placer le repère du site sur la carte</button><p id="siteMapPickStatus" class="fine" role="status" aria-live="polite"></p><button type="button" id="findReverseAddress" class="secondary" hidden>Rechercher une adresse proche via Géoplateforme</button><small class="fine">Cette recherche transmettra la latitude et la longitude du repère à la Géoplateforme. Le résultat est une adresse proche, à vérifier et confirmer manuellement.</small><button type="button" id="confirmReverseAddress" class="secondary" hidden></button>';
-    mapInfo.insertAdjacentElement('afterend', mapPick);
-    const pickButton = $('pickSiteOnMap');
-    const pickStatus = $('siteMapPickStatus');
-    const findReverse = $('findReverseAddress');
-    const confirmReverse = $('confirmReverseAddress');
-    let reverseCandidate = null, reverseRequest = 0;
+    mapPick.innerHTML = '<button type="button" id="pickSiteOnMap" class="secondary">Modifier sur la carte</button><button type="button" id="validateSiteMapPosition" class="secondary" hidden>Valider la position</button><button type="button" id="cancelSiteMapPick" class="secondary" hidden>Annuler le placement</button><p id="siteMapPickStatus" class="fine" role="status" aria-live="polite"></p>';
+    (box.querySelector('.temporaryStudyNote') || hint || input).insertAdjacentElement('afterend', mapPick);
+
+    const pickButton = $('pickSiteOnMap'), pickStatus = $('siteMapPickStatus'), validatePositionButton = $('validateSiteMapPosition');
+    const showPositionValidation = (visible) => {
+      const point = config.localProjectCoordinates || config.projectCoordinates || config.selectedAddressCoordinates;
+      const hasPoint = Number.isFinite(Number(point?.latitude)) && Number.isFinite(Number(point?.longitude));
+      const confirmedParcel = Boolean(window.OzenoParcelQualification?.capture?.());
+      const ready = hasPoint && confirmedParcel && !config.manualLocationPickActive
+        && hasPostalAddress() && !config.manualLocationAddressFlow && !config.addressLookupNeedsSelection;
+      validatePositionButton.hidden = visible === false || !ready;
+      validatePositionButton.textContent = 'Valider l’adresse et continuer';
+    };
+    const suggestions = document.createElement('div');
+    suggestions.className = 'siteAddressSuggestions';
+    suggestions.id = 'siteAddressSuggestions';
+    suggestions.setAttribute('role', 'listbox');
+    suggestions.hidden = true;
+    const addressStatus = document.createElement('p');
+    addressStatus.className = 'fine siteAddressStatus';
+    addressStatus.id = 'siteAddressStatus';
+    addressStatus.setAttribute('role', 'status');
+    addressStatus.setAttribute('aria-live', 'polite');
+    addressControl.insertAdjacentElement('afterend', suggestions);
+    suggestions.insertAdjacentElement('afterend', addressStatus);
+    let addressSearchTimer = 0, addressSearchRequest = 0, addressSearchController = null, addressCandidates = [];
+    const closeAddressSuggestions = () => { suggestions.replaceChildren(); suggestions.hidden = true; addressCandidates = []; };
+    const selectAddress = (coords) => {
+      if (!Number.isFinite(coords?.latitude) || !Number.isFinite(coords?.longitude)) return;
+      const previousReference = config.commercialAddressForLookup;
+      const previousLabel = previousReference?.label || config.projectContext?.address || '';
+      const existingSurfaces = window.roofGroup?.getLayers?.().length || 0;
+      const savedProject = Boolean(config.projectId || config.commercialDraftId || (config.projectContextLoaded && config.projectContext?.id));
+      let preserveContours = existingSurfaces > 0 && roofContainsPoint(coords.latitude, coords.longitude);
+      if (savedProject && existingSurfaces && !preserveContours) {
+          const accepted = window.confirm('Cette adresse se trouve hors des toitures dessinées. La sélectionner effacera ces tracés pour éviter un calcul sur le mauvais bâtiment. Continuer ?');
+          if (!accepted) {
+            input.value = previousLabel;
+            addressStatus.textContent = 'Adresse non modifiée ; le site et ses surfaces ont été conservés.';
+            closeAddressSuggestions();
+            return;
+          }
+      }
+      config.commercialAddressForLookup = coords;
+      config.selectedAddressCoordinates = coords;
+      config.addressLookupNeedsSelection = false;
+      config.temporaryStudyLabel = savedProject ? null : coords.label;
+      input.value = coords.label;
+      const dashAddress = $('dashAddress');
+      if (dashAddress) dashAddress.textContent = coords.label;
+      closeAddressSuggestions();
+      const coordinateOnly = ['COORDINATES', 'USER_COORDINATES'].includes(coords.precision);
+      setMapLocation(coords.latitude, coords.longitude, coords.label, {
+        coordinateSource: coords.coordinateSource || (coordinateOnly ? 'USER_COORDINATES' : 'GEOPLATEFORME'),
+        precision: coords.precision || 'ADDRESS', preserveContours
+      });
+      showPositionValidation(true);
+      window.OzenoSiteLocationUI?.sync();
+      window.dispatchEvent(new CustomEvent('ozeno:site-address-confirmed', { detail: { label: coords.label, precision: coords.precision || 'ADDRESS' } }));
+      window.dispatchEvent(new CustomEvent('ozeno:parcel-address-resolved', { detail: {
+        latitude: coords.latitude, longitude: coords.longitude,
+        coordinateSource: coords.coordinateSource || (coordinateOnly ? 'USER_COORDINATES' : 'GEOPLATEFORME'),
+        precision: coords.precision || 'ADDRESS', label: coords.label
+      } }));
+      addressStatus.textContent = coordinateOnly
+        ? 'Repère placé à ces coordonnées. Si le point est correct, continuez ; sinon déplacez-le sur la carte.'
+        : 'Adresse et repère appliqués. Si le point est correct, continuez ; sinon cliquez sur « Modifier sur la carte ». La parcelle se vérifie séparément à l’étape Surfaces solaires.';
+    };
+    const searchAddressSuggestions = async () => {
+      const query = input.value.trim();
+      const request = ++addressSearchRequest;
+      addressSearchController?.abort();
+      addressSearchController = null;
+      if (!query) { closeAddressSuggestions(); addressStatus.textContent = ''; return; }
+      const { parseCoordinatePair, siteAddressAutocompleteUrl, normalizeSiteAddressSuggestion } = await import('./site-address.mjs?v=20261111-location-flow-5');
+      if (request !== addressSearchRequest || input.value.trim() !== query) return;
+      const coordinates = parseCoordinatePair(query);
+      if (coordinates) {
+        const option = document.createElement('button');
+        option.type = 'button'; option.className = 'siteAddressSuggestion'; option.setAttribute('role', 'option');
+        option.textContent = `Utiliser les coordonnées ${coordinates.label}`;
+        option.addEventListener('click', () => selectAddress({ ...coordinates, coordinateSource: 'USER_COORDINATES' }));
+        suggestions.replaceChildren(option); suggestions.hidden = false;
+        addressStatus.textContent = 'Coordonnées GPS reconnues. Sélectionnez-les pour déplacer le repère.';
+        return;
+      }
+      if (query.length < 3) { closeAddressSuggestions(); addressStatus.textContent = 'Saisissez au moins 3 caractères pour rechercher une adresse.'; return; }
+      addressSearchController = new AbortController();
+      const signal = addressSearchController.signal;
+      addressStatus.textContent = 'Recherche d’adresses officielles…';
+      try {
+        const response = await fetch(siteAddressAutocompleteUrl(query), { signal });
+        if (!response.ok) throw new Error(`geocoding_http_${response.status}`);
+        const payload = await response.json();
+        if (request !== addressSearchRequest || input.value.trim() !== query) return;
+        addressCandidates = (payload.results || payload.features || []).map(normalizeSiteAddressSuggestion).filter(Boolean).slice(0, 8);
+        suggestions.replaceChildren(...addressCandidates.map((candidate, index) => {
+          const option = document.createElement('button');
+          option.type = 'button'; option.className = 'siteAddressSuggestion'; option.setAttribute('role', 'option');
+          option.textContent = candidate.label; option.dataset.addressIndex = String(index);
+          option.addEventListener('click', () => selectAddress(candidate));
+          return option;
+        }));
+        suggestions.hidden = !addressCandidates.length;
+        addressStatus.textContent = addressCandidates.length
+          ? 'Choisissez une adresse dans la liste pour la valider et déplacer le repère.'
+          : 'Aucune suggestion trouvée. Vérifiez la voie et la commune ou déplacez le repère sur la carte.';
+      } catch (error) {
+        if (request !== addressSearchRequest || signal.aborted) return;
+        closeAddressSuggestions();
+        addressStatus.textContent = 'Recherche d’adresse indisponible. Vous pouvez toujours repérer le site sur la carte.';
+      }
+    };
+    input.addEventListener('input', () => {
+      window.dispatchEvent(new CustomEvent('ozeno:site-map-mode-cancel'));
+      validatePositionButton.hidden = true;
+      window.clearTimeout(addressSearchTimer);
+      addressSearchTimer = window.setTimeout(() => { void searchAddressSuggestions(); }, 250);
+    });
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !suggestions.hidden) { closeAddressSuggestions(); return; }
+      if (event.key === 'Enter' && !suggestions.hidden && addressCandidates.length) {
+        event.preventDefault(); selectAddress(addressCandidates[0]);
+      }
+    });
+    const cancelPick = () => {
+      if (config.manualLocationPickActive) {
+        config.manualLocationAddressFlow = false;
+        window.dispatchEvent(new CustomEvent('ozeno:parcel-confirmation-required', { detail: { required: false } }));
+      }
+      config.manualLocationPickActive = false;
+      window.solarMap?.getContainer?.().classList.remove('isPickingSiteLocation');
+      $('cancelSiteMapPick').hidden = true;
+      pickButton.textContent = 'Modifier sur la carte';
+      pickStatus.textContent = '';
+      showPositionValidation();
+    };
+    validatePositionButton.addEventListener('click', () => {
+      if (!window.OzenoParcelQualification?.capture?.() || !hasPostalAddress() || config.manualLocationAddressFlow || config.addressLookupNeedsSelection) return;
+      config.manualLocationPositionConfirmed = true;
+      config.manualLocationAddressFlow = false;
+      window.dispatchEvent(new CustomEvent('ozeno:parcel-confirmation-required', { detail: { required: false } }));
+      validatePositionButton.hidden = true;
+      pickStatus.textContent = 'Position validée. L’adresse postale et la parcelle peuvent être vérifiées séparément.';
+      window.dispatchEvent(new CustomEvent('ozeno:site-position-confirmed', { detail: { ...config.localProjectCoordinates } }));
+    });
+    $('cancelSiteMapPick').addEventListener('click', cancelPick);
+    window.addEventListener('ozeno:site-map-mode-cancel', cancelPick);
+    window.addEventListener('ozeno:project-context-loaded', cancelPick);
+    input.addEventListener('input', () => window.dispatchEvent(new CustomEvent('ozeno:site-map-mode-cancel')));
+    document.addEventListener('keydown', event => { if (event.key === 'Escape' && config.manualLocationPickActive) cancelPick(); });
     const sync = () => {
       const coordinates = config.localProjectCoordinates || config.projectCoordinates;
       const reference = config.commercialAddressForLookup;
-      const coordinateOnly = (config.addressLookupNeedsSelection && Boolean(coordinates))
+      const hasPostalReference = Boolean(reference && (reference.address || reference.streetAddress)
+        && !['MAP_CLICK', 'CONTOUR_CENTER', 'USER_PROVIDED', 'COORDINATES', 'DEVICE_POSITION', 'POINT_OF_INTEREST', 'MANUAL_MAP_PIN'].includes(reference.precision));
+      const coordinateOnly = !hasPostalReference && ((config.addressLookupNeedsSelection && Boolean(coordinates))
         || ['MAP_CLICK', 'CONTOUR_CENTER', 'USER_PROVIDED', 'COORDINATES', 'DEVICE_POSITION'].includes(reference?.precision)
-        || /^(?:Repère manuel|Position GPS|Position sur la carte|Coordonnées GPS|Votre position actuelle)/.test(input.value);
-      if (coordinateOnly) input.value = '';
+        || /^(?:Repère manuel|Position GPS|Position sur la carte|Coordonnées GPS|Votre position actuelle)/.test(input.value));
+      if (coordinateOnly) input.value = reference?.label || '';
       else if (reference?.label) input.value = reference.label;
-      if ($('siteGpsCoordinates')) $('siteGpsCoordinates').value = coordinates?.latitude != null && coordinates?.longitude != null
-        ? `${Number(coordinates.latitude).toFixed(5)}, ${Number(coordinates.longitude).toFixed(5)}` : '';
-      if ($('siteGpsStatus')) $('siteGpsStatus').textContent = coordinateOnly ? 'Position géographique connue ; adresse postale à confirmer si nécessaire.' : '';
     };
     window.OzenoSiteLocationUI = { sync };
-    const useGps = () => {
-      const coordinates = window.SolarShiftSiteLocation?.parseCoordinates($('siteGpsCoordinates').value);
-      if (!coordinates) { $('siteGpsStatus').textContent = 'Vérifiez la latitude (−90 à 90) et la longitude (−180 à 180), séparées par une virgule.'; return; }
-      config.selectedAddressCoordinates = coordinates;
-      config.commercialAddressForLookup = coordinates;
-      config.addressLookupNeedsSelection = false;
-      input.value = '';
-      input.dispatchEvent(new CustomEvent('ozeno:address-selected', { bubbles: true, detail: coordinates }));
-      sync();
-      $('siteGpsStatus').textContent = 'Carte localisée avec les coordonnées saisies. Cliquez sur la toiture pour proposer son contour.';
-    };
-    $('useSiteGps').addEventListener('click', useGps);
-    $('siteGpsCoordinates').addEventListener('keydown', (event) => { if (event.key === 'Enter') { event.preventDefault(); useGps(); } });
     pickButton.addEventListener('click', () => {
+      window.dispatchEvent(new CustomEvent('ozeno:site-map-mode-cancel'));
       config.manualLocationPickActive = true;
-      reverseCandidate = null;
-      findReverse.hidden = true;
-      confirmReverse.hidden = true;
-      pickButton.textContent = 'Cliquez sur le point exact du site sur la carte…';
-      pickStatus.textContent = 'Le prochain clic sur la carte déplacera le repère du site, sans tracer ni détecter de toiture.';
+      config.manualLocationPositionConfirmed = false;
+      config.manualLocationAddressFlow = true;
+      window.dispatchEvent(new CustomEvent('ozeno:parcel-confirmation-required', { detail: { required: true } }));
+      validatePositionButton.hidden = true;
+      config.parcelLocationPickActive = false;
+      $('cancelSiteMapPick').hidden = false;
+      pickButton.textContent = 'Cliquez sur le site sur la carte…';
+      pickStatus.textContent = 'Cliquez sur le bâtiment ou le terrain pour déplacer le repère et rechercher sa parcelle.';
       window.solarMap?.getContainer?.().classList.add('isPickingSiteLocation');
+      const mapTarget = $('prestudyLocationMapSlot')?.parentElement || window.solarMap?.getContainer?.();
+      mapTarget?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
     });
-    confirmReverse.addEventListener('click', () => {
-      if (!reverseCandidate || !config.localProjectCoordinates) return;
-      const pin = config.localProjectCoordinates;
-      const confirmed = { ...reverseCandidate, latitude: pin.latitude, longitude: pin.longitude, coordinateSource: 'USER_CONFIRMED_REVERSE_GEOCODE', precision: 'REVERSE_GEOCODED_ADDRESS' };
-      config.commercialAddressForLookup = confirmed;
-      config.selectedAddressCoordinates = confirmed;
-      config.addressLookupNeedsSelection = false;
-      input.value = confirmed.label;
-      confirmReverse.hidden = true;
-      pickStatus.textContent = `Adresse de proximité confirmée pour la recherche Enedis : ${confirmed.label}. Le point GPS exact reste conservé séparément.`;
-      window.dispatchEvent(new CustomEvent('ozeno:site-address-confirmed', { detail: confirmed }));
-    });
-    findReverse.addEventListener('click', async () => {
-      const coordinates = config.localProjectCoordinates;
-      if (!coordinates) return;
-      const request = ++reverseRequest;
-      reverseCandidate = null;
-      confirmReverse.hidden = true;
-      findReverse.disabled = true;
-      pickStatus.textContent = 'Recherche de l’adresse la plus proche via la Géoplateforme…';
-      try {
-        const { reverseGeocodeUrl, normalizeReverseGeocodeResult } = await import('./site-address.mjs');
-        const response = await fetch(reverseGeocodeUrl(coordinates.latitude, coordinates.longitude), { signal: AbortSignal.timeout(12_000) });
-        if (!response.ok) throw new Error(`service indisponible (${response.status})`);
-        const candidate = normalizeReverseGeocodeResult(await response.json());
-        if (request !== reverseRequest) return;
-        if (!candidate) throw new Error('aucune adresse proche trouvée');
-        reverseCandidate = candidate;
-        const distanceLabel = candidate.distanceMeters == null ? '' : ` · à environ ${Math.round(candidate.distanceMeters)} m`;
-        confirmReverse.textContent = `Confirmer l’adresse proche pour Enedis : ${candidate.label}${distanceLabel}`;
-        confirmReverse.hidden = false;
-        pickStatus.textContent = 'Adresse la plus proche proposée par la Géoplateforme : elle ne prouve pas le numéro exact du bâtiment. Vérifiez le repère et confirmez uniquement si l’adresse correspond au site.';
-      } catch (error) {
-        if (request === reverseRequest) pickStatus.textContent = `Repère GPS conservé. Aucune adresse postale confirmable (${error?.message || 'erreur'}).`;
-      } finally {
-        findReverse.disabled = false;
+    window.addEventListener('ozeno:project-context-loaded', () => { sync(); showPositionValidation(); });
+    window.addEventListener('ozeno:site-address-confirmed', sync);
+    window.addEventListener('ozeno:parcel-qualification-updated', () => showPositionValidation());
+    window.addEventListener('ozeno:parcel-qualification-confirmed', () => {
+      if (config.manualLocationAddressFlow) return;
+      if (config.manualLocationPositionConfirmed) {
+        window.dispatchEvent(new CustomEvent('ozeno:site-position-confirmed', { detail: { ...config.localProjectCoordinates } }));
       }
     });
-    window.addEventListener('ozeno:project-context-loaded', sync);
-    window.addEventListener('ozeno:site-address-confirmed', sync);
-    window.addEventListener('ozeno:map-site-selected', (event) => {
+    window.addEventListener('ozeno:parcel-address-suggestion-validated', event => {
+      const candidate = event.detail;
+      if (!candidate || !String(candidate.address || '').trim()) return;
+      const selected = { ...candidate, coordinateSource: 'GEOPLATEFORME_REVERSE', precision: 'USER_CONFIRMED_ADDRESS' };
+      const savedProject = Boolean(config.projectId || config.commercialDraftId || (config.projectContextLoaded && config.projectContext?.id));
+      config.commercialAddressForLookup = selected;
+      config.selectedAddressCoordinates = selected;
+      config.addressLookupNeedsSelection = false;
+      config.manualLocationAddressFlow = false;
+      window.dispatchEvent(new CustomEvent('ozeno:parcel-confirmation-required', { detail: { required: false } }));
+      config.temporaryStudyLabel = savedProject ? null : selected.label;
+      input.value = selected.label;
+      const dashAddress = $('dashAddress');
+      if (dashAddress) dashAddress.textContent = selected.label;
+      window.OzenoSiteLocationUI?.sync();
+      addressStatus.textContent = 'Nouvelle adresse validée. Passage à l’étape suivante…';
+      window.dispatchEvent(new CustomEvent('ozeno:site-address-confirmed', { detail: { label: selected.label, source: 'PARCEL_PROXIMITY_CANDIDATE' } }));
+    });
+    window.addEventListener('ozeno:map-site-selected', event => {
       const manualPick = config.manualLocationPickActive || event.detail?.manualPick === true;
       if (!manualPick && (config.localProjectCoordinates || (config.projectContextLoaded && config.projectCoordinates))) return;
       const { latitude, longitude, coordinateSource = 'MANUAL_MAP_PIN', precision = 'MAP_CLICK' } = event.detail;
       config.manualLocationPickActive = false;
+      $('cancelSiteMapPick').hidden = true;
+      validatePositionButton.hidden = true;
       window.solarMap?.getContainer?.().classList.remove('isPickingSiteLocation');
-      const reference = { latitude, longitude, label: 'Repère manuel sur la carte', coordinateSource: manualPick ? 'MANUAL_MAP_PIN' : coordinateSource, precision: manualPick ? 'MAP_CLICK' : precision };
-      config.selectedAddressCoordinates = reference;
-      config.commercialAddressForLookup = null;
-      config.addressLookupNeedsSelection = true;
-      input.value = '';
-      input.placeholder = 'Adresse postale à confirmer (facultatif)';
-      setMapLocation(latitude, longitude, reference.label, { coordinateSource: reference.coordinateSource, precision: reference.precision, preserveContours: true, centerMap: false });
-      pickButton.textContent = 'Replacer le repère du site sur la carte';
-      pickStatus.textContent = `Repère GPS enregistré : ${latitude.toFixed(5)}, ${longitude.toFixed(5)}. Vous pouvez l’utiliser seul, ou demander une adresse de proximité à confirmer.`;
-      findReverse.hidden = false;
-      confirmReverse.hidden = true;
-      reverseCandidate = null;
-      reverseRequest += 1;
+      const markerReference = { latitude, longitude, label: 'Repère manuel sur la carte', coordinateSource: manualPick ? 'MANUAL_MAP_PIN' : coordinateSource, precision: manualPick ? 'MAP_CLICK' : precision };
+      const postalReference = config.commercialAddressForLookup;
+      const hasPostalReference = Boolean(!manualPick && postalReference && (postalReference.address || postalReference.streetAddress)
+        && !['MAP_CLICK', 'CONTOUR_CENTER', 'USER_PROVIDED', 'COORDINATES', 'DEVICE_POSITION', 'POINT_OF_INTEREST', 'MANUAL_MAP_PIN'].includes(postalReference.precision));
+      config.selectedAddressCoordinates = markerReference;
+      if (hasPostalReference) {
+        config.addressLookupNeedsSelection = false;
+        input.value = postalReference.label || postalReference.address || config.projectContext?.address || input.value;
+      } else {
+        config.commercialAddressForLookup = null;
+        config.addressLookupNeedsSelection = true;
+        input.value = '';
+      }
+      input.placeholder = 'Adresse postale du site';
+      const preserveContours = roofContainsPoint(latitude, longitude);
+      setMapLocation(latitude, longitude, markerReference.label, { coordinateSource: markerReference.coordinateSource, precision: markerReference.precision, preserveContours, centerMap: false });
+      pickButton.textContent = 'Modifier sur la carte';
+      config.manualLocationPositionConfirmed = false;
+      showPositionValidation(false);
+      pickStatus.textContent = manualPick
+        ? 'Repère déplacé. Confirmez la nouvelle parcelle, puis choisissez son adresse avant de continuer.'
+        : '';
+      if (config.siteLocationMapActive && !event.detail?.parcelLookupScheduled) {
+        config.parcelLocationPickActive = true;
+        window.dispatchEvent(new CustomEvent('ozeno:parcel-map-click', { detail: { latitude, longitude } }));
+      }
       sync();
     });
     window.addEventListener('ozeno:roof-surfaces', () => {
@@ -254,8 +401,8 @@
       if (point) window.dispatchEvent(new CustomEvent('ozeno:map-site-selected', { detail: { latitude: point.lat, longitude: point.lng, coordinateSource: 'DRAWN_CONTOUR_CENTER', precision: 'CONTOUR_CENTER' } }));
     });
     sync();
+    showPositionValidation();
   }
-
   function installGeolocationControl() {
     if (!window.L || !window.solarMap || document.querySelector('.commercialGeolocation')) return;
     const control = L.control({ position: 'topright' });
@@ -303,7 +450,7 @@
     };
     control.addTo(window.solarMap);
     const style = document.createElement('style');
-    style.textContent = '.commercialGeolocation button{border:0;background:#fff;color:#08734c;padding:7px 9px;min-height:34px;font:600 13px system-ui;cursor:pointer}.commercialGeolocation button:disabled{opacity:.65}.addressSimulationExplanation{margin:7px 0}.isPickingSiteLocation,.isPickingSiteLocation *{cursor:crosshair!important}.siteMapPick{display:grid;gap:6px;margin:8px 0}.siteMapPick small{color:#587469}';
+    style.textContent = '.commercialGeolocation button{border:0;background:#fff;color:#08734c;padding:7px 9px;min-height:34px;font:600 13px system-ui;cursor:pointer}.commercialGeolocation button:disabled{opacity:.65}.addressSimulationExplanation{margin:7px 0}.isPickingSiteLocation,.isPickingSiteLocation *{cursor:crosshair!important}.siteAddressControl{display:block;max-width:620px}.siteAddressControl input{box-sizing:border-box;width:100%;min-width:0}.siteAddressSuggestions{display:grid;gap:4px;max-width:620px;margin:4px 0}.siteAddressSuggestion{display:block;width:100%;padding:9px 11px;border:1px solid #d3e1d8;border-radius:5px;background:#fff;color:#244d40;text-align:left;cursor:pointer}.siteAddressSuggestion:hover,.siteAddressSuggestion:focus-visible{background:#eff7f2;border-color:#25856a}.siteAddressStatus{max-width:620px;margin:4px 0;color:#52675f;font-size:12px}.siteMapPick{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:8px 0}.siteMapPick p{flex-basis:100%;margin:0}.siteMapPick small{color:#587469}';
     document.head.appendChild(style);
   }
 
@@ -384,7 +531,7 @@
     if (!document.getElementById('pvgisLossHelpStyles')) {
       const style = document.createElement('style');
       style.id = 'pvgisLossHelpStyles';
-      style.textContent = '.pvgisLossHelp{position:relative;display:inline-block;vertical-align:middle;margin:0 0 5px 6px;font-weight:400}.pvgisLossHelpButton{display:inline-grid;place-items:center;width:20px;height:20px;padding:0;border:0;border-radius:0;background:transparent;color:#08734c;font:700 14px system-ui;cursor:help}.pvgisLossHelpButton:focus-visible{outline:2px solid #08734c;outline-offset:2px}.pvgisLossTooltip{display:none;position:absolute;top:calc(100% + 7px);left:0;z-index:1200;width:min(420px,calc(100vw - 48px));padding:12px 14px;border:1px solid #cfe0d5;border-radius:8px;background:#fff;color:#123d30;box-shadow:0 4px 18px #0002;font-size:13px;font-weight:400;line-height:1.45;white-space:pre-line}.pvgisLossHelp:hover .pvgisLossTooltip,.pvgisLossHelp:focus-within .pvgisLossTooltip,.pvgisLossHelp.is-open .pvgisLossTooltip{display:block}';
+      style.textContent = '.pvgisLossHelp{position:relative;display:inline-block;vertical-align:middle;margin:0 0 5px 6px;font-weight:400}.pvgisLossHelpButton{display:inline-grid;place-items:center;width:20px;height:20px;padding:0;border:1px solid #87b6a0;border-radius:50%;background:#fff;color:#08734c;font:700 12px system-ui;cursor:help}.pvgisLossHelpButton:focus-visible{outline:2px solid #08734c;outline-offset:2px}.pvgisLossTooltip{display:none;position:absolute;top:calc(100% + 7px);left:0;z-index:1200;width:min(420px,calc(100vw - 48px));padding:12px 14px;border:1px solid #cfe0d5;border-radius:8px;background:#fff;color:#123d30;box-shadow:0 4px 18px #0002;font-size:13px;font-weight:400;line-height:1.45;white-space:pre-line}.pvgisLossHelp:hover .pvgisLossTooltip,.pvgisLossHelp:focus-within .pvgisLossTooltip,.pvgisLossHelp.is-open .pvgisLossTooltip{display:block}';
       document.head.appendChild(style);
     }
 

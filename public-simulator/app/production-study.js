@@ -13,8 +13,9 @@
     style.id = 'productionStudyStyles';
     style.textContent = `
       .productionStudy{margin-top:18px}.productionStudyGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0 18px}.productionStudy .metric{position:relative;border:1px solid #cfe0d5;border-radius:9px;padding:12px;background:#f5faf7}.productionStudy .metric b{display:block;color:#0a3f2d;font-size:19px;margin:4px 0}.productionStudy .metric small{color:#587469}.monthlyProfile{display:grid;grid-template-columns:repeat(12,1fr);align-items:end;gap:7px;height:150px;padding:10px 4px;border-bottom:1px solid #cfe0d5}.monthlyProfile i{display:block;min-height:4px;border-radius:5px 5px 0 0;background:linear-gradient(#f2bb35,#d99116);position:relative}.monthlyProfile span{display:block;text-align:center;color:#587469;font-size:11px;margin-top:5px}.productionStudy .status{margin-top:12px}.productionStudy .fine{margin-top:12px}.climateYieldPanel{margin-top:18px;padding:16px;border:1px solid #cfe0d5;border-radius:9px;background:#f8fbf9}.climateYieldPanel h3{margin:0 0 6px;color:#0a3f2d}.climateYieldMetrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:12px 0}.climateYieldMetrics>div{min-width:0;padding:10px;border:1px solid #dce9e0;border-radius:7px;background:#fff}.climateYieldMetrics small,.climateYieldMetrics b{display:block}.climateYieldMetrics small{color:#587469}.climateYieldMetrics b{margin-top:4px;color:#0a3f2d;font-size:17px;font-variant-numeric:tabular-nums}.climateYieldSummary{margin:7px 0;color:#315c4b;font-size:13px}.climateHistoryChart{width:100%;overflow:hidden;border:1px solid #e1ebe4;border-radius:7px;background:#fff}.climateHistoryChart svg{display:block;width:100%;height:auto}.climateHistoryBars rect{fill:#5aaa8d}.climateHistoryGuides line{stroke-width:2;stroke-dasharray:7 5}.climateHistoryGuides .climateP50{stroke:#e0ad22}.climateHistoryGuides .climateP90{stroke:#7952a5}.climateHistoryAxis text{fill:#587469;font:11px system-ui,sans-serif}.climateHistoryLegend{display:flex;flex-wrap:wrap;gap:10px 18px;margin:9px 0;color:#315c4b;font-size:13px}.climateHistoryLegend span{display:flex;align-items:center;gap:7px}.climateHistoryLegend i{display:inline-block;width:18px;height:9px;border-radius:2px;background:#5aaa8d}.climateHistoryLegend .climateLegendP50,.climateHistoryLegend .climateLegendP90{height:0;border-top:2px dashed #e0ad22;background:transparent}.climateHistoryLegend .climateLegendP90{border-color:#7952a5}.climateHistorySource{font-size:12px;color:#587469}@media(max-width:760px){.productionStudyGrid{grid-template-columns:repeat(2,1fr)}.monthlyProfile{gap:3px}.climateYieldMetrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+      .monthlyProfile>div{min-width:0}.monthlyProfile>div>span{display:block;min-width:0;font-size:9px!important;line-height:1.1;white-space:nowrap!important;overflow-wrap:normal;word-break:keep-all}.productionValues>span{white-space:nowrap;overflow:hidden;text-overflow:clip}.productionCurve .curveAxis text{font-size:10px!important}
       #profilePoints circle{fill:#f0b52c;stroke:#fff;stroke-width:2;cursor:help}#profilePoints circle:focus-visible{stroke:#073d2a;stroke-width:3;outline:none}#profileBars .profileBar{cursor:help}#profileBars .profileBar:focus-visible{stroke:#073d2a;stroke-width:2;outline:none}
-      #profileBars{display:block}#profileP50,#profileConsumption,#profilePoints{display:none!important}.profileBar{fill:#5aaa8d;opacity:.55}.profileConsumptionBar{fill:#8c54b8;opacity:.78;cursor:help}.profileBar,.profileConsumptionBar{transition:opacity .12s}.profileBar:hover,.profileConsumptionBar:hover,.profileBar:focus-visible,.profileConsumptionBar:focus-visible{opacity:1;stroke:#073d2a;stroke-width:1.5;outline:none}.legendProductionBars{width:12px!important;height:9px!important;background:#5aaa8d!important;opacity:.55;border-radius:2px!important}.legendConsumption{width:12px!important;height:9px!important;background:#8c54b8!important;border:0!important;border-radius:2px!important}.consumptionReferenceNote{margin:8px 0;padding:9px 11px;border-left:3px solid #8c54b8;border-radius:5px;background:#f7f1fb;color:#4f3762}.monthlySurplusHint{margin:7px 0;padding:9px 11px;border-left:3px solid #27885f;border-radius:5px;background:#edf7f0;color:#315b45}.monthlySurplusHint b{color:#08734c}
+      #profileBars{display:block}#profileP50,#profileConsumption,#profilePoints{display:none!important}.profileBar{fill:#5aaa8d;opacity:.55}.profileConsumptionBar{fill:#8c54b8;opacity:.78;cursor:help}.profileConsumptionBar.isMeasuredProfile{fill:#287e9e}.profileBar,.profileConsumptionBar{transition:opacity .12s}.profileBar:hover,.profileConsumptionBar:hover,.profileBar:focus-visible,.profileConsumptionBar:focus-visible{opacity:1;stroke:#073d2a;stroke-width:1.5;outline:none}.legendProductionBars{width:12px!important;height:9px!important;background:#5aaa8d!important;opacity:.55;border-radius:2px!important}.legendConsumption{width:12px!important;height:9px!important;background:#8c54b8!important;border:0!important;border-radius:2px!important}.legendConsumption.isMeasuredProfile{background:#287e9e!important}.consumptionReferenceNote{margin:8px 0;padding:9px 11px;border-left:3px solid #8c54b8;border-radius:5px;background:#f7f1fb;color:#4f3762}.monthlySurplusHint{margin:7px 0;padding:9px 11px;border-left:3px solid #27885f;border-radius:5px;background:#edf7f0;color:#315b45}.monthlySurplusHint b{color:#08734c}
     `;
     if (!style.isConnected) document.head.appendChild(style);
   }
@@ -29,7 +30,7 @@
     panel.id = 'climateYieldPanel';
     panel.className = 'climateYieldPanel';
     panel.setAttribute('aria-live', 'polite');
-    panel.innerHTML = '<h3>Variabilité climatique historique · aperçu</h3><p id="climateYieldStatus" class="climateYieldSummary">En attente d’un calcul PVGIS historique.</p><div id="climateYieldResults" hidden><div class="climateYieldMetrics"><div><small>Climate P50 · médiane</small><b id="climateP50Value">UNKNOWN</b></div><div><small>Climate P75 · quantile bas</small><b id="climateP75Value">UNKNOWN</b></div><div><small>Climate P90 · décile bas</small><b id="climateP90Value">UNKNOWN</b></div><div><small>Années complètes</small><b id="climateYearCount">UNKNOWN</b></div></div><p id="climateYieldSummary" class="climateYieldSummary"></p><div id="climateHistoryChart" class="climateHistoryChart" role="img" aria-label="Production PVGIS historique annuelle"></div><div class="climateHistoryLegend" aria-label="Légende du graphique historique"><span><i></i>Production annuelle PVGIS</span><span><i class="climateLegendP50"></i>Climate P50 · médiane</span><span><i class="climateLegendP90"></i>Climate P90 · seuil dépassé par environ 90 % des années observées</span></div><p id="climateYieldSource" class="climateHistorySource"></p></div><p class="fine">Climate P50/P90 décrivent uniquement la variabilité climatique historique PVGIS ; ils ne sont ni un P50/P90 modélisé d’investissement, ni une étude indépendante, ni une garantie de production. Les pertes et ombrages saisis sont appliqués comme hypothèses. Cet aperçu n’est pas enregistré au dossier.</p>';
+    panel.innerHTML = '<h3>Variabilité climatique historique · aperçu</h3><p id="climateYieldStatus" class="climateYieldSummary">En attente d’un calcul PVGIS historique.</p><div id="climateYieldResults" hidden><div class="climateYieldMetrics"><div><small tabindex="0" title="Production annuelle médiane sur les années historiques calculées : la moitié des années est au-dessus, l’autre en dessous.">Climate P50 · médiane ⓘ</small><b id="climateP50Value">UNKNOWN</b></div><div><small tabindex="0" title="Quantile empirique bas (25e percentile) : environ 75 % des années historiques ont produit davantage.">Climate P75 · quantile bas ⓘ</small><b id="climateP75Value">UNKNOWN</b></div><div><small tabindex="0" title="Quantile empirique bas (10e percentile) : environ 90 % des années historiques ont produit davantage.">Climate P90 · décile bas ⓘ</small><b id="climateP90Value">UNKNOWN</b></div><div><small tabindex="0" title="Nombre d’années historiques complètes utilisées pour les quantiles.">Années complètes ⓘ</small><b id="climateYearCount">UNKNOWN</b></div></div><p id="climateYieldSummary" class="climateYieldSummary"></p><div id="climateHistoryChart" class="climateHistoryChart" role="img" aria-label="Production PVGIS historique annuelle"></div><div class="climateHistoryLegend" aria-label="Légende du graphique historique"><span><i></i>Production annuelle PVGIS</span><span><i class="climateLegendP50"></i>Climate P50 · médiane</span><span><i class="climateLegendP90"></i>Climate P90 · seuil dépassé par environ 90 % des années observées</span></div><p id="climateYieldSource" class="climateHistorySource"></p></div><p class="fine">Les valeurs sont affichées en MWh/an. Climate P50/P75/P90 décrivent les quantiles de la variabilité climatique historique PVGIS ; ils ne sont ni une garantie de production ni un P50/P90 modélisé pour un investissement. Les pertes et ombrages saisis sont appliqués comme hypothèses. Cet aperçu n’est pas enregistré au dossier.</p>';
     const anchor = card.querySelector('#productionChart, .productionCurve, .monthlyProfile, .productionChart') || card.querySelector('#productionConsumptionPanel') || card.lastElementChild;
     if (anchor) anchor.insertAdjacentElement('afterend', panel);
     else card.appendChild(panel);
@@ -47,11 +48,11 @@
       CLIMATE_PREVIEW_NOT_CONFIGURED: 'Le relais de calcul climatique n’est pas configuré.',
       PRODUCTION_PREVIEW_REQUIRED: 'Renseignez et calculez la production estimée avant le calcul climatique.',
       COORDINATES_MISSING: 'Coordonnées du projet indisponibles : calcul climatique non réalisé.',
-      INSUFFICIENT_COMPLETE_YEARS_FOR_CLIMATE_VARIABILITY: 'Moins de deux années historiques complètes : variabilité climatique et Climate Pxx restent UNKNOWN.'
+      INSUFFICIENT_COMPLETE_YEARS_FOR_CLIMATE_VARIABILITY: 'Moins de deux années historiques complètes : Climate Pxx n’est pas calculé.'
     };
     if (preview?.status !== 'READY') {
       if (results) results.hidden = true;
-      if (status) status.textContent = knownMessages[reason] || (reason && !/^[A-Z0-9_]+$/.test(reason) ? reason : 'Données historiques insuffisantes ou indisponibles ; Climate P50/P90 restent UNKNOWN.');
+      if (status) status.textContent = knownMessages[reason] || (reason && !/^[A-Z0-9_]+$/.test(reason) ? reason : 'Données historiques insuffisantes ou indisponibles ; Climate P50/P90 non calculés.');
       return;
     }
 
@@ -61,7 +62,7 @@
       renderClimateYieldPreview({ status: 'UNKNOWN', reason: 'INSUFFICIENT_COMPLETE_YEARS_FOR_CLIMATE_VARIABILITY' });
       return;
     }
-    const fmt = (value) => `${Math.round(Number(value)).toLocaleString('fr-FR')} kWh/an`;
+    const fmt = (value) => `${(Number(value) / 1000).toLocaleString('fr-FR', { maximumFractionDigits: 1 })} MWh/an`;
     const set = (id, value) => { const node = document.getElementById(id); if (node) node.textContent = value; };
     set('climateP50Value', fmt(preview.climateP50Kwh));
     set('climateP75Value', fmt(preview.climateP75Kwh));
@@ -179,6 +180,31 @@
     target.addEventListener('blur', () => { tooltip.style.display = 'none'; });
   }
 
+  function renderPendingMonthAxis(svg) {
+    if (!svg) return;
+    let monthLabels = document.getElementById('profileMonths');
+    if (!monthLabels) {
+      monthLabels = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      monthLabels.id = 'profileMonths';
+      monthLabels.setAttribute('class', 'curveAxis');
+      svg.appendChild(monthLabels);
+    }
+    if (!monthLabels.childElementCount) {
+      monthLabels.replaceChildren(...months.map((month, index) => {
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('x', String(160 + index * (520 / 11)));
+        label.setAttribute('y', '243');
+        label.setAttribute('text-anchor', 'middle');
+        label.textContent = month;
+        return label;
+      }));
+    }
+    const scale = document.getElementById('productionScale');
+    scale?.querySelectorAll('text').forEach((label, index, labels) => {
+      label.textContent = index === labels.length - 1 ? '0 kWh' : '';
+    });
+  }
+
   function update() {
     const source = document.getElementById('dashPerformance');
     const output = document.getElementById('studyYield');
@@ -234,6 +260,7 @@
     card.querySelector('#profileP90')?.setAttribute('display', 'none');
 
     const svg = card.querySelector('#productionSvg');
+    renderPendingMonthAxis(svg);
     if (svg && !card.querySelector('#profileConsumptionBars')) {
       const loadBars = document.createElementNS('http://www.w3.org/2000/svg', 'g');
       loadBars.id = 'profileConsumptionBars';
@@ -315,6 +342,9 @@
         document.getElementById(id)?.setAttribute('points', '');
       });
       document.getElementById('productionScale')?.querySelectorAll('text').forEach((label) => { label.textContent = '—'; });
+      const svg = document.getElementById('productionSvg');
+      renderPendingMonthAxis(svg);
+      document.querySelector('.productionCurve')?.classList.add('isPending');
       const guide = document.getElementById('consumptionGuideLegend');
       if (guide) guide.hidden = true;
       const monthlySurplus = document.getElementById('monthlySurplusHint');
@@ -325,9 +355,9 @@
       const comparisonNote = document.getElementById('consumptionReferenceNote');
       if (comparisonNote) comparisonNote.textContent = 'La comparaison mensuelle sera disponible après un calcul PVGIS réussi.';
       const yieldNode = document.getElementById('studyYield');
-      if (yieldNode) yieldNode.textContent = 'UNKNOWN';
+      if (yieldNode) yieldNode.textContent = 'Non calculé';
       const annualNode = document.getElementById('studyAnnual');
-      if (annualNode) annualNode.textContent = 'UNKNOWN';
+      if (annualNode) annualNode.textContent = 'Non calculé';
     }
 
     window.addEventListener('ozeno:climate-yield-preview', (event) => renderClimateYieldPreview(event.detail || {}));
@@ -365,18 +395,22 @@
         return label;
       }));
       if (!valid) {
-        if (status) status.textContent = 'Le profil mensuel s’affichera après la saisie ou le tracé d’une surface, ses paramètres et un calcul PVGIS réussi.';
+        if (status) status.textContent = 'Pour afficher les barres, renseignez une surface exploitable et ses paramètres dans Surfaces solaires.';
         return;
       }
+      document.querySelector('.productionCurve')?.classList.remove('isPending');
       const values = monthly.map(Number);
       scale.querySelectorAll('text').forEach((label) => label.setAttribute('x', '126'));
       svg.querySelectorAll('.curveGrid line').forEach((gridline) => gridline.setAttribute('x1', '148'));
       const annualConsumption = window.SolarShiftConsumptionReference?.getAnnualKwh?.() ?? null;
       const averageConsumption = Number.isFinite(annualConsumption) && annualConsumption > 0 ? annualConsumption / 12 : null;
-      const loadProfile = window.SOLARSHIFT_SYNTHETIC_LOAD_PROFILE;
+      const loadProfile = window.SOLARSHIFT_MEASURED_LOAD_PROFILE || window.SOLARSHIFT_SYNTHETIC_LOAD_PROFILE;
       const syntheticMonthly = Array(12).fill(0);
       const monthFormatter = new Intl.DateTimeFormat('en-CA', { month: 'numeric', timeZone: 'Europe/Paris' });
-      if (Array.isArray(loadProfile?.points)) loadProfile.points.forEach((point) => {
+      if (Array.isArray(loadProfile?.monthlyKwh) && loadProfile.monthlyKwh.length === 12) loadProfile.monthlyKwh.forEach((value, index) => {
+        if (Number.isFinite(Number(value)) && Number(value) >= 0) syntheticMonthly[index] = Number(value);
+      });
+      else if (Array.isArray(loadProfile?.points)) loadProfile.points.forEach((point) => {
         const instantValue = point.intervalStart ?? point.start;
         const instant = typeof instantValue === 'number' ? instantValue : Date.parse(instantValue || '');
         const energy = Number(point.kwh ?? point.valueKwh ?? point.value);
@@ -386,6 +420,7 @@
       });
       const hasSyntheticMonthly = syntheticMonthly.some((value) => value > 0);
       const displayedLoad = hasSyntheticMonthly ? syntheticMonthly : null;
+      const measuredProfile = loadProfile === window.SOLARSHIFT_MEASURED_LOAD_PROFILE || /REAL|MEASURED/i.test(String(loadProfile?.sourceType || loadProfile?.kind || ''));
       const max = Math.max(...values, ...(displayedLoad || []), averageConsumption || 0, 1);
       scale.querySelectorAll('text').forEach((label, index) => {
         label.textContent = `${Math.round(max * (4 - index) / 4).toLocaleString('fr-FR')} kWh`;
@@ -420,7 +455,7 @@
           loadBar.dataset.estimate = String(Math.round(loadValue).toLocaleString('fr-FR'));
           loadBar.setAttribute('tabindex', '0');
           const loadDescription = displayedLoad
-            ? `Profil Enedis synthétique ${loadProfile.id}`
+            ? `${measuredProfile ? 'Profil Enedis réel' : 'Profil Enedis synthétique'} ${loadProfile.id || ''}`.trim()
             : 'Repère moyen de consommation annuelle divisée par douze';
           loadBar.setAttribute('aria-label', `${months[index]} · ${loadDescription} · ${loadBar.dataset.estimate} kWh`);
           loadBar.setAttribute('title', `${months[index]} · ${loadDescription} · ${loadBar.dataset.estimate} kWh`);
@@ -432,11 +467,13 @@
       const consumptionLine = document.getElementById('profileConsumption');
       const consumptionLegend = document.getElementById('consumptionGuideLegend');
       consumptionLine?.classList.toggle('isSyntheticProfile', Boolean(displayedLoad));
+      consumptionLine?.classList.toggle('isMeasuredProfile', Boolean(displayedLoad && measuredProfile));
       consumptionLegend?.querySelector('.legendConsumption')?.classList.toggle('isSyntheticProfile', Boolean(displayedLoad));
+      consumptionLegend?.querySelector('.legendConsumption')?.classList.toggle('isMeasuredProfile', Boolean(displayedLoad && measuredProfile));
       if (consumptionLegend) {
         consumptionLegend.hidden = !displayedLoad && averageConsumption == null;
         if (displayedLoad) {
-          consumptionLegend.lastChild.textContent = `Profil Enedis synthétique ${loadProfile.id} · répartition mensuelle`;
+          consumptionLegend.lastChild.textContent = `${measuredProfile ? 'Profil Enedis réel' : 'Profil Enedis synthétique'}${loadProfile.id ? ` ${loadProfile.id}` : ''} · répartition mensuelle`;
         } else if (averageConsumption != null) {
           const source = document.getElementById('cons')?.dataset.referenceSource || 'consommation renseignée';
           consumptionLegend.lastChild.textContent = `${source} · repère moyen ${Math.round(averageConsumption).toLocaleString('fr-FR')} kWh/mois (annuel ÷ 12)`;
@@ -444,7 +481,7 @@
       }
       const comparisonNote = document.getElementById('consumptionReferenceNote');
       if (comparisonNote) comparisonNote.textContent = displayedLoad
-        ? 'Les barres groupées comparent production PVGIS et profil de consommation synthétique, mois par mois. Le profil Enedis est fictif : il ne représente ni le compteur ni la consommation vérifiée de ce site.'
+        ? `Les barres groupées comparent la production PVGIS et un profil Enedis ${measuredProfile ? 'réel associé aux données disponibles' : 'synthétique'} mois par mois. Le profil synthétique ne représente pas le compteur du site ; les barres ne démontrent pas la coïncidence horaire.`
         : 'Les barres violettes sont un simple repère moyen (consommation annuelle ÷ 12), pas un profil réel. Les barres groupées ne démontrent pas le surplus revendable ni la coïncidence ACI/ACC.';
       const monthlySurplus = document.getElementById('monthlySurplusHint');
       if (monthlySurplus) {
@@ -461,10 +498,10 @@
       }
       const specificYield = Number(preview.specificYieldKwhKwp);
       const yieldNode = document.getElementById('studyYield');
-      if (yieldNode) yieldNode.textContent = Number.isFinite(specificYield) ? `${Math.round(specificYield).toLocaleString('fr-FR')} kWh/kWc/an` : 'UNKNOWN';
+      if (yieldNode) yieldNode.textContent = Number.isFinite(specificYield) ? `${Math.round(specificYield).toLocaleString('fr-FR')} kWh/kWc/an` : 'Non calculé';
       const annualNode = document.getElementById('studyAnnual');
       const annual = Number(preview.annualKwh);
-      if (annualNode) annualNode.textContent = Number.isFinite(annual) && annual > 0 ? `${Math.round(annual).toLocaleString('fr-FR')} kWh/an` : 'UNKNOWN';
+      if (annualNode) annualNode.textContent = Number.isFinite(annual) && annual > 0 ? `${Math.round(annual).toLocaleString('fr-FR')} kWh/an` : 'Non calculé';
       const capacityNode = document.getElementById('studyCapacity');
       const capacity = Number(preview.installedCapacityKwp);
       if (capacityNode) capacityNode.textContent = Number.isFinite(capacity) && capacity > 0 ? `${capacity.toLocaleString('fr-FR')} kWc` : 'À dimensionner';
@@ -502,7 +539,7 @@
     const card = document.createElement('section');
     card.className = 'card productionStudy';
     card.id = 'audit-production';
-    card.innerHTML = `<div class="sectionTitle"><h2>Profil mensuel et références</h2><span class="pill">APERÇU · NON CANONIQUE</span></div><p class="hint">Profil mensuel estimatif PVGIS · le rendement spécifique est exprimé en kWh/kWc/an.</p><div class="metrics"><div class="metric"><b>Rendement spécifique estimé</b><span id="studyYield">À calculer</span><small>kWh/kWc/an · PVGIS</small></div></div><div id="productionConsumptionPanel" class="productionConsumptionPanel"></div><h3>Profil mensuel estimé</h3><div class="monthlyProfile" aria-label="Profil mensuel estimatif PVGIS">${barsMarkup()}</div><p class="fine">Survolez une barre pour afficher la valeur mensuelle estimée. Le profil dépend des paramètres de pré-analyse.</p><div class="status"><b>Statut :</b> estimation PVGIS indicative, calculée selon les paramètres de pré-analyse.</div>`;
+    card.innerHTML = `<div class="sectionTitle"><h2>Profil mensuel et références</h2><span class="pill">APERÇU · NON CANONIQUE</span></div><p class="hint">Profil mensuel estimatif PVGIS · le rendement spécifique est exprimé en kWh/kWc/an.</p><div class="metrics"><div class="metric"><b>Rendement spécifique estimé</b><span id="studyYield">À calculer</span><small>kWh/kWc/an · PVGIS</small></div></div><div id="productionConsumptionPanel" class="productionConsumptionPanel"></div><h3>Profil de charge mensuel estimé</h3><div class="monthlyProfile" aria-label="Profil de charge mensuel estimatif PVGIS">${barsMarkup()}</div><p class="fine">Survolez une barre pour afficher la valeur mensuelle estimée. Le profil dépend des paramètres de pré-analyse.</p><div class="status"><b>Statut :</b> estimation PVGIS indicative, calculée selon les paramètres de pré-analyse.</div>`;
     anchor.insertAdjacentElement('afterend', card);
     enhanceCommercialPreAnalysis(card);
     update();
@@ -513,9 +550,9 @@
   else boot();
 }());
 
-['installer-commission.js', 'installation-cost-reference.js', 'roof-surfaces.js', 'annual-allocation.js', 'financial-assumptions.js', 'equity-cashflow.js', 'finance-controls.js', 'summary-ux.js', 'risk-ux.js', 'commercial-ux.js', 'efficiency-impact-ux.js', 'ozeno-theme.js', 'building-energy-prestudy.js', 'prestudy-chapters.js', 'prestudy-shell.js', 'project-hub.js'].forEach((file) => {
+['installer-commission.js', 'installation-cost-reference.js', 'roof-surfaces.js', 'annual-allocation.js', 'financial-assumptions.js', 'equity-cashflow.js', 'finance-controls.js', 'summary-ux.js', 'risk-ux.js', 'commercial-ux.js', 'efficiency-impact-ux.js', 'ozeno-theme.js', 'prestudy-chapters.js', 'prestudy-funding.js', 'prestudy-shell.js', 'project-hub.js'].forEach((file) => {
   const script = document.createElement('script');
-  script.src = `./${file}?v=20261111-envelope-heating`;
+  script.src = `./${file}?v=20261116-location-prospecting-fixes-2`;
   script.async = false;
   document.head.appendChild(script);
 });

@@ -1,9 +1,10 @@
 import { hasHouseNumber, normalizeSiteAddressSuggestion, siteAddressAutocompleteUrl } from './site-address.mjs';
 import { CR010_SIZING_VERSION, estimateSolarCapacity, PRO_SIMULATOR_TILT_ANGLES, solarRoofPlanes } from './pro-simulator-estimation.mjs?v=20261012-7';
-import { installRoofMapInteractions } from './roof-map-interactions.mjs?v=20261012-9';
+import { installRoofMapInteractions } from './simulator-roof-map-interactions.mjs';
 import { projectTimingLabel, paybackWindow, carbonEquivalenceKm, formatGainRange } from './simulator-presentation.mjs?v=20261012-8';
 import { requestSolarPreview } from './solar-preview-request.mjs?v=20261012-7';
 import { resolveAnnualConsumption, resolveBuildingConsumptionBenchmark, resolveElectricityPrice, resolvePowerBand } from './prestudy-building-benchmarks.mjs';
+import { ownerFinancialView } from './simulator-financial-view.mjs';
 import { findInvalidControl, qualificationErrorMessage } from './simulator-validation.mjs';
 
 const $ = (id) => document.getElementById(id);
@@ -187,7 +188,12 @@ function updateProjectSummary() {
   updateRoofPreviews();
 }
 
+function updateWarehouseSubtypeHint() {
+  const choice=$('warehouseSubtype').value;
+  $('warehouseSubtypeHint').textContent={cold:'Le profil frigorifique sera utilisé pour estimer la consommation, à confirmer sur facture.',dry:'Le profil entrepôt sec sera utilisé, à confirmer sur facture.',unknown:'Le sous-type reste à préciser ; aucune consommation réelle n’est déduite.'}[choice]||'';
+}
 function updateBenchmarkContext() {
+  updateWarehouseSubtypeHint();
   const isBuilding = selected('siteKind')?.value === 'building';
   const buildingUse = selected('buildingUse')?.value;
   $('warehouseSubtypeLabel').hidden = !isBuilding || buildingUse !== 'logistics';
@@ -306,8 +312,18 @@ function initRoofMap() {
     const plan = window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap', maxZoom: 19
     });
+    let satelliteTileErrors = 0;
+    satellite.on('tileerror', () => {
+      satelliteTileErrors += 1;
+      if (satelliteTileErrors < 3 || !roofMap.hasLayer(satellite)) return;
+      roofMap.removeLayer(satellite);
+      plan.addTo(roofMap);
+      const status = $('roofMapTileStatus');
+      status.textContent = 'Le fond satellite ne se charge pas complètement. Le plan OpenStreetMap a été activé ; vous pouvez réessayer Satellite avec le sélecteur.';
+      status.hidden = false;
+    });
     satellite.addTo(roofMap);
-    window.L.control.layers({ Satellite: satellite, Plan: plan }, null, { position: 'topright' }).addTo(roofMap);
+    window.L.control.layers({ Satellite: satellite, Plan: plan }, null, { position: 'topright', collapsed: false }).addTo(roofMap);
     roofMapShapes = window.L.featureGroup().addTo(roofMap);
     roofDrawControl = new window.L.Control.Draw({
       position: 'topleft',
@@ -614,8 +630,16 @@ function validateStepFour() {
   group?.classList.toggle('isMissing', !choice);
   $('usageError').hidden = Boolean(choice);
   if (!choice) {
+    $('usageError').textContent = 'Choisissez un usage pour afficher votre synthèse.';
     group?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'center' });
     group?.querySelector('input[name="usageMode"]')?.focus({ preventScroll: true });
+    return false;
+  }
+  const invalid=findInvalidControl(form.querySelector('[data-step="4"]'));
+  if(invalid){
+    $('usageError').textContent=qualificationErrorMessage(invalid);
+    $('usageError').hidden=false;
+    invalid.focus();
     return false;
   }
   return true;
@@ -656,7 +680,7 @@ function buildEstimateInput() {
   const benchmarkPrice = resolveElectricityPrice({ selectedBand: power.band });
   const aciAvoidablePrice = benchmarkPrice.aciAvoidableCorridorEurPerKwh?.ref ?? null;
   $('consumptionBenchmarkNote').textContent = consumption.status === 'ASSUMPTION'
-    ? 'Consommation estimée selon l’activité et l’emprise au sol mesurée sur la carte, à confirmer sur facture. Les étages ne sont pas pris en compte.'
+    ? 'Consommation estimée selon l’activité et l’emprise au sol mesurée sur la carte, à confirmer sur facture. Les étages ne sont pas pris en compte : ce n’est pas la surface de plancher.'
     : 'La consommation déclarée reste prioritaire. Sans saisie, une activité et le contour cartographique permettent une estimation indicative.';
   $('powerBenchmarkNote').textContent = power.status === 'ASSUMPTION'
     ? `Tranche proposée selon le type de bâtiment : ${power.band.replaceAll('_', ' ')} · estimation à confirmer sur facture.`
@@ -717,7 +741,7 @@ function apiUrl(input, optimal = false, orientation = input.orientation) {
       ...(input.buildingUse ? { building_use: input.buildingUse } : {}),
       ...(input.externalSurfaceType ? { external_surface_type: input.externalSurfaceType } : {}),
       ...(input.annualConsumption != null ? { annual_consumption_kwh: input.annualConsumption } : {}),
-      financial_model_version: '2026-10-12.1',
+      financial_model_version: window.SolarShiftCompleteFinancialPolicy?.modelVersion || 'OZENO-FULL-2026-11-16.1',
       ...(input.aciAvoidablePriceCorridor ? {
         avoided_electricity_price_low_eur_kwh: input.aciAvoidablePriceCorridor.low,
         avoided_electricity_price_high_eur_kwh: input.aciAvoidablePriceCorridor.high
@@ -733,9 +757,50 @@ async function requestPvgis(input, signal, optimal = false, orientation = input.
     onRetry: () => { $('resultStatus').textContent = 'Le service solaire est momentanément occupé. Nouvelle tentative automatique…'; }
   });
 }
+function renderOwnerProjectionChart(projection) {
+  const target = $('simProjectionChart');
+  target.replaceChildren();
+  const rows = projection?.projection;
+  if (!Array.isArray(rows) || rows.length < 2 || rows.some((row) => !Number.isFinite(Number(row.cumulativeNetCashflowEur)))) {
+    target.hidden = true;
+    target.setAttribute('aria-label', 'Projection propriétaire indisponible');
+    return;
+  }
+  const width = 720, height = 190, left = 54, right = 14, top = 14, bottom = 30;
+  const values = rows.map((row) => Number(row.cumulativeNetCashflowEur));
+  const minimum = Math.min(0, ...values), maximum = Math.max(0, ...values);
+  const span = maximum - minimum || 1;
+  const x = (year) => left + year / (rows.length - 1) * (width - left - right);
+  const y = (value) => top + (maximum - value) / span * (height - top - bottom);
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+  svg.setAttribute('preserveAspectRatio', 'none');
+  svg.setAttribute('aria-hidden', 'true');
+  const zero = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  zero.setAttribute('x1', String(left)); zero.setAttribute('x2', String(width - right));
+  zero.setAttribute('y1', String(y(0))); zero.setAttribute('y2', String(y(0)));
+  zero.setAttribute('stroke', '#b7c9bf'); zero.setAttribute('stroke-dasharray', '4 4');
+  svg.append(zero);
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d', values.map((value, index) => `${index ? 'L' : 'M'} ${x(index).toFixed(1)} ${y(value).toFixed(1)}`).join(' '));
+  path.setAttribute('fill', 'none'); path.setAttribute('stroke', '#087957'); path.setAttribute('stroke-width', '3');
+  path.setAttribute('stroke-linecap', 'round'); path.setAttribute('stroke-linejoin', 'round');
+  svg.append(path);
+  for (const year of [0, 5, 10, 15, 20, 25].filter((value) => value < rows.length)) {
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x', String(x(year))); label.setAttribute('y', String(height - 8));
+    label.setAttribute('text-anchor', year === 0 ? 'start' : year === 25 ? 'end' : 'middle');
+    label.setAttribute('fill', '#6d8190'); label.setAttribute('font-size', '11'); label.textContent = `${year} an`;
+    svg.append(label);
+  }
+  const checkpoints = [0, 5, 10, 15, 20, 25].filter((year) => year < rows.length);
+  target.setAttribute('aria-label', `Flux nets cumulés avant IS, en euros : ${checkpoints.map((year) => `année ${year}, ${numberFormat(values[year])} euros`).join('; ')}.`);
+  target.append(svg);
+  target.hidden = false;
+}
 function renderResult(input, production = null) {
   const annual = production && input.referenceKwp != null ? Number(production.annual_kwh_kwc) * input.referenceKwp * input.shadeFactor : null;
-  const carbonIntensityGPerKwh = 19.6; // RTE, Bilan électrique 2025: émissions directes moyennes de production.
+  const financial = ownerFinancialView(production?.financial_preview);
   $('resultLocation').textContent = input.address.label;
   $('resultTiming').textContent = `Calendrier souhaité : ${projectTimingLabel(input.projectTiming)} · information déclarative.`;
   $('resultStatus').hidden = Boolean(production);
@@ -765,14 +830,20 @@ function renderResult(input, production = null) {
   const budgetReference = budgetReady
     ? `${numberFormat(Math.round(budget.referenceEur))} € · ${numberFormat(budget.referenceEurPerKwp)} €/kWc`
     : production ? 'À préciser' : 'En attente';
-  $('resultInvestmentRange').textContent = budgetReady
+  const ownerCapexKnown=typeof financial?.capexEur==='number'&&Number.isFinite(financial.capexEur)&&financial.capexEur>0;
+  $('resultInvestmentLabel').textContent=ownerCapexKnown?'Investissement estimé · CAPEX':'Installation seule · estimation';
+  $('resultInvestmentRange').textContent = ownerCapexKnown
+    ? `${numberFormat(Math.round(financial.capexEur / 1000))} k€`
+    : budgetReady
     ? `${numberFormat(Math.round(budget.referenceEur / 1000))} k€`
     : production ? 'À préciser' : 'En attente';
-  $('resultInvestmentRange').classList.toggle('simPendingValue', !budgetReady);
-  $('resultInvestmentNote').textContent = budgetReady
+  $('resultInvestmentRange').classList.toggle('simPendingValue', !ownerCapexKnown&&!budgetReady);
+  $('resultInvestmentNote').textContent = ownerCapexKnown
+    ? 'CAPEX du calcul serveur · hors honoraires OZENO · à confirmer par devis'
+    : budgetReady
     ? `Référence indicative : ${numberFormat(budget.referenceEurPerKwp)} €/kWc · à confirmer par devis`
     : 'Tarif de référence moyen · à confirmer par devis';
-  $('resultFinancialCapex').textContent = budgetReady ? budgetReference : 'À préciser';
+  $('resultFinancialCapex').textContent = ownerCapexKnown?`${numberFormat(financial.capexEur)} € · investissement direct hors honoraires OZENO`:budgetReady?budgetReference:'À préciser';
   $('resultUsableArea').textContent = `${numberFormat(input.usableArea)} m²`;
   const buildingLabels = { offices: 'Bureaux & tertiaire', logistics: 'Stockage & logistique', industry: 'Industrie & atelier', retail: 'Commerce & grande surface', public: 'Équipement public', other: 'Autre bâtiment professionnel' };
   const externalSurfaceLabels = { parking: 'Parking', terrain: 'Terrain', agriculture: 'Surface agricole' };
@@ -785,10 +856,14 @@ function renderResult(input, production = null) {
     : `${nearestCompassLabel(input.orientation)}${input.orientationSource === 'map-trace' ? ' · repérée sur la carte' : ' · hypothèse par défaut'}`;
   $('resultShade').textContent = input.shade === 'none' ? 'Aucun ou très faible · hypothèse' : input.shade === 'some' ? 'Quelques ombres · hypothèse' : input.shade === 'high' ? 'Ombres importantes · hypothèse' : 'À compléter';
   $('resultSpecificYield').textContent = production && input.siteKind !== 'land'
-    ? `${numberFormat(Number(production.annual_kwh_kwc) * input.shadeFactor)} kWh/kWc/an · estimation indicative`
+    ? `${numberFormat(Number(production.annual_kwh_kwc) * input.shadeFactor)} kWh/kWc/an · estimation PVGIS`
     : 'À calculer / qualifier';
-  const financial = production?.financial_preview;
   const financialReady = financial?.status === 'ASSUMPTION';
+  renderOwnerProjectionChart(production?.financial_preview?.ownerProjection ?? null);
+  $('resultGrossArea').textContent = `${numberFormat(input.grossArea)} m²`;
+  $('resultGrossAreaLabel').textContent = input.siteKind === 'land' ? 'Surface extérieure mesurée sur la carte' : 'Emprise au sol du bâtiment mesurée sur la carte';
+  $('resultUsableAssumption').textContent = `${numberFormat(input.usablePercent)} % de la surface totale · hypothèse modifiable`;
+  $('resultIrrNote').textContent = financialReady ? 'Projection propriétaire avant IS, sans dette ni honoraires OZENO.' : financial?.reason === 'FULL_SALE_PRICE_REQUIRED' ? 'Prix de vente totale à confirmer.' : financial?.reason === 'FULL_ACC_PRICE_REQUIRED' ? 'Prix de vente ACC à confirmer.' : 'Hypothèses de consommation et de valorisation à préciser.';
   const lcoe = Number(financial?.lcoeEurPerKwh);
   $('resultSolarKwhCost').textContent = Number.isFinite(lcoe) && lcoe > 0 ? `${numberFormat(lcoe, 3)} €/kWh` : 'À préciser';
   $('resultSolarKwhCost').classList.toggle('simPendingValue', !(Number.isFinite(lcoe) && lcoe > 0));
@@ -810,7 +885,7 @@ function renderResult(input, production = null) {
       ? `${numberFormat(financial.annualAllocation.potentialAccKwh)} kWh/an · potentiel à valoriser`
       : 'À préciser : consommation annuelle requise';
   const annualOpex = financial?.annualOpexYear1Eur;
-  $('resultAnnualOpex').textContent = annualOpex != null && Number.isFinite(Number(annualOpex)) ? `${numberFormat(Number(annualOpex))} €/an · estimation` : 'À préciser';
+  $('resultAnnualOpex').textContent = annualOpex != null && Number.isFinite(Number(annualOpex)) ? `${numberFormat(Number(annualOpex))} €/an · maintenance + assurance` : 'À préciser';
   const allocation = financial?.annualAllocation;
   const aciKwh = allocation?.aciCeilingKwh;
   const accKwh = allocation?.potentialAccKwh;
@@ -861,12 +936,14 @@ function renderResult(input, production = null) {
   }
   $('resultSurplus').textContent = surplusKwh != null
     ? `${numberFormat(surplusKwh / 1000, 1)} MWh/an (${numberFormat(surplusKwh / annual * 100, 0)} % de la production) · potentiel` : 'À préciser';
-  const carbonTonnes = annual != null && Number.isFinite(annual) ? annual * carbonIntensityGPerKwh / 1_000_000 : null;
+  const serverCarbon = production?.carbon_impact?.avoidedCo2eTonnesYear;
+  const carbonTonnes = typeof serverCarbon === 'number' && Number.isFinite(serverCarbon) ? serverCarbon : null;
   $('resultAnnualCarbon').textContent = carbonTonnes != null ? `${numberFormat(carbonTonnes, 1)} tCO₂e/an` : 'À préciser';
   $('resultAnnualCarbon').classList.toggle('simPendingValue', carbonTonnes == null);
   const equivalentKm = carbonEquivalenceKm(carbonTonnes);
   $('resultCarbonKm').textContent = equivalentKm == null ? 'À préciser' : `${numberFormat(equivalentKm)} km`;
-  $('resultCarbonNote').textContent = 'Ordre de grandeur indicatif, sans bilan carbone détaillé ni prise en compte du cycle de vie de l’installation.';
+  const carbonFactor=production?.carbon_impact?.carbonFactor;
+  $('resultCarbonNote').textContent = carbonFactor ? `${carbonFactor.source} ${carbonFactor.reference_year} · ${numberFormat(carbonFactor.value)} gCO₂e/kWh · ordre de grandeur, sans bilan ACV.` : 'Méthode carbone à préciser ; aucune émission évitée n’est inventée.';
   $('resultProjectionTitle').textContent = financialReady ? 'Projection propriétaire indicative disponible' : 'Votre rentabilité reste à préciser';
   $('resultProjectionSummary').textContent = financialReady
     ? `Scénario central : gain net estimé après CAPEX de ${formatGainRange(netGainCentral)} sur 25 ans. Projection indicative, avant impôts et à confirmer sur facture et devis ; l’ACC reste un potentiel sans contrat confirmé.`
@@ -923,7 +1000,7 @@ function renderResult(input, production = null) {
   $('resultRoofType').textContent = input.siteKind === 'land'
     ? `Type de surface : ${(externalSurfaceLabels[input.externalSurfaceType] || 'surface extérieure').toLowerCase()} · installation envisagée : ${(externalInstallationLabels[input.externalSurfaceType] || 'à préciser').toLowerCase()}.`
     : `Bâtiment : ${{ flat: 'toit plat', pitched: 'toiture inclinée' }[input.roofType] || 'à compléter'}.`;
-  $('resultUsage').textContent = `Usage envisagé : ${{ 'self-consumption': 'autoconsommation', 'full-sale': 'vente totale', undecided: 'non décidé' }[input.usageMode] || 'à compléter'} · qualification indicative uniquement.`;
+  $('resultUsage').textContent = `Usage envisagé : ${{ 'self-consumption': 'autoconsommation', 'full-sale': 'vente totale au réseau', 'full-sale-acc': 'vente de 100 % en ACC', undecided: 'à préciser' }[input.usageMode] || 'à compléter'} · qualification indicative uniquement.`;
   updateRoofPreviews();
   $('simUnsupportedResult').hidden = input.supported;
 }
@@ -949,7 +1026,7 @@ async function requestPublicFundingHint(input) {
     subtitle: 'Le repérage est indisponible pour le moment. Les aides dépendent du site, du bénéficiaire et des règles du financeur.'
   };
   title.textContent = 'Recherche indicative en cours…';
-  subtitle.textContent = 'Cette recherche ne modifie pas les estimations financières.';
+  subtitle.textContent = 'Cette vérification ne modifie pas les estimations financières.';
   leads.hidden = true;
   leads.textContent = '';
   const endpoint = window.SOLARSHIFT_CONFIG?.publicFundingHintEndpoint;
@@ -1035,7 +1112,7 @@ async function calculate(event) {
   const updateCalculationStatus = () => {
     if (controller.signal.aborted || calculationController !== controller) return;
     const elapsedSeconds = Math.floor((Date.now() - calculationStartedAt) / 1000);
-    $('resultStatus').textContent = `Calcul solaire en cours… (${elapsedSeconds} s)`;
+    $('resultStatus').textContent = `Calcul PVGIS en cours… (${elapsedSeconds} s)`;
   };
   updateCalculationStatus();
   calculationTimer = window.setInterval(updateCalculationStatus, 1000);

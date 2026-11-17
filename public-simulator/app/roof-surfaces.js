@@ -35,6 +35,14 @@
   const flatAngles = { ...angles };
   const shadeFactors = { 'Aucune ou très faible': 1, 'Quelques ombres': .92, 'Ombres importantes': .75 };
   const extraSurfaceTypes = [['PARKING_CANOPY', 'Ombrière'], ['GROUND_MOUNTED', 'Installation au sol'], ['BUILDING_FACADE', 'Façade'], ['FLOATING', 'Installation flottante'], ['AGRIVOLTAIC', 'Agrivoltaïsme'], ['OTHER', 'Autre surface']];
+  const siteNatureGroups = [
+    ['Bâtiments professionnels', [
+      ['OFFICES', 'Bureaux et tertiaire'], ['LOGISTICS', 'Stockage et logistique'], ['INDUSTRY', 'Industrie et atelier'],
+      ['RETAIL', 'Commerce et grande surface'], ['PUBLIC', 'Équipement public'], ['OTHER_BUILDING', 'Autre bâtiment professionnel']
+    ]],
+    ['Surfaces extérieures', [['PARKING', 'Parking'], ['TERRAIN', 'Terrain'], ['AGRICULTURE', 'Terrain agricole']]]
+  ];
+  const siteNatureValues = new Set(siteNatureGroups.flatMap(([, values]) => values.map(([value]) => value)));
   const cr010SizingRules = Object.freeze({
     version: 'CR-010-V2.1',
     roof: Object.freeze({
@@ -109,7 +117,7 @@
   let zoneEditSession = null;
   let cr013Confirmed = false;
   let cr013BufferAreaM2 = null;
-  let manualSurfaceConfiguration = { type: '', material: '', flatTilt: '', manualDensityWcM2: '' };
+  let manualSurfaceConfiguration = { siteNature: '', type: '', material: '', flatTilt: '', manualDensityWcM2: '' };
   let updatingMeasuredSurface = false;
   let activeProjectContext = '';
   let orientationPicker = null;
@@ -241,9 +249,10 @@
   function azimuthField(label, key, value, id) {
     const numeric = normalizeAzimuth(value);
     const mapAction = numeric == null ? 'Tracer sur la carte' : 'Modifier sur la carte';
+    const clearAction = numeric == null ? '' : `<button type="button" class="roofClearAzimuth" data-roof-clear-azimuth="${key}" data-roof-id="${id}" aria-label="Effacer ${label.toLowerCase()}" title="Effacer l’orientation">Effacer</button>`;
     const tooltipId = `roofAzimuthHelp-${id}-${key}`;
     const help = label.includes('pan') ? roofOrientationHelp : 'Azimut des panneaux : 0° = nord, 90° = est, 180° = sud, 270° = ouest. Pour le mesurer sur la carte, cliquez deux fois dans le sens prévu des panneaux.';
-    return `<label class="roofAzimuthField"><span class="roofAzimuthLabelRow"><span class="roofAzimuthLabelText">${label}</span><span class="roofAzimuthHelp"><button type="button" class="roofAzimuthHelpButton" aria-label="Afficher l’aide sur l’orientation" aria-expanded="false" aria-describedby="${tooltipId}">i</button><span class="roofAzimuthHelpBubble" id="${tooltipId}" role="tooltip">${help}</span></span></span><div class="roofAzimuthControl"><input type="number" min="0" max="359" step="1" placeholder="0–359°" data-roof-field="${key}" value="${numeric ?? ''}" aria-label="${label} en degrés depuis le nord"><button type="button" class="roofPickAzimuth" data-roof-pick="${key}" data-roof-id="${id}">${mapAction}</button></div></label>`;
+    return `<label class="roofAzimuthField"><span class="roofAzimuthLabelRow"><span class="roofAzimuthLabelText">${label}</span><span class="roofAzimuthHelp"><button type="button" class="roofAzimuthHelpButton" aria-label="Afficher l’aide sur l’orientation" aria-expanded="false" aria-describedby="${tooltipId}">i</button><span class="roofAzimuthHelpBubble" id="${tooltipId}" role="tooltip">${help}</span></span></span><div class="roofAzimuthControl"><input type="number" min="0" max="359" step="1" placeholder="0–359°" data-roof-field="${key}" value="${numeric ?? ''}" aria-label="${label} en degrés depuis le nord"><button type="button" class="roofPickAzimuth" data-roof-pick="${key}" data-roof-id="${id}">${mapAction}</button>${clearAction}</div></label>`;
   }
 
   function area(layer) {
@@ -600,8 +609,9 @@
     window.dispatchEvent(new CustomEvent('ozeno:roof-surfaces'));
   }
 
-  function selectOptions(values, selected) {
-    return values.map((value) => `<option${value === selected ? ' selected' : ''}>${value}</option>`).join('');
+  function selectOptions(values, selected, blankLabel = '') {
+    const blank = blankLabel ? `<option value=""${selected ? '' : ' selected'}>${blankLabel}</option>` : '';
+    return blank + values.map((value) => `<option${value === selected ? ' selected' : ''}>${value}</option>`).join('');
   }
 
   function isConfigured(config) {
@@ -646,6 +656,8 @@
     const host = document.getElementById('roofSurfaceCards') || document.getElementById('roofSurfaces');
     if (!host) return;
     const current = layers();
+    const buildingCondition = document.getElementById('roof')?.closest('label');
+    if (buildingCondition && host.contains(buildingCondition)) buildingCondition.remove();
     const activeIds = new Set(current.map((layer) => L.stamp(layer)));
     [...configurations.keys()].filter((id) => !activeIds.has(id)).forEach((id) => {
       clearOrientationMark(`${id}:orientation`);
@@ -678,17 +690,19 @@
       config.orientation = normalizeAzimuth(config.orientation) ?? '';
       config.orientation2 = normalizeAzimuth(config.orientation2) ?? '';
     });
-    host.innerHTML = `<div class="roofSurfaceHeader"><b>Surfaces de toiture · aperçu</b></div>` +
+    host.innerHTML = `<div class="roofSurfaceHeader"><b>Zones d’implantation · aperçu</b></div>` +
       (current.length ? `<div class="roofSurfaceList">${current.map((layer, index) => {
         const id = L.stamp(layer), config = configurations.get(id);
         const twoPans = config.type === 'PITCHED' && Number(config.panCount) === 2;
-        return `<article class="roofSurface" data-roof-id="${id}"><div class="roofSurfaceTitle"><b>Toiture ${index + 1} · ${area(layer).toLocaleString('fr-FR')} m² estimés</b><div class="roofSurfaceActions"><button type="button" class="roofEdit" data-edit-roof="${id}" aria-label="Corriger le contour de la toiture ${index + 1}" title="Corriger le contour"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 16.5-.5 4 4-.5L18.8 8.7l-3.5-3.5L4 16.5Zm16.2-9.2a1 1 0 0 0 0-1.4l-2.1-2.1a1 1 0 0 0-1.4 0l-1 1 3.5 3.5 1-1Z"/></svg></button><button type="button" class="roofDelete" data-delete-roof="${id}" aria-label="Supprimer la toiture ${index + 1}" title="Supprimer cette surface"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-2 6h10l-1 11H8L7 9Zm3 2v7h2v-7h-2Zm4 0v7h2v-7h-2Z"/></svg></button></div></div><div class="form"><label>Type<select data-roof-field="type"><option value="PITCHED"${config.type === 'PITCHED' ? ' selected' : ''}>Toiture inclinée</option><option value="FLAT"${config.type === 'FLAT' ? ' selected' : ''}>Toit plat</option></select></label>${['PITCHED', 'FLAT'].includes(config.type) ? `<label>Matériau de couverture<select data-roof-field="material"><option value="">Je ne sais pas encore</option>${roofMaterials.map((material) => `<option value="${material}"${config.material === material ? ' selected' : ''}>${material}</option>`).join('')}</select><small class="fine">Repère chantier facultatif · sans effet sur PVGIS.</small></label>` : ''}${config.type === 'PITCHED' ? `<label>Nombre de pans<select data-roof-field="panCount"><option value="1"${!twoPans ? ' selected' : ''}>1 pan</option><option value="2"${twoPans ? ' selected' : ''}>2 pans</option></select></label>${azimuthField(twoPans ? 'Orientation pan 1 (° depuis le nord)' : 'Orientation du pan (° depuis le nord)', 'orientation', config.orientation, id)}${twoPans ? azimuthField('Orientation pan 2 (° depuis le nord)', 'orientation2', config.orientation2, id) : ''}<label class="roofPitch">Pente<select data-roof-field="pitch">${selectOptions(pitches, config.pitch)}</select></label>` : ''}<label><span class="roofFieldLabel">Ombrage local estimé <span class="roofFieldHelp" tabindex="0" title="Les obstacles proches de la toiture peuvent créer de l’ombre. Ce choix ne décrit pas l’horizon du terrain.">i</span></span><select data-roof-field="shade">${selectOptions(shades, config.shade)}</select></label></div>${config.type === 'PITCHED' ? `<div class="roofAzimuthProposal"><button type="button" class="roofProposeAzimuth" data-propose-roof-azimuth="${id}">Proposer depuis le contour</button><span class="fine">Proposition géométrique à confirmer ; le contour ne révèle pas à lui seul le sens du pan.</span><div class="roofAzimuthChoices" data-roof-azimuth-choices hidden></div></div>` : ''}<p class="fine roofSurfaceHelp">${config.type === 'FLAT' ? '' : twoPans ? `Surface indicative par pan : ${Math.round(area(layer) / 2).toLocaleString('fr-FR')} m². Ajustez séparément leurs orientations.` : 'La surface correspond à un seul pan de toiture.'}</p></article>`;
+        return `<article class="roofSurface" data-roof-id="${id}"><div class="roofSurfaceTitle"><b>Zone d’implantation ${index + 1}</b><div class="roofSurfaceActions"><button type="button" class="roofEdit" data-edit-roof="${id}" aria-label="Corriger le contour de la toiture ${index + 1}" title="Corriger le contour"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 16.5-.5 4 4-.5L18.8 8.7l-3.5-3.5L4 16.5Zm16.2-9.2a1 1 0 0 0 0-1.4l-2.1-2.1a1 1 0 0 0-1.4 0l-1 1 3.5 3.5 1-1Z"/></svg></button><button type="button" class="roofDelete" data-delete-roof="${id}" aria-label="Supprimer la surface solaire ${index + 1}" title="Supprimer cette surface"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-2 6h10l-1 11H8L7 9Zm3 2v7h2v-7h-2Zm4 0v7h2v-7h-2Z"/></svg></button></div></div><div class="form"><label>Type d’installation<select data-roof-field="type"><option value="PITCHED"${config.type === 'PITCHED' ? ' selected' : ''}>Toiture inclinée</option><option value="FLAT"${config.type === 'FLAT' ? ' selected' : ''}>Toit plat</option></select></label>${['PITCHED', 'FLAT'].includes(config.type) ? `<label>Matériau de couverture<select data-roof-field="material"><option value="">Je ne sais pas encore</option>${roofMaterials.map((material) => `<option value="${material}"${config.material === material ? ' selected' : ''}>${material}</option>`).join('')}</select><small class="fine">Repère chantier facultatif · sans effet sur PVGIS.</small></label>` : ''}${config.type === 'PITCHED' ? `<label>Nombre de pans<select data-roof-field="panCount"><option value="1"${!twoPans ? ' selected' : ''}>1 pan</option><option value="2"${twoPans ? ' selected' : ''}>2 pans</option></select></label>${azimuthField(twoPans ? 'Orientation pan 1 (° depuis le nord)' : 'Orientation du pan (° depuis le nord)', 'orientation', config.orientation, id)}${twoPans ? azimuthField('Orientation pan 2 (° depuis le nord)', 'orientation2', config.orientation2, id) : ''}<label class="roofPitch">Pente<select data-roof-field="pitch">${selectOptions(pitches, config.pitch, 'À renseigner')}</select></label>` : ''}<label><span class="roofFieldLabel">Ombrage local estimé <span class="roofFieldHelp" tabindex="0" title="Les obstacles proches de la toiture peuvent créer de l’ombre. Ce choix ne décrit pas l’horizon du terrain.">i</span></span><select data-roof-field="shade">${selectOptions(shades, config.shade)}</select></label></div>${config.type === 'PITCHED' ? `<div class="roofAzimuthProposal"><button type="button" class="roofProposeAzimuth" data-propose-roof-azimuth="${id}">Proposer depuis le contour</button><span class="fine">Proposition géométrique à confirmer ; le contour ne révèle pas à lui seul le sens du pan.</span><div class="roofAzimuthChoices" data-roof-azimuth-choices hidden></div></div>` : ''}<p class="fine roofSurfaceHelp">${config.type === 'FLAT' ? '' : twoPans ? `Surface indicative par pan : ${Math.round(area(layer) / 2).toLocaleString('fr-FR')} m². Ajustez séparément leurs orientations.` : 'La surface correspond à un seul pan de toiture.'}</p></article>`;
       }).join('')}</div>` : '<p class="result">Aucune toiture ajoutée. Cliquez sur un bâtiment ou utilisez les outils de dessin sur la carte.</p>');
     current.forEach((layer, index) => {
       const id = L.stamp(layer), config = configurations.get(id);
       const card = host.querySelector(`[data-roof-id="${id}"]`);
       const form = card?.querySelector('.form');
-      card?.querySelector('[data-edit-roof]')?.setAttribute('aria-label', `Corriger le contour de la surface solaire ${index + 1}`);
+        card?.setAttribute('data-roof-type', config.type || '');
+        card?.setAttribute('data-pan-count', config.type === 'PITCHED' ? String(Number(config.panCount) || 1) : '');
+      card?.querySelector('[data-edit-roof]')?.setAttribute('aria-label', `Corriger le contour de la zone d’implantation ${index + 1}`);
       card?.querySelector('[data-delete-roof]')?.setAttribute('aria-label', `Supprimer la surface solaire ${index + 1}`);
       const type = card?.querySelector('[data-roof-field="type"]');
       if (type) {
@@ -708,7 +722,7 @@
         select.insertBefore(option, select.firstChild);
       };
       if (config.type === 'FLAT' && form && !form.querySelector('[data-roof-field="flatTilt"]')) {
-        form.insertAdjacentHTML('beforeend', `${azimuthField('Orientation des supports (° depuis le nord)', 'orientation', config.orientation, id)}<label>Inclinaison des supports<select data-roof-field="flatTilt">${selectOptions(flatTilts, normalizeFlatTilt(config.flatTilt))}</select><small class="fine pvgisTiltCallout" data-pvgis-tilt-advice>Repère PVGIS calculé selon l’orientation, à titre indicatif.</small></label>`);
+        form.insertAdjacentHTML('beforeend', `${azimuthField('Orientation des supports (° depuis le nord)', 'orientation', config.orientation, id)}<label>Inclinaison des supports<select data-roof-field="flatTilt">${selectOptions(flatTilts, normalizeFlatTilt(config.flatTilt), 'À renseigner')}</select><small class="fine pvgisTiltCallout" data-pvgis-tilt-advice>Repère PVGIS calculé selon l’orientation, à titre indicatif.</small></label>`);
       }
       const tiltSelect = form?.querySelector('[data-roof-field="flatTilt"]');
       if (tiltSelect && !tiltSelect.parentElement.querySelector('[data-pvgis-tilt-advice]')) {
@@ -732,14 +746,16 @@
         }
       }
       if (config.type && !['PITCHED', 'FLAT'].includes(config.type) && form && !form.querySelector('[data-roof-field="orientation"]')) {
-        form.insertAdjacentHTML('beforeend', `${azimuthField('Orientation prévue (° depuis le nord)', 'orientation', config.orientation, id)}<label>Inclinaison prévue<select data-roof-field="pitch">${selectOptions(pitches, config.pitch)}</select></label>`);
+        form.insertAdjacentHTML('beforeend', `${azimuthField('Orientation prévue (° depuis le nord)', 'orientation', config.orientation, id)}<label>Inclinaison prévue<select data-roof-field="pitch">${selectOptions(pitches, config.pitch, 'À renseigner')}</select></label>`);
       }
       if (config.type && !['PITCHED', 'FLAT'].includes(config.type) && form && !form.querySelector('[data-roof-field="manualDensityWcM2"]')) {
         const density = Number(config.manualDensityWcM2);
         const value = Number.isFinite(density) && density >= 1 && density <= 1000 ? density : '';
-        form.insertAdjacentHTML('beforeend', `<label>Densité indicative saisie (Wc/m²)<input type="number" min="1" max="1000" step="any" inputmode="decimal" data-roof-field="manualDensityWcM2" value="${value}" placeholder="Valeur à confirmer"><small class="fine">Valeur de travail fournie pour cette surface ; aucune plage de référence n’est inventée.</small></label>`);
+        form.insertAdjacentHTML('beforeend', `<label>Densité issue du calepinage (Wc/m²)<input type="number" min="1" max="1000" step="any" inputmode="decimal" data-roof-field="manualDensityWcM2" value="${value}" placeholder="À renseigner après calepinage"><small class="fine">Aucun repère générique validé pour ce type de surface. Sans densité issue d’un calepinage, la puissance n’est pas estimée.</small></label>`);
       }
       card?.querySelectorAll('[data-roof-field]').forEach((field) => {
+        const gridFieldClass = ({ type: 'roofGridInstallType', material: 'roofGridMaterial', panCount: 'roofGridPanCount', orientation: 'roofGridOrientation1', orientation2: 'roofGridOrientation2', pitch: 'roofGridPitch', flatTilt: 'roofGridFlatTilt', shade: 'roofGridShade', manualDensityWcM2: 'roofGridDensity' })[field.dataset.roofField];
+        if (gridFieldClass) field.closest('label')?.classList.add(gridFieldClass);
         if (field.tagName !== 'SELECT') {
           if (field.dataset.roofField === 'manualDensityWcM2') {
             const density = Number(config.manualDensityWcM2);
@@ -754,11 +770,9 @@
         if (key === 'flatTilt') field.value = normalizeFlatTilt(config.flatTilt);
         if (key === 'orientation' || key === 'orientation2') field.value = normalizeAzimuth(config[key]) ?? '';
       });
-      const title = card?.querySelector('.roofSurfaceTitle b');
-      if (title) title.textContent += isConfigured(config) ? ' · paramètres renseignés' : ' · à compléter';
+      const shadeField = card?.querySelector('[data-roof-field="shade"]');
+      shadeField?.closest('label')?.toggleAttribute('hidden', !config.type);
       const help = card?.querySelector('.roofSurfaceHelp');
-      const surfaceTitle = card?.querySelector('.roofSurfaceTitle b');
-      if (surfaceTitle) surfaceTitle.textContent = surfaceTitle.textContent.replace(/^Toiture /, 'Surface solaire ');
       if (help && !config.type) help.textContent = `Choisissez le type de surface, puis renseignez les caractéristiques connues. La production reste en attente tant que le contour et ses paramètres ne sont pas définis.${roofAzimuthCandidates(layer).length ? ' Axe du contour analysé automatiquement.' : ''}`;
       if (help && config.type === 'FLAT') help.textContent = '';
       if (help && config.type && !isConfigured(config)) help.textContent = `${surfaceTypeLabels[config.type] || (config.type === 'PITCHED' ? 'Toiture inclinée' : 'Surface')} : renseignez orientation et inclinaison${config.type === 'PITCHED' && Number(config.panCount) === 2 ? ' et orientation du second pan' : ''}. L’ombrage est facultatif ; sans donnée, aucune réduction supplémentaire n’est appliquée.`;
@@ -824,9 +838,33 @@
         }
         startOrientationPick({ kind: 'roof', id, field: button.dataset.roofPick, fromRidge: configurations.get(id)?.type === 'PITCHED' }, button);
       }));
+      card.querySelectorAll('[data-roof-clear-azimuth]').forEach((button) => button.addEventListener('click', () => {
+        const field = button.dataset.roofClearAzimuth;
+        const config = configurations.get(id);
+        if (!config || !['orientation', 'orientation2'].includes(field)) return;
+        if (orientationPicker?.target.kind === 'roof' && orientationPicker.target.id === id && orientationPicker.target.field === field) finishOrientationPick();
+        config[field] = '';
+        config[`${field}Source`] = '';
+        clearOrientationMark(`${id}:${field}`);
+        render();
+      }));
       const pitch = card.querySelector('.roofPitch');
       if (pitch) pitch.firstChild.nodeValue = 'Pente du pan';
     });
+    if (buildingCondition && current.length) {
+      buildingCondition.classList.add('roofSurfaceConditionInline');
+      const qualifiedBuildingRoof = !isExteriorSite() && current.find((layer) => ['PITCHED', 'FLAT'].includes(configurations.get(L.stamp(layer))?.type));
+      const destinationLayer = qualifiedBuildingRoof || current[0];
+      buildingCondition.hidden = !qualifiedBuildingRoof;
+      host.querySelector(`[data-roof-id="${L.stamp(destinationLayer)}"] .form`)?.append(buildingCondition);
+    } else if (buildingCondition) {
+      buildingCondition.classList.remove('roofSurfaceConditionInline');
+      buildingCondition.hidden = false;
+      if (!buildingCondition.isConnected) {
+        const destination = document.querySelector('#prestudySurfaceQualification > .prestudyDPanel') || document.querySelector('#manualAreaSettings .form');
+        destination?.append(buildingCondition);
+      }
+    }
     host.querySelectorAll('[data-delete-roof]').forEach((button) => button.addEventListener('click', () => removeSurface(Number(button.dataset.deleteRoof))));
     host.querySelectorAll('[data-edit-roof]').forEach((button) => button.addEventListener('click', () => editSurface(Number(button.dataset.editRoof))));
     window.OzenoRoofSurfaces = { configurations, layers: current, captureDraft, restoreDraft, calculateUsableArea: calculateCr013SolarUsableArea,
@@ -866,15 +904,18 @@
     }
     // Legacy draft zones are deliberately ignored while CR-013 is archived.
     manualSurfaceConfiguration = {
+      siteNature: siteNatureValues.has(snapshot.manualConfiguration?.siteNature) ? snapshot.manualConfiguration.siteNature : '',
       type: ['PITCHED', 'FLAT', ...extraSurfaceTypes.map(([value]) => value)].includes(snapshot.manualConfiguration?.type) ? snapshot.manualConfiguration.type : '',
       material: roofMaterials.includes(snapshot.manualConfiguration?.material) ? snapshot.manualConfiguration.material : '',
       flatTilt: snapshot.manualConfiguration?.flatTilt || '',
       manualDensityWcM2: Number(snapshot.manualConfiguration?.manualDensityWcM2) >= 1 && Number(snapshot.manualConfiguration?.manualDensityWcM2) <= 1000 ? String(snapshot.manualConfiguration.manualDensityWcM2) : ''
     };
+    const siteNature = document.getElementById('siteNature');
     const manualType = document.getElementById('manualRoofType');
     const manualMaterial = document.getElementById('manualRoofMaterial');
     const manualFlatTilt = document.getElementById('manualFlatTilt');
     const manualDensityInput = document.getElementById('manualDensityWcM2');
+    if (siteNature) siteNature.value = manualSurfaceConfiguration.siteNature;
     if (manualType) manualType.value = manualSurfaceConfiguration.type;
     if (manualMaterial) manualMaterial.value = manualSurfaceConfiguration.material;
     if (manualFlatTilt) manualFlatTilt.value = manualSurfaceConfiguration.flatTilt;
@@ -916,6 +957,68 @@
     return inside;
   }
 
+  function isExteriorSite() {
+    return ['PARKING', 'TERRAIN', 'AGRICULTURE'].includes(manualSurfaceConfiguration.siteNature);
+  }
+
+  function activateExteriorFootprintDrawing() {
+    const map = document.getElementById('map');
+    if (!map || map.dataset.mapPurpose !== 'surfaces' || !map.getClientRects().length) return false;
+    if (layers().length) return false;
+    if (drawingActive || zoneDrawSession || zoneEditSession || orientationPicker || contourEdit) return false;
+    const drawPolygon = map.querySelector('.leaflet-draw-draw-polygon');
+    if (!drawPolygon || drawPolygon.disabled || drawPolygon.classList.contains('leaflet-disabled') || drawPolygon.getAttribute('aria-disabled') === 'true') return false;
+    drawPolygon.click();
+    return drawingActive;
+  }
+
+  function detectAtSitePoint(lat, lng) {
+    if (!siteNatureValues.has(manualSurfaceConfiguration.siteNature)) {
+      detectionStatus('Veuillez sélectionner la catégorie du site svp.', 'error');
+      const siteNature = document.getElementById('siteNature');
+      siteNature?.setAttribute('aria-invalid', 'true');
+      siteNature?.focus?.({ preventScroll: true });
+      return;
+    }
+    if (isExteriorSite()) {
+      detectionStatus('La détection automatique des toitures ne s’applique pas aux surfaces extérieures. Dessinez le contour du parking ou du terrain avec le polygone ou le rectangle.', '');
+      return;
+    }
+    return searchFootprints(lat, lng);
+  }
+
+  function selectSitePointAndDetect(event) {
+    if (!event?.latlng) return;
+    const { lat, lng } = event.latlng;
+    window.dispatchEvent(new CustomEvent('ozeno:map-site-selected', { detail: { latitude: lat, longitude: lng, manualPick: true, parcelLookupScheduled: Boolean(window.SOLARSHIFT_CONFIG?.siteLocationMapActive) } }));
+    if (window.SOLARSHIFT_CONFIG?.siteLocationMapActive) {
+      window.SOLARSHIFT_CONFIG.parcelLocationPickActive = true;
+      window.dispatchEvent(new CustomEvent('ozeno:parcel-map-click', { detail: { latitude: lat, longitude: lng } }));
+      return;
+    }
+    return detectAtSitePoint(lat, lng);
+  }
+
+  function handleLocationMapClick(event) {
+    if (!event.latlng) return false;
+    // A deliberate map pick takes precedence over parcel lookup and roof editing,
+    // even if a delayed chapter transition left the location-mode flag stale.
+    if (window.SOLARSHIFT_CONFIG?.manualLocationPickActive && window.SOLARSHIFT_CONFIG?.siteLocationMapActive) {
+      void selectSitePointAndDetect(event);
+      return true;
+    }
+    if (window.SOLARSHIFT_CONFIG?.parcelLocationPickActive) {
+      if (window.SOLARSHIFT_CONFIG?.siteLocationMapActive) {
+        void selectSitePointAndDetect(event);
+        return true;
+      }
+      window.dispatchEvent(new CustomEvent('ozeno:parcel-map-click', { detail: { latitude: event.latlng.lat, longitude: event.latlng.lng } }));
+      return true;
+    }
+    if (!window.SOLARSHIFT_CONFIG?.siteLocationMapActive) return false;
+    return true;
+  }
+
   function layerContainsPoint(layer, lat, lng) {
     const latlngs = layer?.getLatLngs?.() || [];
     const inRing = (ring) => ring.length >= 3 && containsPoint(ring.map((point) => ({ lat: point.lat, lon: point.lng })), lat, lng);
@@ -932,17 +1035,21 @@
     layer.options.bubblingMouseEvents = false;
     layer.on('click', (event) => {
       if (event.originalEvent) L.DomEvent.stopPropagation(event.originalEvent);
+      if (handleLocationMapClick(event)) return;
       if (zoneDrawSession && event.latlng) { addZonePoint(event); return; }
       if (zoneEditSession) return;
       if (orientationPicker) { chooseOrientationAtMap(event); return; }
       if (window.SOLARSHIFT_CONFIG?.manualLocationPickActive && event.latlng) {
-        window.dispatchEvent(new CustomEvent('ozeno:map-site-selected', { detail: { latitude: event.latlng.lat, longitude: event.latlng.lng, manualPick: true } }));
+        void selectSitePointAndDetect(event);
         return;
       }
       if (drawingActive) return;
       editSurface(L.stamp(layer));
     });
-    layer.on('edit', refreshRoofTotals);
+    // Vertex drags emit `edit` repeatedly. Do not propagate those intermediate
+    // geometries into the form; Leaflet's editor can detach the remaining
+    // handles when downstream preview listeners redraw. Commit once on Save.
+    layer.on('edit', () => { if (contourEdit?.layer !== layer) refreshRoofTotals(); });
     layer.on('revert-edited', refreshRoofTotals);
   }
 
@@ -1002,11 +1109,11 @@
   }
 
   function detectAt(event) {
+    if (handleLocationMapClick(event)) return;
     if (zoneDrawSession && event.latlng) { addZonePoint(event); return; }
     if (zoneEditSession) return;
     if (window.SOLARSHIFT_CONFIG?.manualLocationPickActive && event.latlng) {
-      window.dispatchEvent(new CustomEvent('ozeno:map-site-selected', { detail: { latitude: event.latlng.lat, longitude: event.latlng.lng, manualPick: true } }));
-      return;
+      return selectSitePointAndDetect(event);
     }
     if (orientationPicker && chooseOrientationAtMap(event)) return;
     if (drawingActive || !event.latlng) return;
@@ -1018,7 +1125,7 @@
     if (detectionPending) return;
     finishContourEdit(true);
     window.dispatchEvent(new CustomEvent('ozeno:map-site-selected', { detail: { latitude: event.latlng.lat, longitude: event.latlng.lng } }));
-    return searchFootprints(event.latlng.lat, event.latlng.lng);
+    return detectAtSitePoint(event.latlng.lat, event.latlng.lng);
   }
 
   function removeSurface(id) {
@@ -1233,8 +1340,8 @@
       detection.className = 'roofDetectionStatus fine';
       detection.setAttribute('aria-live', 'polite');
     }
-    [document.getElementById('roofMapClickHint'), document.getElementById('roofResult'),
-      detection, document.querySelector('.roofModeNote')].filter(Boolean).forEach((node) => feedback.appendChild(node));
+    [document.getElementById('roofResult'), detection, document.querySelector('.roofModeNote')]
+      .filter(Boolean).forEach((node) => feedback.appendChild(node));
     const surfaces = document.getElementById('roofSurfaces');
     if (surfaces && feedback.nextElementSibling !== surfaces) feedback.insertAdjacentElement('afterend', surfaces);
   }
@@ -1243,7 +1350,7 @@
     const control = document.getElementById('roofRatio');
     const output = document.getElementById('roofRatioValue');
     const value = control?.value === '' ? NaN : Number(control?.value);
-    if (output) output.textContent = Number.isFinite(value) ? `${value.toLocaleString('fr-FR')} %` : 'À préciser';
+    if (output) output.textContent = Number.isFinite(value) ? `${value.toLocaleString('fr-FR', { maximumFractionDigits: 0 })} %` : 'À préciser';
   }
 
   function installRoofRatioSlider() {
@@ -1280,7 +1387,7 @@
       details = document.createElement('section');
       details.id = 'roofSurfaceGeneral';
       details.className = 'roofSurface roofSurfaceGeneral';
-      details.innerHTML = '<h3>Surface solaire · informations générales</h3><p class="fine">Surface totale et taux d’exploitation estimés.</p><div class="form"></div>';
+      details.innerHTML = '<div class="form"></div>';
       surfaces.appendChild(details);
     }
     const fields = details.querySelector('.form');
@@ -1331,7 +1438,7 @@
     const settings = document.createElement('section');
     settings.id = 'manualAreaSettings';
     settings.hidden = true;
-    settings.innerHTML = `<h3>Caractéristiques de la surface</h3><p class="fine">Ces champs restent disponibles même sans contour détecté. La surface peut être saisie ou dessinée ; une fois un contour ajouté, les caractéristiques se règlent pour chaque surface séparément.</p><div class="form"><label>Type de surface<select id="manualRoofType"><option value="">À renseigner</option><option value="PITCHED">Toiture inclinée</option><option value="FLAT">Toit plat</option>${extraSurfaceTypes.map(([value, label]) => `<option value="${value}">${label}</option>`).join('')}</select></label><label>Matériau de couverture<select id="manualRoofMaterial"><option value="">Je ne sais pas encore</option>${roofMaterials.map((material) => `<option value="${material}">${material}</option>`).join('')}</select></label><label id="manualFlatTiltLabel" hidden>Inclinaison des supports<select id="manualFlatTilt"><option value="">À renseigner</option>${flatTilts.map((tilt) => `<option value="${tilt}">${tilt}</option>`).join('')}</select><small id="manualPvgisTiltAdvice" class="fine pvgisTiltCallout">Repère PVGIS calculé selon l’orientation, à titre indicatif.</small></label><label id="manualDensityLabel" hidden>Densité issue d’un calepinage (Wc/m², facultative)<input id="manualDensityWcM2" type="number" min="1" max="1000" step="any" inputmode="decimal" placeholder="Laisser vide pour l’estimation"><small class="fine">Sans calepinage, une estimation géométrique préliminaire est calculée automatiquement.</small></label><label>Orientation des panneaux (° depuis le nord)<span title="Azimut : 0° = nord, 90° = est, 180° = sud, 270° = ouest.">i</span><div class="roofAzimuthControl"><input id="manualAzimuth" type="number" min="0" max="359" step="1" placeholder="0–359°" aria-label="Orientation des panneaux en degrés depuis le nord"><button type="button" class="roofPickAzimuth" data-pick-manual-azimuth>Tracer sur la carte</button></div></label></div>`;
+    settings.innerHTML = `<h3>Caractéristiques de la surface</h3><p class="fine">Ces champs restent disponibles même sans contour détecté. La surface peut être saisie ou dessinée ; une fois un contour ajouté, les caractéristiques se règlent pour chaque surface séparément.</p><div class="form"><label>Type d’installation<select id="manualRoofType"><option value="">À renseigner</option><option value="PITCHED">Toiture inclinée</option><option value="FLAT">Toit plat</option>${extraSurfaceTypes.map(([value, label]) => `<option value="${value}">${label}</option>`).join('')}</select></label><label>Matériau de couverture<select id="manualRoofMaterial"><option value="">Je ne sais pas encore</option>${roofMaterials.map((material) => `<option value="${material}">${material}</option>`).join('')}</select></label><label id="manualFlatTiltLabel" hidden>Inclinaison des supports<select id="manualFlatTilt"><option value="">À renseigner</option>${flatTilts.map((tilt) => `<option value="${tilt}">${tilt}</option>`).join('')}</select><small id="manualPvgisTiltAdvice" class="fine pvgisTiltCallout">Repère PVGIS calculé selon l’orientation, à titre indicatif.</small></label><label id="manualDensityLabel" hidden>Densité issue d’un calepinage (Wc/m², facultative)<input id="manualDensityWcM2" type="number" min="1" max="1000" step="any" inputmode="decimal" placeholder="Laisser vide pour l’estimation"><small class="fine">Sans calepinage, une estimation géométrique préliminaire est calculée automatiquement.</small></label><label><span class="manualAzimuthLabelRow">Orientation des panneaux (° depuis le nord) <span class="roofFieldHelp" title="Azimut : 0° = nord, 90° = est, 180° = sud, 270° = ouest.">i</span></span><div class="roofAzimuthControl"><input id="manualAzimuth" type="number" min="0" max="359" step="1" placeholder="0–359°" aria-label="Orientation des panneaux en degrés depuis le nord"><button type="button" class="roofPickAzimuth" data-pick-manual-azimuth>Tracer sur la carte</button></div></label></div>`;
     const details = roof.querySelector('#roofSurfaceGeneral');
     (details || form).insertAdjacentElement('afterend', settings);
     document.getElementById('orientation')?.closest('label')?.setAttribute('hidden', 'hidden');
@@ -1347,6 +1454,56 @@
     const manualFlatTiltLabel = settings.querySelector('#manualFlatTiltLabel');
     const manualDensityInput = settings.querySelector('#manualDensityWcM2');
     const manualDensityLabel = settings.querySelector('#manualDensityLabel');
+    const updateInstallationHint = () => {
+      const mapGuidance = document.getElementById('siteMapGuidance');
+      if (!mapGuidance) return;
+      const natureKnown = siteNatureValues.has(manualSurfaceConfiguration.siteNature);
+      mapGuidance.textContent = !natureKnown
+        ? 'Choisissez la nature du site pour afficher la méthode de repérage adaptée. Vous qualifierez le type d’installation de chaque zone après le tracé.'
+        : isExteriorSite()
+          ? 'Surface extérieure : si la carte est ouverte et qu’aucun contour n’existe, le mode polygone s’active automatiquement. Cliquez les sommets du terrain, parking ou de la zone d’ombrière, puis double-cliquez pour terminer. Faites glisser la carte pour la déplacer lorsque le tracé est arrêté.'
+          : 'Cliquez une fois sur chaque toiture pour proposer son contour. Pour le corriger, cliquez une seconde fois dessus. Le type d’installation se précisera ensuite pour chaque zone.';
+    };
+    const map = document.getElementById('map');
+    if (map && !document.getElementById('earlySolarProjectType')) {
+      const natureSection = document.createElement('section');
+      natureSection.id = 'earlySolarProjectType';
+      natureSection.className = 'earlySolarProjectType';
+      natureSection.innerHTML = '<h2>Nature du site</h2><p class="fine">Choisissez le contexte du projet : bâtiment professionnel ou surface extérieure.</p><div class="form"></div>';
+      const natureLabel = document.createElement('label');
+      natureLabel.htmlFor = 'siteNature';
+      natureLabel.append('Catégorie du site');
+      const natureSelect = document.createElement('select');
+      natureSelect.id = 'siteNature';
+      natureSelect.innerHTML = '<option value="">À renseigner</option>' + siteNatureGroups.map(([group, values]) => `<optgroup label="${group}">${values.map(([value, label]) => `<option value="${value}">${label}</option>`).join('')}</optgroup>`).join('');
+      natureLabel.append(natureSelect);
+      natureSection.querySelector('.form').appendChild(natureLabel);
+      map.insertAdjacentElement('beforebegin', natureSection);
+      const mapGuide = document.createElement('section');
+      mapGuide.id = 'earlySolarMappingGuide';
+      mapGuide.className = 'earlySolarMappingGuide';
+      mapGuide.innerHTML = '<h2>Repérage sur la carte</h2><div class="siteMapAttention" role="note"><span class="siteMapAttentionIcon" aria-hidden="true">⚠</span><p id="siteMapGuidance" class="fine siteMapGuidance" aria-live="polite"></p></div>';
+      natureSection.insertAdjacentElement('afterend', mapGuide);
+    }
+    const siteNatureSelect = document.getElementById('siteNature');
+    if (siteNatureSelect) siteNatureSelect.value = manualSurfaceConfiguration.siteNature;
+    siteNatureSelect?.addEventListener('change', () => {
+      manualSurfaceConfiguration.siteNature = siteNatureValues.has(siteNatureSelect.value) ? siteNatureSelect.value : '';
+      siteNatureSelect.removeAttribute('aria-invalid');
+      updateInstallationHint();
+      if (isExteriorSite()) {
+        requestAnimationFrame(() => {
+          if (!isExteriorSite()) return;
+          const started = activateExteriorFootprintDrawing();
+          detectionStatus(started
+            ? 'Mode polygone activé : cliquez les sommets de la zone, puis double-cliquez pour terminer. Le contour cadastral reste une donnée distincte.'
+            : layers().length
+              ? 'Surface extérieure sélectionnée. Un contour existe déjà ; modifiez-le ou ajoutez une zone avec l’outil polygone.'
+              : 'Surface extérieure sélectionnée. Utilisez l’outil polygone pour tracer sa zone ; le déplacement de la carte est possible hors du tracé.', '');
+        });
+      }
+      window.dispatchEvent(new CustomEvent('ozeno:roof-configurations-updated'));
+    });
     if (manualType) manualType.value = manualSurfaceConfiguration.type;
     if (manualMaterial) manualMaterial.value = manualSurfaceConfiguration.material;
     if (manualFlatTilt) manualFlatTilt.value = manualSurfaceConfiguration.flatTilt;
@@ -1362,14 +1519,24 @@
           manualDensityLabel.firstChild.textContent = 'Densité indicative après validation du calepinage (Wc/m²)';
           const note = manualDensityLabel.querySelector('small');
           if (note) note.textContent = 'Le repère toit plat Sud 140/155/175 Wc/m² ne s’applique pas au-delà de 15°. Valeur à saisir après validation du calepinage.';
+          if (manualDensityInput) manualDensityInput.placeholder = 'À renseigner après calepinage';
+        } else if (manualType?.value && !['PITCHED', 'FLAT'].includes(manualType.value)) {
+          manualDensityLabel.firstChild.textContent = 'Densité issue du calepinage (Wc/m²)';
+          const note = manualDensityLabel.querySelector('small');
+          if (note) note.textContent = 'Aucun repère générique validé pour ce type de surface. Sans densité issue d’un calepinage, la puissance n’est pas estimée.';
+          if (manualDensityInput) manualDensityInput.placeholder = 'À renseigner après calepinage';
         } else if (manualDensityLabel.firstChild) {
           manualDensityLabel.firstChild.textContent = 'Densité indicative saisie (Wc/m²)';
+          const note = manualDensityLabel.querySelector('small');
+          if (note) note.textContent = 'Sans calepinage, une estimation géométrique préliminaire est calculée automatiquement.';
+          if (manualDensityInput) manualDensityInput.placeholder = 'Laisser vide pour l’estimation';
         }
       }
       const pitchLabel = document.getElementById('tilt')?.closest('label');
       if (pitchLabel) pitchLabel.hidden = flat;
     };
     updateManualTypeFields();
+    updateInstallationHint();
     manualType?.addEventListener('change', () => {
       manualSurfaceConfiguration.type = ['PITCHED', 'FLAT', ...extraSurfaceTypes.map(([value]) => value)].includes(manualType.value) ? manualType.value : '';
       updateManualTypeFields();
@@ -1621,9 +1788,9 @@
     }
     set('roofUsableAreaInline', usableLabel);
     set('roofUsableAreaProvenance', cr013Area.status === 'VERIFIED'
-      ? `Surface brute moins les zones confirmées et les marges · ${gross > 0 ? (usable / gross * 100).toLocaleString('fr-FR', { maximumFractionDigits: 1 }) : 0} % retenus · taux forfaitaire non appliqué · pré-étude`
+      ? `Surface brute moins les zones confirmées et les marges · ${gross > 0 ? (usable / gross * 100).toLocaleString('fr-FR', { maximumFractionDigits: 0 }) : 0} % retenus · taux forfaitaire non appliqué · pré-étude`
       : cr013Area.status === 'ASSUMPTION'
-      ? `${cr013Area.fallbackPercent} % de la surface brute · hypothèse modifiable · pré-étude non validée`
+      ? `${Number(cr013Area.fallbackPercent).toLocaleString('fr-FR', { maximumFractionDigits: 0 })} % de la surface brute · hypothèse modifiable · pré-étude non validée`
       : 'Surface brute inconnue · surface exploitable à préciser');
     set('terrainCapacity', capacity ? `${capacity.toFixed(1).replace('.', ',')} kWc` : 'À calculer');
     set('terrainProduction', annualProduction ? `${Math.round(annualProduction).toLocaleString('fr-FR')} kWh/an` : 'À calculer');
@@ -1716,6 +1883,19 @@
     const preview = { status: annualProduction > 0 ? 'READY' : 'UNKNOWN', annualKwh: annualProduction > 0 ? Math.round(annualProduction) : null, monthlyKwh: annualProduction > 0 ? monthlyProduction.map((value) => Math.round(value)) : null, specificYieldKwhKwp: annualProduction > 0 && capacity > 0 ? Math.round(annualProduction / capacity) : null, installedCapacityKwp: capacity || null, sizing: { status: sizing.status, version: sizing.version, lowKwp: sizing.lowKwp, referenceKwp: sizing.referenceKwp, highKwp: sizing.highKwp, basis: sizing.status === 'ESTIMATED_MANUAL' ? 'USER_INDICATIVE_INPUT' : 'CR010_REFERENCE' }, source: 'PVGIS_PREVIEW', canonical: false };
     window.SOLARSHIFT_CONFIG = window.SOLARSHIFT_CONFIG || {};
     window.SOLARSHIFT_CONFIG.commercialProductionPreview = preview;
+    window.SOLARSHIFT_CONFIG.commercialCarbonImpactPreview = null;
+    if (preview.status === 'READY' && window.SOLARSHIFT_CONFIG.pvgisEndpoint) {
+      const carbonUrl = new URL(window.SOLARSHIFT_CONFIG.pvgisEndpoint, window.location.href);
+      carbonUrl.search = new URLSearchParams({ tool: 'carbon-impact', annual_production_kwh: String(preview.annualKwh) }).toString();
+      fetch(carbonUrl, { cache: 'no-store', signal: AbortSignal.timeout(12000) })
+        .then((response) => response.ok ? response.json() : null)
+        .then((result) => {
+          if (version !== calculationVersion || !result?.carbon_impact) return;
+          window.SOLARSHIFT_CONFIG.commercialCarbonImpactPreview = result.carbon_impact;
+          window.dispatchEvent(new CustomEvent('ozeno:carbon-impact-preview', { detail: result.carbon_impact }));
+        })
+        .catch(() => { /* Les résultats d’efficacité et CEE restent distincts. */ });
+    }
     window.dispatchEvent(new CustomEvent('ozeno:commercial-production-preview', { detail: preview }));
     if (climateRequest && annualProduction) requestClimateYieldPreview(version, climateRequest.latitude, climateRequest.longitude, lossPercent, climateRequest.planes);
     else emitClimateYieldPreview({ status: 'UNKNOWN', reason: productionFailure || 'PRODUCTION_PREVIEW_REQUIRED', canonical: false });
@@ -1728,6 +1908,8 @@
   }
 
   function bindInstallerDocumentUpload(container) {
+    // Référence DOM conservée lorsque la composition locale déplace le panneau documentaire.
+    const documentTypeSelect = container.querySelector('#roofInstallerDocumentType');
     const input = container.querySelector('#roofInstallerFiles');
     const uploadButton = container.querySelector('#roofInstallerUpload');
     const status = container.querySelector('#roofInstallerUploadStatus');
@@ -1773,7 +1955,7 @@
         return;
       }
       uploadButton.disabled = true;
-      const documentType = container.querySelector('#roofInstallerDocumentType')?.value || 'INSTALLER_STUDY';
+      const documentType = documentTypeSelect?.value || 'INSTALLER_STUDY';
       try {
         const token = await config.getAccessToken();
         if (!token) throw new Error('Votre session a expiré. Reconnectez-vous, puis réessayez.');
@@ -1905,7 +2087,7 @@
       if (label.textContent.includes('Puissance installée')) label.textContent = 'Puissance installée estimée';
       if (label.textContent.includes('Production annuelle moyenne')) label.textContent = 'Production annuelle estimée';
     });
-    const inputSectionEnd = roof.querySelector(':scope > .roofExpertSettings') || roofForm || surfaces;
+    const inputSectionEnd = roof.querySelector(':scope > .roofExpertSettings') || surfaces;
     inputSectionEnd.insertAdjacentElement('afterend', estimate);
     estimate.appendChild(metrics);
     const productionStatus = document.createElement('p');
@@ -2055,14 +2237,6 @@
       else if (contourEdit) { event.preventDefault(); finishContourEdit(false); }
     });
     installTerrainSummary();
-    // Install after the legacy layout cleanup, which removes its old fine-print paragraph.
-    if (!document.getElementById('roofMapClickHint')) {
-      const clickHint = document.createElement('p');
-      clickHint.id = 'roofMapClickHint';
-      clickHint.className = 'fine';
-      clickHint.textContent = 'Cliquez une fois sur chaque toiture à ajouter pour proposer son contour. Pour le corriger, cliquez une seconde fois dessus.';
-      mapContainer.insertAdjacentElement('afterend', clickHint);
-    }
     // CR-013 exclusion drawing remains archived in this file but is not active.
     installManualAreaSettings();
     positionRoofMapModules();
@@ -2089,12 +2263,21 @@
     window.updateRoof = calculateSynthesis;
     window.solarMap.getContainer().classList.add('roofDetectionReady');
     window.solarMap.on('click', detectAt);
+    window.addEventListener('ozeno:shared-map-placed', event => {
+      if (event.detail?.chapter !== 'project') return;
+      invalidateDetection(); finishContourEdit(true); finishOrientationPick(); stopZoneDrawing();
+      if (zoneEditSession) finishZoneEdit(true);
+      Object.values(window.roofDrawControl?._toolbars || {}).forEach(toolbar => toolbar.disable());
+    });
     window.solarMap.on('draw:drawstart draw:editstart draw:deletestart', () => { finishContourEdit(true); invalidateDetection(); drawingActive = true; });
     window.solarMap.on('draw:drawstop draw:editstop draw:deletestop', () => { drawingActive = false; });
     window.addEventListener('ozeno:roof-surfaces', () => {
       if (layers().length) surfaceSource = 'map';
       else if (surfaceSource === 'map') surfaceSource = 'none';
-      render();
+      // Leaflet.Draw reuses vertex-marker layers during a drag. Rebuilding the
+      // companion surface form on each `edit` event detaches those handles;
+      // defer that render until the contour is saved or cancelled.
+      if (!contourEdit) render();
     });
     const refreshProjectContext = () => {
       const next = projectContextKey();
@@ -2112,8 +2295,8 @@
         surfaceSource = 'none';
         lastCr013AreaResult = null;
         if (totalInput) totalInput.value = '';
-        manualSurfaceConfiguration = { type: '', material: '', flatTilt: '', manualDensityWcM2: '' };
-        ['manualRoofType', 'manualRoofMaterial', 'manualDensityWcM2'].forEach((id) => { const field = document.getElementById(id); if (field) field.value = ''; });
+        manualSurfaceConfiguration = { siteNature: '', type: '', material: '', flatTilt: '', manualDensityWcM2: '' };
+        ['siteNature', 'manualRoofType', 'manualRoofMaterial', 'manualDensityWcM2'].forEach((id) => { const field = document.getElementById(id); if (field) field.value = ''; });
         const manualAzimuth = document.getElementById('manualAzimuth');
         if (manualAzimuth) manualAzimuth.value = '';
         ['orientation', 'tilt', 'shade'].forEach((id) => { const field = document.getElementById(id); if (field) field.value = ''; });

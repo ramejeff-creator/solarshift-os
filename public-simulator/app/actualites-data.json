@@ -1,0 +1,348 @@
+{
+  "schema_version": 2,
+  "updated_at": "2026-11-04",
+  "themes": [
+    {
+      "id": "investisseurs",
+      "label": "Investisseurs & financement"
+    },
+    {
+      "id": "aides",
+      "label": "Aides publiques · Funding"
+    },
+    {
+      "id": "reglementation",
+      "label": "Réglementation & obligations"
+    }
+  ],
+  "policy": {
+    "archive_after_days": 90,
+    "page_size": 6,
+    "deletion": false,
+    "deadline_preview_limit": 5,
+    "show_future_milestones": true
+  },
+  "items": [
+    {
+      "id": "kourbe-financement-20261030",
+      "theme": "investisseurs",
+      "published_date": "2026-10-30",
+      "date_label": "Publié le",
+      "title": "Kourbe sécurise 47,5 M€ de dette senior",
+      "summary": "Le développeur annonce le financement d’un portefeuille d’environ 170 centrales en toitures et ombrières, représentant 42,5 MWc en France.",
+      "kind": "Financement photovoltaïque",
+      "territory": "France",
+      "facts": "Programme d’investissement annoncé de 55 M€ pour près de 170 centrales en toitures et ombrières en France, représentant 42,5 MWc et environ 48 GWh/an. Arkéa Banque Entreprises & Institutionnels, Bpifrance et Caisse d’Épargne Aquitaine Poitou-Charentes apportent 47,5 M€ de dette senior. Mises en service annoncées au plus tard au S1 2027. CFNEWS mentionne plusieurs opérations de financement senior sans recours.",
+      "conditions": "Non publiés : maturités, taux, allocation par banque, financement du solde du programme et garanties détaillées.",
+      "impact": "Qualifier Kourbe comme partenaire de portefeuille ou acquéreur potentiel de projets; comparer ses critères d’éligibilité et son seuil d’agrégation aux dossiers OZENO. Les modalités de dette restent à obtenir.",
+      "impact_label": "Piste opérationnelle · déduction",
+      "sources": [
+        {
+          "label": "Annonce Kourbe",
+          "url": "https://fr.linkedin.com/posts/alexandre-douay-4669b2b_kourbecpoct26-activity-7521618697002688512-mzKi"
+        },
+        {
+          "label": "CFNEWS Infra, 30/10",
+          "url": "https://www.cfnewsinfra.net/L-actualite/Dette/Financement-de-projets/Kourbe-engrange-de-nouveaux-financements-solaires"
+        }
+      ],
+      "tags": [
+        "Photovoltaïque",
+        "Financement"
+      ],
+      "verified_at": "2026-11-04",
+      "territory_level": "national",
+      "territory_code": "FR",
+      "project_types": [
+        "photovoltaique",
+        "stockage"
+      ],
+      "professional_profiles": [
+        "developpeurs_photovoltaique",
+        "investisseurs"
+      ],
+      "affected_aid_ids": [],
+      "record_status": "published",
+      "funding_impact": "none"
+    },
+    {
+      "id": "ze-energy-vert-20261026",
+      "theme": "investisseurs",
+      "published_date": "2026-10-26",
+      "date_label": "Publié le",
+      "title": "ZE Energy ouvre 49 % de la centrale hybride de Vert",
+      "summary": "L’opération réunit des entités régionales du Crédit Agricole et Terra Énergies autour d’un actif de 77 MW photovoltaïques et 29,6 MWh de batteries.",
+      "kind": "Cession de participation · PV + stockage",
+      "territory": "France",
+      "facts": "ZE Energy annonce la cession de 49 % de l’actif de Vert (Landes) à trois entités régionales du Crédit Agricole — Aquitaine, Pyrénées Gascogne et Toulouse 31 — et Terra Énergies. La centrale associe 77 MW photovoltaïques et 29,6 MWh de batteries, pour environ 90 GWh/an, sous CPPA Orange de 15 ans. L’entrée de Terra Énergies est attendue avant fin 2026, sous réserve des accords usuels.",
+      "conditions": "Non publiés : prix de cession, répartition des parts entre acquéreurs et modalités de rémunération du stockage. Projet au sol de grande puissance, pas une offre B2B derrière compteur.",
+      "impact": "Cartographier les véhicules régionaux du Crédit Agricole et Terra Énergies comme investisseurs territoriaux à qualifier. Étudier la cession minoritaire d’actifs hybrides comme référence de structuration, sans extrapoler son applicabilité aux petits projets.",
+      "impact_label": "Piste opérationnelle · déduction",
+      "sources": [
+        {
+          "label": "Communiqué officiel du 26/10/2026 (PDF)",
+          "url": "https://ze-energy.com/admin/wp-content/uploads/2026/10/cp-ze-energy-selldown-vert-final-pour-diffusion.pdf"
+        }
+      ],
+      "tags": [
+        "Photovoltaïque",
+        "Stockage"
+      ],
+      "verified_at": "2026-11-04",
+      "territory_level": "national",
+      "territory_code": "FR",
+      "project_types": [
+        "photovoltaique",
+        "stockage"
+      ],
+      "professional_profiles": [
+        "investisseurs",
+        "developpeurs_photovoltaique"
+      ],
+      "affected_aid_ids": [],
+      "record_status": "published",
+      "funding_impact": "none"
+    },
+    {
+      "id": "vecteur-finance-20261029",
+      "theme": "investisseurs",
+      "published_date": "2026-10-29",
+      "date_label": "Publié le",
+      "title": "Vecteur Finance cible les petits développeurs ENR",
+      "summary": "Le cabinet lyonnais se positionne sur le financement des projets photovoltaïques et de stockage : dette, capital et financement participatif.",
+      "kind": "Nouvel intermédiaire",
+      "territory": "France",
+      "facts": "Cabinet lancé à Lyon par Aymeric Doutriaux, spécialisé en conseil de financement de projets photovoltaïques et de stockage. Le fondateur décrit un accompagnement de la modélisation au closing sur la dette, le capital et le financement participatif. Il s’agit d’un conseil financier, pas d’un investisseur annoncé.",
+      "conditions": "Non publiés : honoraires, taille minimale des dossiers, conditions de mandat, références clients et partenaires financeurs mobilisables.",
+      "impact": "Prendre contact pour tester sa capacité à orienter des dossiers OZENO vers des financeurs et à co-construire des dossiers bancables. Vérifier ses critères, son réseau actif et l’absence de conflit de mandat.",
+      "impact_label": "Piste opérationnelle · déduction",
+      "sources": [
+        {
+          "label": "Annonce du fondateur",
+          "url": "https://fr.linkedin.com/posts/aymeric-doutriaux_je-me-lance-et-%C3%A7a-sappelle-vecteur-finance-activity-7521107279606190080-h5rp"
+        },
+        {
+          "label": "CFNEWS Infra, 29/10",
+          "url": "https://www.cfnewsinfra.net/L-actualite/Tete-d-affiche/Vecteur-Finance-veut-conseiller-les-petits-developpeurs-d-ENR"
+        }
+      ],
+      "tags": [
+        "Photovoltaïque",
+        "Stockage"
+      ],
+      "verified_at": "2026-11-04",
+      "territory_level": "national",
+      "territory_code": "FR",
+      "project_types": [
+        "photovoltaique",
+        "stockage"
+      ],
+      "professional_profiles": [
+        "developpeurs_photovoltaique"
+      ],
+      "affected_aid_ids": [],
+      "record_status": "published",
+      "funding_impact": "none"
+    },
+    {
+      "id": "funding-fonds-chaleur-suspension-20261104",
+      "theme": "aides",
+      "published_date": "2026-11-04",
+      "date_label": "Constaté le",
+      "title": "Fonds Chaleur : suspension des nouveaux dépôts",
+      "kind": "Suspension",
+      "territory": "France",
+      "tags": [
+        "Rénovation tertiaire",
+        "Chaleur renouvelable"
+      ],
+      "summary": "Les fiches ADEME des réseaux de chaleur, du solaire thermique et des PAC solaires affichent « Aide close » au 4 novembre 2026.",
+      "facts": "Les trois fiches annoncent la suspension des nouvelles demandes et remplacent l’échéance du 31 décembre par le 4 novembre 2026. Bénéficiaires professionnels concernés : entreprises et opérateurs de projets de chaleur, dont le tertiaire.",
+      "conditions": "Date de publication non indiquée sur les fiches ; fermeture constatée le 04/11. Réouverture et nouveaux barèmes non publiés. Ne pas étendre automatiquement la suspension aux études, aux conventions déjà signées ou à DÉTER sans confirmation.",
+      "amounts": "Aucun nouveau taux annoncé : la fermeture du guichet ne transforme pas les anciens barèmes en aide de 0 €.",
+      "impact": "Versionner les fiches vérifiées en « nouveaux dépôts suspendus », les exclure des aides mobilisables pour une nouvelle demande et conserver l’historique. Contrôler le statut de chaque dossier avant toute modification.",
+      "impact_label": "Impact sur OZENO Funding · à appliquer",
+      "sources": [
+        {
+          "label": "ADEME · Réseaux de chaleur",
+          "url": "https://agirpourlatransition.ademe.fr/entreprises/aides-financieres/catalogue/2026/extension-et-creation-de-reseaux-de-chaleur-ou-de-froid"
+        },
+        {
+          "label": "ADEME · Solaire thermique",
+          "url": "https://agirpourlatransition.ademe.fr/entreprises/aides-financieres/catalogue/2026/installation-de-production-deau-chaude-solaire-thermique"
+        },
+        {
+          "label": "ADEME · PAC solaires",
+          "url": "https://agirpourlatransition.ademe.fr/entreprises/aides-financieres/catalogue/2026/installation-de-pompes-chaleur-solaire-pour-la-production-deau-chaude"
+        }
+      ],
+      "verified_at": "2026-11-04",
+      "territory_level": "national",
+      "territory_code": "FR",
+      "project_types": [
+        "chaleur_renouvelable",
+        "renovation_tertiaire"
+      ],
+      "professional_profiles": [
+        "entreprises",
+        "operateurs_chaleur"
+      ],
+      "affected_aid_ids": [],
+      "record_status": "suspended",
+      "funding_impact": "direct"
+    },
+    {
+      "id": "funding-advenir-justificatif-20261102",
+      "theme": "aides",
+      "published_date": "2026-11-02",
+      "date_label": "Publié le",
+      "effective_date": "2026-11-15",
+      "title": "ADVENIR : nouveau justificatif pour les bornes publiques",
+      "kind": "Conditions modifiées",
+      "territory": "France · primes éligibles",
+      "tags": [
+        "IRVE",
+        "Justificatif"
+      ],
+      "summary": "À partir du 15 novembre 2026, les dossiers signés devront fournir un lien filtré vers la base nationale des bornes de recharge.",
+      "facts": "L’annonce officielle du 2 novembre remplace le justificatif de publication des données par une URL du fichier consolidé qui permet d’identifier les bornes du projet (aménageur, adresse ou identifiant).",
+      "conditions": "Obligatoire pour les dossiers signés à compter du 15/11/2026 ; également accepté, à partir de cette date, pour les dossiers signés auparavant. Applicable aux primes actives pour bornes ouvertes à tout public. Pour les entreprises : vérifier notamment la catégorie ZNI ; cette évolution ne rouvre aucune prime supprimée.",
+      "amounts": "Aucun changement de taux ou de plafond annoncé. Le 15 novembre est une date d’application, pas une date limite de dépôt.",
+      "impact": "Ajouter l’URL filtrée aux pièces à contrôler et versionner la règle selon la date de signature du dossier. Conserver les filtres d’éligibilité propres à chaque prime.",
+      "impact_label": "Impact sur OZENO Funding · à appliquer",
+      "sources": [
+        {
+          "label": "ADVENIR · Annonce du 02/11/2026",
+          "url": "https://advenir.mobi/2026/11/02/evolution-des-consignes-concernant-la-justification-de-publication-des-donnees-sur-data-gouv-2/"
+        },
+        {
+          "label": "ADVENIR · Entreprises en ZNI",
+          "url": "https://advenir.mobi/zni/"
+        }
+      ],
+      "verified_at": "2026-11-04",
+      "territory_level": "national",
+      "territory_code": "FR",
+      "project_types": [
+        "irve"
+      ],
+      "professional_profiles": [
+        "professionnels_irve_ouvert_public"
+      ],
+      "affected_aid_ids": [],
+      "record_status": "adopted",
+      "funding_impact": "direct",
+      "milestones": [
+        {
+          "date": "2026-11-15",
+          "type": "effective_date",
+          "label": "Nouveau justificatif requis pour les dossiers signés à compter de cette date"
+        }
+      ]
+    },
+    {
+      "id": "reglementation-bacs-calendrier-20251227",
+      "theme": "reglementation",
+      "published_date": "2025-12-27",
+      "date_label": "Publié au JO le",
+      "effective_date": "2025-12-28",
+      "compliance_date": "2030-01-01",
+      "title": "BACS : échéance repoussée à 2030 pour certains bâtiments existants",
+      "kind": "Calendrier réglementaire",
+      "territory": "France · bâtiments tertiaires",
+      "tags": [
+        "BACS",
+        "Bâtiments tertiaires",
+        "Échéance 2030"
+      ],
+      "summary": "Pour certains bâtiments existants dont le chauffage ou la climatisation dépasse 70 kW, l’échéance BACS passe de 2027 à 2030.",
+      "facts": "Le décret n° 2025-1343 du 26 décembre 2025, publié au Journal officiel le 27 décembre et entré en vigueur le lendemain, remplace l’année 2027 par 2030 à l’article R. 175-2. La version consolidée du code vise les autres bâtiments existants de plus de 70 kW lorsque le système est renouvelé et au plus tard le 1er janvier 2030.",
+      "conditions": "Le propriétaire du système concerné est assujetti. Une étude peut justifier l’impossibilité d’un retour sur investissement inférieur à dix ans. Les règles propres aux bâtiments neufs et aux systèmes de plus de 290 kW restent distinctes.",
+      "amounts": "Aucun montant d’aide ne change dans ce texte. Date de publication : 27/12/2025 ; entrée en vigueur : 28/12/2025 ; échéance pour les bâtiments concernés : 01/01/2030.",
+      "impact": "Ajouter un signal de contexte lié au seuil de puissance, au renouvellement du système et à l’échéance. Cela peut modifier le calendrier de prospection ou des travaux, mais ne prouve ni l’éligibilité à une aide ni un changement des critères Funding.",
+      "impact_label": "Impact OZENO · obligation distincte d’une aide",
+      "sources": [
+        {
+          "label": "Légifrance · décret n° 2025-1343",
+          "url": "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000053175245"
+        },
+        {
+          "label": "Légifrance · article R. 175-2 en vigueur",
+          "url": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000053216492"
+        }
+      ],
+      "verified_at": "2026-11-04",
+      "territory_level": "national",
+      "territory_code": "FR",
+      "project_types": [
+        "renovation_tertiaire",
+        "bacs"
+      ],
+      "professional_profiles": [
+        "proprietaires_systemes_thermiques"
+      ],
+      "affected_aid_ids": [],
+      "record_status": "in_force",
+      "funding_impact": "indirect",
+      "milestones": [
+        {
+          "date": "2030-01-01",
+          "type": "compliance_date",
+          "label": "Échéance BACS pour les bâtiments concernés"
+        }
+      ]
+    },
+    {
+      "id": "reglementation-eet-formules-20260820",
+      "theme": "reglementation",
+      "published_date": "2026-08-19",
+      "date_label": "Publié au JO le",
+      "effective_date": "2026-08-20",
+      "title": "Éco Énergie Tertiaire : formules précisées pour sept sous-catégories",
+      "kind": "Règle EET modifiée",
+      "territory": "France · catégories tertiaires concernées",
+      "tags": [
+        "EET",
+        "OPERAT",
+        "Calcul réglementaire"
+      ],
+      "summary": "Un arrêté corrige les valeurs manquantes dans les formules de modulation de la composante USE pour sept sous-catégories.",
+      "facts": "L’arrêté du 11 août 2026, publié le 19 août et applicable dès le 20 août, remplace les valeurs de référence absentes pour des zones de centres commerciaux, grands magasins, palais des congrès, transport aérien et ferroviaire, ainsi que pour une blanchisserie d’établissement pénitentiaire.",
+      "conditions": "Seuls les établissements déclarés dans les sous-catégories visées sont concernés. Cette modification complète les paramètres de calcul EET ; elle n’instaure pas une nouvelle aide financière.",
+      "amounts": "Pas de taux ni de plafond de subvention modifié par cet arrêté. Publication : 19/08/2026 ; entrée en vigueur : 20/08/2026.",
+      "impact": "Conserver l’alerte réglementaire pour le contexte bâtimentaire et vérifier les valeurs appliquées à OPERAT dans les catégories concernées. Ne modifier les règles d’éligibilité ou de montant du moteur Funding que si un lien direct est établi avec une fiche d’aide.",
+      "impact_label": "Impact OZENO · vérification de données EET",
+      "sources": [
+        {
+          "label": "Légifrance · arrêté du 11 août 2026",
+          "url": "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000054708735"
+        }
+      ],
+      "verified_at": "2026-11-04",
+      "territory_level": "national",
+      "territory_code": "FR",
+      "project_types": [
+        "renovation_tertiaire",
+        "eet"
+      ],
+      "professional_profiles": [
+        "etablissements_tertiaires_assujettis"
+      ],
+      "affected_aid_ids": [],
+      "record_status": "in_force",
+      "funding_impact": "indirect"
+    }
+  ],
+  "watch_baseline": {
+    "checked_on": "2026-11-04",
+    "coverage": "Référence initiale partielle ; sources principales ADEME, ADVENIR, DGEC, CRE, Grand Est, Bretagne, Occitanie, Bpifrance. Collecte locale à poursuivre.",
+    "already_reported_change_ids": [
+      "funding-fonds-chaleur-suspension-20261104",
+      "funding-advenir-justificatif-20261102",
+      "reglementation-bacs-calendrier-20251227",
+      "reglementation-eet-formules-20260820"
+    ],
+    "reference_note": "ACTUALITES-FUNDING-FILTRES-ARCHIVAGE.md",
+    "regulatory_scope": "Veille activée le 04/11/2026. Textes officiels adoptés uniquement ; distinguer obligation applicable, échéance de conformité, projet non adopté et conséquence sur le moteur. État initial partiel."
+  }
+}

@@ -199,6 +199,7 @@
     const contents = [...report.children].filter((child) => child !== title);
     const details = document.createElement('details');
     details.className = 'reportOptional';
+    details.open = true;
     details.innerHTML = '<summary>Préparer une note de décision (facultatif)</summary><p class="fine">Cette note reprend la synthèse pour relecture ou export PDF ; elle n’est pas nécessaire à la simulation.</p>';
     report.appendChild(details);
     contents.forEach((child) => details.appendChild(child));

@@ -1,0 +1,37 @@
+.workspaceR11{margin-top:18px}
+.workspaceR11Access{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:12px 0}
+.workspaceR11Access button{min-width:0;text-align:left;padding:12px 13px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);cursor:pointer;box-shadow:var(--shadow)}
+.workspaceR11Access button:hover,.workspaceR11Access button[aria-current="page"]{border-color:var(--green);background:#f2f8f3}
+.workspaceR11Access strong{display:block;color:var(--green-dark);font-size:13px}
+.workspaceR11Access small{display:block;margin-top:3px;color:var(--muted);font-size:10px}
+.workspaceR11Tabs{display:flex;gap:5px;border-bottom:1px solid var(--line);margin:6px 0 14px;overflow-x:auto}
+.workspaceR11Tabs button{flex:none;padding:9px 13px;border:0;border-bottom:3px solid transparent;background:transparent;color:#52695e;font-weight:750;cursor:pointer}
+.workspaceR11Tabs button[aria-selected="true"]{border-bottom-color:var(--gold);color:var(--green-dark)}
+.workspaceR11Panel[hidden]{display:none!important}
+.workspaceR11Panel>.sectionSummary{margin-top:0}
+.workspaceR11Intro{padding:11px 13px;border-radius:9px;background:var(--soft);color:var(--muted);font-size:12px}
+.workspaceR11InfoGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.workspaceR11Info{padding:13px;border:1px solid var(--line);border-radius:11px;background:#fcfdfb}
+.workspaceR11Info h3{margin:0 0 5px;color:var(--green-dark);font-size:14px}
+.workspaceR11Info p{margin:0;color:var(--muted);font-size:12px}
+.workspaceR11Documents{margin-top:12px}
+.workspaceR11Documents .table{min-width:600px}
+.workspaceR11DocMetrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:12px 0}
+.workspaceR11DocMetrics article{display:grid;gap:3px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:#f8fbf8}
+.workspaceR11DocMetrics b{color:var(--green-dark);font-size:20px}
+.workspaceR11DocMetrics span,.workspaceR11DocumentTable td small,.workspaceR11DocumentTable th small{display:block;margin-top:4px;color:var(--muted);font-size:11px;font-weight:500}
+.workspaceR11DocState{display:inline-flex;padding:4px 8px;border-radius:99px;font-size:11px;font-weight:800;white-space:nowrap}
+.workspaceR11DocState.is-present{background:#e4f3e9;color:#17623e}
+.workspaceR11DocState.is-missing{background:#fff2d1;color:#785600}
+.workspaceR11DocLink{font-weight:700}
+.workspaceR11Upload{white-space:nowrap}
+#workspaceR11DocumentStatus[data-tone="success"]{color:#17623e}
+#workspaceR11DocumentStatus[data-tone="error"]{color:#9b2c2c}
+.workspaceR11Notice{margin-top:11px;padding:10px 12px;border-radius:9px;background:#f1f3f1;color:#53675e;font-size:11px}
+.workspaceR11Decision{padding:14px;border:1px solid var(--line);border-radius:11px;background:#fcfdfb}
+.workspaceR11Decision p{margin:5px 0;color:var(--muted);font-size:12px}
+.workspaceR11ReportHistory{margin-top:14px}
+.workspaceR11 .reportToolbar{margin-top:10px}
+@media(max-width:900px){.workspaceR11Access{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.workspaceR11Access{gap:7px}.workspaceR11Access button{padding:10px}.workspaceR11Access strong{font-size:12px}.workspaceR11Access small{font-size:9px}.workspaceR11Tabs button{padding:8px 10px;font-size:12px}.workspaceR11InfoGrid{grid-template-columns:1fr}.workspaceR11DocMetrics{grid-template-columns:1fr}.workspaceR11Documents .table{min-width:560px}.workspaceR11Upload{font-size:11px;padding:7px}}
+@media print{.workspaceR11Access,.workspaceR11Tabs{display:none!important}.workspaceR11Panel[hidden]{display:none!important}.workspaceR11InfoGrid{break-inside:avoid}}

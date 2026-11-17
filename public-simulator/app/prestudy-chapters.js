@@ -3,6 +3,33 @@
   const $ = (id) => document.getElementById(id);
   const make = (tag, text, cls) => { const n = document.createElement(tag); if (text) n.textContent = text; if (cls) n.className = cls; return n; };
   let riskEditor, revealRisk;
+  // Prototype OOI : ne se charge que sur un serveur local avec flag explicite.
+  const configOOI = window.SOLARSHIFT_CONFIG || {};
+  const OOI_LOCAL_PREVIEW = ['localhost', '127.0.0.1', '::1', '[::1]'].includes(location.hostname.toLowerCase())
+    && (configOOI.OOI_VISUAL_PREVIEW_ENABLED === true
+      || new URLSearchParams(location.search).get('OOI_VISUAL_PREVIEW_ENABLED') === 'true');
+  let ooiView = null;
+  function refreshOOI() { ooiView?.mountPrestudyPanel(); }
+  if (OOI_LOCAL_PREVIEW) {
+    import('./ooi-visual-v04.mjs?v=20261113-portfolio-save-fix-1').then((module) => {
+      ooiView = module;
+      if (!document.getElementById('ooiVisualStyle')) {
+        const link = make('link'); link.id = 'ooiVisualStyle'; link.rel = 'stylesheet'; link.href = './ooi-visual-v04.css'; document.head.append(link);
+      }
+      refreshOOI();
+    }).catch((error) => console.warn('OOI aperçu indisponible', error));
+    // Ne pas écouter l'événement de présentation : la synthèse possède un observateur DOM existant,
+    // et un rerendu OOI pourrait provoquer une boucle d'observation.
+    ['ozeno:commercial-production-preview', 'ozeno:carbon-impact-preview', 'ozeno:finance-summary-ready', 'ozeno:local-finance', 'ozeno:risk-document-attached', 'ozeno:prestudy-chapter-shown', 'ozeno:project-context-loaded'].forEach((event) => window.addEventListener(event, refreshOOI));
+    // Refresh après les gestionnaires existants; cela ne modifie aucune saisie ni aucun résultat.
+    window.addEventListener('input', (event) => {
+      if (event.target?.closest?.('#audit-finance')) queueMicrotask(refreshOOI);
+    });
+    window.addEventListener('click', (event) => {
+      if (event.target?.closest?.('#addRisk')) queueMicrotask(refreshOOI);
+    });
+  }
+
 
   function section(root, id, label, nodes) {
     const host = make('section', null, 'prestudyDSection'); host.id = id;
@@ -39,32 +66,91 @@
       identity.append(actions);
     }
     section(root, 'prestudyProjectIdentityGroup', 'Fiche projet', [identity]);
-    section(root, 'prestudyProjectLocationGroup', 'Localisation', [location]);
+    const locationSection = section(root, 'prestudyProjectLocationGroup', 'Localisation', []);
+    const workspace = make('div', null, 'prestudyLocationWorkspace');
+    const fields = make('div', null, 'prestudyLocationFields'); fields.id = 'prestudyLocationFields';
+    fields.append(location);
+    const mapPanel = make('section', null, 'prestudyLocationMap'); mapPanel.setAttribute('aria-label', 'Carte de localisation du site');
+    const mapTitle = make('h3', 'Localiser et choisir la parcelle');
+    const mapSlot = make('div'); mapSlot.id = 'prestudyLocationMapSlot';
+    mapPanel.append(mapTitle, make('p', 'Pour déplacer le repère, cliquez sur « Modifier sur la carte », puis cliquez sur l’emplacement souhaité.', 'fine'), mapSlot);
+    workspace.append(fields, mapPanel); locationSection.panel.append(workspace);
     const config = window.SOLARSHIFT_CONFIG = window.SOLARSHIFT_CONFIG || {};
-    config.parcelQualificationReady = import('./parcel-qualification-ui.mjs').then(module => module.mountParcelQualification($('prestudyProjectLocationGroup').querySelector('.prestudyDPanel')));
+    config.parcelQualificationReady = import('./parcel-qualification-ui.mjs?v=20261116-address-confirmation-fix-1').then(module => module.mountParcelQualification(fields));
     const provenanceSection = section(root, 'prestudyProjectProvenanceGroup', 'Origine des données', [provenance]);
     provenanceSection.panel.append(make('p', 'Les sources sont précisées au niveau des champs et résultats concernés ; aucun récapitulatif séparé de provenance n’est disponible dans cette fiche.', 'prestudyProvenanceEmpty'));
   }
   function prepareSurfaces() {
     const root = $('audit-roof'); root.querySelector(':scope > h2')?.classList.add('prestudySrOnly');
     const nature = $('earlySolarProjectType');
-    if (nature) { const h = nature.querySelector('h2'); if (h) { h.id = 'prestudySurfaceKindTitle'; h.classList.add('prestudyDHeading'); nature.before(h); } nature.classList.add('prestudyDPanel'); }
+    const mapGuide = $('earlySolarMappingGuide');
+    if (nature) {
+      const h = nature.querySelector('h2');
+      if (h) { h.id = 'prestudySurfaceKindTitle'; h.classList.add('prestudyDHeading'); }
+      nature.classList.add('prestudyDPanel');
+    }
+    if (mapGuide) mapGuide.classList.add('prestudyDPanel');
+    if (nature && mapGuide && !nature.parentElement?.classList.contains('prestudySurfaceSelectors')) {
+      const selectors = make('div', null, 'prestudySurfaceSelectors');
+      nature.before(selectors);
+      selectors.append(nature, mapGuide);
+    }
     headingBefore($('map'), 'prestudySurfaceMapTitle', 'Carte et tracé');
-    headingBefore($('roofSurfaceGeneral'), 'prestudySurfaceAreasTitle', 'Zones et surfaces');
-    $('roofSurfaceGeneral').classList.add('prestudyDPanel');
-    const qualification = section($('roofSurfaces'), 'prestudySurfaceQualification', 'Qualification toiture', [$('manualAreaSettings'), $('roofSurfaceCards')]);
-    qualification.host.dataset.surfaceQualification = 'true';
+    const mapSlot = make('div'); mapSlot.id = 'prestudySurfaceMapSlot';
+    $('map').before(mapSlot); mapSlot.append($('map'));
+    const settings = $('manualAreaSettings');
+    const settingsForm = settings?.querySelector('.form');
     const roofState = $('roof')?.closest('label');
+    const areaForm = $('roofSurfaceGeneral')?.querySelector('.form');
+    const manualMaterial = $('manualRoofMaterial')?.closest('label');
+    const pitch = $('tilt')?.closest('label');
+    const orientation = $('manualAzimuth')?.closest('label');
+    const shade = $('shade')?.closest('label');
+    const condition = roofState;
+    const flatTilt = $('manualFlatTilt')?.closest('label');
+    const density = $('manualDensityWcM2')?.closest('label');
+    [manualMaterial, pitch, orientation, shade, flatTilt, density].filter(Boolean).forEach((node) => settingsForm?.append(node));
+    const qualification = section($('roofSurfaces'), 'prestudySurfaceQualification', 'Qualification des surfaces', [$('roofSurfaceGeneral'), settings, $('roofSurfaceCards')]);
+    qualification.host.dataset.surfaceQualification = 'true';
     if (roofState) {
       const labelText = [...roofState.childNodes].find((node) => node.nodeType === Node.TEXT_NODE);
       if (labelText) labelText.textContent = 'État apparent du bâtiment';
       $('roof')?.setAttribute('aria-label', 'État apparent du bâtiment');
+      if (!root.querySelector('#roofSurfaceCards .roofSurface .form')?.contains(roofState)) qualification.panel.append(roofState);
     }
-    qualification.panel.prepend(make('p', 'Sans toiture tracée, les paramètres généraux servent de référence. Dès qu’une toiture est tracée, ses caractéristiques propres (type, orientation, pente et ombrage) prévalent pour son estimation PVGIS. L’état apparent reste une appréciation unique du bâtiment.', 'fine prestudySurfacePriorityNote'));
+    const notes = make('div', null, 'prestudySurfacePriorityNotes');
+    notes.append(
+      make('p', 'Sans toiture tracée, les paramètres généraux servent de référence. Dès qu’une toiture est tracée, ses caractéristiques propres (type, orientation, pente et ombrage) prévalent pour son estimation PVGIS. L’état apparent reste une appréciation unique du bâtiment.', 'fine prestudySurfacePriorityNote'),
+      make('p', 'Pour les autres surfaces, renseignez orientation et inclinaison. L’ombrage est facultatif ; sans donnée, aucune réduction supplémentaire n’est appliquée.', 'fine prestudySurfaceOtherNote')
+    );
+    qualification.panel.prepend(notes);
+    if (areaForm) {
+      areaForm.classList.add('prestudySurfaceFieldGrid');
+      $('roofTotal')?.closest('label')?.classList.add('prestudySurfaceField', 'prestudySurfaceTotalField');
+      $('roofRatio')?.closest('label')?.classList.add('prestudySurfaceField', 'prestudySurfaceRatioField');
+      $('roofUsableAreaReadout')?.classList.add('prestudySurfaceField', 'prestudySurfaceUsableField');
+    }
+    settingsForm?.classList.add('prestudySurfaceFieldGrid');
+    manualMaterial?.classList.add('prestudySurfaceField', 'prestudySurfaceMaterialField');
+    pitch?.classList.add('prestudySurfaceField', 'prestudySurfacePitchField');
+    orientation?.classList.add('prestudySurfaceField', 'prestudySurfaceOrientationField');
+    shade?.classList.add('prestudySurfaceField', 'prestudySurfaceShadeField');
+    condition?.classList.add('prestudySurfaceField', 'prestudySurfaceConditionField');
+    flatTilt?.classList.add('prestudySurfaceField', 'prestudySurfaceFlatTiltField');
+    density?.classList.add('prestudySurfaceField', 'prestudySurfaceDensityField');
+    $('roofSurfaceGeneral')?.classList.add('prestudySurfaceGeneralFields');
+    settings?.classList.add('prestudySurfaceManualFields');
+    $('roofSurfaceCards')?.classList.add('prestudySurfaceCards');
     const advanced = root.querySelector('.roofExpertSettings');
     if (advanced) { headingBefore(advanced, 'prestudySurfaceAdvancedTitle', 'Paramètres avancés et documents'); advanced.classList.add('prestudyDPanel'); }
+    // Emplacements résolus avant l'assemblage des liens du shell; les nœuds restent ceux des formulaires existants.
+    if (OOI_LOCAL_PREVIEW) {
+      const documents = $('roofInstallerStudyTitle')?.closest('.roofInstallerStudy');
+      const partners = make('section', null, 'ooiPartnersSlot'); partners.id = 'ooiPartnersSlot'; root.append(partners);
+      if (documents) { documents.id = 'ooiInstallerDocuments'; root.append(documents); }
+    }
     // Les deux tuiles restent accessibles dans la production ; retrait du seul bloc de surface redondant.
-    $('roofSurfaceGeneral').querySelectorAll('.metric').forEach((n) => {
+    $('roofSurfaceGeneral')?.querySelectorAll('.metric').forEach((n) => {
       if (/^(Zones identifiées|Couverture)$/.test(n.querySelector('b,small')?.textContent.trim() || '')) n.hidden = true;
     });
   }
@@ -73,9 +159,24 @@
     const legacy = [...root.children];
     const production = section(root, 'prestudyPerformanceProductionGroup', 'Production PVGIS', [estimate]);
     const load = section(root, 'prestudyPerformanceLoadGroup', 'Consommation et profil de charge', [study]);
-    section(root, 'prestudyPerformanceMatchingGroup', 'Adéquation énergétique', [make('p', 'Les profils et répartitions indicatifs sont présentés ci-dessus avec leurs limites. Les parts ACI, ACC, IRVE et surplus restent réglables dans Finance & décision.', 'fine')]);
-    const matchingLink = make('a', 'Accéder à la valorisation de l’énergie →'); matchingLink.href = '#prestudy-finance-allocation';
-    $('prestudyPerformanceMatchingGroup').lastElementChild.append(matchingLink);
+    const matching = section(root, 'prestudyPerformanceMatchingGroup', 'Adéquation énergétique', []);
+    const flowNotice = make('div', null, 'prestudyEnergyFlowNotice');
+    flowNotice.setAttribute('role', 'note');
+    const flowHeader = make('div', null, 'prestudyEnergyFlowHeader');
+    flowHeader.append(
+      make('span', 'Production : estimation PVGIS', 'prestudyEnergyFlowBadge'),
+      make('span', 'Destinations : non calculées', 'prestudyEnergyFlowBadge isUnavailable')
+    );
+    flowNotice.append(
+      flowHeader,
+      make('p', 'Dans cette pré-étude, la production PVGIS est une estimation. Les références annuelles ou mensuelles de consommation ne suffisent pas à calculer les volumes d’autoconsommation, d’injection ou d’ACC.'),
+      make('p', 'Les montants associés à ces destinations dans les hypothèses financières restent des scénarios à instruire : ils ne représentent ni des flux mesurés ni un résultat de matching temporel.')
+    );
+    const financeAction = make('p', null, 'fine prestudyDInlineAction');
+    const financeLink = make('a', 'Consulter les hypothèses financières →');
+    financeLink.href = '#audit-finance';
+    financeAction.append(financeLink);
+    matching.panel.append(flowNotice, financeAction);
     if (estimate) {
       const action = make('p', null, 'fine prestudyDInlineAction');
       const link = make('a', 'Ajuster les surfaces et la qualification de toiture →');
@@ -84,23 +185,37 @@
       production.panel.append(action);
     }
     const climateGroup = section(root, 'prestudyPerformanceClimateGroup', 'Variabilité climatique historique', [climate]);
-    if (climate) {
-      const action = make('p', null, 'fine prestudyDInlineAction');
-      const link = make('a', 'Accéder à Production PVGIS →');
-      link.href = '#prestudyPerformanceProductionGroup';
-      action.append(link);
-      climateGroup.panel.append(action);
+    const placeClimatePanel = () => {
+      const currentClimate = $('climateYieldPanel');
+      if (currentClimate && !climateGroup.panel.contains(currentClimate)) climateGroup.panel.prepend(currentClimate);
+      if (currentClimate && !climateGroup.panel.querySelector('.prestudyDInlineAction')) {
+        const action = make('p', null, 'fine prestudyDInlineAction');
+        const link = make('a', 'Accéder à Production PVGIS →');
+        link.href = '#prestudyPerformanceProductionGroup';
+        action.append(link); climateGroup.panel.append(action);
+      }
+    };
+    placeClimatePanel();
+    if (!climateGroup.panel.querySelector('#climateYieldPanel')) {
+      const climateObserver = new MutationObserver(() => {
+        placeClimatePanel();
+        if (climateGroup.panel.querySelector('#climateYieldPanel')) climateObserver.disconnect();
+      });
+      climateObserver.observe(document.body, { childList: true, subtree: true });
     }
     const productionCurve = study?.querySelector('.productionCurve');
     const profileBars = study?.querySelector('#profileBars');
     const profileLine = study?.querySelector('#profileP50');
     if (productionCurve && profileBars && !study.querySelector('.prestudyProductionPending')) {
-      const pending = make('p', 'Le graphique mensuel s’affichera après une estimation PVGIS réussie.', 'fine prestudyProductionPending');
+      const pending = make('p', 'Les repères mensuels restent visibles ; les barres de production apparaîtront après un calcul PVGIS réussi.', 'fine prestudyProductionPending');
       pending.setAttribute('role', 'status');
       productionCurve.insertAdjacentElement('afterend', pending);
       const syncProductionGraph = () => {
         const ready = profileBars.childElementCount >= 12 || Boolean(profileLine?.getAttribute('points')?.trim());
-        productionCurve.hidden = !ready;
+        // Keep the chart frame and month axis in place while PVGIS is pending.
+        // Hiding the whole plot made the monthly chart appear to have vanished.
+        productionCurve.hidden = false;
+        productionCurve.setAttribute('aria-busy', String(!ready));
         pending.hidden = ready;
       };
       syncProductionGraph();
@@ -108,23 +223,101 @@
       if (profileLine) new MutationObserver(syncProductionGraph).observe(profileLine, { attributes: true, attributeFilter: ['points'] });
     }
     // Ces contrôles historiques restent en place : leurs identifiants sont encore lus par PVGIS, Risques, Enedis, Finance et la restauration du brouillon.
-    const terrain = section(root, 'prestudyPerformanceTerrainGroup', 'Fiche terrain actuelle', legacy);
-    terrain.panel.prepend(make('p', 'Cette rubrique reprend la fiche terrain historique : surface utilisable, orientation, pente, ombrage, état apparent et consommation. Les valeurs sont maintenant renseignées dans « Surfaces solaires » et « Consommation et profil de charge » ; cette fiche ne contient donc pas de valeur indépendante. Le badge « Commercial » indique le contexte de pré-étude, pas une qualification technique du site.', 'fine prestudyTerrainNote'));
+    const legacyTerrain = make('div', null, 'prestudyTerrainLegacy');
+    legacyTerrain.hidden = true;
+    legacyTerrain.setAttribute('aria-hidden', 'true');
+    legacy.forEach((node) => legacyTerrain.append(node));
+    root.append(legacyTerrain);
     production.panel.querySelector(':scope > #roofEstimate > h3')?.classList.add('prestudySrOnly');
     production.panel.querySelector('#roofEstimate > .sectionTitle h2')?.classList.add('prestudySrOnly');
     climate?.querySelector(':scope > h3')?.classList.add('prestudySrOnly');
     load.panel.querySelector('#consumptionReferenceGroup')?.classList.add('prestudyDFlat');
+    const consumptionGroup = load.panel.querySelector('#consumptionReferenceGroup');
+    if (consumptionGroup && !$('prestudyPrm')) {
+      const label = make('label', 'PDL / PRM du site (facultatif)');
+      const prm = make('input'); prm.id = 'prestudyPrm'; prm.type = 'text'; prm.inputMode = 'numeric'; prm.maxLength = 14;
+      prm.autocomplete = 'off'; prm.placeholder = '14 chiffres, si connu'; prm.setAttribute('aria-describedby', 'prestudyPrmHelp');
+      const help = make('small', 'Identifiant du point de livraison / point de référence mesure. À confirmer sur une facture ou auprès du client.'); help.id = 'prestudyPrmHelp';
+      label.append(prm, help); consumptionGroup.append(label);
+    }
   }
   function prepareRisks() {
     const root = $('audit-risk'), selector = $('riskFactor');
     const form = selector.closest('.form');
     root.querySelector('.sectionTitle h2')?.classList.add('prestudySrOnly');
+    const urbanism = section(root, 'prestudyParcelUrbanism', 'Urbanisme de la parcelle', []);
+    urbanism.panel.id = 'prestudyParcelUrbanismPanel';
+    const installerSection = section(root, 'prestudyInstallerInfoSection', 'Informations pour l’installateur', []);
+    const installer = make('details', null, 'prestudyInstallerInfo'); installer.id = 'prestudyInstallerInfo';
+    installer.append(make('summary', 'Profil solaire, toiture et raccordement'));
+    const installerIntro = make('p', 'Repères de pré-étude pour préparer la visite et les échanges avec le gestionnaire de réseau. Les résultats de proximité ne valent pas une étude de raccordement.', 'fine');
+    const installerData = make('div', null, 'prestudyInstallerInfoContent'); installerData.id = 'prestudyInstallerInfoContent';
+    installer.append(installerIntro, installerData); installerSection.panel.append(installer);
+    const renderInstallerInfo = () => {
+      installerData.replaceChildren();
+      const facts = make('dl', null, 'prestudyInstallerFacts');
+      const config = window.SOLARSHIFT_CONFIG || {};
+      const production = config.commercialProductionPreview;
+      const addFact = (label, value) => { const row = make('div'); row.append(make('dt', label), make('dd', value || 'À compléter')); facts.append(row); };
+      const fmt = value => Number.isFinite(Number(value)) && Number(value) > 0 ? Number(value).toLocaleString('fr-FR', { maximumFractionDigits: 1 }) : null;
+      addFact('Profil solaire PVGIS', production?.status === 'READY' ? `${fmt(production.annualKwh) || 'À compléter'} kWh/an · ${fmt(production.specificYieldKwhKwp) || 'À compléter'} kWh/kWc/an` : 'En attente du calcul des surfaces');
+      addFact('Puissance estimée', production?.status === 'READY' ? `${fmt(production.installedCapacityKwp) || 'À dimensionner'} kWc` : 'À dimensionner');
+      const roof = window.OzenoRoofSurfaces?.captureDraft?.();
+      const roofConfigs = roof?.surfaces?.length ? roof.surfaces.map(surface => surface.configuration || {}) : [roof?.manualConfiguration || {}];
+      const roofParameters = roofConfigs.map((item, index) => {
+        const type = item.type === 'PITCHED' ? 'inclinée' : item.type === 'FLAT' ? 'plate' : item.type || '';
+        const orientation = item.orientation || (index === 0 ? $('manualAzimuth')?.value : '') || '';
+        const tilt = item.pitch || item.flatTilt || '';
+        const shade = item.shade || (index === 0 ? $('shade')?.value : '') || '';
+        return [type, orientation ? `orientation ${orientation}°` : '', tilt ? `inclinaison ${tilt}°` : '', shade ? `ombrage ${shade}` : ''].filter(Boolean).join(' · ');
+      }).filter(Boolean);
+      addFact('Paramètres des surfaces', roofParameters.length ? [...new Set(roofParameters)].join(' ; ') : 'À renseigner dans Surfaces solaires');
+      const qualification = window.OzenoParcelQualification?.capture?.();
+      const networks = qualification?.siteContext?.networks;
+      if (networks) {
+        import('./site-context-view.mjs').then(({ networkSummary }) => {
+          if (!facts.isConnected) return;
+          for (const [label, kind] of [['Réseau BT', 'BT'], ['Réseau HTA', 'HTA'], ['Poste HTA/BT', 'POSTE']]) addFact(label, networkSummary(networks, kind));
+        });
+      } else {
+        addFact('Réseaux électriques', 'À rechercher après confirmation de la parcelle');
+      }
+      installerData.append(facts);
+      const limitation = make('p', 'Distances indicatives à vol d’oiseau depuis la parcelle ; elles ne donnent ni le tracé, ni la capacité, ni le coût du raccordement.', 'fine'); installerData.append(limitation);
+      const horizonHost = make('div', null, 'prestudyInstallerHorizon');
+      installerData.append(horizonHost);
+      if (qualification?.horizon) import('./qualification-horizon.mjs').then(({ appendHorizon }) => {
+        if (installerData.isConnected) appendHorizon(horizonHost, qualification.horizon);
+      });
+      else horizonHost.append(make('p', 'Profil du relief et courses du soleil : à compléter après consultation PVGIS.', 'fine'));
+      if (qualification && (!networks || networks.state !== 'AVAILABLE' || qualification.horizon?.state !== 'AVAILABLE')) {
+        const retry = make('button', 'Rechercher les réseaux et le profil du relief'); retry.type = 'button'; retry.className = 'secondary';
+        retry.addEventListener('click', async () => {
+          retry.disabled = true; retry.textContent = 'Consultation des sources…';
+          try { await window.OzenoParcelQualification?.refreshContext?.(); }
+          finally { retry.disabled = false; retry.textContent = 'Rechercher les réseaux et le profil du relief'; }
+        });
+        installerData.append(retry);
+      } else if (!qualification) {
+        const resume = make('a', 'Reprendre la sélection de la parcelle →'); resume.href = '#prestudy-project-location'; installerData.append(resume);
+      }
+      const surfaceLink = make('a', 'Voir les surfaces et paramètres de toiture →'); surfaceLink.href = '#prestudySurfaceQualification'; installerData.append(surfaceLink);
+    };
+    renderInstallerInfo();
+    window.addEventListener('ozeno:parcel-qualification-updated', renderInstallerInfo);
+    window.addEventListener('ozeno:commercial-production-preview', renderInstallerInfo);
+    window.addEventListener('ozeno:project-context-loaded', renderInstallerInfo);
     const register = section(root, 'prestudyRiskRegister', 'Registre des sept contrôles', []);
+    window.SOLARSHIFT_CONFIG?.parcelQualificationReady?.then(() => window.OzenoParcelQualification?.mountUrbanism(urbanism.panel));
     const editorNodes = [form, $('riskHelp'), root.querySelector('.riskActions'), $('riskEvidenceUploadStatus'), $('riskEvidenceDocuments')];
     riskEditor = make('div', null, 'prestudyRiskEditor'); riskEditor.id = 'prestudyRiskEditor';
     register.panel.append(riskEditor);
     editorNodes.filter(Boolean).forEach((n) => riskEditor.append(n));
-    window.OzenoBuildingEnergyPrestudy?.mountRisk(root, section);
+    const factorLabel = selector.closest('label');
+    if (factorLabel) factorLabel.hidden = true;
+    const factorHeading = make('h3', '', 'prestudyRiskFactorHeading');
+    factorHeading.id = 'prestudyRiskFactorHeading';
+    riskEditor.prepend(factorHeading);
     const rows = new Map(); let active = selector.value, pending = null, internalChange = false, restoringContext = false;
     const source = $('riskSource'), observation = $('riskObservation'), evidence = $('riskEvidence'), file = $('riskEvidenceFile'), upload = $('riskEvidenceUpload');
     const values = () => JSON.stringify([observation.value, evidence.value, source.value]);
@@ -159,8 +352,9 @@
     function open(factor, focus = true) {
       active = factor;
       const row = rows.get(factor); row.host.append(riskEditor); riskEditor.hidden = false;
+      factorHeading.textContent = row.label.textContent;
       rows.forEach((item, key) => item.button.setAttribute('aria-expanded', String(key === factor)));
-      if (focus) { selector.focus({ preventScroll: true }); row.host.scrollIntoView({ block: 'nearest' }); }
+      if (focus) { observation.focus({ preventScroll: true }); row.host.scrollIntoView({ block: 'nearest' }); }
     }
     function select(factor) {
       if (factor !== active) {
@@ -187,7 +381,7 @@
       const button = make('button', 'Examiner'); button.type = 'button'; button.dataset.riskExamine = option.value;
       button.setAttribute('aria-label', `Examiner : ${label.textContent}`); button.setAttribute('aria-controls', riskEditor.id); button.setAttribute('aria-expanded', 'false');
       button.addEventListener('click', () => request(option.value));
-      line.append(label, state, status, button); host.append(line); register.panel.append(host); rows.set(option.value, { host, button, status, state });
+      line.append(label, state, status, button); host.append(line); register.panel.append(host); rows.set(option.value, { host, button, status, state, label });
     });
     // Le contrôle existant reste utilisable : intercepter avant ses handlers seulement en cas de changement de ligne.
     selector.addEventListener('change', (event) => {
@@ -213,6 +407,47 @@
   }
   function prepareFinancePresentation() {
     const root = $('audit-finance');
+    if (root && !root.querySelector('#prestudyFinanceDecisionGuide')) {
+      const guide = make('aside', null, 'prestudyFinanceDecisionGuide');
+      guide.id = 'prestudyFinanceDecisionGuide';
+      guide.setAttribute('aria-label', 'Lecture des résultats financiers');
+      const heading = make('h3', 'Lecture des résultats');
+      const grid = make('div', null, 'prestudyFinanceDecisionGrid');
+      const addItem = (id, label, value) => {
+        const item = make('div'); item.append(make('small', label));
+        const result = make('strong', value); result.id = id; item.append(result); grid.append(item);
+      };
+      addItem('prestudyFinanceBeneficiary', 'Bénéficiaire retenu', 'À sélectionner');
+      addItem('prestudyFinanceBasis', 'Base affichée', 'Hypothèses actives');
+      addItem('prestudyFinanceCompare', 'Comparaison', 'Une option à la fois');
+      const note = make('p', 'Les recettes ACI, ACC et surplus reposent sur les parts et prix annuels saisis. Elles restent des hypothèses tant qu’un matching temporel lié au projet et au scénario n’est pas établi.', 'fine');
+      note.id = 'prestudyFinanceDecisionNote';
+      guide.append(heading, grid, note);
+      const hint = root.querySelector(':scope > .hint');
+      if (hint) hint.insertAdjacentElement('afterend', guide);
+      else root.prepend(guide);
+    }
+    const updateDecisionGuide = () => {
+      if (!root) return;
+      const owner = $('financialAnalysis')?.value !== 'investor';
+      const horizon = Number($('term')?.value);
+      const debtShare = Number($('debtShare')?.value);
+      const preview = window.SOLARSHIFT_FINANCIAL_PREVIEW || {};
+      const ready = preview.status === 'READY';
+      const beneficiary = $('prestudyFinanceBeneficiary');
+      const basis = $('prestudyFinanceBasis');
+      const comparison = $('prestudyFinanceCompare');
+      if (beneficiary) beneficiary.textContent = owner ? 'Propriétaire exploitant' : 'Tiers investisseur / SPV';
+      if (basis) basis.textContent = `${ready ? 'Aperçu recalculé' : 'À calculer'}${Number.isFinite(horizon) && horizon > 0 ? ` · ${horizon} ans` : ''} · avant IS`;
+      if (comparison) comparison.textContent = 'Une configuration active · comparaison indisponible';
+      const note = $('prestudyFinanceDecisionNote');
+      if (note) {
+        const debt = Number.isFinite(debtShare) && debtShare > 0
+          ? `Dette saisie : ${debtShare.toLocaleString('fr-FR', { maximumFractionDigits: 1 })} % ; le DSCR n’est pertinent que si le modèle fournit ce ratio sur la période de dette.`
+          : 'Aucune dette saisie : le DSCR est non applicable.';
+        note.textContent = `${debt} Les recettes ACI, ACC et surplus reposent sur les parts et prix annuels saisis ; elles restent des hypothèses tant qu’un matching temporel lié au projet et au scénario n’est pas établi.`;
+      }
+    };
     const funding = root?.querySelector('.financeFundingConfiguration');
     const irve = root?.querySelector('#irveInvestmentGroup');
     if (funding && irve) irve.before(funding);
@@ -220,7 +455,15 @@
     presentationHeadingBefore(funding, 'prestudyFinanceFundingHeading', 'Financement');
     presentationHeadingBefore(root?.querySelector('.financeRevenueGroups'), 'prestudyFinanceValuationHeading', 'Valorisation énergétique');
     presentationHeadingBefore(root?.querySelector('.financePreviewMetrics'), 'prestudyFinanceResultsHeading', 'Résultats financiers · aperçu');
-    window.OzenoBuildingEnergyPrestudy?.mountFunding(root);
+    updateDecisionGuide();
+    if (root && root.dataset.decisionGuideListeners !== 'true') {
+      root.dataset.decisionGuideListeners = 'true';
+      root.addEventListener('input', updateDecisionGuide);
+      root.addEventListener('change', updateDecisionGuide);
+      window.addEventListener('ozeno:finance-summary-ready', updateDecisionGuide);
+      window.addEventListener('ozeno:local-finance', updateDecisionGuide);
+      window.addEventListener('ozeno:project-context-loaded', updateDecisionGuide);
+    }
   }
   function addPreviewMetric(grid, id, label, valueId, noteId, description) {
     if (!grid || $(id)) return;
@@ -235,6 +478,13 @@
     const energyGrid = root?.querySelector('.decisionGrid');
     if (energyGrid && !energyGrid.id) energyGrid.id = 'prestudySummaryEnergyGrid';
     presentationHeadingBefore(energyGrid, 'prestudySummaryEnergyHeading', 'Indicateurs énergétiques');
+    if (root && energyGrid && !root.querySelector('#prestudySummaryStatus')) {
+      const status = make('aside', null, 'prestudySummaryStatus');
+      status.id = 'prestudySummaryStatus';
+      status.setAttribute('role', 'note');
+      status.textContent = 'Aperçu commercial · non canonique. Les indicateurs reprennent l’option et les hypothèses financières actives. Les recettes ACI et ACC issues de parts annuelles restent théoriques tant qu’un matching temporel lié au même projet et scénario n’est pas établi.';
+      energyGrid.before(status);
+    }
     const profile = root?.querySelector('.decisionProductionProfile');
     if (profile && !profile.id) profile.id = 'prestudySummaryProduction';
     const financeGrid = $('decisionFinanceMetricGrid') || $('decisionFinanceMetrics')?.querySelector('.decisionFinanceMetricGrid');
@@ -246,7 +496,7 @@
     if (lcoe) {
       if (!lcoe.id) lcoe.id = 'prestudySummaryLcoe';
       if (!lcoe.querySelector('.decisionLcoeMethod')) {
-        const method = make('small', 'Méthode existante : CAPEX, commission initiale et OPEX non actualisés rapportés à la production totale estimée.', 'decisionLcoeMethod');
+        const method = make('small', 'Méthode : CAPEX total du projet (y compris IRVE) + OPEX et renouvellements − valeur terminale, divisés par la production cumulée dégradée. Ratio non actualisé, avant impôts et intérêts ; le coût IRVE augmente donc le coût par kWh solaire, même sans recette IRVE.', 'decisionLcoeMethod');
         $('dashLcoe').insertAdjacentElement('afterend', method);
       }
     }
@@ -276,9 +526,9 @@
   function prepare() {
     if (!$('audit-project') || $('audit-project').classList.contains('prestudyChapterD')) return;
     // Vérifiable avant/après composition : aucune copie de contrôle ni nouvelle valeur métier.
-    const link = make('link'); link.rel = 'stylesheet'; link.href = './prestudy-chapters.css?v=20261111-envelope-heating'; document.head.append(link);
+    const link = make('link'); link.rel = 'stylesheet'; link.href = './prestudy-chapters.css?v=20261115-crux13-performance-1'; document.head.append(link);
     ['audit-project', 'audit-roof', 'audit-solar', 'audit-risk'].forEach((id) => $(id).classList.add('prestudyChapterD'));
-    const phaseEStyle = make('link'); phaseEStyle.id = 'prestudyPhaseEStyles'; phaseEStyle.rel = 'stylesheet'; phaseEStyle.href = './prestudy-phase-e.css?v=20261111-envelope-heating'; document.head.append(phaseEStyle);
+    const phaseEStyle = make('link'); phaseEStyle.id = 'prestudyPhaseEStyles'; phaseEStyle.rel = 'stylesheet'; phaseEStyle.href = './prestudy-phase-e.css?v=20261115-crux13-finance-summary-1'; document.head.append(phaseEStyle);
     ['audit-finance', 'audit-efficiency', 'ozeno-summary'].forEach((id) => $(id)?.classList.add('prestudyChapterE'));
     document.querySelector('.reportEditor')?.classList.add('prestudyChapterE');
     prepareProject(); prepareSurfaces(); preparePerformance(); prepareRisks();
@@ -287,5 +537,33 @@
     const summary = $('ozeno-summary');
     if (summary) new MutationObserver(prepareSummaryPresentation).observe(summary, { childList: true, subtree: true });
   }
-  window.OzenoPrestudyChapters = Object.freeze({ prepare, refreshSummaryPresentation: prepareSummaryPresentation, reveal(target) { if (riskEditor?.contains(target)) revealRisk(); } });
+  function placeSharedMap(chapter) {
+    const map = $('map'), locationMode = chapter === 'project';
+    const target = $(locationMode ? 'prestudyLocationMapSlot' : 'prestudySurfaceMapSlot');
+    if (!map || !target) return;
+    const moved = map.parentElement !== target;
+    const config = window.SOLARSHIFT_CONFIG = window.SOLARSHIFT_CONFIG || {};
+    if (config.siteLocationMapActive !== locationMode) window.dispatchEvent(new CustomEvent('ozeno:site-map-mode-cancel'));
+    config.siteLocationMapActive = locationMode;
+    // Legacy demonstration pins must never appear as the location of a new project.
+    if (locationMode && typeof marks !== 'undefined') Object.values(marks).forEach(marker => window.solarMap?.removeLayer(marker));
+    map.dataset.mapPurpose = locationMode ? 'location' : 'surfaces';
+    if (map.parentElement !== target) target.append(map);
+    window.dispatchEvent(new CustomEvent('ozeno:shared-map-placed', { detail: { chapter } }));
+    // Leaflet caches its dimensions when constructed in the original roof panel.
+    // Recalculate after the chapter becomes visible and the new panel has laid out.
+    requestAnimationFrame(() => {
+      window.solarMap?.invalidateSize({ pan: false });
+      requestAnimationFrame(() => {
+        window.solarMap?.invalidateSize({ pan: false });
+        if (moved) {
+          // Reload visible tiles after the shared map has moved out of its hidden chapter.
+          window.solarMap?.eachLayer?.((layer) => {
+            if (layer._url && typeof layer.redraw === 'function') layer.redraw();
+          });
+        }
+      });
+    });
+  }
+  window.OzenoPrestudyChapters = Object.freeze({ prepare, placeSharedMap, refreshSummaryPresentation: prepareSummaryPresentation, reveal(target) { if (riskEditor?.contains(target)) revealRisk(); } });
 }());

@@ -276,7 +276,10 @@ export function buildProvisionalReport({ id, title, site, financialViewpoint = '
         production: Array.isArray(visuals.production?.monthlyKwh) && visuals.production.monthlyKwh.length === 12 ? {
           monthlyKwh: visuals.production.monthlyKwh.map(Number).filter(value => Number.isFinite(value) && value >= 0),
           annualKwh: visuals.production.annualKwh != null && Number.isFinite(Number(visuals.production.annualKwh)) ? Number(visuals.production.annualKwh) : null,
-          consumptionAnnualKwh: visuals.production.consumptionAnnualKwh != null && Number.isFinite(Number(visuals.production.consumptionAnnualKwh)) ? Number(visuals.production.consumptionAnnualKwh) : null
+          consumptionAnnualKwh: visuals.production.consumptionAnnualKwh != null && Number.isFinite(Number(visuals.production.consumptionAnnualKwh)) ? Number(visuals.production.consumptionAnnualKwh) : null,
+          consumptionMonthlyKwh: Array.isArray(visuals.production.consumptionMonthlyKwh) && visuals.production.consumptionMonthlyKwh.length === 12 && visuals.production.consumptionMonthlyKwh.every(value => Number.isFinite(Number(value)) && Number(value) >= 0) ? visuals.production.consumptionMonthlyKwh.map(Number) : null,
+          consumptionProfileType: ['ENEDIS_SYNTHETIC', 'ENEDIS_MEASURED'].includes(visuals.production.consumptionProfileType) ? visuals.production.consumptionProfileType : null,
+          consumptionProfileId: clean(visuals.production.consumptionProfileId).slice(0, 120) || null
         } : null,
         revenue: Array.isArray(visuals.revenue?.items) ? {
           title: clean(visuals.revenue.title) || 'Répartition des économies et recettes · année 1',

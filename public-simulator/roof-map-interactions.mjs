@@ -12,9 +12,9 @@ export function ringContainsPoint(ring, latitude, longitude) {
 }
 
 // The map owns selection. No preliminary button or nearest-building guess is needed.
-export function installRoofMapInteractions({ map, shapes, leaflet, onChange, onStatus, onEditing, drawControl,
+export function installRoofMapInteractions({ map, shapes, leaflet, onChange, onStatus, onEditing,
   fetchFootprints = fetchBuildingFootprints }) {
-  let drawing = false, correction = null, pendingEdit = null, request = null, requestTimer = null, footprintDetectionEnabled = true, suspended = false;
+  let drawing = false, correction = null, request = null, requestTimer = null, footprintDetectionEnabled = true;
   const bound = new WeakSet();
   const status = (message, kind = 'info') => onStatus?.(message, kind);
   function clearRequestTimer() {
@@ -42,7 +42,7 @@ export function installRoofMapInteractions({ map, shapes, leaflet, onChange, onS
     status(save ? 'Contour enregistré. Cliquez sur une autre toiture pour ajouter une surface.' : 'Correction annulée. Le contour précédent est conservé.');
   }
   function edit(layer) {
-    if (suspended || drawing || !layer.editing || correction?.layer === layer) return;
+    if (drawing || !layer.editing || correction?.layer === layer) return;
     finishCorrection(true);
     cancelRequest();
     correction = { layer, coordinates: JSON.parse(JSON.stringify(layer.getLatLngs())) };
@@ -67,7 +67,7 @@ export function installRoofMapInteractions({ map, shapes, leaflet, onChange, onS
     return ringContainsPoint(rings[0], lat, lng) && !rings.slice(1).some((ring) => ringContainsPoint(ring, lat, lng));
   }
   async function detectAt(event) {
-    if (suspended || !footprintDetectionEnabled || drawing || !event.latlng) return;
+    if (!footprintDetectionEnabled || drawing || !event.latlng) return;
     const { lat, lng } = event.latlng;
     const existing = shapes.getLayers().find((layer) => contains(layer, lat, lng));
     if (existing) { edit(existing); return; }
@@ -105,9 +105,9 @@ export function installRoofMapInteractions({ map, shapes, leaflet, onChange, onS
       shapes.addLayer(layer);
       bind(layer);
       onChange();
-      // Zoom in to inspect the roof while retaining nearby context.
-      map.fitBounds(layer.getBounds(), { padding: [45, 45], maxZoom: 19 });
-      edit(layer);
+      // Keep the surrounding buildings visible rather than zooming into the roof.
+      map.fitBounds(layer.getBounds(), { padding: [45, 45], maxZoom: 18 });
+      status('Contour proposé. Vérifiez-le sur la photo et cliquez dessus pour le corriger.', 'ready');
     } catch (error) {
       if (!controller.signal.aborted && request === controller) status('Le repérage cartographique est indisponible pour le moment. Vous pouvez dessiner la toiture avec l’outil polygone ou rectangle.', 'warning');
     } finally {
@@ -119,46 +119,20 @@ export function installRoofMapInteractions({ map, shapes, leaflet, onChange, onS
   }
   shapes.eachLayer(bind);
   map.on('click', detectAt);
-  map.on('draw:created', (event) => {
-    if (suspended) return;
-    cancelRequest(); shapes.addLayer(event.layer); bind(event.layer); onChange();
-    // Leaflet.draw fires created before drawstop: do not open two editors at once.
-    if (drawing) pendingEdit = event.layer;
-    else edit(event.layer);
-  });
+  map.on('draw:created', (event) => { cancelRequest(); shapes.addLayer(event.layer); bind(event.layer); onChange(); });
   map.on('draw:edited draw:deleted', onChange);
   map.on('draw:drawstart draw:editstart draw:deletestart', () => {
-    pendingEdit = null; finishCorrection(true); cancelRequest(); drawing = true;
+    finishCorrection(true); cancelRequest(); drawing = true;
     status('Terminez le tracé ou la modification avec les commandes de la carte.');
   });
-  map.on('draw:drawstop draw:editstop draw:deletestop', () => {
-    drawing = false;
-    const layer = pendingEdit; pendingEdit = null;
-    if (layer && shapes.getLayers().includes(layer)) edit(layer);
-  });
+  map.on('draw:drawstop draw:editstop draw:deletestop', () => { drawing = false; });
   return {
     finishCorrection,
-    setSuspended(enabled) {
-      suspended = Boolean(enabled);
-      if (!suspended) return;
-      pendingEdit = null; cancelRequest(); finishCorrection(true);
-      // Leaflet.draw 1.0.4: save/disable the active handler directly. Toolbar.disable()
-      // would revert edited/deleted layers, losing the user's current adjustments.
-      Object.values(drawControl?._toolbars || {}).forEach((toolbar) => {
-        const handler = toolbar._activeMode?.handler;
-        handler?.save?.(); handler?.disable?.();
-      });
-      drawing = false;
-      shapes.eachLayer((layer) => layer.editing?.disable());
-      onEditing?.(false);
-      status('');
-    },
-    editLast() { const layer = shapes.getLayers().at(-1); if (layer) edit(layer); },
     setFootprintDetectionEnabled(enabled) {
       footprintDetectionEnabled = Boolean(enabled);
       if (!footprintDetectionEnabled) cancelRequest();
     },
-    cancel() { pendingEdit = null; cancelRequest(); finishCorrection(false); },
+    cancel() { cancelRequest(); finishCorrection(false); },
     detectAt
   };
 }

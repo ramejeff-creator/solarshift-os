@@ -1,0 +1,158 @@
+.installerDirectoryIntro { align-items: flex-start; }
+.installerDirectoryIntro h1 { margin: 0; font-family: inherit; font-size: 30px; font-weight: 750; line-height: 1.15; }
+.installerPublicDirectory { margin: 18px 0 24px; padding: 22px; border: 1px solid #cfe0d5; border-radius: 14px; background: #fff; min-width: 0; }
+.installerPublicHeading h2,.installerPrestudyHead h2 { margin: 0 0 8px; color: #143c2d; font-family: inherit; font-size: 23px; font-weight: 750; line-height: 1.2; }
+.installerPrestudyHead h2 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 5px 10px; }
+.installerPrestudyHead [data-installer-site-locality] { color: #60776b; font-size: 15px; font-weight: 650; }
+.installerPublicHeading > p:last-child { margin: 0; color: #536e61; font-size: 14px; }
+.installerPublicSearch { display: grid; grid-template-columns: minmax(220px, 1.4fr) minmax(150px, .7fr) minmax(170px, .8fr) minmax(260px, 1.5fr) auto; align-items: end; gap: 12px; margin: 18px 0 12px; }
+.installerPublicSearch > label { display: grid; gap: 6px; min-width: 0; font-weight: 650; }
+.installerPublicSearch :is(input:not([type=checkbox]),select) { width: 100%; max-width: none; min-width: 0; box-sizing: border-box; padding: 10px; border: 1px solid #c9d9d0; border-radius: 8px; font: inherit; background: #fff; }
+.installerPublicSearch fieldset { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; min-width: 0; margin: 0; padding: 9px 12px; border: 1px solid #d6e2db; border-radius: 8px; }
+.installerPublicSearch fieldset label { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; }
+.installerPublicSearch .installerSearchFilters { grid-column: 1 / -2; }
+.installerPublicSearch [data-public-category-wrap] { grid-column: 1 / -2; }
+.installerPublicSearch > button { min-height: 40px; white-space: nowrap; }
+.installerFilterHint { margin: -2px 0 10px; font-size: 12px; }
+.installerPublicSearch :is(label,fieldset)[hidden] { display: none; }
+.installerPublicSearch .installerSearchFilters[hidden] { display: none !important; }
+.installerPublicSearch input[type=checkbox] { width: auto; min-width: 0; margin: 0; }
+.installerPublicDirectory [data-public-installer-more] { margin-top: 16px; }
+.installerPublicDirectory .installerDirectoryList { max-height: min(510px, 60vh); overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; padding: 2px 8px 2px 0; }
+.installerPublicDirectory .installerPublicAddress { margin: 5px 0 8px; color: #60776b; font-size: 13px; line-height: 1.4; overflow-wrap: anywhere; }
+.installerPublicDirectory .installerPartnerCard { gap: 8px; padding: 12px 14px; }
+.installerPublicDirectory .installerPartnerCardHead { align-items: center; gap: 10px; }
+.installerPublicDirectory .installerPublicName { min-width: 0; flex: 1 1 auto; }
+.installerPublicDirectory .installerTechTags { flex: 0 0 auto; order: 2; }
+.installerPublicDirectory .installerPartnerDetailsToggle { flex: 0 0 auto; order: 3; min-width: 86px; padding: 7px 10px; }
+.installerPublicDirectory .installerPublicTitleLine { display: flex; flex-wrap: wrap; align-items: center; gap: 5px 7px; }
+.installerPublicDirectory .installerPublicQualification { display: flex; flex-wrap: wrap; align-items: baseline; gap: 3px 8px; margin-top: 5px; color: #60776b; font-size: 11px; line-height: 1.35; }
+.installerPublicDirectory .installerPublicQualification strong { color: #176345; font-size: 12px; font-weight: 700; }
+.installerPublicDirectory .installerPublicQualification.isUnverified strong { color: #765400; }
+.installerPublicDirectory .installerPublicQualification a { color: #176c48; font-weight: 650; text-decoration: underline; }
+.installerPartnerCardHead h3,.installerPublicDirectory .installerPublicTitleLine h3 { margin: 0; font-family: inherit; font-size: 16px; font-weight: 700; line-height: 1.25; }
+.installerPublicDirectory .installerPublicTitleLine .installerNetworkStatus,
+.installerPublicDirectory .installerPublicTitleLine .installerNetworkStar,
+.installerPublicDirectory .installerPublicQualiPv,
+.installerPublicDirectory .installerPublicRating { margin: 0; padding: 3px 7px; font-size: 10px; }
+.installerPublicDirectory .installerPublicAddress { margin: 4px 0 0; font-size: 12px; }
+.installerPublicDirectory .installerTechTags span { padding: 4px 8px; font-size: 10px; }
+.installerPublicDirectory .installerPartnerActions { gap: 6px; }
+.installerPublicDirectory .installerPartnerActions :is(a,button) { min-height: 30px; padding: 5px 9px; font-size: 11px; }
+.installerPublicDirectory .installerPartnerCard > .installerMuted { font-size: 10px; line-height: 1.35; }
+.installerPublicDirectory .installerPublicQualiPv,.installerPublicDirectory .installerPublicRating { display: inline-flex; align-items: center; width: fit-content; margin: 0 6px 6px 0; padding: 4px 8px; border: 1px solid #d5e8dc; border-radius: 999px; background: #edf6f0; color: #176345; font-size: 11px; font-weight: 700; }
+.installerPublicDirectory .installerPublicRating { border-color: #f0dfb7; background: #fff8e8; color: #745719; }
+.installerDirectoryFilter { display: grid; gap: 6px; width: min(100%, 440px); margin: 12px 0; color: #315548; font-size: 12px; font-weight: 650; }
+.installerDirectoryFilter input { min-width: 0; padding: 10px 12px; border: 1px solid #c9d9d0; border-radius: 8px; background: #fff; color: #173f37; font: inherit; font-weight: 400; }
+.installerDirectoryFilter input:focus { outline: 2px solid #6f9b89; outline-offset: 1px; }
+.installerPublicDirectory .installerPartnerCard .installerMuted { margin: 0; font-size: 12px; }
+.installerPublicDirectory .ooiPartnerStatus { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.installerPublicDirectory .ooiPartnerStatus :is(.installerNetworkStar,.installerNetworkStatus) { margin: 0; }
+.installerPublicDirectory .ooiPartnerDetails > summary { display: none; }
+.installerPublicDirectory .ooiPartnerDetails:not([open]) { display: none; }
+.installerQualification a { color: #176c48; }
+.installerPrestudyUnifiedSearch .installerPublicContextManaged { margin: 14px 0 0; padding: 0; border: 0; border-top: 1px solid #d9e5de; border-radius: 0; background: transparent; box-shadow: none; }
+.installerPrestudyUnifiedSearch .installerPublicContextManaged .installerPublicHeading { display: none; }
+.installerPrestudyUnifiedSearch .installerPublicContextManaged .installerPublicSearch { grid-template-columns: minmax(280px, 1.1fr) minmax(300px, 1.2fr) auto; margin-top: 14px; }
+.installerPrestudyUnifiedSearch .installerPublicContextManaged [data-public-category-wrap] { grid-column: 1 / -1; grid-row: 2; }
+.installerPrestudyUnifiedSearch .installerPublicContextManaged .installerSearchFilters { grid-column: 2; grid-row: 1; }
+.installerPrestudyUnifiedSearch .installerPublicContextManaged .installerGlobalQuery { grid-column: 1; grid-row: 1; }
+.installerPrestudyUnifiedSearch .installerPublicContextManaged .installerPublicSearch > button { grid-column: 3; grid-row: 1; }
+.installerPrestudyUnifiedSearch .installerPublicContextManaged .installerDirectoryList { max-height: 420px; }
+@media (max-width: 1000px) {
+  .installerPublicSearch { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .installerPublicSearch .installerSearchFilters { grid-column: 1 / -1; }
+  .installerPrestudyUnifiedSearch .installerPublicContextManaged .installerPublicSearch { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .installerPrestudyUnifiedSearch .installerPublicContextManaged [data-public-category-wrap] { grid-column: 1 / -1; grid-row: 3; }
+  .installerPrestudyUnifiedSearch .installerPublicContextManaged .installerSearchFilters { grid-column: 2; grid-row: 1; }
+  .installerPrestudyUnifiedSearch .installerPublicContextManaged .installerGlobalQuery { grid-column: 1; grid-row: 2; }
+  .installerPrestudyUnifiedSearch .installerPublicContextManaged .installerPublicSearch > button { grid-column: 2; grid-row: 2; }
+}
+@media (max-width: 760px) {
+  .installerPublicDirectory { padding: 16px; }
+  .installerPublicDirectory .installerPartnerCardHead { display: grid; grid-template-columns:minmax(0,1fr) auto; align-items: start; }
+  .installerPublicDirectory .installerPublicName { grid-column: 1 / -1; }
+  .installerPublicDirectory .installerTechTags { grid-column: 1; }
+  .installerPublicDirectory .installerPartnerDetailsToggle { grid-column: 2; grid-row: 2; }
+  .installerPublicSearch { grid-template-columns: minmax(0, 1fr); }
+  .installerPublicSearch .installerSearchFilters { grid-column: auto; }
+  .installerPrestudyUnifiedSearch .installerPublicContextManaged .installerPublicSearch { grid-template-columns: minmax(0, 1fr); }
+  .installerPrestudyUnifiedSearch .installerPublicContextManaged [data-public-category-wrap],
+  .installerPrestudyUnifiedSearch .installerPublicContextManaged .installerSearchFilters,
+  .installerPrestudyUnifiedSearch .installerPublicContextManaged .installerGlobalQuery,
+  .installerPrestudyUnifiedSearch .installerPublicContextManaged .installerPublicSearch > button { grid-column: auto; grid-row: auto; }
+  .installerPrestudyUnifiedSearch .installerPublicContextManaged .installerSearchFilters { grid-column: auto; }
+  .installerPublicSearch :is(input:not([type=checkbox]),select) { max-width: 100%; }
+}
+.installerDirectoryPanel { padding: 22px; }
+.installerToolbar { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.installerToolbar label, .installerPrestudyControls > label { display: grid; gap: 6px; color: var(--hub-ink, #17392d); font-weight: 650; }
+.installerToolbar select, .installerPrestudyControls input { min-width: 190px; padding: 10px 12px; border: 1px solid #c9d9d0; border-radius: 8px; font: inherit; background: #fff; }
+.installerToolbar > span { color: #62776d; font-size: 13px; }
+.installerDirectoryList, .installerSuggestionList { display: grid; gap: 14px; }
+.installerPartnerCard { display: grid; gap: 14px; padding: 18px; border: 1px solid #dce7e1; border-radius: 12px; background: #fff; }
+.installerPartnerCardHead { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; }
+.installerProjectSelection { display:grid; grid-template-columns:minmax(220px,.8fr) minmax(260px,1.2fr) auto; align-items:end; gap:12px; margin:18px 0 8px; }
+.installerProjectSelection label { display:grid; gap:6px; color:var(--hub-ink,#17392d); font-weight:650; }
+.installerProjectSelection select { min-width:0; width:100%; padding:10px 12px; border:1px solid #c9d9d0; border-radius:8px; color:#1c4034; background:#fff; font:inherit; }
+.installerProjectSelection button { min-height:41px; }
+.installerPrestudyPanel [data-installer-project-details] { margin-top:14px; }
+.installerPrestudyPanel [data-installer-project-details] .installerPartnerCard { padding:15px; }
+.installerPrestudyPanel [data-installer-project-details] .installerPartnerDetails { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.installerPartnerCardHead h3 { margin: 0 0 4px; color: #143c2d; font-size: 18px; }
+.installerPartnerLegalName { margin: 0; color: #65786e; font-size: 13px; }
+.installerNetworkStar, .installerNetworkStatus { display: inline-flex; margin-top: 8px; padding: 4px 9px; border-radius: 99px; background: #fff5d7; color: #765400; font-size: 12px; font-weight: 700; }
+.installerNetworkStatus { background: #edf3ef; color: #52665b; }
+.installerTechTags { display: flex; flex-wrap: wrap; gap: 6px; }
+.installerTechTags span { padding: 5px 9px; border-radius: 99px; background: #eef6f1; color: #245b42; font-size: 12px; }
+.installerTechTags .installerPartnerCategory { background: #e8f0fb; color: #294e76; }
+.installerAgreementNotice { display: flex; flex-direction: column; gap: 4px; margin: 14px 0; padding: 12px 15px; border-left: 3px solid #d99b20; border-radius: 7px; background: #fff8e8; color: #624b1e; font-size: 13px; line-height: 1.45; }
+.installerAgreementNotice strong { color: #49370f; }
+.installerAgreementNoticeDirectory { margin: 0 0 16px; }
+.installerCategoryFieldset > p { flex: 1 0 100%; margin: 0 0 2px; color: #65786e; font-size: 12px; font-weight: 400; }
+.installerPartnerDetails { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+.installerPartnerDetail { display: grid; gap: 3px; padding: 9px 11px; border-radius: 8px; background: #f5f8f6; }
+.installerPartnerDetail span, .installerMuted, .installerReviewSummary, .installerQualification { color: #677a70; font-size: 13px; }
+.installerPartnerDetail strong { overflow-wrap: anywhere; color: #1c4031; font-size: 13px; }
+.installerQualification, .installerReviewSummary { margin: 0; }
+.installerQualification.isValid { color: #176c48; font-weight: 650; }
+.installerPartnerActions, .installerFormActions { display: flex; flex-wrap: wrap; gap: 8px; }
+.installerEmpty { margin: 0; padding: 18px; border: 1px dashed #cbdad2; border-radius: 10px; color: #63776c; }
+.installerPrestudyPanel { margin: 20px 0; padding: 20px; border: 1px solid #cfe0d5; border-radius: 14px; background: #fff; box-shadow: 0 2px 8px #102d2010; }
+.installerPrestudyHead h2 { margin: 0 0 6px; color: #143c2d; }
+.installerPrestudyHead p:last-child { margin: 0; color: #65786e; font-size: 14px; }
+.installerEyebrow { margin: 0 0 7px; color: #24724d; font-size: 11px; font-weight: 800; letter-spacing: .1em; }
+.installerPrestudyControls { display: flex; flex-wrap: wrap; align-items: end; gap: 18px; margin: 18px 0 10px; }
+.installerPrestudyControls fieldset { display: flex; flex-wrap: wrap; gap: 8px 16px; min-width: 0; margin: 0; padding: 10px 13px; border: 1px solid #d6e2db; border-radius: 9px; }
+.installerPrestudyControls legend { padding: 0 5px; color: #52685d; font-size: 13px; }
+.installerPrestudyControls fieldset label { color: #274c3b; font-size: 13px; font-weight: 550; white-space: nowrap; }
+.installerPrestudyControls input[type="checkbox"], .installerForm input[type="checkbox"] { width: auto; margin-right: 6px; }
+.installerPrestudyPanel .installerPartnerCard { padding: 15px; }
+.installerPrestudyPanel .installerPartnerDetails { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.installerStatus { color: #48695a; font-size: 13px; }
+.installerStatus.isError, .installerFormState { color: #a03930; }
+.installerMoreHint { color: #65786e; font-size: 13px; }
+.installerDialog { box-sizing: border-box; width: min(860px, calc(100% - 28px)); max-height: min(90vh, 900px); padding: 0; border: 0; border-radius: 14px; box-shadow: 0 18px 60px #071a1480; }
+.installerDialog::backdrop { background: #071a1480; }
+.installerDialogHead { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 17px 20px; border-bottom: 1px solid #e0e8e3; background: #fff; }
+.installerDialogHead h2 { margin: 0; color: #143c2d; }
+.installerForm { padding: 18px 20px 20px; }
+.installerFormGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.installerFormGrid > label, .installerFormGrid > fieldset { display: grid; min-width: 0; align-content: start; gap: 6px; color: #274c3b; font-size: 13px; font-weight: 650; }
+.installerFormGrid input:not([type="checkbox"]), .installerFormGrid select, .installerFormGrid textarea { box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; padding: 9px 10px; border: 1px solid #c9d9d0; border-radius: 7px; font: inherit; background: #fff; }
+.installerFormGrid small { color: #72847a; font-weight: 400; }
+.installerFormGrid fieldset { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 0; padding: 10px 12px; border: 1px solid #d6e2db; border-radius: 8px; }
+.installerFormGrid fieldset legend { padding: 0 5px; }
+.installerFormGrid fieldset label { font-weight: 500; }
+.installerFormWide { grid-column: 1 / -1; }
+.installerFormState { min-height: 1.4em; margin: 12px 0; }
+@media (max-width: 760px) {
+  .installerProjectSelection { grid-template-columns:minmax(0,1fr); align-items:stretch; }
+  .installerPrestudyPanel [data-installer-project-details] .installerPartnerDetails { grid-template-columns:1fr; }
+  .installerPartnerCardHead, .installerToolbar { align-items: stretch; flex-direction: column; }
+  .installerPartnerDetails, .installerPrestudyPanel .installerPartnerDetails { grid-template-columns: 1fr; }
+  .installerPrestudyControls { align-items: stretch; flex-direction: column; }
+  .installerPrestudyControls fieldset { display: grid; }
+  .installerFormGrid { grid-template-columns: 1fr; }
+  .installerFormWide { grid-column: auto; }
+}

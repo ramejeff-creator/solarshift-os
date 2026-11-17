@@ -53,10 +53,10 @@ export function createProspectingSheet({ host, config, getToken, onConsumption =
     energy.append(node('p', 'Recherche de l’adresse du bâtiment…', 'hubMuted'));
     const parcels = section(grid, 'Parcelles cadastrales'); parcels.append(node('p', 'Chargement…', 'hubMuted'));
     const planning = section(grid, 'Urbanisme · zonage PLU'); planning.append(node('p', 'Chargement…', 'hubMuted'));
-    const owner = section(grid, 'Propriétaire et contacts · accès restreint');
-    owner.append(node('p', 'Les données personnelles et les coordonnées de contact ne sont jamais chargées par les services publics du navigateur. Leur accès nécessite une vérification des droits sur le serveur.', 'hubMuted'));
-    const assets = section(grid, 'Patrimoine et qualification commerciale');
-    assets.append(node('p', 'Nombre d’établissements, surfaces regroupées, droit de propriété, dirigeant et contacts : non renseignés. Ces champs attendent le raccordement sécurisé de votre base / ERP ; ils ne sont pas déduits de la carte.', 'hubMuted'));
+    const owner = section(grid, 'Sociétés propriétaires et pistes de contact');
+    owner.append(node('p', 'Les sociétés propriétaires publiées par la BDNB sont un indice de propriété, pas une preuve d’occupation. Les dirigeants et associés peuvent servir à la prise de contact après vérification ; ils ne définissent ni le potentiel tertiaire ni le potentiel solaire.', 'hubMuted'));
+    const assets = section(grid, 'Activité sur le site · à confirmer');
+    assets.append(node('p', 'Aucun établissement occupant n’est attribué automatiquement à ce bâtiment. Vérifiez séparément l’établissement, son activité et son statut dans une source diffusible ; l’adresse et le code APE ne prouvent pas l’occupation du bâtiment.', 'hubMuted'));
     if (scroll) { host.scrollIntoView({ behavior: 'smooth', block: 'start' }); title.focus({ preventScroll: true }); }
     consumptionLabel.textContent = 'Consommation : chargement…';
     try {
@@ -152,10 +152,24 @@ export function createProspectingSheet({ host, config, getToken, onConsumption =
         }).then(payload => {
           if (!payload) return;
           if (!active()) return;
+          const sirens = [...new Set((Array.isArray(payload.sirens) ? payload.sirens : []).filter(value => /^\d{9}$/.test(value)))];
+          const names = Array.isArray(payload.names) ? payload.names.filter(value => typeof value === 'string' && value.trim()) : [];
           const list = node('dl', '', 'hubSheetFields');
-          field(list, 'Dénominations des personnes morales publiées', payload.names?.join(' · '));
-          field(list, 'SIREN publiés', payload.sirens?.join(' · '));
-          owner.append(list, node('p', 'Ces listes ne prouvent pas une correspondance nom/SIREN ligne par ligne, ni l’identité de l’occupant ou du décideur. Aucun nom de personne physique n’est ajouté.', 'hubPrivacyNote'));
+          field(list, 'Sociétés propriétaires publiées (BDNB)', names.join(' · '));
+          field(list, 'SIREN publiés', sirens.join(' · '));
+          field(list, 'Établissement occupant / SIRET', 'Non établi · à vérifier séparément');
+          owner.append(list);
+          if (sirens.length) {
+            const links = node('ul', '', 'hubProspectingCompanyLinks');
+            sirens.forEach(siren => {
+              const item = node('li');
+              const link = node('a', `Consulter la fiche officielle du SIREN ${siren}`);
+              link.href = `https://annuaire-entreprises.data.gouv.fr/entreprise/${siren}`;
+              link.target = '_blank'; link.rel = 'noopener noreferrer'; item.append(link); links.append(item);
+            });
+            owner.append(links);
+          }
+          owner.append(node('p', 'Les dénominations et SIREN BDNB sont des listes agrégées, sans appariement garanti entre chaque nom et numéro. La fiche officielle peut présenter des représentants ; disponibilité et niveau de détail varient, et certaines informations nécessitent un compte. Vérifiez leur rôle et leur actualité avant toute prise de contact. Aucun nom personnel ni moyen de contact n’est importé dans cette fiche.', 'hubPrivacyNote'));
           source(owner, { name: 'BDNB Open · consultation protégée', url: 'https://bdnb.io/', retrievedAt: payload.retrievedAt });
         }).catch(error => { if (active()) owner.append(node('p', error.message || 'Connexion interne requise pour les propriétaires et contacts.', 'hubSheetWarning')); });
       }

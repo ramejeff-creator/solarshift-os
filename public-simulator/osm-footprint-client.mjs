@@ -1,6 +1,8 @@
 const OVERPASS_ENDPOINTS = [
   'https://overpass-api.de/api/interpreter',
-  'https://overpass.private.coffee/api/interpreter'
+  'https://overpass.private.coffee/api/interpreter',
+  'https://ovp.dresel.systems/api/interpreter',
+  'https://maps.mail.ru/osm/tools/overpass/api/interpreter'
 ];
 const recentResults = new WeakMap();
 
@@ -131,7 +133,7 @@ export async function fetchBuildingFootprints(lat, lng, { fetcher = fetch, timeo
   }
   if (fallbackUrl && deadline > Date.now()) {
     try {
-      try { onProgress?.({ attempt: 3, total: 3, endpoint: 'api.openstreetmap.org', source: 'OSM_MAP' }); } catch {}
+      try { onProgress?.({ attempt: OVERPASS_ENDPOINTS.length + 1, total: OVERPASS_ENDPOINTS.length + 1, endpoint: 'api.openstreetmap.org', source: 'OSM_MAP' }); } catch {}
       const payload = await boundedMapRequest(fetcher, fallbackUrl, { headers: { Accept: 'application/json' } }, deadline-Date.now(), signal);
       const elements = mapBuildingWays(payload);
       recentResults.set(fetcher, { lat, lng, radiusMeters, elements, fetchedAt: Date.now() });

@@ -27,7 +27,14 @@ body.prestudyShell .prestudyEHeading {
 }
 
 body.prestudyShell #audit-finance.prestudyChapterE > .prestudyEHeading:first-of-type { margin-top: 16px; }
-body.prestudyShell #audit-finance.prestudyChapterE :is(#investmentGroup, .financePreviewDetails) > .prestudyEHeading { grid-column: 1 / -1; }
+body.prestudyShell #audit-finance.prestudyChapterE :is(#investmentGroup, .financePreviewDetails) > .prestudyEHeading {
+  grid-column: 1 / -1;
+  justify-self: stretch;
+  width: 100%;
+  box-sizing: border-box;
+  margin-left: 0;
+  text-align: left;
+}
 
 body.prestudyShell #audit-finance.prestudyChapterE #financeOwnershipChoice {
   padding: 14px;
@@ -54,21 +61,6 @@ body.prestudyShell #audit-finance.prestudyChapterE #investmentGroup > #irveInves
 body.prestudyShell #audit-finance.prestudyChapterE #investmentGroup > .financeInvestmentCostRow { grid-column: 1 / -1; }
 body.prestudyShell #audit-finance.prestudyChapterE #investmentGroup > .financeFundingConfiguration { margin-top: 14px; }
 body.prestudyShell #audit-finance.prestudyChapterE #investmentGroup > #irveInvestmentGroup { margin-top: 14px; }
-body.prestudyShell #audit-finance.prestudyChapterE .prestudyFundingLeads {
-  grid-column: 1 / -1;
-  margin-top: 14px;
-  padding: 14px;
-  border: 1px solid var(--e-line);
-  border-radius: 3px;
-  background: #f7f8fa;
-}
-body.prestudyShell #audit-finance.prestudyChapterE .prestudyFundingLeads > h3 { margin: 0 0 10px; color: var(--e-ink); font-size: 16px; }
-body.prestudyShell #audit-finance.prestudyChapterE .prestudyFundingLead { margin: 10px 0; padding: 12px; border: 1px solid var(--e-line); background: #fff; }
-body.prestudyShell #audit-finance.prestudyChapterE .prestudyFundingLead h3 { margin: 4px 0 6px; color: var(--e-ink); font-size: 15px; }
-body.prestudyShell #audit-finance.prestudyChapterE .prestudyFundingLead p,
-body.prestudyShell #audit-finance.prestudyChapterE .prestudyFundingLead small { display: block; color: var(--e-muted); line-height: 1.5; }
-body.prestudyShell #audit-finance.prestudyChapterE .prestudyFundingLeadStatus { display: inline-block; color: #745400; background: #fff1c2; border-radius: 99px; padding: 3px 8px; font-size: 12px; font-weight: 700; }
-body.prestudyShell #audit-finance.prestudyChapterE .prestudyFundingLead a { display: inline-block; margin: 0 0 6px; color: #155a92; font-weight: 650; }
 body.prestudyShell #audit-finance.prestudyChapterE .financeRevenueGroups {
   margin-top: 18px;
   padding: 14px;
@@ -639,3 +631,74 @@ body.prestudyShell #ozeno-summary.prestudyChapterE .decisionFinanceMetricGrid #d
   body.prestudyShell #ozeno-summary.prestudyChapterE *,
   body.prestudyShell .reportEditor.prestudyChapterE * { transition-duration: 0s !important; }
 }
+
+/* Additional Funding qualification, kept within the existing finance panel. */
+body.prestudyShell #audit-finance.prestudyChapterE #prestudyEnvelopeHeating {
+  margin: 14px 0 0; padding: 14px; border: 1px solid var(--e-line, #d8e5dd); border-radius: 8px; background: #f8fbf9;
+}
+body.prestudyShell #audit-finance.prestudyChapterE #prestudyEnvelopeHeating > legend { padding: 0 6px; color: var(--e-ink, #123c32); font-weight: 700; }
+body.prestudyShell #audit-finance.prestudyChapterE #prestudyEnvelopeHeating > p { margin: 4px 0 12px; }
+body.prestudyShell #audit-finance.prestudyChapterE #prestudyIndicativeFundingHint > :is(strong, span) { display: block; }
+body.prestudyShell #audit-finance.prestudyChapterE #prestudyIndicativeFundingHint > span { margin-top: 4px; }
+body.prestudyShell #audit-finance.prestudyChapterE #prestudyEnvelopeHeatingForm { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 14px; }
+body.prestudyShell #audit-finance.prestudyChapterE #prestudyEnvelopeHeatingForm > label { min-width: 0; }
+body.prestudyShell #audit-finance.prestudyChapterE #prestudyEnvelopeHeatingForm select { max-width: 100%; }
+body.prestudyShell #audit-finance.prestudyChapterE #prestudyFundingLeadList { display: grid; gap: 8px; margin-top: 12px; }
+body.prestudyShell #audit-finance.prestudyChapterE .prestudyFundingLead { display: grid; gap: 5px; padding: 12px; border: 1px solid #d6e7dd; border-radius: 8px; background: #fff; }
+body.prestudyShell #audit-finance.prestudyChapterE .prestudyFundingLead > p { margin: 0; }
+body.prestudyShell #audit-finance.prestudyChapterE .prestudyFundingLeadStatus { justify-self: start; padding: 3px 8px; border-radius: 99px; background: #fff2c8; color: #745400; font-size: 12px; font-weight: 700; }
+body.prestudyShell #audit-finance.prestudyChapterE .prestudyFundingLead > small { color: #61756c; }
+@media (max-width: 690px) {
+  body.prestudyShell #audit-finance.prestudyChapterE #prestudyEnvelopeHeatingForm { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Funding et ACC rejoignent les chapitres complémentaires de la pré-étude. */
+body.prestudyShell #audit-efficiency .prestudyFundingPanel { grid-column: 1 / -1; width: 100%; margin: 18px 0 0; }
+body.prestudyShell #audit-efficiency .prestudyFundingPanel > legend { color: var(--e-ink); font-size: 24px; line-height: 1.25; font-weight: 700; letter-spacing: -.035em; }
+body.prestudyShell #audit-efficiency .prestudyFundingPanel > p,
+body.prestudyShell #audit-efficiency .prestudyFundingPanel [role="status"] { line-height: 1.55; }
+body.prestudyShell #audit-efficiency .prestudyEnvelopeHeating { display: grid; gap: 12px; min-width: 0; margin: 12px 0 0; padding: 14px; border: 1px solid #d5e4d8; border-radius: 9px; background: #fff; }
+body.prestudyShell #audit-efficiency .prestudyEnvelopeHeating > legend { font-weight: 700; color: #0a3f2d; }
+body.prestudyShell #audit-efficiency #prestudyEnvelopeHeatingForm { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+body.prestudyShell #audit-efficiency #prestudyFundingLeadList { display: grid; gap: 8px; }
+body.prestudyShell #audit-efficiency .prestudyFundingLead { padding: 12px; border: 1px solid #d5e4d8; border-radius: 8px; background: #f8fbf9; }
+body.prestudyShell #audit-efficiency .prestudyFundingLeadStatus { display: inline-block; margin-right: 8px; color: #8a5a00; font-size: 12px; font-weight: 700; }
+body.prestudyShell #audit-acc.prestudyAccChapter { grid-column: 1 / -1; }
+body.prestudyShell #audit-acc #prestudyAccEmbed { min-width: 0; }
+@media (max-width: 760px) {
+  body.prestudyShell #audit-efficiency #prestudyEnvelopeHeatingForm { grid-template-columns: minmax(0, 1fr); }
+}
+body.prestudyShell #audit-finance #prestudyFinanceValuationHeading { display: block; grid-column: 1 / -1; justify-self: stretch; align-self: start; width: 100%; box-sizing: border-box; margin: 20px 0 10px !important; text-align: left !important; transform: none !important; }
+body.prestudyShell #audit-finance #prestudyFinanceValuationHeading + .financeRevenueGroups { grid-column: 1 / -1; width: 100%; }
+body.prestudyShell #audit-efficiency > .prestudyFundingPanel { margin-top: 24px; padding: 18px 20px; border: 1px solid #cfe0d5; border-radius: 8px; background: #fff; }
+body.prestudyShell #audit-efficiency > .prestudyFundingPanel > legend { padding: 0 8px; }
+
+/* CR-UX-013 — lecture et disponibilité des résultats financiers. */
+body.prestudyShell #audit-finance #prestudyFinanceDecisionGuide,
+body.prestudyShell #ozeno-summary #prestudySummaryStatus {
+  margin: 12px 0 18px; padding: 14px 16px; border: 1px solid #d8e5dc;
+  border-left: 4px solid #c18a18; border-radius: 8px; background: #f8faf8; color: #183c2d;
+}
+body.prestudyShell #audit-finance #prestudyFinanceDecisionGuide h3 { margin: 0 0 10px; font-size: 17px; }
+body.prestudyShell #audit-finance .prestudyFinanceDecisionGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+body.prestudyShell #audit-finance .prestudyFinanceDecisionGrid > div { min-width: 0; padding: 9px 11px; border: 1px solid #e0e9e3; border-radius: 7px; background: #fff; }
+body.prestudyShell #audit-finance .prestudyFinanceDecisionGrid small,
+body.prestudyShell #audit-finance .prestudyFinanceDecisionGrid strong { display: block; }
+body.prestudyShell #audit-finance .prestudyFinanceDecisionGrid small { color: #587469; font-size: 12px; }
+body.prestudyShell #audit-finance .prestudyFinanceDecisionGrid strong { margin-top: 3px; overflow-wrap: anywhere; }
+body.prestudyShell #audit-finance #prestudyFinanceDecisionNote { margin: 10px 0 0; line-height: 1.5; }
+body.prestudyShell #ozeno-summary #prestudySummaryStatus { line-height: 1.55; }
+@media (max-width: 700px) {
+  body.prestudyShell #audit-finance .prestudyFinanceDecisionGrid { grid-template-columns: minmax(0, 1fr); }
+  body.prestudyShell #audit-finance #prestudyFinanceDecisionGuide,
+  body.prestudyShell #ozeno-summary #prestudySummaryStatus { padding: 12px; }
+}
+
+/* Keep the mission controls aligned with their own commercial cards. */
+body.prestudyShell #audit-finance #ozenoMissionPlan .financialSimpleField input {
+  border-color: #b9ccbf; border-radius: 7px; color: #173f32;
+}
+body.prestudyShell #audit-finance #ozenoMissionPlan .financialSimpleField input:focus-visible {
+  border-color: #227659; outline: 3px solid #d1e9dc; outline-offset: 1px;
+}
+body.prestudyShell #audit-finance .ozenoMissions .ozenoMissionButton { border-radius: 7px; }

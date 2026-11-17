@@ -8,7 +8,7 @@
     document.title = 'OZENO · Espace commercial';
     const stylesheet = document.createElement('link');
     stylesheet.rel = 'stylesheet';
-    stylesheet.href = './ozeno-theme.css';
+    stylesheet.href = './ozeno-theme.css?v=20261116-missions-layout-3';
     stylesheet.addEventListener('load', () => window.solarMap?.invalidateSize());
     document.head.appendChild(stylesheet);
 
@@ -87,9 +87,13 @@
       const identity = document.createElement('details');
       identity.id = 'ozenoProjectIdentity';
       identity.className = 'ozenoProjectIdentity';
+      identity.open = false;
       identity.innerHTML = '<summary>Fiche signalétique</summary><dl></dl>';
+      const collapseIdentity = () => { identity.open = false; identity.removeAttribute('open'); };
+      window.addEventListener('pageshow', collapseIdentity, { once: true });
+      window.setTimeout(collapseIdentity, 0);
       const identityFields = [
-        ['clientName', 'Client'], ['contactName', 'Contact'], ['phone', 'Téléphone'],
+        ['clientName', 'Client'], ['companyName', 'Société'], ['siret', 'SIRET'], ['contactName', 'Contact'], ['phone', 'Téléphone'],
         ['installerName', 'Partenaire installateur'], ['installationDate', 'Date prévisionnelle'], ['activityLabel', 'Activité(s) du site']
       ];
       const identityList = identity.querySelector('dl');
@@ -117,7 +121,7 @@
       }).observe(address, { childList: true, characterData: true, subtree: true });
     }
     const mapHint = document.querySelector('#audit-roof > .hint');
-    if (mapHint) mapHint.textContent = 'Localisez le projet par son adresse, ses coordonnées GPS ou un clic sur la carte. Cliquez une fois sur chaque toiture à ajouter pour proposer son contour. Pour le corriger, cliquez une seconde fois dessus. Chaque zone peut ensuite être qualifiée séparément.';
+    if (mapHint) mapHint.textContent = 'Localisez le projet par son adresse, ses coordonnées GPS ou un clic sur la carte.';
     const summaryProfile = document.querySelector('.decisionProductionProfile');
     if (summaryProfile) {
       const months = document.createElement('div');

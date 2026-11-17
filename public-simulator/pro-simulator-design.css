@@ -1138,3 +1138,22 @@ body[data-active-step="2"] .simIntroArt,body[data-active-step="2"] .simHeroNote 
   #resultStep .simSummaryMetrics { grid-template-columns: 1fr; }
   #resultStep .simSummaryMetric > strong { font-size: 27px; }
 }
+
+/* Preserve local artwork proportions and accessible map notices. */
+.simBuildingChoices .simBuildingArt {
+  height: auto;
+  aspect-ratio: 16 / 9;
+}
+.simRoofCard .simSolarArt {
+  width: min(100%, 148px);
+  height: auto;
+  aspect-ratio: 1 / 1;
+  align-self: center;
+  margin-inline: auto;
+  background-size: 200% 200%;
+}
+.simMapHint { position: static; display: flex; align-items: center; gap: 10px; margin: 0 0 10px; padding: 12px 15px; border: 1px solid #e3b448; border-radius: 10px; background: #fff3c4; color: #164a3b; box-shadow: 0 3px 14px #153c2630; font-size: 14px; font-weight: 750; line-height: 1.45; }
+.simMapTileStatus { position: absolute; z-index: 801; right: 12px; bottom: 12px; max-width: min(560px, calc(100% - 24px)); margin: 0; padding: 9px 12px; border: 1px solid #bdd6c8; border-radius: 9px; background: #fff; color: #355849; box-shadow: 0 2px 10px #153c2620; font-size: 12px; line-height: 1.4; }
+.simProjectionChart { min-height: 190px; width: 100%; }
+.simProjectionDetails { margin-top: 14px; }
+.simProjectionDetails > summary { cursor: pointer; color: #275e4b; font-weight: 650; }

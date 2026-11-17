@@ -1,0 +1,1275 @@
+{
+  "release": "SS-BETA-FRONTEND-20261117",
+  "sourceCommit": "e27e60c3e980c0552cceae146644640780ec07cb",
+  "backend": "dptympcfznaqcdvtdxok",
+  "files": [
+    {
+      "path": ".nojekyll",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "acc-energy-suggestion.mjs",
+      "sha256": "7df97ad938df8f1e8036fabca28e7f737ea72b9f9ce3df0b09340664e93090c9"
+    },
+    {
+      "path": "acc-establishments-public.mjs",
+      "sha256": "4852ae4f0e5d325c4eeff6d171c6143e618ed0e729d44406e3b041272c8bf438"
+    },
+    {
+      "path": "acc-prospect-appraisals.mjs",
+      "sha256": "0e3d0050e935f78aed418c2b6755e095d7186adbf4eb1d5815cfaa1edd760db6"
+    },
+    {
+      "path": "acc-prospects-model.mjs",
+      "sha256": "5a43538aa26f89b08dd06290b0737fdc641e5f5bd7dcff00649c2bcc4c041e54"
+    },
+    {
+      "path": "acc-prospects-page.mjs",
+      "sha256": "093abe86ab6f9b14773d8180f2cdddfbd189e81dea8fd0528e0b341fffb7d86d"
+    },
+    {
+      "path": "acc-prospects-search.mjs",
+      "sha256": "efe4409cbc2cd98f5e15a6b0344a206423a7fd149f114d0e0ceae56d552d97ff"
+    },
+    {
+      "path": "acc-prospects-ui.mjs",
+      "sha256": "192e5fb26b6ecfd85f29f55579276318eab74e511f4c6f2adbe0396b6e007a21"
+    },
+    {
+      "path": "acc-prospects.css",
+      "sha256": "c94893358ca7f22d10c54a8c37b4067696d6ab9cb0845aefa8d7ed29635401c3"
+    },
+    {
+      "path": "acc-prospects.html",
+      "sha256": "435a58b33c4d0fb19594e5bbed1f03516df5f6b7da6fdfaf47802255ad60246b"
+    },
+    {
+      "path": "actualites-data.json",
+      "sha256": "26384fddcf65524be66c84210f6f31cc79942d3217b50578f3563665c40bf29d"
+    },
+    {
+      "path": "actualites-feed.css",
+      "sha256": "4b685f7d57ad51bf10292b205b98403ce030b473233b22af1ab11a9aab8cc014"
+    },
+    {
+      "path": "actualites-feed.js",
+      "sha256": "40da454363e6a8f221e4033bf12ed3c2bde899f66ed8707a05da0b5d2a50ffe8"
+    },
+    {
+      "path": "actualites.css",
+      "sha256": "ec696d2c636bcbba240cea41866fedd0c2c86b061b34594fcd98795b1502689a"
+    },
+    {
+      "path": "actualites.html",
+      "sha256": "8f41e5582a6fcc31365632c986070e8772ff55de4a573dc4316e097d79fce8de"
+    },
+    {
+      "path": "annual-allocation.js",
+      "sha256": "bfc7e41d330e0e1619736c366caa0dea2d34fb95dab641540f18e25320734987"
+    },
+    {
+      "path": "app/acc-energy-suggestion.mjs",
+      "sha256": "7df97ad938df8f1e8036fabca28e7f737ea72b9f9ce3df0b09340664e93090c9"
+    },
+    {
+      "path": "app/acc-establishments-public.mjs",
+      "sha256": "4852ae4f0e5d325c4eeff6d171c6143e618ed0e729d44406e3b041272c8bf438"
+    },
+    {
+      "path": "app/acc-prospect-appraisals.mjs",
+      "sha256": "0e3d0050e935f78aed418c2b6755e095d7186adbf4eb1d5815cfaa1edd760db6"
+    },
+    {
+      "path": "app/acc-prospects-model.mjs",
+      "sha256": "5a43538aa26f89b08dd06290b0737fdc641e5f5bd7dcff00649c2bcc4c041e54"
+    },
+    {
+      "path": "app/acc-prospects-page.mjs",
+      "sha256": "093abe86ab6f9b14773d8180f2cdddfbd189e81dea8fd0528e0b341fffb7d86d"
+    },
+    {
+      "path": "app/acc-prospects-search.mjs",
+      "sha256": "efe4409cbc2cd98f5e15a6b0344a206423a7fd149f114d0e0ceae56d552d97ff"
+    },
+    {
+      "path": "app/acc-prospects-ui.mjs",
+      "sha256": "192e5fb26b6ecfd85f29f55579276318eab74e511f4c6f2adbe0396b6e007a21"
+    },
+    {
+      "path": "app/acc-prospects.css",
+      "sha256": "c94893358ca7f22d10c54a8c37b4067696d6ab9cb0845aefa8d7ed29635401c3"
+    },
+    {
+      "path": "app/acc-prospects.html",
+      "sha256": "435a58b33c4d0fb19594e5bbed1f03516df5f6b7da6fdfaf47802255ad60246b"
+    },
+    {
+      "path": "app/actualites-data.json",
+      "sha256": "26384fddcf65524be66c84210f6f31cc79942d3217b50578f3563665c40bf29d"
+    },
+    {
+      "path": "app/actualites-feed.css",
+      "sha256": "4b685f7d57ad51bf10292b205b98403ce030b473233b22af1ab11a9aab8cc014"
+    },
+    {
+      "path": "app/actualites-feed.js",
+      "sha256": "40da454363e6a8f221e4033bf12ed3c2bde899f66ed8707a05da0b5d2a50ffe8"
+    },
+    {
+      "path": "app/actualites.css",
+      "sha256": "ec696d2c636bcbba240cea41866fedd0c2c86b061b34594fcd98795b1502689a"
+    },
+    {
+      "path": "app/actualites.html",
+      "sha256": "8f41e5582a6fcc31365632c986070e8772ff55de4a573dc4316e097d79fce8de"
+    },
+    {
+      "path": "app/annual-allocation.js",
+      "sha256": "bfc7e41d330e0e1619736c366caa0dea2d34fb95dab641540f18e25320734987"
+    },
+    {
+      "path": "app/app-auth-gate.js",
+      "sha256": "a6c96ae8d19c48049b035fad9c1865e2480a1e35f81acd2393b73a27c28e6e42"
+    },
+    {
+      "path": "app/assets/simulator/autoconsommation-surplus.png",
+      "sha256": "980acc77a87b685b889c0a0ecdbbe26bc4b6aac25d255fdcb1c0726fec89b8de"
+    },
+    {
+      "path": "app/assets/simulator/building-types.png",
+      "sha256": "2a44d32fa7905bfc9c2e99b7a7d9b5d85f0d0d1021c9dfdbd6955c7367f3906f"
+    },
+    {
+      "path": "app/assets/simulator/ozeno-wordmark.svg",
+      "sha256": "9384d5552dab4e6a7c7716f7c21488b31dc0987b5645272304a2ea57a13c2fbf"
+    },
+    {
+      "path": "app/assets/simulator/pv-agrivoltaic-canopy.png",
+      "sha256": "25deaf55b6db6b6b3b6305e8874e69dc4cf3a4fee5cf0dde94f51002492e90e5"
+    },
+    {
+      "path": "app/assets/simulator/pv-carport.png",
+      "sha256": "7f7b207cd257ab14071ef27e5f1889a0bb602860451b9459df3fdc1a4a577dba"
+    },
+    {
+      "path": "app/assets/simulator/README.md",
+      "sha256": "6ff42e6accf5e91b373583aaf621b50d885c768f8129a799e9a7d55090be2660"
+    },
+    {
+      "path": "app/assets/simulator/site-kind-building.png",
+      "sha256": "2a0434e61f529ed2a1e90c2b7563ef304647e94dd5bc3203ce8f7eeaf90ac641"
+    },
+    {
+      "path": "app/assets/simulator/site-kind-exterior.png",
+      "sha256": "31761798ecbc9e1c993073df1d1e827dd6e38b9409d89a5a176a72dddbd135f8"
+    },
+    {
+      "path": "app/assets/simulator/solar-building-hero.png",
+      "sha256": "46fabc1b4bc3ea23b931897eae8cf3bc1c5f74b89a6c03beea120f25f3e1ce6b"
+    },
+    {
+      "path": "app/assets/simulator/solar-choices.png",
+      "sha256": "cf2eb35df83250237b42a854d4e3d0c56121d298d546e1c571b2b4f991c54a82"
+    },
+    {
+      "path": "app/assets/simulator/vente-totale.png",
+      "sha256": "7dcae654be72396de33c85c402e6f2cb0465e78845851087267fcc291363176d"
+    },
+    {
+      "path": "app/audit-ux.js",
+      "sha256": "3b76ef21edaa52773e8c3e0bbc93859b430d8a342b1d92c71cdc2b6274fb7741"
+    },
+    {
+      "path": "app/commercial-ux.js",
+      "sha256": "271ff24b19db58bd68a80e94932bcf336abc3281d34018596535a7ca05198816"
+    },
+    {
+      "path": "app/complete-financial-client.mjs",
+      "sha256": "07a17ffa33fafe14dd4553f676859db10c227d12b3682330622c567069d79534"
+    },
+    {
+      "path": "app/efficiency-impact-ux.js",
+      "sha256": "91584a16320cb35834c4460d20cf196d87d7638f57869dfcad86e7dc705538e1"
+    },
+    {
+      "path": "app/enedis-estimate-groups.mjs",
+      "sha256": "ae0b7de62a7287500e1de664ac34fa79759d40eee5dd481838164110c61fb635"
+    },
+    {
+      "path": "app/enedis-synthetic-picker.mjs",
+      "sha256": "c95273869aa9ffa80abaf40ac720384188a0df6e94131b19c1882d0b0285af76"
+    },
+    {
+      "path": "app/energy-engine-client.js",
+      "sha256": "8de8a8414494655bb29a13b60c6f259f192f51333fe1b4e9320f4d9dd79d116e"
+    },
+    {
+      "path": "app/equity-cashflow.js",
+      "sha256": "d9a072ca5224c3589e458aa070fdc414b7bdc99240f1cfdbc941e6d66e5abbf4"
+    },
+    {
+      "path": "app/exec-d2eda8f0-968b-466f-b6ab-7ba649808352.png",
+      "sha256": "bb4ac4821ddcbd44a7eacda42b85d820e0fa4b75e6c2f9c6659ce396500f2390"
+    },
+    {
+      "path": "app/finance-controls.js",
+      "sha256": "be63152d4c2e83065aa34e18432d4a9e6a24d12ee0c371fb6e7320a4b86a843b"
+    },
+    {
+      "path": "app/financial-assumptions.js",
+      "sha256": "02d32e6bc6ec90b3dbbe914ee273885139beaa5465e17d9ed4eda1c05956ee93"
+    },
+    {
+      "path": "app/franchise-dashboard-data.mjs",
+      "sha256": "c8b6c7e52d788df04ae57d5abeb5a1c84c3cf31361c93447605f417dc2b364d9"
+    },
+    {
+      "path": "app/franchise-dashboard.css",
+      "sha256": "97cd2414e0fba0f1f6148d8429331cf4d735aa8a05a55b21c9cd48b85a2ec8ca"
+    },
+    {
+      "path": "app/franchise-dashboard.js",
+      "sha256": "d55cb270e32574077984ff25698871fab733653765aca0d3766089303c191248"
+    },
+    {
+      "path": "app/franchise.html",
+      "sha256": "0d610124ee4dded7ede74f50a151115f9cd27632c8696a5270e7f32d392c3731"
+    },
+    {
+      "path": "app/index.html",
+      "sha256": "fb37fc812dced86b66918aaa29c391bf9fc4950758d0d859aba4473ac4767eb3"
+    },
+    {
+      "path": "app/installation-cost-reference.js",
+      "sha256": "519e9ba717745a43455e0eca5b87ba9ebf8220bdc3e496844691ca4075f4036b"
+    },
+    {
+      "path": "app/installer-commission.js",
+      "sha256": "c2089aedab4715b7fda80b791f94318eeff4015af961dc68c9925e693c9f992c"
+    },
+    {
+      "path": "app/installer-directory-client.mjs",
+      "sha256": "2605c23e3c63a52a02a341344b653b52954515c3b5d59e46420dff685e6f0233"
+    },
+    {
+      "path": "app/installer-directory-ui.mjs",
+      "sha256": "4d4fa0ea5cb91e76eab1c461befc2ae94cc2500d1537137861ee906c430da6df"
+    },
+    {
+      "path": "app/installer-network.css",
+      "sha256": "342b20a313a1b18ad2683ce6f2f3ed96595dbb5318e6f5b8fcbf4e45c4b9b289"
+    },
+    {
+      "path": "app/installer-network.mjs",
+      "sha256": "65ba1f29060216fc957994a5aae3de649fa6424b995fd1371b7242c9024b576f"
+    },
+    {
+      "path": "app/investor-enhancements.js",
+      "sha256": "0a568c56b6482466295bfe11eef0c8a8627583b444b564784b13a85f48fa7f63"
+    },
+    {
+      "path": "app/investor.html",
+      "sha256": "13fd3bb9cb5a4e52d593a007320e1134441dc2b012ad1d64c4bf13971bbac3c9"
+    },
+    {
+      "path": "app/local-preview-navigation.js",
+      "sha256": "6d4e9283beeadeb71465a21c984a5f80742474555e8ad93bab2aa2b534aff6e4"
+    },
+    {
+      "path": "app/local-roof-import.mjs",
+      "sha256": "4f072602253c9f65d43d2231f1df1d5281fab8f9a54412c02157c31302174590"
+    },
+    {
+      "path": "app/login.html",
+      "sha256": "becbfe376611e58a9c410a7e06afc9bc41be16f1ebf4162c6415c91f473364db"
+    },
+    {
+      "path": "app/login.js",
+      "sha256": "9a9048fa615c59560b6b5ca0abff3a884c9d021cb0961607afc2d9e6bd011275"
+    },
+    {
+      "path": "app/market-opportunities.css",
+      "sha256": "bb1a9ee77aae70dcdadcb960398495dcece0fdb19119424aa66abaa05c7c3c01"
+    },
+    {
+      "path": "app/market-opportunities.js",
+      "sha256": "a88ffbf52aa8de18f6355c36922d61f4fd00e6c7d1043238a5759e37fc493ba1"
+    },
+    {
+      "path": "app/mission-contract-draft.mjs",
+      "sha256": "f0f576981b5aa4bb90bd0a788bce9247468ec11bf8457ba17da84311a9864d75"
+    },
+    {
+      "path": "app/mission-editor.mjs",
+      "sha256": "a9d519bcabbbb2b0d75bc5d26651b4fa63149ca79426b6bc161066f8da105645"
+    },
+    {
+      "path": "app/obi-001-muret-fixture.json",
+      "sha256": "b2d80a85939a9baee56115aa5d4b90b7282e851bfe033d293e3536674d8926cb"
+    },
+    {
+      "path": "app/obi-c2-muret-recorded-reference.json",
+      "sha256": "263aef57767a4d83e2c9f67f49c8dfb3d2c99cd0f11c622c853f12bfd576999d"
+    },
+    {
+      "path": "app/obi-connected-data.mjs",
+      "sha256": "e42b8557c694208833b776e9f48ec77ee4ef411db60cf97d305c5c74d0783839"
+    },
+    {
+      "path": "app/obi-dvf-history.mjs",
+      "sha256": "3c95aaec018acd908385a04ef9a73f0b7cf40a6b61064a937be58bce4df688fb"
+    },
+    {
+      "path": "app/obi-dvf-muret-recorded-reference.json",
+      "sha256": "e143e2c94a14c727531c688f1ca12cfcfca6924aa169872b95cb4e3eeaa241d2"
+    },
+    {
+      "path": "app/obi-eet-regulatory.mjs",
+      "sha256": "9db280c12fc685ed434190dc2478a8f342675700f9deee7795bd0cd13a3f200e"
+    },
+    {
+      "path": "app/obi-evidence-view.mjs",
+      "sha256": "7536e814fa3e80b23eb82ea237bde021f4df7210b05b5df7ff0f7bbdd3db597e"
+    },
+    {
+      "path": "app/obi-prospecting-fiche-template.mjs",
+      "sha256": "807995ce8df4fae6fd2d40c08e33bf768373c5e45b6f89d1a711b5ef33483808"
+    },
+    {
+      "path": "app/obi-prospecting-fixture.mjs",
+      "sha256": "b1943e57e7e078105cd9966a89ac1898e610852c051311c99e2cccbc4c180dff"
+    },
+    {
+      "path": "app/obi-prospecting-view-model.mjs",
+      "sha256": "d35e77a72fc25f555283ea2fd2af7f59c9f3f4ae76d58b12b6f071920c7b1d43"
+    },
+    {
+      "path": "app/obi-public-evidence.mjs",
+      "sha256": "4d984f33e6f3d4aff26814cdd85544a9db79848d40319b41bd0fa830c98f4658"
+    },
+    {
+      "path": "app/obi-qualification-demo.mjs",
+      "sha256": "2a64b50d8f6064659361c7b4984bbf451c647b794b9af4bf22b8ae8bfaa86da8"
+    },
+    {
+      "path": "app/obi-qualification-preview.mjs",
+      "sha256": "4e983155955ee3db0eb4ab717e898ce9e73c1d80a87b569b6e992ec78006f0c3"
+    },
+    {
+      "path": "app/obi-rnb-bdnb-readonly.mjs",
+      "sha256": "bcafb3764f79831bf58190a0aa5c03e8dc599d4df2598988e97b5e0ff05aa249"
+    },
+    {
+      "path": "app/ooi-energy-visuals.css",
+      "sha256": "4e555765833e96f35ad8a37704f035f1cfd49eb574cbe6756da497efbc5d9b0e"
+    },
+    {
+      "path": "app/ooi-v10.css",
+      "sha256": "d1d4b94222964fa4e59c9ca071c80139426ea6e4c44cb01867c9c95f1d9c9a38"
+    },
+    {
+      "path": "app/ooi-v10.mjs",
+      "sha256": "78c04accc98ede6bea8e54322eecf471f548ad8ff706bbd4b7834672dab029b9"
+    },
+    {
+      "path": "app/ooi-visual-v04.css",
+      "sha256": "56c0af5195f5565c7409588344b9a38ae80e15e5557ee6705db84e4378fbc8e3"
+    },
+    {
+      "path": "app/ooi-visual-v04.mjs",
+      "sha256": "3e9773dc79539dd3f67bfc2c784f9b0a35fcd414a6b07f57aa0bca27ae5c0c86"
+    },
+    {
+      "path": "app/osm-footprint-client.mjs",
+      "sha256": "c91302190d8b168a68d7a67584c84177be30ff00a15358267ffec7643f66fe03"
+    },
+    {
+      "path": "app/ozeno-brand.css",
+      "sha256": "b3efabfbb1fbb45dab0590b878814ae7feb3da27ca0548ab1ceaae8427d29d0e"
+    },
+    {
+      "path": "app/ozeno-brand.js",
+      "sha256": "6a610777a5f18e95a55e340e82be294f3dbf513681cce10577d98f2457ee8c9a"
+    },
+    {
+      "path": "app/ozeno-missions.mjs",
+      "sha256": "d466544274b9131797a096ffa71b9d64af8b7086cfdc3d3efd1561faaee513fa"
+    },
+    {
+      "path": "app/ozeno-theme.css",
+      "sha256": "63d5e00e7f580dc5e51742ff5eb2de4b44a41f1e624aafa0805ca09cccb28a5e"
+    },
+    {
+      "path": "app/ozeno-theme.js",
+      "sha256": "e9ede2eee90887e952323b23e4a9eb1e32797897a77c88597697aeb5b45cb9bc"
+    },
+    {
+      "path": "app/ozeno-wordmark.png",
+      "sha256": "33a993653b6202a5fe990f6958158a99ce55f87bf4eb67ec564cc8d84d66cf80"
+    },
+    {
+      "path": "app/parcel-qualification-ui.mjs",
+      "sha256": "14250a36460bc3115020a64ec4590dfd0fd084f9205e75a75dd793f824871e54"
+    },
+    {
+      "path": "app/parcel-qualification.css",
+      "sha256": "a29c2cb1a7c17e6211580e82f4f70fcfd33d5bca501b3a044cd6fb3c7a72925b"
+    },
+    {
+      "path": "app/parcel-qualification.mjs",
+      "sha256": "fe3f1e4f7a11b59de662e6fbff8c89cd3d0c9e3701dded3d67a067de3b4f67cc"
+    },
+    {
+      "path": "app/prestudy-acc-entry.mjs",
+      "sha256": "661a6e4c8b4da37d84dc3ef65d9957b07ecf6887d57c360d0ff4f2c72b4e3a1a"
+    },
+    {
+      "path": "app/prestudy-building-benchmarks.mjs",
+      "sha256": "59288036b224d084ad0af15be5aa31c7cfbeb9204d1bfc670eceb33c8d13d275"
+    },
+    {
+      "path": "app/prestudy-chapters.css",
+      "sha256": "c07da8940374ba563d2d6a99f84e887c067099d7856e5c676742500605ac3c93"
+    },
+    {
+      "path": "app/prestudy-chapters.js",
+      "sha256": "bb428c1baf02b50a23cdbbd5a4528e1a5211a71983d958214425a9e1713b4d73"
+    },
+    {
+      "path": "app/prestudy-funding.js",
+      "sha256": "365bba82d57f0b7ceac498aa9a57aaec859a1384f08ee66289de1ee2d7725573"
+    },
+    {
+      "path": "app/prestudy-phase-e.css",
+      "sha256": "277da10c7dc48489a3b219311e8bf39e5b0fa855e6d320b46ce3bc64b499d9e8"
+    },
+    {
+      "path": "app/prestudy-shell.css",
+      "sha256": "0fff3dd5128f2d6d659630600586194205dcd2a950dad261934fad5539032090"
+    },
+    {
+      "path": "app/prestudy-shell.js",
+      "sha256": "522dd85548042530cbeb39b1eee3a5675249861ba1c1cdbe425c942ad978979c"
+    },
+    {
+      "path": "app/pro-simulator-design.css",
+      "sha256": "92bd2428a3596bedec10b7ae274725cbd18477b19936db6594d4b7d8ef855eb1"
+    },
+    {
+      "path": "app/pro-simulator-estimation.mjs",
+      "sha256": "ff8dbfc5e3decbdbeef2f26b0d79e0b0f84ea78a05e4289b6508c3b00b2714e1"
+    },
+    {
+      "path": "app/pro-simulator.css",
+      "sha256": "d349de2014db8b379618625b9f37d2474acfeb72e4e987aca320e9e974a187b9"
+    },
+    {
+      "path": "app/pro-simulator.html",
+      "sha256": "2a0e5b974281d5918cd8bf0345638388bfe902ae2dc4e199c33254367ef47719"
+    },
+    {
+      "path": "app/pro-simulator.mjs",
+      "sha256": "78d551d9c319afa543f2b5e58138c72785db3ce9a6c187cfbae14ca7e1df68cc"
+    },
+    {
+      "path": "app/production-study.js",
+      "sha256": "8ba459c6af8716c2a62ba8c2e5eaab1ae03e2bdfa834ab1fab07fe3c715efcdc"
+    },
+    {
+      "path": "app/project-acc-entry.mjs",
+      "sha256": "0f5ad7801e0803c501996e4133181f64e958f9dd8118fdb6a2b82fb0ed053f9b"
+    },
+    {
+      "path": "app/project-dashboard-model.mjs",
+      "sha256": "db33b3ac7d4f3981a3fa32fb7c39a5d7da5dadea2474a75a7a3b4197e4ae6758"
+    },
+    {
+      "path": "app/project-dashboard.css",
+      "sha256": "dcade2fd0f4e62cf3420420ae9ea800714c4e902e10ac45ed881b671b405f0b8"
+    },
+    {
+      "path": "app/project-dashboard.html",
+      "sha256": "dbba9aa8099b76e6dac4768a56465f31167a3df641dd8379a9743ebddde84c74"
+    },
+    {
+      "path": "app/project-dashboard.js",
+      "sha256": "9185b3214419677f9dd115956d34870b8be7ad929219b539e1eaad2153cc5a18"
+    },
+    {
+      "path": "app/project-hub-client.mjs",
+      "sha256": "8f99801abda35a74dff5429c5a2d6a968129045d50274661208c1cc7974500f0"
+    },
+    {
+      "path": "app/project-hub.css",
+      "sha256": "e00bf70a8420d45e6318bca77093872a57a9e415c8d024ad67efd606def4b472"
+    },
+    {
+      "path": "app/project-hub.js",
+      "sha256": "38a2c313a964c583ebf0698b9be0141b56edd953cc347d27ebe1dc17eccb874c"
+    },
+    {
+      "path": "app/project-site-qualification.mjs",
+      "sha256": "093ddd6a9e90051f93f6f31aeb58ec06a534d09d697fbc7486beaf504823474c"
+    },
+    {
+      "path": "app/project-transfer.mjs",
+      "sha256": "135d1ae8b286241b70cd9cbc870d1b3c07a6859772cbefc72825e06a4256935a"
+    },
+    {
+      "path": "app/projects.html",
+      "sha256": "5192f9739f05d2df4a10eef7684cc549d0464189225704f3f99c14e4fca3e338"
+    },
+    {
+      "path": "app/prospecting-data.mjs",
+      "sha256": "73a2c2de3d0399ad15d96d602946ed4d31c7e8ae86c71da6c397a7734e389cdc"
+    },
+    {
+      "path": "app/prospecting-energy.mjs",
+      "sha256": "ffcbaf15d422bd8a82075e2c02121a66f65feb4932755341da156b7241f37fa4"
+    },
+    {
+      "path": "app/prospecting-sheet.mjs",
+      "sha256": "d89d37d3de40ad452db1de4e8b7dfcc24d178e1511fa49e561e40482b28f0f01"
+    },
+    {
+      "path": "app/provisional-report.mjs",
+      "sha256": "348af8ed7d061563e629bd7ba62f52cdcd20215aee952ee21ba26a925bf5e30f"
+    },
+    {
+      "path": "app/qualification-horizon.mjs",
+      "sha256": "4f553a371445e07d5544c21dcd4fb3610828846b57a719d24490c4c413373995"
+    },
+    {
+      "path": "app/qualification-report.mjs",
+      "sha256": "16f20db5c121ac8ceb13450806f5c2d0fc9f5fdd333ef0d97126d6b1808435c2"
+    },
+    {
+      "path": "app/report-pdf.mjs",
+      "sha256": "75a1e76e72ce6712fa299ea5faba46ca72f1e037f4b7a32e44b6ca5aab1efef1"
+    },
+    {
+      "path": "app/report-status.js",
+      "sha256": "071fdc56050b9800a719140684766d00d7437457dd885aecade21d79e48fad86"
+    },
+    {
+      "path": "app/risk-ux.js",
+      "sha256": "8fe1c2f16b4b5c89c90240760dbff55ca5d0ee97be74df6a6ed3a406cd9d159c"
+    },
+    {
+      "path": "app/roof-map-interactions.mjs",
+      "sha256": "3e996ea11e942d8fe771dc36f8ea1759054686f2db1edc5ca70174b824a535af"
+    },
+    {
+      "path": "app/roof-surfaces.js",
+      "sha256": "82dd021ca2e7aebc207bb6955f2cdaa375077c3989abd08e645d41070c2389d4"
+    },
+    {
+      "path": "app/runtime-config.js",
+      "sha256": "f1412c9bc9bd414acbdb0b1b8a322eec1b586b66affd5154509be063136c75ab"
+    },
+    {
+      "path": "app/scenario-report.html",
+      "sha256": "fb3fcc716a7a0fdccc8e2273cbee4b01db687666da3c5309ab91b91564793cc0"
+    },
+    {
+      "path": "app/scenario-report.js",
+      "sha256": "b457c555268768352d5288fae7a01b0892cab83d9497083cfefdbfcf6d6e2891"
+    },
+    {
+      "path": "app/simulator-financial-view.mjs",
+      "sha256": "002dd4a0829d6dd506058cb3abb500165611772f0e9b16a5e1042dbe3eaa9d7b"
+    },
+    {
+      "path": "app/simulator-presentation.mjs",
+      "sha256": "d48170f181af4e01f441471c6dd985eb457bd5a2835eda0dfe121db03ba4ada9"
+    },
+    {
+      "path": "app/simulator-roof-map-interactions.mjs",
+      "sha256": "9648885fff94f923c4c349604c26ecefa7a943255590cbd4d67f1e25c1678a5a"
+    },
+    {
+      "path": "app/simulator-validation.mjs",
+      "sha256": "ec818b01b8b1a7d5367392b0979c0053c932b227ad1534dac8ec762879b83d20"
+    },
+    {
+      "path": "app/site-address.mjs",
+      "sha256": "8a78b859bbdc683210151e8d415bc92b66aaca7ec48c1ef53638e01dbc26f6b6"
+    },
+    {
+      "path": "app/site-context-view.mjs",
+      "sha256": "6299bd8e9354d12d173b11ded8118dc15240c4b05a5982c066f47b59423ffd29"
+    },
+    {
+      "path": "app/situation-plan-page.mjs",
+      "sha256": "bbb5542d9ee7d4c2841d644c6aafe47df759f6ae95e3ceb6c5bad3b31c546159"
+    },
+    {
+      "path": "app/situation-plan-pdf.mjs",
+      "sha256": "aba4a085d529e146ec155ec5d8a02640d9f9510b4b40cdb2f2c9f7c787845f5c"
+    },
+    {
+      "path": "app/situation-plan-ui.mjs",
+      "sha256": "e62bb21ef0fbc951dd94880621832b12761ed8860b629be219948b40ad9bebbe"
+    },
+    {
+      "path": "app/situation-plan.html",
+      "sha256": "353ac5ba2c6712b547a0cb844a4e169fe4f8e2a98450416304c1f59477ec87f2"
+    },
+    {
+      "path": "app/solar-preview-request.mjs",
+      "sha256": "7e372f8a73299dd46ad307a159008e1281296c84eaa99b703abdf6cd5d6cc7d9"
+    },
+    {
+      "path": "app/summary-ux.js",
+      "sha256": "12587499ff26a263ef8c0272aef6e254423a00ae9b075ba16ea1ba60e546e7fd"
+    },
+    {
+      "path": "app/supabase-session.js",
+      "sha256": "ba22c78ee227a72d08cb9f491fa779b29bac9638e79f6a9101ae8956e30f6e24"
+    },
+    {
+      "path": "app/vendor/leaflet/images/layers-2x.png",
+      "sha256": "066daca850d8ffbef007af00b06eac0015728dee279c51f3cb6c716df7c42edf"
+    },
+    {
+      "path": "app/vendor/leaflet/images/layers.png",
+      "sha256": "1dbbe9d028e292f36fcba8f8b3a28d5e8932754fc2215b9ac69e4cdecf5107c6"
+    },
+    {
+      "path": "app/vendor/leaflet/images/spritesheet-2x.png",
+      "sha256": "fa2c95e0610f3787c879645e42b86ad010c305f8312e116841730d00d4ab72b7"
+    },
+    {
+      "path": "app/vendor/leaflet/images/spritesheet.png",
+      "sha256": "a8978a1d3d21d8ee6f16cce342ff67fc47c4241f52161f05baf88f15e1058199"
+    },
+    {
+      "path": "app/vendor/leaflet/leaflet.css",
+      "sha256": "a7837102824184820dfa198d1ebcd109ff6d0ff9a2672a074b9a1b4d147d04c6"
+    },
+    {
+      "path": "app/vendor/leaflet/leaflet.draw.css",
+      "sha256": "5f30f74696873efee5cd7f6ab7eda7d63e5c5a3e3c3b6e0ab2068662928df31f"
+    },
+    {
+      "path": "app/vendor/leaflet/leaflet.draw.js",
+      "sha256": "b22a1f7385308e5adadd85a4c2d84e9fc523ebd70d37868cba0fe2387362460b"
+    },
+    {
+      "path": "app/vendor/leaflet/leaflet.js",
+      "sha256": "db49d009c841f5ca34a888c96511ae936fd9f5533e90d8b2c4d57596f4e5641a"
+    },
+    {
+      "path": "app/vendor/leaflet/LICENSE.leaflet-draw.txt",
+      "sha256": "320f2c68ac27b7f7f2a78c490470a273d297e753ab37ba026944616bf0a62f47"
+    },
+    {
+      "path": "app/vendor/leaflet/LICENSE.leaflet.txt",
+      "sha256": "53e8dc25862014e4324741ca18fbe3611e11d42ef69f59f86ea8c5389647d4cb"
+    },
+    {
+      "path": "app/workspace-r1-1.css",
+      "sha256": "1b0a12dc34354ee6928499fd1d629e735c4d9fbd196a37983a6c5e9ab78a37ba"
+    },
+    {
+      "path": "app/workspace-r1-1.js",
+      "sha256": "2eb447103adee3cfce59296f22ae3c7e7b2e9d2a61796bf862e7738c256d66ec"
+    },
+    {
+      "path": "app/workspace-redesign.css",
+      "sha256": "963ee2e0477c144ae72f2e31725cca970e9d8c2e16c2262fcde115cde0cb85e4"
+    },
+    {
+      "path": "app/workspace-redesign.js",
+      "sha256": "c00a2354aad34e2e183ede6d7355d0ca88cc8be09e79f2a1a7993601d22c11b0"
+    },
+    {
+      "path": "app/workspace-report.js",
+      "sha256": "8bbdf2227a34348ca098b61e5f6b6e67ee700465c7945cd78c529970c276ed9a"
+    },
+    {
+      "path": "app/workspace-solar-area-types.js",
+      "sha256": "f93d760bfa449d215e5f32cc9b6bbc676852502d4f1940e98e270a5c6ff11d54"
+    },
+    {
+      "path": "app/workspace.html",
+      "sha256": "746edec4ef197043cd907422ed48c563668679d8eb1bf6e50b66219eff2f6b7e"
+    },
+    {
+      "path": "app/workspace.js",
+      "sha256": "ec7cf7047bca0748956cc708ddc3984d639baaef23c93f0a22df322acfb9f02a"
+    },
+    {
+      "path": "app-auth-gate.js",
+      "sha256": "a6c96ae8d19c48049b035fad9c1865e2480a1e35f81acd2393b73a27c28e6e42"
+    },
+    {
+      "path": "assets/simulator/autoconsommation-surplus.png",
+      "sha256": "980acc77a87b685b889c0a0ecdbbe26bc4b6aac25d255fdcb1c0726fec89b8de"
+    },
+    {
+      "path": "assets/simulator/building-types.png",
+      "sha256": "2a44d32fa7905bfc9c2e99b7a7d9b5d85f0d0d1021c9dfdbd6955c7367f3906f"
+    },
+    {
+      "path": "assets/simulator/ozeno-wordmark.svg",
+      "sha256": "9384d5552dab4e6a7c7716f7c21488b31dc0987b5645272304a2ea57a13c2fbf"
+    },
+    {
+      "path": "assets/simulator/pv-agrivoltaic-canopy.png",
+      "sha256": "25deaf55b6db6b6b3b6305e8874e69dc4cf3a4fee5cf0dde94f51002492e90e5"
+    },
+    {
+      "path": "assets/simulator/pv-carport.png",
+      "sha256": "7f7b207cd257ab14071ef27e5f1889a0bb602860451b9459df3fdc1a4a577dba"
+    },
+    {
+      "path": "assets/simulator/README.md",
+      "sha256": "6ff42e6accf5e91b373583aaf621b50d885c768f8129a799e9a7d55090be2660"
+    },
+    {
+      "path": "assets/simulator/site-kind-building.png",
+      "sha256": "2a0434e61f529ed2a1e90c2b7563ef304647e94dd5bc3203ce8f7eeaf90ac641"
+    },
+    {
+      "path": "assets/simulator/site-kind-exterior.png",
+      "sha256": "31761798ecbc9e1c993073df1d1e827dd6e38b9409d89a5a176a72dddbd135f8"
+    },
+    {
+      "path": "assets/simulator/solar-building-hero.png",
+      "sha256": "46fabc1b4bc3ea23b931897eae8cf3bc1c5f74b89a6c03beea120f25f3e1ce6b"
+    },
+    {
+      "path": "assets/simulator/solar-choices.png",
+      "sha256": "cf2eb35df83250237b42a854d4e3d0c56121d298d546e1c571b2b4f991c54a82"
+    },
+    {
+      "path": "assets/simulator/vente-totale.png",
+      "sha256": "7dcae654be72396de33c85c402e6f2cb0465e78845851087267fcc291363176d"
+    },
+    {
+      "path": "audit-ux.js",
+      "sha256": "3b76ef21edaa52773e8c3e0bbc93859b430d8a342b1d92c71cdc2b6274fb7741"
+    },
+    {
+      "path": "commercial-ux.js",
+      "sha256": "271ff24b19db58bd68a80e94932bcf336abc3281d34018596535a7ca05198816"
+    },
+    {
+      "path": "complete-financial-client.mjs",
+      "sha256": "07a17ffa33fafe14dd4553f676859db10c227d12b3682330622c567069d79534"
+    },
+    {
+      "path": "efficiency-impact-ux.js",
+      "sha256": "91584a16320cb35834c4460d20cf196d87d7638f57869dfcad86e7dc705538e1"
+    },
+    {
+      "path": "enedis-estimate-groups.mjs",
+      "sha256": "ae0b7de62a7287500e1de664ac34fa79759d40eee5dd481838164110c61fb635"
+    },
+    {
+      "path": "enedis-synthetic-picker.mjs",
+      "sha256": "c95273869aa9ffa80abaf40ac720384188a0df6e94131b19c1882d0b0285af76"
+    },
+    {
+      "path": "energy-engine-client.js",
+      "sha256": "8de8a8414494655bb29a13b60c6f259f192f51333fe1b4e9320f4d9dd79d116e"
+    },
+    {
+      "path": "equity-cashflow.js",
+      "sha256": "d9a072ca5224c3589e458aa070fdc414b7bdc99240f1cfdbc941e6d66e5abbf4"
+    },
+    {
+      "path": "exec-d2eda8f0-968b-466f-b6ab-7ba649808352.png",
+      "sha256": "bb4ac4821ddcbd44a7eacda42b85d820e0fa4b75e6c2f9c6659ce396500f2390"
+    },
+    {
+      "path": "finance-controls.js",
+      "sha256": "be63152d4c2e83065aa34e18432d4a9e6a24d12ee0c371fb6e7320a4b86a843b"
+    },
+    {
+      "path": "financial-assumptions.js",
+      "sha256": "02d32e6bc6ec90b3dbbe914ee273885139beaa5465e17d9ed4eda1c05956ee93"
+    },
+    {
+      "path": "franchise-dashboard-data.mjs",
+      "sha256": "c8b6c7e52d788df04ae57d5abeb5a1c84c3cf31361c93447605f417dc2b364d9"
+    },
+    {
+      "path": "franchise-dashboard.css",
+      "sha256": "97cd2414e0fba0f1f6148d8429331cf4d735aa8a05a55b21c9cd48b85a2ec8ca"
+    },
+    {
+      "path": "franchise-dashboard.js",
+      "sha256": "d55cb270e32574077984ff25698871fab733653765aca0d3766089303c191248"
+    },
+    {
+      "path": "franchise.html",
+      "sha256": "0d610124ee4dded7ede74f50a151115f9cd27632c8696a5270e7f32d392c3731"
+    },
+    {
+      "path": "index.html",
+      "sha256": "2a0e5b974281d5918cd8bf0345638388bfe902ae2dc4e199c33254367ef47719"
+    },
+    {
+      "path": "installation-cost-reference.js",
+      "sha256": "519e9ba717745a43455e0eca5b87ba9ebf8220bdc3e496844691ca4075f4036b"
+    },
+    {
+      "path": "installer-commission.js",
+      "sha256": "c2089aedab4715b7fda80b791f94318eeff4015af961dc68c9925e693c9f992c"
+    },
+    {
+      "path": "installer-directory-client.mjs",
+      "sha256": "2605c23e3c63a52a02a341344b653b52954515c3b5d59e46420dff685e6f0233"
+    },
+    {
+      "path": "installer-directory-ui.mjs",
+      "sha256": "4d4fa0ea5cb91e76eab1c461befc2ae94cc2500d1537137861ee906c430da6df"
+    },
+    {
+      "path": "installer-network.css",
+      "sha256": "342b20a313a1b18ad2683ce6f2f3ed96595dbb5318e6f5b8fcbf4e45c4b9b289"
+    },
+    {
+      "path": "installer-network.mjs",
+      "sha256": "65ba1f29060216fc957994a5aae3de649fa6424b995fd1371b7242c9024b576f"
+    },
+    {
+      "path": "investor-enhancements.js",
+      "sha256": "0a568c56b6482466295bfe11eef0c8a8627583b444b564784b13a85f48fa7f63"
+    },
+    {
+      "path": "investor.html",
+      "sha256": "13fd3bb9cb5a4e52d593a007320e1134441dc2b012ad1d64c4bf13971bbac3c9"
+    },
+    {
+      "path": "local-preview-navigation.js",
+      "sha256": "6d4e9283beeadeb71465a21c984a5f80742474555e8ad93bab2aa2b534aff6e4"
+    },
+    {
+      "path": "local-roof-import.mjs",
+      "sha256": "4f072602253c9f65d43d2231f1df1d5281fab8f9a54412c02157c31302174590"
+    },
+    {
+      "path": "login.html",
+      "sha256": "becbfe376611e58a9c410a7e06afc9bc41be16f1ebf4162c6415c91f473364db"
+    },
+    {
+      "path": "login.js",
+      "sha256": "9a9048fa615c59560b6b5ca0abff3a884c9d021cb0961607afc2d9e6bd011275"
+    },
+    {
+      "path": "market-opportunities.css",
+      "sha256": "bb1a9ee77aae70dcdadcb960398495dcece0fdb19119424aa66abaa05c7c3c01"
+    },
+    {
+      "path": "market-opportunities.js",
+      "sha256": "a88ffbf52aa8de18f6355c36922d61f4fd00e6c7d1043238a5759e37fc493ba1"
+    },
+    {
+      "path": "mission-contract-draft.mjs",
+      "sha256": "f0f576981b5aa4bb90bd0a788bce9247468ec11bf8457ba17da84311a9864d75"
+    },
+    {
+      "path": "mission-editor.mjs",
+      "sha256": "a9d519bcabbbb2b0d75bc5d26651b4fa63149ca79426b6bc161066f8da105645"
+    },
+    {
+      "path": "obi-001-muret-fixture.json",
+      "sha256": "b2d80a85939a9baee56115aa5d4b90b7282e851bfe033d293e3536674d8926cb"
+    },
+    {
+      "path": "obi-c2-muret-recorded-reference.json",
+      "sha256": "263aef57767a4d83e2c9f67f49c8dfb3d2c99cd0f11c622c853f12bfd576999d"
+    },
+    {
+      "path": "obi-connected-data.mjs",
+      "sha256": "e42b8557c694208833b776e9f48ec77ee4ef411db60cf97d305c5c74d0783839"
+    },
+    {
+      "path": "obi-dvf-history.mjs",
+      "sha256": "3c95aaec018acd908385a04ef9a73f0b7cf40a6b61064a937be58bce4df688fb"
+    },
+    {
+      "path": "obi-dvf-muret-recorded-reference.json",
+      "sha256": "e143e2c94a14c727531c688f1ca12cfcfca6924aa169872b95cb4e3eeaa241d2"
+    },
+    {
+      "path": "obi-eet-regulatory.mjs",
+      "sha256": "9db280c12fc685ed434190dc2478a8f342675700f9deee7795bd0cd13a3f200e"
+    },
+    {
+      "path": "obi-evidence-view.mjs",
+      "sha256": "7536e814fa3e80b23eb82ea237bde021f4df7210b05b5df7ff0f7bbdd3db597e"
+    },
+    {
+      "path": "obi-prospecting-fiche-template.mjs",
+      "sha256": "807995ce8df4fae6fd2d40c08e33bf768373c5e45b6f89d1a711b5ef33483808"
+    },
+    {
+      "path": "obi-prospecting-fixture.mjs",
+      "sha256": "b1943e57e7e078105cd9966a89ac1898e610852c051311c99e2cccbc4c180dff"
+    },
+    {
+      "path": "obi-prospecting-view-model.mjs",
+      "sha256": "d35e77a72fc25f555283ea2fd2af7f59c9f3f4ae76d58b12b6f071920c7b1d43"
+    },
+    {
+      "path": "obi-public-evidence.mjs",
+      "sha256": "4d984f33e6f3d4aff26814cdd85544a9db79848d40319b41bd0fa830c98f4658"
+    },
+    {
+      "path": "obi-qualification-demo.mjs",
+      "sha256": "2a64b50d8f6064659361c7b4984bbf451c647b794b9af4bf22b8ae8bfaa86da8"
+    },
+    {
+      "path": "obi-qualification-preview.mjs",
+      "sha256": "4e983155955ee3db0eb4ab717e898ce9e73c1d80a87b569b6e992ec78006f0c3"
+    },
+    {
+      "path": "obi-rnb-bdnb-readonly.mjs",
+      "sha256": "bcafb3764f79831bf58190a0aa5c03e8dc599d4df2598988e97b5e0ff05aa249"
+    },
+    {
+      "path": "ooi-energy-visuals.css",
+      "sha256": "4e555765833e96f35ad8a37704f035f1cfd49eb574cbe6756da497efbc5d9b0e"
+    },
+    {
+      "path": "ooi-v10.css",
+      "sha256": "d1d4b94222964fa4e59c9ca071c80139426ea6e4c44cb01867c9c95f1d9c9a38"
+    },
+    {
+      "path": "ooi-v10.mjs",
+      "sha256": "78c04accc98ede6bea8e54322eecf471f548ad8ff706bbd4b7834672dab029b9"
+    },
+    {
+      "path": "ooi-visual-v04.css",
+      "sha256": "56c0af5195f5565c7409588344b9a38ae80e15e5557ee6705db84e4378fbc8e3"
+    },
+    {
+      "path": "ooi-visual-v04.mjs",
+      "sha256": "3e9773dc79539dd3f67bfc2c784f9b0a35fcd414a6b07f57aa0bca27ae5c0c86"
+    },
+    {
+      "path": "osm-footprint-client.mjs",
+      "sha256": "c91302190d8b168a68d7a67584c84177be30ff00a15358267ffec7643f66fe03"
+    },
+    {
+      "path": "ozeno-brand.css",
+      "sha256": "b3efabfbb1fbb45dab0590b878814ae7feb3da27ca0548ab1ceaae8427d29d0e"
+    },
+    {
+      "path": "ozeno-brand.js",
+      "sha256": "6a610777a5f18e95a55e340e82be294f3dbf513681cce10577d98f2457ee8c9a"
+    },
+    {
+      "path": "ozeno-missions.mjs",
+      "sha256": "d466544274b9131797a096ffa71b9d64af8b7086cfdc3d3efd1561faaee513fa"
+    },
+    {
+      "path": "ozeno-theme.css",
+      "sha256": "63d5e00e7f580dc5e51742ff5eb2de4b44a41f1e624aafa0805ca09cccb28a5e"
+    },
+    {
+      "path": "ozeno-theme.js",
+      "sha256": "e9ede2eee90887e952323b23e4a9eb1e32797897a77c88597697aeb5b45cb9bc"
+    },
+    {
+      "path": "ozeno-wordmark.png",
+      "sha256": "33a993653b6202a5fe990f6958158a99ce55f87bf4eb67ec564cc8d84d66cf80"
+    },
+    {
+      "path": "parcel-qualification-ui.mjs",
+      "sha256": "14250a36460bc3115020a64ec4590dfd0fd084f9205e75a75dd793f824871e54"
+    },
+    {
+      "path": "parcel-qualification.css",
+      "sha256": "a29c2cb1a7c17e6211580e82f4f70fcfd33d5bca501b3a044cd6fb3c7a72925b"
+    },
+    {
+      "path": "parcel-qualification.mjs",
+      "sha256": "fe3f1e4f7a11b59de662e6fbff8c89cd3d0c9e3701dded3d67a067de3b4f67cc"
+    },
+    {
+      "path": "prestudy-acc-entry.mjs",
+      "sha256": "661a6e4c8b4da37d84dc3ef65d9957b07ecf6887d57c360d0ff4f2c72b4e3a1a"
+    },
+    {
+      "path": "prestudy-building-benchmarks.mjs",
+      "sha256": "59288036b224d084ad0af15be5aa31c7cfbeb9204d1bfc670eceb33c8d13d275"
+    },
+    {
+      "path": "prestudy-chapters.css",
+      "sha256": "c07da8940374ba563d2d6a99f84e887c067099d7856e5c676742500605ac3c93"
+    },
+    {
+      "path": "prestudy-chapters.js",
+      "sha256": "bb428c1baf02b50a23cdbbd5a4528e1a5211a71983d958214425a9e1713b4d73"
+    },
+    {
+      "path": "prestudy-funding.js",
+      "sha256": "365bba82d57f0b7ceac498aa9a57aaec859a1384f08ee66289de1ee2d7725573"
+    },
+    {
+      "path": "prestudy-phase-e.css",
+      "sha256": "277da10c7dc48489a3b219311e8bf39e5b0fa855e6d320b46ce3bc64b499d9e8"
+    },
+    {
+      "path": "prestudy-shell.css",
+      "sha256": "0fff3dd5128f2d6d659630600586194205dcd2a950dad261934fad5539032090"
+    },
+    {
+      "path": "prestudy-shell.js",
+      "sha256": "522dd85548042530cbeb39b1eee3a5675249861ba1c1cdbe425c942ad978979c"
+    },
+    {
+      "path": "pro-simulator-design.css",
+      "sha256": "92bd2428a3596bedec10b7ae274725cbd18477b19936db6594d4b7d8ef855eb1"
+    },
+    {
+      "path": "pro-simulator-estimation.mjs",
+      "sha256": "ff8dbfc5e3decbdbeef2f26b0d79e0b0f84ea78a05e4289b6508c3b00b2714e1"
+    },
+    {
+      "path": "pro-simulator.css",
+      "sha256": "d349de2014db8b379618625b9f37d2474acfeb72e4e987aca320e9e974a187b9"
+    },
+    {
+      "path": "pro-simulator.html",
+      "sha256": "2a0e5b974281d5918cd8bf0345638388bfe902ae2dc4e199c33254367ef47719"
+    },
+    {
+      "path": "pro-simulator.mjs",
+      "sha256": "78d551d9c319afa543f2b5e58138c72785db3ce9a6c187cfbae14ca7e1df68cc"
+    },
+    {
+      "path": "production-study.js",
+      "sha256": "8ba459c6af8716c2a62ba8c2e5eaab1ae03e2bdfa834ab1fab07fe3c715efcdc"
+    },
+    {
+      "path": "project-acc-entry.mjs",
+      "sha256": "0f5ad7801e0803c501996e4133181f64e958f9dd8118fdb6a2b82fb0ed053f9b"
+    },
+    {
+      "path": "project-dashboard-model.mjs",
+      "sha256": "db33b3ac7d4f3981a3fa32fb7c39a5d7da5dadea2474a75a7a3b4197e4ae6758"
+    },
+    {
+      "path": "project-dashboard.css",
+      "sha256": "dcade2fd0f4e62cf3420420ae9ea800714c4e902e10ac45ed881b671b405f0b8"
+    },
+    {
+      "path": "project-dashboard.html",
+      "sha256": "dbba9aa8099b76e6dac4768a56465f31167a3df641dd8379a9743ebddde84c74"
+    },
+    {
+      "path": "project-dashboard.js",
+      "sha256": "9185b3214419677f9dd115956d34870b8be7ad929219b539e1eaad2153cc5a18"
+    },
+    {
+      "path": "project-hub-client.mjs",
+      "sha256": "8f99801abda35a74dff5429c5a2d6a968129045d50274661208c1cc7974500f0"
+    },
+    {
+      "path": "project-hub.css",
+      "sha256": "e00bf70a8420d45e6318bca77093872a57a9e415c8d024ad67efd606def4b472"
+    },
+    {
+      "path": "project-hub.js",
+      "sha256": "38a2c313a964c583ebf0698b9be0141b56edd953cc347d27ebe1dc17eccb874c"
+    },
+    {
+      "path": "project-site-qualification.mjs",
+      "sha256": "093ddd6a9e90051f93f6f31aeb58ec06a534d09d697fbc7486beaf504823474c"
+    },
+    {
+      "path": "project-transfer.mjs",
+      "sha256": "135d1ae8b286241b70cd9cbc870d1b3c07a6859772cbefc72825e06a4256935a"
+    },
+    {
+      "path": "projects.html",
+      "sha256": "5192f9739f05d2df4a10eef7684cc549d0464189225704f3f99c14e4fca3e338"
+    },
+    {
+      "path": "prospecting-data.mjs",
+      "sha256": "73a2c2de3d0399ad15d96d602946ed4d31c7e8ae86c71da6c397a7734e389cdc"
+    },
+    {
+      "path": "prospecting-energy.mjs",
+      "sha256": "ffcbaf15d422bd8a82075e2c02121a66f65feb4932755341da156b7241f37fa4"
+    },
+    {
+      "path": "prospecting-sheet.mjs",
+      "sha256": "d89d37d3de40ad452db1de4e8b7dfcc24d178e1511fa49e561e40482b28f0f01"
+    },
+    {
+      "path": "provisional-report.mjs",
+      "sha256": "348af8ed7d061563e629bd7ba62f52cdcd20215aee952ee21ba26a925bf5e30f"
+    },
+    {
+      "path": "qualification-horizon.mjs",
+      "sha256": "4f553a371445e07d5544c21dcd4fb3610828846b57a719d24490c4c413373995"
+    },
+    {
+      "path": "qualification-report.mjs",
+      "sha256": "16f20db5c121ac8ceb13450806f5c2d0fc9f5fdd333ef0d97126d6b1808435c2"
+    },
+    {
+      "path": "report-pdf.mjs",
+      "sha256": "75a1e76e72ce6712fa299ea5faba46ca72f1e037f4b7a32e44b6ca5aab1efef1"
+    },
+    {
+      "path": "report-status.js",
+      "sha256": "071fdc56050b9800a719140684766d00d7437457dd885aecade21d79e48fad86"
+    },
+    {
+      "path": "risk-ux.js",
+      "sha256": "8fe1c2f16b4b5c89c90240760dbff55ca5d0ee97be74df6a6ed3a406cd9d159c"
+    },
+    {
+      "path": "roof-map-interactions.mjs",
+      "sha256": "3e996ea11e942d8fe771dc36f8ea1759054686f2db1edc5ca70174b824a535af"
+    },
+    {
+      "path": "roof-surfaces.js",
+      "sha256": "82dd021ca2e7aebc207bb6955f2cdaa375077c3989abd08e645d41070c2389d4"
+    },
+    {
+      "path": "runtime-config.js",
+      "sha256": "f1412c9bc9bd414acbdb0b1b8a322eec1b586b66affd5154509be063136c75ab"
+    },
+    {
+      "path": "scenario-report.html",
+      "sha256": "fb3fcc716a7a0fdccc8e2273cbee4b01db687666da3c5309ab91b91564793cc0"
+    },
+    {
+      "path": "scenario-report.js",
+      "sha256": "b457c555268768352d5288fae7a01b0892cab83d9497083cfefdbfcf6d6e2891"
+    },
+    {
+      "path": "simulator-financial-view.mjs",
+      "sha256": "002dd4a0829d6dd506058cb3abb500165611772f0e9b16a5e1042dbe3eaa9d7b"
+    },
+    {
+      "path": "simulator-presentation.mjs",
+      "sha256": "d48170f181af4e01f441471c6dd985eb457bd5a2835eda0dfe121db03ba4ada9"
+    },
+    {
+      "path": "simulator-roof-map-interactions.mjs",
+      "sha256": "9648885fff94f923c4c349604c26ecefa7a943255590cbd4d67f1e25c1678a5a"
+    },
+    {
+      "path": "simulator-validation.mjs",
+      "sha256": "ec818b01b8b1a7d5367392b0979c0053c932b227ad1534dac8ec762879b83d20"
+    },
+    {
+      "path": "site-address.mjs",
+      "sha256": "8a78b859bbdc683210151e8d415bc92b66aaca7ec48c1ef53638e01dbc26f6b6"
+    },
+    {
+      "path": "site-context-view.mjs",
+      "sha256": "6299bd8e9354d12d173b11ded8118dc15240c4b05a5982c066f47b59423ffd29"
+    },
+    {
+      "path": "situation-plan-page.mjs",
+      "sha256": "bbb5542d9ee7d4c2841d644c6aafe47df759f6ae95e3ceb6c5bad3b31c546159"
+    },
+    {
+      "path": "situation-plan-pdf.mjs",
+      "sha256": "aba4a085d529e146ec155ec5d8a02640d9f9510b4b40cdb2f2c9f7c787845f5c"
+    },
+    {
+      "path": "situation-plan-ui.mjs",
+      "sha256": "e62bb21ef0fbc951dd94880621832b12761ed8860b629be219948b40ad9bebbe"
+    },
+    {
+      "path": "situation-plan.html",
+      "sha256": "353ac5ba2c6712b547a0cb844a4e169fe4f8e2a98450416304c1f59477ec87f2"
+    },
+    {
+      "path": "solar-preview-request.mjs",
+      "sha256": "7e372f8a73299dd46ad307a159008e1281296c84eaa99b703abdf6cd5d6cc7d9"
+    },
+    {
+      "path": "summary-ux.js",
+      "sha256": "12587499ff26a263ef8c0272aef6e254423a00ae9b075ba16ea1ba60e546e7fd"
+    },
+    {
+      "path": "supabase-session.js",
+      "sha256": "ba22c78ee227a72d08cb9f491fa779b29bac9638e79f6a9101ae8956e30f6e24"
+    },
+    {
+      "path": "vendor/leaflet/images/layers-2x.png",
+      "sha256": "066daca850d8ffbef007af00b06eac0015728dee279c51f3cb6c716df7c42edf"
+    },
+    {
+      "path": "vendor/leaflet/images/layers.png",
+      "sha256": "1dbbe9d028e292f36fcba8f8b3a28d5e8932754fc2215b9ac69e4cdecf5107c6"
+    },
+    {
+      "path": "vendor/leaflet/images/spritesheet-2x.png",
+      "sha256": "fa2c95e0610f3787c879645e42b86ad010c305f8312e116841730d00d4ab72b7"
+    },
+    {
+      "path": "vendor/leaflet/images/spritesheet.png",
+      "sha256": "a8978a1d3d21d8ee6f16cce342ff67fc47c4241f52161f05baf88f15e1058199"
+    },
+    {
+      "path": "vendor/leaflet/leaflet.css",
+      "sha256": "a7837102824184820dfa198d1ebcd109ff6d0ff9a2672a074b9a1b4d147d04c6"
+    },
+    {
+      "path": "vendor/leaflet/leaflet.draw.css",
+      "sha256": "5f30f74696873efee5cd7f6ab7eda7d63e5c5a3e3c3b6e0ab2068662928df31f"
+    },
+    {
+      "path": "vendor/leaflet/leaflet.draw.js",
+      "sha256": "b22a1f7385308e5adadd85a4c2d84e9fc523ebd70d37868cba0fe2387362460b"
+    },
+    {
+      "path": "vendor/leaflet/leaflet.js",
+      "sha256": "db49d009c841f5ca34a888c96511ae936fd9f5533e90d8b2c4d57596f4e5641a"
+    },
+    {
+      "path": "vendor/leaflet/LICENSE.leaflet-draw.txt",
+      "sha256": "320f2c68ac27b7f7f2a78c490470a273d297e753ab37ba026944616bf0a62f47"
+    },
+    {
+      "path": "vendor/leaflet/LICENSE.leaflet.txt",
+      "sha256": "53e8dc25862014e4324741ca18fbe3611e11d42ef69f59f86ea8c5389647d4cb"
+    },
+    {
+      "path": "workspace-r1-1.css",
+      "sha256": "1b0a12dc34354ee6928499fd1d629e735c4d9fbd196a37983a6c5e9ab78a37ba"
+    },
+    {
+      "path": "workspace-r1-1.js",
+      "sha256": "2eb447103adee3cfce59296f22ae3c7e7b2e9d2a61796bf862e7738c256d66ec"
+    },
+    {
+      "path": "workspace-redesign.css",
+      "sha256": "963ee2e0477c144ae72f2e31725cca970e9d8c2e16c2262fcde115cde0cb85e4"
+    },
+    {
+      "path": "workspace-redesign.js",
+      "sha256": "c00a2354aad34e2e183ede6d7355d0ca88cc8be09e79f2a1a7993601d22c11b0"
+    },
+    {
+      "path": "workspace-report.js",
+      "sha256": "8bbdf2227a34348ca098b61e5f6b6e67ee700465c7945cd78c529970c276ed9a"
+    },
+    {
+      "path": "workspace-solar-area-types.js",
+      "sha256": "f93d760bfa449d215e5f32cc9b6bbc676852502d4f1940e98e270a5c6ff11d54"
+    },
+    {
+      "path": "workspace.html",
+      "sha256": "746edec4ef197043cd907422ed48c563668679d8eb1bf6e50b66219eff2f6b7e"
+    },
+    {
+      "path": "workspace.js",
+      "sha256": "ec7cf7047bca0748956cc708ddc3984d639baaef23c93f0a22df322acfb9f02a"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+.actualitesTopNav { display:flex; align-items:center; justify-content:flex-end; flex:1; padding-right:clamp(16px,3vw,40px); }
+.actualitesTopNav a { text-decoration:none; }
+.actualitesShell { min-height:calc(100dvh - 76px); }
+.actualitesMain { max-width:1440px; }
+.actualitesMain>.ozenoEyebrow { margin:0 0 15px; }
+.actualitesHeading { display:flex; align-items:flex-end; justify-content:space-between; gap:20px; margin-bottom:12px; }
+.actualitesHeading h1 { margin:0 0 8px; color:#073f39; font-size:clamp(28px,3vw,38px); letter-spacing:-.035em; }
+.actualitesKicker,.actualiteCategory { margin:0 0 8px; color:#658274; font-size:10px; font-weight:750; letter-spacing:.12em; text-transform:uppercase; }
+.actualitesPeriod { margin:0; color:#536e61; font-size:14px; }
+.actualitesCount { flex:none; padding:8px 12px; border:1px solid #d4e3da; border-radius:99px; background:#edf5f0; color:#315f4b; font-size:12px; font-weight:700; }
+.actualitesIntro { max-width:780px; margin:0 0 24px; color:#536e61; font-size:14px; line-height:1.6; }
+.actualitesGrid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; align-items:stretch; }
+.actualiteCard,.actualitesFollowUp { display:flex; min-width:0; flex-direction:column; padding:22px; border:1px solid #d8e5de; border-radius:12px; background:#fff; box-shadow:0 3px 10px #173f3707; }
+.actualiteCard h2,.actualitesFollowUp h2 { margin:0 0 12px; color:#173f37; font-size:20px; line-height:1.3; }
+.actualiteCard>p:not(.actualiteCategory),.actualitesFollowUp>p { margin:0 0 16px; color:#506b5e; font-size:13px; line-height:1.65; }
+.actualiteTags { display:flex; flex-wrap:wrap; gap:7px; margin:auto 0 18px; padding-top:4px; }
+.actualiteTags span { padding:5px 9px; border-radius:99px; background:#eff5f1; color:#426653; font-size:10px; font-weight:650; }
+.actualiteCard>a { align-self:flex-start; margin-top:6px; color:#187459; font-size:12px; font-weight:700; text-decoration:none; }
+.actualiteCard>a:hover { text-decoration:underline; }
+.actualitesFollowUp { justify-content:center; border-color:#d2e2d6; background:#f2f7f2; }
+.actualitesFollowUp span { color:#6b8175; font-size:11px; }
+.actualitesMain>.hubDashboardFootnote { margin-top:22px; }
+@media(max-width:900px) { .actualitesMain { padding:28px 20px 44px; } .actualitesGrid { grid-template-columns:1fr; } }
+@media(max-width:520px) { .actualitesHeading { align-items:flex-start; flex-direction:column; } .actualiteCard,.actualitesFollowUp { padding:18px; } }

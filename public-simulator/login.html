@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>Connexion · OZENO</title>
+  <script>
+    (() => {
+      const url = new URL(window.location.href);
+      const sensitive = (key) => /^(?:email|password|passwd|token|access_token|refresh_token|apikey|api_key)$/i.test(key);
+      let unsafe = [...url.searchParams.keys()].some(sensitive);
+      const next = url.searchParams.get('next');
+      if (next) {
+        try {
+          const target = new URL(next, url);
+          for (const key of [...target.searchParams.keys()]) {
+            if (sensitive(key)) { target.searchParams.delete(key); unsafe = true; }
+          }
+          url.searchParams.set('next', `${target.pathname}${target.search}${target.hash}`);
+        } catch { url.searchParams.delete('next'); }
+      }
+      for (const key of [...url.searchParams.keys()]) {
+        if (sensitive(key) || !['next', 'reason', 'mode'].includes(key)) url.searchParams.delete(key);
+      }
+      if (unsafe) {
+        window.__OZENO_UNSAFE_LOGIN_LINK = true;
+        window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
+      }
+    })();
+  </script>
+  <link rel="icon" type="image/png" href="./exec-d2eda8f0-968b-466f-b6ab-7ba649808352.png">
+  <link rel="stylesheet" href="./ozeno-theme.css">
+  <script src="./runtime-config.js"></script>
+  <script type="module" src="./login.js"></script>
+  <style>
+    body{min-height:100vh;margin:0;display:grid;place-items:center;background:#f2f6f3;color:#073d35;font:16px system-ui,-apple-system,"Segoe UI",sans-serif}
+    .loginCard{box-sizing:border-box;width:min(440px,calc(100% - 32px));padding:32px;background:#fff;border:1px solid #d5e4da;border-radius:18px;box-shadow:0 14px 40px #092e2417}
+    .loginBrand{display:flex;align-items:center;gap:12px;margin-bottom:26px}.loginBrand img{width:54px;height:auto}.loginBrand strong{display:block;font-size:25px;letter-spacing:.02em}.loginBrand small{color:#607b70}
+    h1{margin:0 0 8px;font-size:25px}.loginIntro{margin:0 0 24px;color:#607b70;line-height:1.5}
+    form{display:grid;gap:14px}form[hidden]{display:none}label{display:grid;gap:6px;font-weight:650}.passwordField{position:relative;display:block}.passwordField input{padding-right:48px}.visibilityToggle{position:absolute;top:50%;right:5px;transform:translateY(-50%);display:grid;place-items:center;width:38px;height:38px;padding:7px;border:0;border-radius:6px;background:transparent;color:#527468}.visibilityToggle:hover{background:#edf6f1}.visibilityToggle:focus-visible{outline:3px solid #a9d8c0}.visibilityToggle svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.visibilityToggle .eyeSlash{display:none}.visibilityToggle[aria-pressed="true"] .eyeSlash{display:block}input{box-sizing:border-box;width:100%;padding:12px;border:1px solid #c9dbd0;border-radius:8px;font:inherit}input:focus{outline:3px solid #a9d8c0;border-color:#1c875b}
+    button{border:0;border-radius:8px;background:#06453c;color:#fff;padding:13px 16px;font:inherit;font-weight:700;cursor:pointer}button:disabled{opacity:.65;cursor:wait}.loginLink{display:block;width:max-content;margin:-5px auto 0;padding:4px;background:transparent;color:#176851;font:inherit;font-size:14px;text-decoration:underline}.loginSecondary{background:#e8f3ed;color:#06453c}.loginProgress{display:flex;align-items:center;gap:9px;margin:14px 0 0;color:#176851;font-size:14px}.loginProgress[hidden]{display:none}.loginSpinner{width:16px;height:16px;flex:0 0 16px;border:2px solid #c5ded2;border-top-color:#08734c;border-radius:50%;animation:spin .75s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.loginStatus{min-height:22px;margin:14px 0 0;color:#9a5110;font-size:14px}.loginFoot{margin:18px 0 0;color:#71867c;font-size:12px;line-height:1.5}.envBadge{display:inline-block;margin-bottom:18px;padding:5px 9px;border-radius:999px;background:#e8f3ed;color:#22634a;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+  </style>
+</head>
+<body>
+  <main class="loginCard">
+    <div class="loginBrand"><img src="./ozeno-wordmark.png" alt=""><div><strong>OZENO</strong><small>Plateforme de transition énergétique</small></div></div>
+    <span class="envBadge" id="environmentBadge">Environnement de test</span>
+    <h1>Connexion</h1>
+    <p class="loginIntro">Après vérification de votre mot de passe, confirmez aussi votre identité avec le code envoyé sur votre téléphone.</p>
+    <form id="loginForm" novalidate>
+      <label for="loginEmail">Adresse e-mail<input id="loginEmail" name="email" type="email" autocomplete="username" required></label>
+      <label for="loginPassword">Mot de passe<span class="passwordField"><input id="loginPassword" name="password" type="password" autocomplete="current-password" required><button class="visibilityToggle" type="button" data-visibility-toggle="loginPassword" aria-label="Afficher le mot de passe" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path class="eyeSlash" d="m3 3 18 18"/></svg></button></span></label>
+      <button id="loginSubmit" type="submit">Se connecter</button>
+      <button class="loginLink" id="forgotPassword" type="button">Mot de passe oublié ?</button>
+    </form>
+    <form id="recoveryRequestForm" hidden novalidate>
+      <label for="recoveryEmail">Adresse e-mail du compte<input id="recoveryEmail" name="email" type="email" autocomplete="email" required></label>
+      <button id="recoveryRequestSubmit" type="submit">Recevoir un lien de récupération</button>
+      <button class="loginLink" id="recoveryRequestCancel" type="button">Retour à la connexion</button>
+    </form>
+    <form id="newPasswordForm" hidden novalidate>
+      <label for="newPassword">Nouveau mot de passe<span class="passwordField"><input id="newPassword" name="password" type="password" autocomplete="new-password" minlength="15" maxlength="128" required><button class="visibilityToggle" type="button" data-visibility-toggle="newPassword" aria-label="Afficher le nouveau mot de passe" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path class="eyeSlash" d="m3 3 18 18"/></svg></button></span></label>
+      <label for="confirmPassword">Confirmer le nouveau mot de passe<span class="passwordField"><input id="confirmPassword" name="password_confirmation" type="password" autocomplete="new-password" minlength="15" maxlength="128" required><button class="visibilityToggle" type="button" data-visibility-toggle="confirmPassword" aria-label="Afficher la confirmation du mot de passe" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path class="eyeSlash" d="m3 3 18 18"/></svg></button></span></label>
+      <button id="newPasswordSubmit" type="submit">Enregistrer le nouveau mot de passe</button>
+    </form>
+    <form id="phoneForm" hidden novalidate>
+      <label for="loginPhone">Téléphone mobile<input id="loginPhone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+33 6 12 34 56 78" required></label>
+      <button id="phoneSubmit" type="submit">Recevoir un code par SMS</button>
+    </form>
+    <form id="codeForm" hidden novalidate>
+      <label for="loginCode">Code reçu par SMS<input id="loginCode" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required></label>
+      <button id="codeSubmit" type="submit">Valider le code</button>
+    </form>
+    <p id="loginStatus" class="loginStatus" role="status" aria-live="polite"></p>
+    <div id="loginProgress" class="loginProgress" role="status" aria-live="polite" hidden><span class="loginSpinner" aria-hidden="true"></span><span id="loginProgressText">Vérification en cours…</span></div>
+    <p class="loginFoot">Les comptes sont créés par un administrateur. Les brouillons enregistrés dans ce navigateur restent locaux à cet appareil.</p>
+  </main>
+</body>
+</html>

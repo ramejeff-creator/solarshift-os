@@ -55,7 +55,7 @@ export function buildQualificationReport(snapshot, { name = 'Site à qualifier',
       { label: 'Statut', value: 'Qualification indicative - revue projet nécessaire' }],
     sections: [
       { title: 'Prochaines vérifications', text: qualificationChecks(snapshot).map((c, i) => `${i + 1}. ${c.label}`).join('\n') },
-      { title: 'Constats sur l’emprise', text: summary.join('\n') + '\n' + (snapshot.buildings?.state === 'AVAILABLE' ? `BDNB : ${(snapshot.buildings.items || []).map(b => `${b.usage || 'usage non renseigné'}, emprise ${fmt(b.areaM2)} m²${b.year ? `, construction ${b.year}` : ''}`).join(' ; ') || 'aucun bâtiment lié renvoyé, rattachement à vérifier'}.` : 'BDNB : source indisponible ou rattachement incomplet.') },
+      { title: 'Constats sur l’emprise', text: 'Les informations d’urbanisme et les contraintes ci-dessous portent sur la parcelle entière ; elles ne permettent pas d’identifier à elles seules le bâtiment ou la toiture visés.\n' + summary.join('\n') + '\n' + (snapshot.buildings?.state === 'AVAILABLE' ? `BDNB : ${(snapshot.buildings.items || []).map(b => `${b.usage || 'usage non renseigné'}, emprise ${fmt(b.areaM2)} m²${b.year ? `, construction ${b.year}` : ''}`).join(' ; ') || 'aucun bâtiment lié renvoyé, rattachement à vérifier'}.` : 'BDNB : source indisponible ou rattachement incomplet.') },
       { title: 'Risques naturels et technologiques', text: riskText },
       { title: 'Réseaux électriques proches', text: networkText },
       { title: 'Masque solaire du relief - PVGIS', horizon: horizon?.state === 'AVAILABLE' ? horizon : null, text: horizonText },

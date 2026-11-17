@@ -19,6 +19,13 @@
     try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch { return null; }
   }
 
+  function sessionAssuranceLevel(session) {
+    try {
+      const payload = session.access_token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+      return JSON.parse(atob(payload)).aal || 'aal1';
+    } catch { return 'aal1'; }
+  }
+
   function storeSession(session) {
     if (session) localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
     else localStorage.removeItem(STORAGE_KEY);
@@ -174,6 +181,7 @@
     config.projectId = projectId;
     config.projectContextLoaded = false;
     config.projectCoordinates = null;
+    config.projectSiteContext = null;
     config.pvProfile = null;
     config.loadProfile = null;
     dispatchContext();
@@ -186,6 +194,7 @@
     const project = projects[0];
     if (!project) throw new Error('Le projet n’est pas accessible avec ce compte.');
     config.projectContext = project;
+    config.projectSiteContext = sites.find((site) => site.latitude != null && site.longitude != null) || null;
     config.addressLookupNeedsSelection = false;
     config.commercialAddressForLookup = {
       address: project.address,
@@ -211,7 +220,8 @@
     const coverage = latestLoad?.coverage_ratio == null ? 'couverture UNKNOWN' : `couverture ${Math.round(Number(latestLoad.coverage_ratio) * 100)} %`;
     const loadSource = latestLoad ? [latestLoad.source_type, latestLoad.source_reference].filter(Boolean).join(' · ') || 'source UNKNOWN' : '';
     const loadPeriod = latestLoad ? [latestLoad.coverage_start, latestLoad.coverage_end].filter(Boolean).join(' → ') || 'période UNKNOWN' : '';
-    $('canonicalSnapshot').innerHTML = `<div><b>${esc(project.project_reference || project.name)}</b><span>${esc(address)}</span><span>${esc(coordinates)}</span><span>PRM / compteur : ${esc(meters.length ? meters.join(', ') : 'UNKNOWN')}</span><span>Consommation du projet : ${esc(latestLoad ? `${latestLoad.granularity || 'granularité UNKNOWN'} · ${latestLoad.quality_level || 'qualité UNKNOWN'} · ${coverage} · ${loadPeriod} · ${loadSource}` : 'UNKNOWN · aucun profil canonique')}</span><span>Production PV du projet : ${esc(profileLabel(latestPv))}</span></div>`;
+    const canonicalSnapshot = $('canonicalSnapshot');
+    if (canonicalSnapshot) canonicalSnapshot.innerHTML = `<div><b>${esc(project.project_reference || project.name)}</b><span>${esc(address)}</span><span>${esc(coordinates)}</span><span>PRM / compteur : ${esc(meters.length ? meters.join(', ') : 'UNKNOWN')}</span><span>Consommation du projet : ${esc(latestLoad ? `${latestLoad.granularity || 'granularité UNKNOWN'} · ${latestLoad.quality_level || 'qualité UNKNOWN'} · ${coverage} · ${loadPeriod} · ${loadSource}` : 'UNKNOWN · aucun profil canonique')}</span><span>Production PV du projet : ${esc(profileLabel(latestPv))}</span></div>`;
     const scenarioSelect = $('connectionScenario');
     if (scenarioSelect) {
       scenarioSelect.innerHTML = config.scenarios.length
@@ -227,7 +237,8 @@
     }
     const projectSelect = $('connectionProject');
     const projectLabel = projectSelect?.selectedOptions?.[0]?.textContent || project.name;
-    $('connectionState').textContent = `Connecté · ${projectLabel} · données canoniques consultées`;
+    const connectionState = $('connectionState');
+    if (connectionState) connectionState.textContent = `Connecté · ${projectLabel} · données canoniques consultées`;
     window.setTimeout(async () => {
       await window.runProductionStudy?.();
       if (config.canonicalConnectionExpected && !config.projectCoordinates) {
@@ -333,39 +344,50 @@
     };
     if (!session) {
       config.canonicalConnectionExpected = false;
-      $('connectionState').textContent = 'Non connecté · les aperçus commerciaux restent indicatifs.';
-      $('supabaseConnection').hidden = true;
+      const connectionState = $('connectionState');
+      if (connectionState) connectionState.textContent = 'Non connecté · les aperçus commerciaux restent indicatifs.';
+      const connectionPanel = $('supabaseConnection');
+      if (connectionPanel) connectionPanel.hidden = true;
+      return;
+    }
+    if (sessionAssuranceLevel(session) !== 'aal2' && !config.localTestMfaBypass) {
+      const next = `${location.pathname}${location.search}${location.hash}`;
+      location.replace(`./login.html?${new URLSearchParams({ next, reason: 'mfa' })}`);
       return;
     }
     config.canonicalConnectionExpected = true;
     config.sessionToken = session.access_token;
     storeSession(session);
-    $('connectionLogin').hidden = true;
-    $('connectionLogout').hidden = false;
-    $('canonicalSummary').hidden = false;
+    const connectionLogin = $('connectionLogin'); if (connectionLogin) connectionLogin.hidden = true;
+    const connectionLogout = $('connectionLogout'); if (connectionLogout) connectionLogout.hidden = false;
+    const canonicalSummary = $('canonicalSummary'); if (canonicalSummary) canonicalSummary.hidden = false;
     try {
       const projects = await api('projects?select=id,project_reference,name&order=updated_at.desc', session.access_token);
       if (!projects.length) throw new Error('Aucun projet autorisé pour ce compte.');
       const select = $('connectionProject');
-      select.innerHTML = projects.map((project) => `<option value="${esc(project.id)}">${esc(project.project_reference)} · ${esc(project.name)}</option>`).join('');
-      $('connectionProjectWrap').hidden = false;
+      if (select) select.innerHTML = projects.map((project) => `<option value="${esc(project.id)}">${esc(project.project_reference)} · ${esc(project.name)}</option>`).join('');
+      const connectionProjectWrap = $('connectionProjectWrap'); if (connectionProjectWrap) connectionProjectWrap.hidden = false;
       const requested = new URLSearchParams(location.search);
       if (requested.has('draftId')) {
         config.canonicalConnectionExpected = false;
-        $('canonicalSummary').hidden = true;
-        $('supabaseConnection').hidden = true;
-        $('connectionState').textContent = 'Connecté · brouillon local ouvert, sans profil canonique.';
+        if (canonicalSummary) canonicalSummary.hidden = true;
+        const supabaseConnection = $('supabaseConnection'); if (supabaseConnection) supabaseConnection.hidden = true;
+        if (connectionState) connectionState.textContent = 'Connecté · brouillon local ouvert, sans profil canonique.';
         return;
       }
+      let selectedProjectId = select?.value || projects[0]?.id;
       if (requested.has('projectId')) {
         if (!projects.some((project) => project.id === requested.get('projectId'))) throw new Error('Le projet demandé n’est pas accessible avec ce compte.');
-        select.value = requested.get('projectId');
+        selectedProjectId = requested.get('projectId');
+        if (select) select.value = selectedProjectId;
       }
-      await loadProject(select.value, session.access_token);
+      if (!selectedProjectId) throw new Error('Aucun projet autorisé pour ce compte.');
+      await loadProject(selectedProjectId, session.access_token);
       const workspaceOpen = $('workspaceOpen');
       if (workspaceOpen) workspaceOpen.hidden = false;
     } catch (error) {
-      $('connectionState').textContent = `Connecté, mais données indisponibles : ${error.message}`;
+      const connectionState = $('connectionState');
+      if (connectionState) connectionState.textContent = `Connecté, mais données indisponibles : ${error.message}`;
     }
   }
 

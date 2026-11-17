@@ -23,7 +23,10 @@ export function sitePoint(value) {
   return Number.isFinite(latitude) && Number.isFinite(longitude) && Math.abs(latitude) <= 90 && Math.abs(longitude) <= 180
     ? { latitude, longitude } : null;
 }
-export const pointKey = value => { const p = sitePoint(value); return p ? `${p.latitude},${p.longitude}` : ''; };
+// Project storage can round coordinates to six decimals. Compare the same
+// precision on both sides (about 0.1 m) so a saved qualification survives a
+// database round-trip without accepting a genuinely moved site marker.
+export const pointKey = value => { const p = sitePoint(value); return p ? `${p.latitude.toFixed(6)},${p.longitude.toFixed(6)}` : ''; };
 export function roofLookupPoint(geometry) {
   const shape = geometry?.type === 'Feature' ? geometry.geometry : geometry;
   const ring = shape?.type === 'Polygon' ? shape.coordinates?.[0] : shape?.type === 'MultiPolygon' ? shape.coordinates?.[0]?.[0] : null;
@@ -38,6 +41,7 @@ export const safeSourceUrl = value => {
   catch { return null; }
 };
 const text = value => typeof value === 'string' || typeof value === 'number' ? String(value).slice(0, 700) : '';
+const normalizedText = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 function documentUrl(p) {
   const direct = safeSourceUrl(p.urlfic || p.url || p.url_document);
   if (direct) return direct;
@@ -55,11 +59,58 @@ function observationSummary(observation, group, scope) {
     error: observation.error || '',
     items: observation.data.map(f => {
       const p = f.properties || {};
-      return { id: text(f.id || p.id || p.idurba || p.idass), label: text(p.libelle || p.libelong || p.nom_site || p.nom || p.categorie || p.nomass || 'Objet géographique recensé'),
+      return { id: text(f.id || p.id || p.lib_idpsc || p.lib_idinf || p.idurba || p.idass),
+        typeCode: text(p.typepsc || p.typeinf || p.typezone || p.categorie),
+        label: text(p.libelle || p.libelong || p.nom_site || p.nom || p.categorie || p.nomass || 'Objet géographique recensé'),
         description: text(p.libelong || p.categorie || p.typezone), date: text(p.datvalid || p.datappro || p.date_maj),
         documentUrl: documentUrl(p) };
     })
   };
+}
+
+// GPU returns every object intersecting the parcel. A single published rule can
+// be split into several mapped features; group those only when the title and
+// published source are identical, while retaining the number of mapped pieces.
+export function compactUrbanismItems(items = []) {
+  const compact = new Map();
+  for (const item of items) {
+    const title = normalizedText(item.label);
+    const source = safeSourceUrl(item.documentUrl);
+    const key = source ? `${title}|${source}|${normalizedText(item.date)}`
+      : item.id ? `id:${item.id}` : `unique:${compact.size}`;
+    const existing = compact.get(key);
+    if (existing) existing.count++;
+    else compact.set(key, { ...item, count: 1 });
+  }
+  return [...compact.values()];
+}
+
+// This is a reading aid based on the official layer and published title, not a
+// legal conclusion. Information layers include many administrative overlays
+// that do not themselves prescribe PV installation conditions.
+export function urbanismRelevance(observation, item) {
+  if (observation.name === 'Zonage d’urbanisme') return {
+    level: 'review', label: 'Règle d’urbanisme à vérifier',
+    reason: 'Le zonage peut fixer les règles applicables au bâtiment et aux travaux.'
+  };
+  if (observation.name?.startsWith('Prescriptions')) return {
+    level: 'review', label: 'Prescription à vérifier',
+    reason: 'Cette prescription peut encadrer les travaux ou l’aspect du bâtiment.'
+  };
+  if (observation.group === 'servitudes') return {
+    level: 'review', label: 'Servitude à vérifier',
+    reason: 'Une servitude peut limiter les travaux ou imposer une consultation.'
+  };
+  const title = normalizedText(`${item.label} ${item.description} ${item.typeCode}`);
+  if (/inond|risque|monument|patrimoine|site classe|abords|captage|protection|bruit|pollu|avap|spr|secteur sauvegarde|alignement|paysage|littoral|foret|incendie/.test(title)) return {
+    level: 'review', label: 'Information potentiellement pertinente',
+    reason: 'Le thème publié peut influer sur l’autorisation ou les prescriptions du projet.'
+  };
+  if (/preemption|taxe amenagement|gare|logement|mixite sociale|emplacement reserve/.test(title)) return {
+    level: 'context', label: 'Contexte administratif',
+    reason: 'Cet objet ne décrit pas à lui seul une contrainte technique PV ; il peut rester utile pour le contexte foncier ou administratif.'
+  };
+  return { level: 'unknown', label: 'Portée à préciser', reason: 'L’intitulé seul ne permet pas de déterminer l’effet sur une installation photovoltaïque.' };
 }
 export async function findSiteParcels(point, options = {}) {
   const p = sitePoint(point);
@@ -91,7 +142,7 @@ export async function qualifyParcel(feature, point, options = {}) {
     schemaVersion: PARCEL_SCHEMA, status: 'PROVISIONAL', point: sitePoint(point), selectedAt: new Date().toISOString(),
     parcel: { id: scope, section: text(p.section), number: text(p.numero), city: text(p.nom_com), cityCode: text(p.code_insee), areaM2: knownNumber(p.contenance), geometry: structuredClone(feature.geometry) },
     cadastre: { name: 'IGN API Carto · Cadastre', url: options.cadastre?.url || 'https://apicarto.ign.fr/api/doc/cadastre',
-      retrievedAt: options.cadastre?.retrievedAt || new Date().toISOString(), lookupPoint: sitePoint(options.lookupPoint || point), method: options.lookupPoint ? 'ROOF_POINT_THEN_USER_PARCEL_SELECTION' : 'SITE_POINT_THEN_USER_PARCEL_SELECTION' },
+      retrievedAt: options.cadastre?.retrievedAt || new Date().toISOString(), lookupPoint: sitePoint(options.lookupPoint || point), method: options.lookupMethod || (options.lookupPoint ? 'ROOF_POINT_THEN_USER_PARCEL_SELECTION' : 'SITE_POINT_THEN_USER_PARCEL_SELECTION') },
     observations: results,
     buildings: { state: buildings.state, name: buildings.name, url: buildings.url, retrievedAt: buildings.retrievedAt,
       method: 'BDNB_EXPLICIT_PARCEL_LINK', error: buildings.error || '', items: buildings.data.map(b => ({
@@ -160,7 +211,7 @@ export function qualificationChecks(snapshot) {
 }
 
 export function restoreQualification(value, point) {
-  if (!value || value.schemaVersion !== PARCEL_SCHEMA || value.status !== 'PROVISIONAL' || pointKey(value.point) !== pointKey(point)
+  if (!sitePoint(point) || !value || value.schemaVersion !== PARCEL_SCHEMA || value.status !== 'PROVISIONAL' || pointKey(value.point) !== pointKey(point)
     || !/^[0-9A-Z]{14}$/.test(value.parcel?.id || '') || !Array.isArray(value.observations)
     || value.observations.length > PARCEL_LAYERS.length || !Array.isArray(value.buildings?.items) || value.buildings.items.length > 10 || value.buildings.items.some(item => !item || typeof item !== 'object')
     || !value.cadastre || (value.siteContext != null && !validSiteContext(value.siteContext, value.parcel.id))

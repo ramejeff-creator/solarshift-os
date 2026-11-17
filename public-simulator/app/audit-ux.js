@@ -5,7 +5,7 @@
     ['project', '1', 'Projet & adresse', /Projets|Carte et mesure de toiture/i],
     ['roof', '2', 'Surfaces solaires', /Carte et mesure de toiture/i],
     ['solar', '3', 'Performance solaire', /Fiche terrain et performance/i],
-    ['risk', '4', 'Risques & preuves', /Registre de risque/i],
+    ['risk', '4', 'Audits et documentations', /Registre de risque/i],
     ['finance', '5', 'Finance & décision', /Simulation économique SPV|Votre estimation solaire/i]
   ];
 
@@ -121,7 +121,10 @@
     const area = document.getElementById('panelArea');
     const power = document.getElementById('panelWp');
     const existingLoss = document.getElementById('pvgisSystemLoss');
-    const form = roof?.querySelector('.form');
+    // The site nature card may be inserted before this module boots. Anchor the
+    // advanced controls to the form that owns panelArea/panelWp, never the first
+    // generic form under audit-roof.
+    const form = area?.closest('.form') || power?.closest('.form');
     if (!roof || !area || !power || !form || roof.querySelector('.roofExpertSettings')) return;
     const details = document.createElement('details');
     details.className = 'roofExpertSettings';
@@ -271,6 +274,10 @@
 
   function installAddressRecognition() {
     const input = document.getElementById('newProjectAddress');
+    // The current pre-study owns this input in commercial-ux.js. Installing the
+    // legacy autocomplete here creates a second suggestion list and two competing
+    // status messages, which can also clear the selected address while typing.
+    if (document.querySelector('main.layout .auditJourney')) return;
     if (!input || input.dataset.addressRecognition === 'ready') return;
     input.dataset.addressRecognition = 'ready';
     input.setAttribute('autocomplete', 'off');
@@ -306,6 +313,11 @@
       window.dispatchEvent(new CustomEvent('ozeno:manual-location-request', { detail: { inputId: input.id } }));
     });
     let timer = 0, controller = null, lastRequest = 0;
+    window.addEventListener('ozeno:site-address-confirmed', () => {
+      clearTimeout(timer);
+      controller?.abort();
+      suggestions.replaceChildren();
+    });
     input.addEventListener('input', () => {
       clearTimeout(timer);
       controller?.abort();
@@ -385,10 +397,10 @@
           }));
           hint.textContent = usableResults.length
             ? config.commercialDraftId ? 'Adresse du dossier non géolocalisée : choisissez le résultat officiel correspondant pour centrer la carte.' : 'Choisissez l’adresse ou le lieu le plus précis :'
-            : 'Aucun résultat assez précis. Vous pouvez saisir une commune, des coordonnées GPS ou placer le site sur la carte.';
+            : 'Aucune adresse reconnue. Placez le repère sur la carte ou saisissez les coordonnées GPS.';
           hint.dataset.state = usableResults.length ? 'ready' : 'empty';
         } catch (error) {
-          if (error.name !== 'AbortError') { hint.textContent = 'Reconnaissance indisponible pour le moment ; l’adresse sera vérifiée à la création.'; hint.dataset.state = 'error'; }
+          if (error.name !== 'AbortError') { hint.textContent = 'Recherche indisponible. Placez le repère sur la carte ou saisissez les coordonnées GPS.'; hint.dataset.state = 'error'; }
         }
       }, 500);
     });

@@ -1,4 +1,5 @@
 (function installFinancialAssumptions(global) {
+  // Archived commercial 1.4 compatibility. Active previews use the server OZENO-FULL policy.
   'use strict';
 
   const MODEL_VERSION = 'FINANCIAL-PREVIEW-1.4';

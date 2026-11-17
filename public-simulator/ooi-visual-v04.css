@@ -1,0 +1,46 @@
+/* OOI V0.4 — styles volontairement confinés, sans surcharge des composants existants. */
+.ooiCompleteness { min-width: 0; font: 12px/1.4 "Segoe UI",Arial,sans-serif; color: #587469; }
+.ooiCompletenessLabel { margin-bottom: 5px; color: #445e52; font-size: 11px; font-weight: 650; }
+.ooiSegments { display: flex; width: 100%; max-width: 260px; gap: 3px; }
+.ooiSegment { display: block; min-width: 9px; flex: 1 1 0; height: 9px; border-radius: 3px; }
+.ooiSegment.is-filled { background: #278a6c; }
+.ooiSegment.is-missing { background: #d5a24c; }
+.ooiSegment.is-unknown { background: #acb8b6; }
+.ooiCompletenessFoot { margin: 7px 0 0; font-size: 11px; color: #6a7c75; }
+.ooiCompletenessCompact { max-width: 192px; margin-top: 9px; }
+.ooiCompletenessCompact .ooiCompletenessLabel { font-size: 10px; line-height: 1.25; }
+.ooiLocalScope { display: block; margin-top: 3px; font-size: 10px; color: #778780; }
+.ooiDiagnosticPanel { margin: 16px 0 24px; padding: 22px; border: 1px solid #d5e3db; border-left: 4px solid #268267; border-radius: 10px; background: #fff; box-shadow: 0 5px 18px #173f3110; font-family: "Segoe UI",Arial,sans-serif; }
+.ooiDiagnosticHead { display: flex; gap: 12px; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 18px; }
+.ooiDiagnosticHead h3 { margin: 0; color: #173f31; font-size: 22px; line-height: 1.25; }
+.ooiDiagnosticSubtitle { margin: 5px 0 0; color: #62786d; font-size: 13px; }
+.ooiDiagnosticBadge { padding: 5px 8px; border: 1px solid #dde6e1; border-radius: 16px; background: #f3f6f4; color: #5f786c; font-size: 11px; }
+.ooiProvenance { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; margin: 0 0 12px; padding: 9px; border: 1px solid #e0e7e4; border-radius: 6px; background: #f4f7f5; }
+.ooiProvenanceItem { display: grid; grid-template-columns: auto 1fr; gap: 2px 8px; min-width: 0; align-items: baseline; }
+.ooiProvenanceLabel,.ooiVisualEyebrow { color: #71827a; font-size: 9px; font-weight: 800; letter-spacing: .08em; }
+.ooiProvenanceStatus { color: #465d53; font-size: 11px; font-weight: 700; }
+.ooiProvenanceDetail { grid-column: 2; color: #71827a; font-size: 10px; overflow-wrap: anywhere; }
+.ooiVisualGroups { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; align-items: stretch; }
+.ooiVisualGroup { min-width: 0; padding: 16px; border: 1px solid #dce7e1; border-radius: 9px; background: linear-gradient(180deg,#fff,#fbfdfc); }
+.ooiVisualGroupHead { min-height: 46px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #e5ece8; }
+.ooiVisualGroupHead h4 { margin: 4px 0 0; color: #173f31; font-size: 16px; }
+.ooiMetricGrid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 7px; }
+.ooiMetric { display: flex; flex-direction: column; min-width: 0; gap: 6px; padding: 12px; border: 1px solid #e3ebe7; border-radius: 7px; background: #f7faf8; }
+.ooiMetricLabel { color: #526d60; font-size: 12px; line-height: 1.4; }
+.ooiMetricValue { color: #123d30; font-size: 20px; line-height: 1.25; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.ooiMetricNote { display: block; margin: 4px 0 0; color: #62786d; font-size: 12px; line-height: 1.45; overflow-wrap: anywhere; }
+.ooiAllocationStatus { margin-top: 9px; padding: 9px; border-left: 3px solid #c88a20; border-radius: 4px; background: #fff9ed; }
+.ooiAllocationTitle { display: block; margin-top: 4px; color: #654c1c; font-size: 11px; line-height: 1.4; }
+.ooiConstraintSummary { margin: 0 0 6px; color: #60766b; font-size: 10px; }
+.ooiConstraintList { max-height: 180px; overflow: auto; margin: 0; padding: 0; list-style: none; }
+.ooiConstraintList li { padding: 8px 0; border-top: 1px solid #e8eeeb; }
+.ooiConstraintList li:first-child { border-top: 0; }
+.ooiConstraintList strong,.ooiConstraintList span,.ooiConstraintList small { display: block; overflow-wrap: anywhere; }
+.ooiConstraintList strong { color: #405b4f; font-size: 11px; }
+.ooiConstraintList span,.ooiConstraintList small { margin-top: 3px; color: #6a7c75; font-size: 10px; line-height: 1.4; }
+.ooiDiagnosticPanel .ooiCompleteness { margin-top: 10px; padding-top: 8px; border-top: 1px solid #e0e7e4; }
+.ooiDiagnosticPanel .ooiCompletenessSecondary .ooiCompletenessLabel { color: #7b8982; font-size: 10px; }
+.ooiDiagnosticPanel .ooiSegments { max-width: 260px; }
+.ooiDisclosure { margin: 9px 0 0; font-size: 10px; color: #687b72; }
+@media (max-width: 1100px) { .ooiVisualGroups { grid-template-columns: repeat(2,minmax(0,1fr)); } .ooiVisualGroup:last-child { grid-column: 1 / -1; } }
+@media (max-width: 700px) { .ooiProvenance,.ooiVisualGroups,.ooiMetricGrid { grid-template-columns: 1fr; } .ooiVisualGroup:last-child { grid-column: auto; } .ooiDiagnosticPanel { padding: 16px; } }

@@ -1,5 +1,5 @@
 // Published address aggregates only. No PRM, individual load profile, owner/contact or financial data.
-import { knownNumber, requestJson, summarizeConsumption, loadBuildingObservations, buildingAddresses } from './prospecting-data.mjs';
+import { knownNumber, requestJson, summarizeConsumption, loadBuildingObservations, buildingAddresses, matchingBuildingAddressReference } from './prospecting-data.mjs?v=20261116-enedis-prospecting-display-3';
 const definitions = [
   { population: 'BUSINESS', slug: 'consommation-annuelle-entreprise-par-adresse', count: 'nombre_de_sites', countLabel: 'site(s)' },
   { population: 'RESIDENTIAL', slug: 'consommation-annuelle-residentielle-par-adresse', count: 'nombre_de_logements', countLabel: 'logement(s)' }
@@ -47,9 +47,13 @@ export async function publishedConsumption(address, { fetcher = fetch, signal, r
 export async function candidateConsumption(candidate, options = {}) {
   const observations = await loadBuildingObservations(candidate, { ...options, includePlanning: false });
   const addresses = buildingAddresses(observations.building.building);
-  if (addresses.length !== 1) return { state: observations.building.state === 'UNAVAILABLE' ? 'UNAVAILABLE' : 'UNKNOWN', totalMwh: null, reason: addresses.length > 1 ? 'Plusieurs adresses : consulter la fiche.' : 'Adresse non identifiée.' };
-  const summary = await publishedConsumption(addresses[0], options);
-  return { ...summary, state: summary.totalMwh == null ? 'UNKNOWN' : 'AVAILABLE', address: addresses[0] };
+  const building = observations.building.building;
+  const primaryAddress = buildingAddresses({ ...building, l_libelle_adr: [] })[0] || null;
+  const address = matchingBuildingAddressReference(addresses, candidate.referenceAddress) || primaryAddress
+    || (addresses.length === 1 ? addresses[0] : null);
+  if (!address) return { state: observations.building.state === 'UNAVAILABLE' ? 'UNAVAILABLE' : 'UNKNOWN', totalMwh: null, reason: addresses.length > 1 ? 'Plusieurs adresses : consulter la fiche.' : 'Adresse non identifiée.' };
+  const summary = await publishedConsumption(address, options);
+  return { ...summary, state: summary.totalMwh == null ? 'UNKNOWN' : 'AVAILABLE', address };
 }
 
 export function compareProspectingCards(a, b, mode = 'surface') {

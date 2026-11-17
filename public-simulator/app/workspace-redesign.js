@@ -15,6 +15,20 @@
   let activeProjectId = null;
   let sectionObserver = null;
   let navEventsInstalled = false;
+  let ooiVisuals = null;
+  const previewConfig = window.SOLARSHIFT_CONFIG || {};
+  const OOI_LOCAL_PREVIEW = ['localhost', '127.0.0.1', '::1', '[::1]'].includes(location.hostname.toLowerCase())
+    && (previewConfig.OOI_VISUAL_PREVIEW_ENABLED === true || new URLSearchParams(location.search).get('OOI_VISUAL_PREVIEW_ENABLED') === 'true');
+  if (OOI_LOCAL_PREVIEW) {
+    import('./ooi-visual-v04.mjs').then((module) => {
+      ooiVisuals = module;
+      if (!document.getElementById('ooiEnergyVisualStyle')) {
+        const link = document.createElement('link');
+        link.id = 'ooiEnergyVisualStyle'; link.rel = 'stylesheet'; link.href = './ooi-energy-visuals.css'; document.head.append(link);
+      }
+      if (scenarioData) renderDerived(scenarioData);
+    }).catch((error) => console.warn('OOI aperçu énergie indisponible', error));
+  }
 
   function projectIdentity(data) {
     const project = data?.project || {};
@@ -104,7 +118,11 @@
     const provenance = [data.scenario.pv_profile_id ? `Profil PV associé` : null, data.scenario.load_profile_id ? 'Profil consommation associé' : null].filter(Boolean).join(' · ') || 'Profil utilisé : à compléter';
     const conservation = match.conservation || {};
     const conservationText = isFullSale ? 'Sans objet pour la vente totale' : [`production ${fmt(conservation.pvKwh, 'kWh')}`, `ACI ${fmt(conservation.aciKwh, 'kWh')}`, `ACC ${fmt(conservation.accKwh, 'kWh')}`, `surplus ${fmt(conservation.surplusKwh, 'kWh')}`, `résiduel ${fmt(conservation.residualKwh, 'kWh')}`].join(' · ');
-    $('matchingContent').innerHTML = `<div class="channelGrid">${values}</div><p class="methodNote"><b>Méthode :</b> ${esc(methodLabel)} · <b>État :</b> ${esc(canonical ? 'Matching temporel canonique' : isFullSale ? 'Production de référence' : method === 'ANNUAL_PREVIEW' ? 'Prévisualisation commerciale, non temporelle' : label('UNKNOWN'))}<br>${esc(meta)}<br>${esc(provenance)} · Couverture ${esc(fmt(match.coverageRatePct ?? match.coveragePct ?? match.coverage_pct, '%', 1))}<br><b>Conservation source :</b> ${esc(conservationText)}</p>`;
+    const distributionOptions = { eligible: canonical && inputsCurrent(data) === true && !isFullSale, method, maturity: request.decision_maturity, matching: match, productionKwh: production };
+    const distribution = ooiVisuals?.temporalEnergyDistributionMarkup(distributionOptions) || '';
+    const distributionNote = OOI_LOCAL_PREVIEW && distributionOptions.eligible && !distribution
+      ? '<p class="ooiEnergyUnavailable">Graphique masqué : résultat temporel ou bilan de conservation incomplet ou incohérent.</p>' : '';
+    $('matchingContent').innerHTML = `<div class="channelGrid">${values}</div>${distribution}${distributionNote}<p class="methodNote"><b>Méthode :</b> ${esc(methodLabel)} · <b>État :</b> ${esc(canonical ? 'Matching temporel canonique' : isFullSale ? 'Production de référence' : method === 'ANNUAL_PREVIEW' ? 'Prévisualisation commerciale, non temporelle' : label('UNKNOWN'))}<br>${esc(meta)}<br>${esc(provenance)} · Couverture ${esc(fmt(match.coverageRatePct ?? match.coveragePct ?? match.coverage_pct, '%', 1))}<br><b>Conservation source :</b> ${esc(conservationText)}</p>`;
     badge($('matchingStatus'), canonical ? 'VERIFIED' : isFullSale && production != null ? 'ASSUMPTION' : method === 'ANNUAL_PREVIEW' ? 'ASSUMPTION' : 'UNKNOWN', isFullSale ? 'Production seule' : label(canonical ? 'VERIFIED' : method === 'ANNUAL_PREVIEW' ? 'ASSUMPTION' : 'UNKNOWN'));
     navState('matching', canonical || isFullSale && production != null ? 'VERIFIED' : method === 'ANNUAL_PREVIEW' ? 'ASSUMPTION' : 'UNKNOWN');
   }

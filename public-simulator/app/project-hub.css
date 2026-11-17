@@ -24,6 +24,11 @@
 .hubFields #hubActivityQualification label { align-content: start; }
 .hubFields #hubActivityDetails[hidden], .hubFields #hubActivityQualification[hidden] { display: none; }
 .hubFields label, #hubLoginForm label { display: grid; gap: 6px; font-size: 12px; font-weight: 650; }
+.hubAddressControl { display: grid; grid-template-columns: minmax(0, 1fr) 48px; align-items: stretch; }
+.hubAddressControl input { min-width: 0; }
+.ozenoWorkspace .hubAddressControl .hubGeolocation { display: grid; place-items: center; min-height: 42px; margin-left: 8px; padding: 7px; border: 1px solid #8393a3; border-radius: 5px; background: #fff; color: var(--pine); cursor: pointer; }
+.hubGeolocation svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.hubGeolocation[hidden] { display: none; }
 .hubFields small { font-weight: 400; color: #728479; line-height: 1.5; }
 .hubAddressSuggestions { display: grid; gap: 5px; max-height: 220px; overflow-y: auto; }
 .hubAddressSuggestions[hidden] { display: none; }
@@ -173,6 +178,7 @@
 .hubProjects td { padding: 15px 11px; color: #284b3e; font-size: 12px; }
 .hubProjects tbody tr:hover { background: #f3f8f5; }
 .hubProjects td small { font-size: 10px; }
+.hubProjects td .hubArchivedTag { color: #8a4a3a; font-weight: 700; }
 .hubStatus { border-radius: 20px; padding: 5px 10px; font-weight: 600; }
 .hubStatus.cloud { background: #e9f2ff; color: #386594; }
 .hubStatus.local { background: #fff4d5; color: #82631d; }
@@ -275,6 +281,9 @@
 .hubDataCaveat { margin: 18px 0 10px; padding: 12px 14px; border-left: 3px solid #d69a27; border-radius: 5px; background: #fff8e9; color: #6a571f; font-size: 11px; line-height: 1.55; }
 .hubPrivacyNote { margin: 8px 0 0; color: #718378; font-size: 10px; line-height: 1.55; }
 .hubProspectingState { margin: 14px 0 0; color: #17614f; font-size: 12px; }
+.hubProspectingProgressWrap { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; margin-top: 10px; color: #536b60; font-size: 11px; }
+.hubProspectingProgressWrap[hidden] { display: none; }
+.hubProspectingProgressWrap progress { width: 100%; height: 9px; accent-color: #17614f; }
 .hubProspectingResults { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(270px, .8fr); gap: 18px; margin-top: 18px; }
 .hubProspectingMap { height: min(66vh, 660px); min-height: 430px; }
 .hubCandidatePanel { min-width: 0; padding: 19px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
@@ -294,6 +303,9 @@
 .ozenoWorkspace .hubCandidateDetails { border: 0; background: none; color: #17614f; padding: 5px 11px; cursor: pointer; font: inherit; font-size: 11px; text-decoration: underline; }
 .hubCandidateCard { border: 1px solid #d8e4dc; border-radius: 7px; background: #fff; min-width: 0; }
 .hubCandidateCard:focus-within { outline: 2px solid #cde7da; }
+.hubCandidateCard.hasEnedisConsumption { border-color: #25875e; box-shadow: inset 3px 0 #25875e; }
+.hubCandidateEnedis { border-radius: 20px; padding: 3px 6px; background: #e7f5ed; color: #176b49; font-size: 9px; font-weight: 700; }
+.hubCandidateEnedis[hidden] { display: none; }
 .ozenoWorkspace .hubCandidateCard .hubCandidate { border: 0; border-radius: 7px 7px 0 0; box-sizing: border-box; }
 .hubCandidateFooter { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; justify-content: space-between; padding: 0 9px 7px; }
 .ozenoWorkspace .hubCandidateCreateProject { width: calc(100% - 18px); margin: 0 9px 9px; padding: 7px 9px; border: 1px solid #cfe0d5; border-radius: 6px; background: #f3f8f5; color: #17614f; cursor: pointer; font: 600 11px system-ui,sans-serif; }
@@ -341,4 +353,412 @@
   .hubMapLegend { gap: 10px 14px; }
   .hubMap { height: 380px; }
   .hubProspectingMap { height: 400px; min-height: 0; }
+}
+
+/* Local OBI pilot: these controls are hidden until the fail-closed flag is enabled. */
+.hubObiModeBar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 0 14px; padding: 15px 18px; border: 1px solid #c9ddd2; border-radius: 9px; background: #f5faf7; }
+.hubObiModeBar[hidden], .hubObiListTools[hidden], .hubObiDetail[hidden] { display: none; }
+.hubObiModeBar strong { color: #174b3d; font-size: 13px; }
+.hubObiEyebrow { margin: 0 0 4px; color: #61796c; font-size: 9px; font-weight: 750; letter-spacing: .08em; }
+.hubObiModeButtons { display: flex; flex-wrap: wrap; gap: 6px; }
+.hubObiLiveSearch { display: grid; grid-template-columns: auto minmax(180px, 1fr); align-items: start; gap: 9px; max-width: 430px; color: #174b3d; cursor: pointer; }
+.hubObiLiveSearch input { width: 18px; height: 18px; margin: 2px 0 0; accent-color: #17614f; }
+.hubObiLiveSearch span, .hubObiLiveSearch strong, .hubObiLiveSearch small { display: block; }
+.hubObiLiveSearch strong { font-size: 12px; }
+.hubObiLiveSearch small { margin-top: 4px; color: #536b60; font-size: 10px; font-weight: 400; line-height: 1.45; }
+.ozenoWorkspace .hubObiModeButtons button { min-height: 38px; padding: 8px 12px; border: 1px solid #cbdad2; border-radius: 6px; background: #fff; color: #174b3d; font: 600 11px system-ui,sans-serif; cursor: pointer; }
+.ozenoWorkspace .hubObiModeButtons button[aria-pressed="true"] { border-color: #17614f; background: #17614f; color: #fff; }
+.ozenoWorkspace .hubObiModeButtons button:focus-visible, .hubObiListTools :is(select, button):focus-visible, .hubObiDetail button:focus-visible { outline: 3px solid #9acbb6; outline-offset: 2px; }
+.hubProspectingResults.hubObiMode .hubCandidateSort, .hubProspectingResults.hubObiMode #hubProspectingSortState { display: none; }
+.hubObiListTools { margin: 12px 0; padding: 11px; border: 1px solid #d8e4dc; border-radius: 7px; background: #f8fbf9; }
+.hubObiListTools label { display: grid; gap: 6px; color: #61796c; font-size: 10px; font-weight: 650; }
+.hubObiListTools select { width: 100%; min-height: 38px; padding: 7px 9px; border: 1px solid #cbdad2; border-radius: 6px; background: #fff; color: #174b3d; font: inherit; font-size: 11px; }
+.hubObiLegend { display: flex; align-items: center; gap: 7px; margin: 8px 0; color: #536b60; font-size: 10px; }
+.hubObiLegendSwatch { width: 15px; height: 12px; border: 2px dashed #344b43; border-radius: 2px; background: #dfe8e3; }
+.hubObiLegendSwatch.potential { border-color: #17638a; background: #b8e0f0; }
+.hubObiDefinitions { margin: 8px 0; color: #536b60; font-size: 10px; line-height: 1.5; }
+.hubObiQualificationNotice { margin: 0 0 10px; padding: 10px 11px; border: 1px solid #d8ad65; border-left: 4px solid #a66b0b; border-radius: 6px; background: #fff8e8; color: #59451f; font-size: 11px; line-height: 1.5; }
+.hubObiQualificationNotice strong { display: block; margin-bottom: 3px; color: #664400; }
+.hubObiPartialState { margin: 8px 0; color: #785718; font-size: 10px; line-height: 1.45; }
+#hubObiMore { width: 100%; margin-top: 8px; }
+.hubObiCandidate.isMapHovered { border-color: #b57812; box-shadow: 0 0 0 2px #b578122b; }
+.hubCandidates:has(.isMapHovered) .hubObiCandidate[aria-current="true"]:not(.isMapHovered) { border-color: #d8e4dc; box-shadow: none; }
+.leaflet-tooltip.hubObiCartouche { box-sizing: border-box; width: 250px; max-width: calc(100vw - 32px); padding: 9px 11px; white-space: normal; border-radius: 8px; background: #fff; color: #214a3d; box-shadow: 0 3px 12px #163b3520; }
+.hubObiMapTooltip dl { margin: 0; display: grid; gap: 5px; font: 11px/1.4 system-ui, sans-serif; }
+.hubObiMapTooltip dl > div { display: grid; grid-template-columns: 85px minmax(0, 1fr); gap: 10px; }
+.hubObiMapTooltip dt { font-weight: 650; }
+.hubObiMapTooltip dd { margin: 0; text-align: right; }
+.hubObiCandidate { padding: 10px; border: 1px solid #d8e4dc; border-radius: 7px; background: #fff; }
+.hubObiCandidate[aria-current="true"] { border-color: #28749a; box-shadow: inset 3px 0 #28749a; }
+.hubObiCandidateHead { display: flex; align-items: start; justify-content: space-between; gap: 8px; }
+.hubObiCandidateHead strong { color: #174b3d; font-size: 11px; }
+.hubObiCandidateHead span { color: #61796c; font-size: 9px; text-align: right; }
+.hubObiCandidate dl { display: grid; gap: 5px; margin: 9px 0; }
+.hubObiBadge { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 10px; padding: 6px 7px; border-radius: 5px; background: #f0f3f1; color: #3e544a; font-size: 9px; }
+.hubObiBadge dt { font-weight: 650; }
+.hubObiBadge dd { margin: 0; text-align: right; }
+.hubObiBadge small { grid-column: 1 / -1; color: #61796c; font-size: 9px; line-height: 1.35; }
+.hubObiCandidateActions { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px; }
+.hubObiCandidateActions button { min-height: 34px; padding: 6px 8px; font-size: 10px; }
+.hubObiCandidateEnergy { margin: 6px 0 9px; padding: 6px 7px; border-radius: 5px; background: #f0f5f2; color: #52695d; font-size: 9px; line-height: 1.4; }
+.hubObiCandidate .hubObiCandidateEnergy { margin: 6px 0 9px; padding: 0; font: inherit; }
+.hubObiCandidate .hubObiBadge { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); align-items: start; font: 10px/1.45 system-ui,sans-serif; }
+.hubObiLegend[hidden] { display: none; }
+.hubValidatedFiche progress { width: 100%; height: 12px; accent-color: #17614f; }
+.hubValidatedFiche .details-body a { overflow-wrap: anywhere; }
+.hubObiFilterHeading { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 11px; font-weight: 650; }
+.hubObiFilterInfo { position: relative; }
+.hubObiFilterInfo > button { border: 0; background: transparent; color: #416a5b; min-width: 28px; min-height: 28px; padding: 2px; font-size: 16px; cursor: help; }
+.hubObiFilterInfo > [role=tooltip] { position: absolute; left: -120px; top: 100%; z-index: 1100; box-sizing: border-box; width: 280px; max-width: calc(100vw - 40px); padding: 12px; border: 1px solid #cfddd5; border-radius: 8px; background: #fff; color: #466454; box-shadow: 0 4px 16px #173d3526; font: 12px/1.5 system-ui,sans-serif; visibility: hidden; opacity: 0; pointer-events: none; }
+.hubObiFilterInfo:hover > [role=tooltip], .hubObiFilterInfo:focus-within > [role=tooltip] { visibility: visible; opacity: 1; }
+.hubProspectingProgressWrap { padding: 10px 12px; border: 1px solid #d1e1d7; border-radius: 8px; background: #eef7f2; font-size: 12px; }
+.hubProspectingProgressWrap progress { height: 14px; }
+.hubCandidatePanel > .hubProspectingProgressWrap { box-sizing: border-box; width: 100%; margin: 8px 0 12px; padding: 8px 10px; font-size: 11px; }
+.hubCandidatePanel > .hubProspectingProgressWrap progress { height: 6px; }
+.hubCandidatePanel > .hubProspectingProgressWrap.isComplete { padding: 3px 0; border: 0; background: transparent; }
+.hubCandidatePanel > .hubProspectingProgressWrap.isComplete progress { display: none; }
+.hubProspectingResults.hubObiDetailOpen #hubProspectingProgressWrap { display: none !important; }
+.hubObiSavedStatus { margin: 7px 0; padding: 6px 8px; border-radius: 5px; background: #fff4df; color: #8b5700; font-size: 10px; font-weight: 650; }
+.hubProspectPendingStatus { color: #875300; font-weight: 650; }
+.hubObiDetail { margin-top: 12px; padding: 13px; border: 1px solid #cbdad2; border-radius: 7px; background: #fbfdfc; }
+.hubObiDetailHeader { display: flex; align-items: start; justify-content: space-between; gap: 8px; }
+.hubObiDetailHeader h3 { margin: 0; color: #174b3d; font-size: 14px; }
+.hubObiDetailHeader button { min-height: 32px; padding: 5px 8px; }
+.hubC4 .hubC4Header { margin: -14px -14px 12px; padding: 12px 14px 10px; border-bottom: 1px solid #d8e4dc; background: #f7faf8; }
+.hubC4 .hubC4Actions { flex: 0 0 auto; }
+.hubC4SiteContext { border-color: #b8d2c5; background: #f4f9f6; }
+.hubC4SiteContext p { overflow-wrap: anywhere; }
+.hubC4SiteSource { padding-top: 8px; border-top: 1px solid #d8e4dc; font-size: 11px !important; }
+.hubObiDemoBanner { margin: 10px 0; padding: 8px; border-left: 3px solid #38768f; background: #eef7fa; color: #285363; font-size: 10px; line-height: 1.45; }
+.hubObiDetail h4 { margin: 12px 0 5px; color: #284b3e; font-size: 11px; }
+.hubObiDetail p, .hubObiDetail li { color: #536b60; font-size: 10px; line-height: 1.45; }
+.hubObiDetail ul { margin: 5px 0; padding-left: 18px; }
+.hubObiEvidenceEntry { margin-top: 14px; padding-top: 10px; border-top: 1px solid #d8e4dc; }
+.hubObiEvidenceEntry > button { min-height: 36px; }
+.hubObiEvidenceCaveat, .hubObiEvidenceBanner, .hubObiEvidenceFixtureNote { padding: 8px 10px; border-radius: 6px; background: #f0f6f3; }
+.hubObiEvidenceFixtureNote { background: #fff7e8; color: #714a12 !important; }
+.hubObiEvidenceControls { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+.hubObiEvidenceControls button { min-height: 36px; }
+.hubObiEvidenceStatus { margin: 7px 0; }
+.hubObiEvidenceResults { display: grid; gap: 8px; margin-top: 10px; }
+.hubObiEvidenceCard, .hubObiEvidenceSources { min-width: 0; border: 1px solid #d8e4dc; border-radius: 7px; padding: 9px 10px; background: #fff; }
+.hubObiEvidenceCard > summary, .hubObiEvidenceSources > summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; cursor: pointer; color: #244f40; font-size: 11px; }
+.hubObiEvidenceState { flex: 0 0 auto; border-radius: 20px; padding: 3px 7px; background: #edf3f0; color: #435f52; font-size: 9px; font-weight: 700; }
+.hubObiEvidenceCard h4 { margin-top: 10px; }
+.hubObiEvidenceUnknowns { margin: 8px 0; }
+.hubObiEvidenceUnknowns > div { display: flex; justify-content: space-between; gap: 10px; padding: 4px 0; border-bottom: 1px solid #edf2ef; }
+.hubObiEvidenceUnknowns dt { color: #536b60; }
+.hubObiEvidenceUnknowns dd { margin: 0; font-weight: 700; }
+.hubObiEvidenceQuestion { padding: 8px; border-left: 3px solid #70a98c; background: #f2f8f4; }
+.hubObiEvidenceSource { overflow-wrap: anywhere; }
+.hubObiEvidenceSources a { color: #17614f; }
+.hubObiSurfaceGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 8px 0; }
+.hubObiSurfaceGrid div { padding: 7px; border-radius: 5px; background: #f0f3f1; }
+.hubObiSurfaceGrid span, .hubObiSurfaceGrid strong { display: block; font-size: 9px; }
+.hubObiSurfaceGrid span { color: #61796c; }
+.hubObiSourceNote { margin: 9px 0 0; padding-top: 8px; border-top: 1px solid #d8e4dc; }
+.hubObiDetail.hubC4 { padding: 24px; margin-top: 22px; background: #f7faf8; scroll-margin-top: 90px; }
+.hubC4[hidden] { display: none; }
+.hubC4 * { box-sizing: border-box; }
+.hubC4 .hubC4Header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: start; gap: 16px; }
+.hubC4 .hubC4Header > div { flex: 1 1 300px; min-width: 0; }
+.hubC4 .hubC4Eyebrow { font-size: 11px; color: #507265; letter-spacing: .08em; margin: 0 0 8px; font-weight: 700; }
+.hubC4 h2 { color: #073f39; font-size: 23px; margin: 0; line-height: 1.3; overflow-wrap: anywhere; }
+.hubC4 h2:focus-visible { outline: 2px solid #267b64; outline-offset: 5px; }
+.hubC4 .hubC4Actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.hubC4 button { min-height: 44px; white-space: normal; }
+.hubC4 .hubPrimary:disabled { cursor: default; }
+.hubC4Overview { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 14px 0; }
+.hubC4SummaryCard, .hubC4PotentialSection { min-width: 0; padding: 14px; border: 1px solid #d4e2da; border-radius: 9px; background: #fff; }
+.hubC4SummaryCard h3, .hubC4PotentialSection > h3 { margin: 0 0 10px; color: #073f39; font-size: 16px; }
+.hubC4Rows { display: grid; gap: 0; margin: 0; }
+.hubC4Row { display: grid; grid-template-columns: minmax(130px, .8fr) minmax(0, 1.2fr); align-items: start; gap: 10px; padding: 8px 0; border-bottom: 1px solid #e7eee9; font-size: 11px; line-height: 1.45; }
+.hubC4Row:last-child { border-bottom: 0; }
+.hubC4Row dt { color: #5c7568; }
+.hubC4Row dd { margin: 0; color: #173c31; font-weight: 600; text-align: right; overflow-wrap: anywhere; }
+.hubC4EnergyCard { grid-column: 1 / -1; }
+.hubC4PotentialSection { margin: 12px 0; background: #f8fbf9; }
+.hubC4Intro { margin: 0 0 12px; color: #536b60; font-size: 12px; line-height: 1.55; }
+.hubC4 .hubC4Cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.hubC4 .hubC4Card { min-width: 0; padding: 13px; border: 1px solid #d4e2da; border-top: 3px solid #9aa8a0; border-radius: 8px; background: #fff; }
+.hubC4 .hubC4Card.is-review { border-top-color: #d68c17; }
+.hubC4 .hubC4Card.is-none { border-top-color: #aab5ae; }
+.hubC4CardHeading { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; align-items: center; gap: 7px; }
+.hubC4CardHeading h4 { margin: 0; color: #123c30; font-size: 13px; }
+.hubC4Icon { display: grid; width: 28px; height: 28px; place-items: center; border-radius: 8px; background: #eef1ef; color: #69796f; font-size: 17px; font-weight: 700; }
+.hubC4Icon.is-review { background: #fff3da; color: #a56800; }
+.hubC4Status { border-radius: 20px; padding: 5px 7px; background: #eef1ef; color: #68766d; font-size: 9px; font-weight: 750; white-space: nowrap; }
+.hubC4Status.is-review { background: #fff2d8; color: #9a6000; }
+.hubC4SourceBadge { display: inline-block; margin: 8px 0; border-radius: 20px; padding: 4px 7px; background: #f2f5f3; color: #596d61; font-size: 9px; }
+.hubC4Criteria { display: grid; gap: 0; margin: 0; }
+.hubC4Criteria .hubC4Row { grid-template-columns: 1fr; gap: 3px; }
+.hubC4Criteria .hubC4Row dd { text-align: left; font-weight: 400; }
+.hubC4NextStep { margin: 10px 0 0; padding-top: 9px; border-top: 1px solid #e5ece7; color: #80530b; font-size: 11px; line-height: 1.5; font-weight: 650; }
+.hubC4Evidence, .hubC4Benchmark, .hubC4BuildingDetails, .hubC4DemoDetails { margin-top: 9px; padding-top: 8px; border-top: 1px solid #e5ece7; }
+.hubC4Evidence summary, .hubC4Benchmark summary, .hubC4BuildingDetails summary, .hubC4DemoDetails summary { color: #17614f; font-size: 11px; font-weight: 700; cursor: pointer; }
+.hubC4Priorities { margin: 12px 0; }
+.hubC4Priorities ol { display: grid; gap: 7px; margin: 0; padding-left: 20px; color: #345548; font-size: 11px; line-height: 1.5; }
+.hubC4SourceNote { color: #62796d; font-size: 10px; line-height: 1.5; }
+.hubC4Benchmark { padding: 10px; border-radius: 7px; background: #fff8e9; }
+.hubC4BuildingDetailsHost { margin-top: 10px; }
+.hubC4DemoDetails { padding: 10px; border: 1px dashed #c6d7cd; border-radius: 8px; background: #fbfdfc; }
+.hubC4 .hubC4Banner { padding: 12px 14px; background: #e9f3f0; border-left: 3px solid #267b64; border-radius: 4px; color: #285748; }
+.hubC4 p { font-size: 13px; line-height: 1.6; color: #496459; }
+.hubC4 .hubC4Identity { margin: 16px 0; }
+.hubC4 .hubC4Cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.hubC4 .hubC4Card { min-width: 0; background: #fff; border: 1px solid #d5e2da; border-radius: 10px; padding: 18px; }
+.hubC4 h3 { font-size: 16px; line-height: 1.4; color: #173f33; margin: 0 0 12px; }
+.hubC4 .hubC4Conclusion { font-size: 19px; font-weight: 650; color: #174b3d; line-height: 1.35; margin: 0 0 12px; }
+.hubC4 .hubC4Badge { display: inline-block; border-radius: 5px; padding: 5px 8px; background: #eaf2f7; color: #27546d; font-size: 12px; font-weight: 600; }
+.hubC4 details { margin-top: 16px; padding-top: 12px; border-top: 1px solid #e0e9e4; }
+.hubC4 summary { cursor: pointer; color: #235b48; font-size: 13px; font-weight: 650; min-height: 32px; overflow-wrap: anywhere; }
+.hubC4 details p { overflow-wrap: anywhere; }
+.hubC4 .hubC4Next { background: #fff; border: 1px solid #d5e2da; border-radius: 8px; padding: 18px; margin-top: 18px; }
+.hubC4 .hubC4Next p { margin-bottom: 0; }
+.hubC4 .hubC4Demo { padding: 20px; margin-top: 20px; background: #fff; border: 1px dashed #729d8b; border-radius: 10px; min-width: 0; }
+.hubC4 .hubC4Demo label { display: grid; gap: 9px; font-size: 13px; color: #285344; margin: 16px 0; min-width: 0; }
+.hubC4 .hubC4Demo select { width: 100%; min-width: 0; max-width: 100%; padding: 10px; min-height: 44px; border: 1px solid #adc5b9; background: #fff; color: #214c3c; font: inherit; border-radius: 5px; }
+.hubC4 .hubC4Demo input[type=checkbox] { width: 20px; height: 20px; }
+.hubC4 .hubC4Interview, .hubC4 .hubC4Pipeline { margin-top: 24px; padding-top: 18px; border-top: 1px solid #d6e3dc; }
+.hubC4 .hubC4Stages { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; list-style: none; }
+.hubC4 .hubC4Stages li { padding: 8px 10px; border-radius: 6px; background: #eef3f0; font-size: 12px; }
+.hubC4 .hubC4Stages li[aria-current=step] { background: #17614f; color: #fff; font-weight: 650; }
+.hubC4 button:disabled { opacity: .55; cursor: not-allowed; }
+.hubC4 button:focus-visible, .hubC4 select:focus-visible, .hubC4 summary:focus-visible { outline: 2px solid #247e64; outline-offset: 3px; }
+@media(max-width: 1000px) {
+  .hubC4 .hubC4Cards { grid-template-columns: 1fr; }
+}
+@media(max-width: 600px) {
+  .hubC4Overview { grid-template-columns: 1fr; }
+  .hubC4EnergyCard { grid-column: auto; }
+  .hubC4Row { grid-template-columns: minmax(110px, .7fr) minmax(0, 1.3fr); }
+  .hubC4CardHeading { grid-template-columns: 28px minmax(0, 1fr); }
+  .hubC4Status { grid-column: 2; justify-self: start; }
+  .hubObiDetail.hubC4 { padding: 16px; scroll-margin-top: 75px; }
+  .hubC4 .hubC4Header { top: 74px; margin: -16px -16px 12px; padding: 12px 16px 10px; }
+  .hubC4 h2 { font-size: 21px; }
+  .hubC4 .hubC4Actions { width: 100%; }
+  .hubC4 .hubC4Actions button { flex: 1 1 130px; }
+}
+.hubProspectingResults.hubObiMode { position: relative; }
+.hubProspecting.hubObiDetailOpen > .hubDashboardIntro,
+.hubProspecting.hubObiDetailOpen > .hubObiModeBar,
+.hubProspecting.hubObiDetailOpen > .hubProjectPanel,
+.hubProspectingResults.hubObiDetailOpen .hubCandidateHeading,
+.hubProspectingResults.hubObiDetailOpen .hubCandidateSort,
+.hubProspectingResults.hubObiDetailOpen #hubProspectingSortState,
+.hubProspectingResults.hubObiDetailOpen #hubObiListTools,
+.hubProspectingResults.hubObiDetailOpen #hubCandidates { display: none !important; }
+.hubProspectingResults.hubObiDetailOpen #hubObiMore { display: none !important; }
+.hubProspectingResults.hubObiDetailOpen > .hubObiMobileView { display: none !important; }
+.hubProspectingResults.hubObiDetailOpen { display: block; }
+.hubProspectingResults.hubObiDetailOpen .hubProspectingMapColumn { display: none !important; }
+.hubProspectingResults.hubObiDetailOpen .hubCandidatePanel { display: block; height: auto; min-height: 0; max-height: none; overflow: visible; padding: 0; border: 0; background: transparent; }
+.hubProspectingResults.hubObiDetailOpen .hubObiDetail { margin: 0; }
+.hubObiEnergySummary { margin: 12px 0 0; padding: 12px 14px; border: 1px solid #c9dfd2; border-left: 4px solid #348b67; border-radius: 7px; background: #eef7f1; color: #174b3d; font-size: 13px; font-weight: 600; line-height: 1.5; }
+.hubObiMobileView, .hubObiMobileView[hidden] { display: none; }
+@media (min-width: 761px) {
+  .hubProspectingResults.hubObiMode { grid-template-columns: minmax(0, 1.55fr) minmax(300px, .95fr); align-items: start; }
+  .hubProspectingResults.hubObiMode .hubProspectingMapColumn { position: sticky; top: 88px; align-self: start; }
+  .hubProspectingResults.hubObiMode .hubProspectingMap { height: min(66vh, 640px); min-height: 430px; }
+  .hubProspectingResults.hubObiMode .hubCandidatePanel { display: block; box-sizing: border-box; height: auto; min-height: 0; max-height: none; overflow: visible; padding: 15px; }
+  .hubProspectingResults.hubObiMode .hubObiListTools { flex: 0 0 auto; max-height: none; overflow: visible; }
+  .hubProspectingResults.hubObiMode .hubCandidates { min-height: 0; max-height: none; overflow: visible; }
+  .hubProspectingResults.hubObiMode .hubObiDetail:not([hidden]) { flex: 0 0 auto; min-height: 0; max-height: none; overflow: visible; }
+  .hubProspectingResults.hubObiMode .hubObiDetail.hubC4 .hubC4Cards { grid-template-columns: 1fr; }
+  .hubProspectingResults.hubObiMode .hubObiDetail.hubC4 { margin-top: 8px; padding: 14px; }
+}
+@media (min-width: 761px) and (max-width: 1050px) {
+  .hubProspectingResults.hubObiMode { grid-template-columns: minmax(0, 1.1fr) minmax(270px, .9fr); gap: 12px; }
+  .hubProspectingResults.hubObiMode .hubProspectingMap { min-height: 400px; }
+  .hubProspectingResults.hubObiMode .hubCandidatePanel { min-height: 400px; padding: 12px; }
+}
+@media (max-width: 760px) {
+  .hubObiModeBar { align-items: stretch; flex-direction: column; }
+  .hubObiModeButtons { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; }
+  .ozenoWorkspace .hubObiModeButtons button { width: 100%; min-width: 0; min-height: 42px; padding: 7px 5px; text-align: center; font-size: 10px; line-height: 1.25; }
+  .hubObiSurfaceGrid { grid-template-columns: 1fr; }
+  .hubObiMobileView { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+  .ozenoWorkspace .hubObiMobileView button { min-height: 42px; border: 1px solid #cbdad2; border-radius: 6px; background: #fff; color: #174b3d; font: 650 12px system-ui,sans-serif; }
+  .ozenoWorkspace .hubObiMobileView button[aria-pressed="true"] { border-color: #17614f; background: #17614f; color: #fff; }
+  .hubProspectingResults.hubObiMobileMap .hubCandidatePanel { display: none; }
+  /* Keep Leaflet dimensions stable while the list is visible; zero-size maps drift. */
+  .hubProspectingResults.hubObiMobileList .hubProspectingMapColumn { display: block; position: absolute; left: 0; right: 0; visibility: hidden; pointer-events: none; }
+  .hubProspectingResults.hubObiMode .hubCandidatePanel { position: static; display: block; width: auto; height: auto; min-height: 0; max-height: none; overflow: visible; padding: 14px; }
+  .hubProspectingResults.hubObiMode .hubObiListTools { max-height: none; overflow: visible; }
+  .hubProspectingResults.hubObiMode .hubCandidates { max-height: none; min-height: 0; overflow: visible; }
+  .hubProspectingResults.hubObiMode .hubObiDetail:not([hidden]) { max-height: none; overflow: visible; }
+  .hubProspectingResults.hubObiMode .hubProspectingMap { height: 52vh; min-height: 330px; }
+  .hubProspectingResults.hubObiDetailOpen .hubCandidatePanel { padding: 0; }
+}
+.hubC4 .hubC4Hero { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(260px, .75fr); align-items: stretch; gap: 18px; margin: -14px -14px 14px; padding: 14px; border-bottom: 1px solid #d8e4dc; background: #f7faf8; }
+.hubC4 .hubC4HeroMain { display: flex; flex-direction: column; justify-content: center; gap: 14px; min-width: 0; }
+.hubC4 .hubC4Header { margin: 0; padding: 0; border: 0; background: transparent; }
+.hubC4 .hubC4MapFigure { min-width: 0; margin: 0; }
+.hubC4 .hubC4MapHost { min-width: 0; height: 250px; overflow: hidden; border: 1px solid #d4e2da; border-radius: 9px; background: #edf3f0; }
+.hubC4 .hubC4MapHost > .hubProspectingMap { width: 100%; height: 100%; min-height: 0; border: 0; border-radius: inherit; }
+.hubC4 .hubC4MapFigure > .hubPrivacyNote { margin: 6px 2px 0; color: #718378; font-size: 10px; line-height: 1.45; }
+.hubValidatedFiche { min-width: 0; padding: 0; border: 0; scroll-margin-top: 90px; }
+.hubValidatedFiche #hubObiDetailTitle:focus { outline: none; }
+.hubValidatedFiche > div.wrap { max-width: none; padding: 0; }
+.hubValidatedFiche > .wrap > .ficheReturnBar { position: sticky; z-index: 1000; display: flex; padding: 8px 0; margin-bottom: 8px; background: #f3f6f4; }
+.hubValidatedFiche > .wrap > .ficheReturnBar button { min-height: 44px; font-size: 13px; }
+.hubValidatedFiche > .wrap .page-head.has-context-map { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(250px, .8fr); gap: 22px; align-items: center; }
+.hubValidatedFiche .ficheHeroMain { min-width: 0; }
+.hubValidatedFiche .ficheMapFigure { min-width: 0; margin: 0; }
+.hubValidatedFiche .ficheMapHost { height: 230px; overflow: hidden; border-radius: 12px; border: 1px solid #d9e1da; background: #edf3f0; }
+.hubProspectingResults .hubValidatedFiche .ficheMapHost > .hubProspectingMap { width: 100%; height: 100%; min-height: 0; border: 0; }
+.hubValidatedFiche .ficheMapFigure figcaption { margin-top: 6px; color: #5f786e; font-size: 11px; }
+.hubProspectingResults .hubValidatedFiche .ficheMapHost .leaflet-control-attribution { display: none; }
+.hubValidatedFiche .final-action-grid button { width: 100%; min-height: 44px; }
+/* Typography and alignment within the validated fiche, independent of app rem sizes. */
+.hubValidatedFiche { container-type: inline-size; }
+.hubValidatedFiche > .wrap { font-size: 14px; line-height: 1.5; }
+.hubValidatedFiche > .wrap .page-head { padding: 20px; }
+.hubValidatedFiche > .wrap .title-row { gap: 10px; }
+.hubValidatedFiche > .wrap .title-row h2 { font-size: 25px; line-height: 1.22; letter-spacing: -.025em; }
+.hubValidatedFiche > .wrap .subtitle { margin-top: 8px; font-size: 12px; }
+.hubValidatedFiche > .wrap .eyebrow { font-size: 10px; letter-spacing: .075em; margin-bottom: 6px; }
+.hubValidatedFiche > .wrap .panel { padding: 18px; }
+.hubValidatedFiche > .wrap .panel h3 { margin-bottom: 0; font-size: 17px; line-height: 1.3; }
+.hubValidatedFiche > .wrap .section-title-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: start; margin-bottom: 14px; }
+.hubValidatedFiche > .wrap .section-title-row > div { min-width: 0; }
+.hubValidatedFiche > .wrap .badge { padding: 4px 8px; gap: 4px; font-size: 11px; line-height: 1.4; }
+.hubValidatedFiche > .wrap .lead { font-size: 13px; line-height: 1.55; }
+.hubValidatedFiche > .wrap .comment-box { padding: 12px 14px; font-size: 13px; line-height: 1.5; border-radius: 12px; }
+.hubValidatedFiche > .wrap .key-list { gap: 0; }
+.hubValidatedFiche > .wrap .key-row { grid-template-columns: minmax(125px, .85fr) minmax(0, 1.15fr); gap: 14px; padding: 10px 0; font-size: 13px; line-height: 1.5; }
+.hubValidatedFiche > .wrap .trigger-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; row-gap: 12px; }
+.hubValidatedFiche > .wrap .trigger-card { display: grid; grid-template-rows: subgrid; grid-row: span 6; gap: 12px; min-width: 0; padding: 16px; }
+.hubValidatedFiche > .wrap .trigger-heading { align-items: center; gap: 9px; margin: 0; }
+.hubValidatedFiche > .wrap .trigger-heading h4 { font-size: 14px; line-height: 1.35; }
+.hubValidatedFiche > .wrap .trigger-icon { width: 32px; height: 32px; flex-basis: 32px; border-radius: 9px; }
+.hubValidatedFiche > .wrap .trigger-icon svg { width: 19px; height: 19px; }
+.hubValidatedFiche > .wrap .trigger-badges { align-content: start; align-items: start; gap: 5px; margin: 0; }
+.hubValidatedFiche > .wrap .trigger-state { padding: 4px 8px; font-size: 11px; line-height: 1.4; }
+.hubValidatedFiche > .wrap .trigger-legend { margin-bottom: 14px; gap: 6px 14px; font-size: 11px; }
+.hubValidatedFiche > .wrap .trigger-criteria { display: contents; }
+.hubValidatedFiche > .wrap .criterion-row { grid-template-columns: 22px minmax(0, 1fr); gap: 8px; }
+.hubValidatedFiche > .wrap .criterion-mark { width: 22px; height: 22px; font-size: 11px; }
+.hubValidatedFiche > .wrap .criterion-copy strong { font-size: 12px; line-height: 1.4; }
+.hubValidatedFiche > .wrap .criterion-copy span { font-size: 13px; line-height: 1.5; margin-top: 3px; }
+.hubValidatedFiche > .wrap .trigger-next { margin: 0; padding-top: 12px; font-size: 13px; line-height: 1.5; }
+.hubValidatedFiche > .wrap .trigger-card details { margin: 0; font-size: 12px; }
+.hubValidatedFiche > .wrap .details-body { font-size: 12px; line-height: 1.5; }
+.hubValidatedFiche > .wrap .warning-box,
+.hubValidatedFiche > .wrap .info-box { padding: 12px 14px; font-size: 12px; line-height: 1.55; border-radius: 10px; }
+.hubValidatedFiche > .wrap .mini-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.hubValidatedFiche > .wrap .stat-card { padding: 12px; }
+.hubValidatedFiche > .wrap .stat-card .label { min-height: 34px; font-size: 11px; line-height: 1.4; }
+.hubValidatedFiche > .wrap .stat-card .value { font-size: 25px; line-height: 1.2; margin: 6px 0; }
+.hubValidatedFiche > .wrap .stat-card .sub { font-size: 10px; }
+.hubValidatedFiche > .wrap .bar-row { grid-template-columns: 38px minmax(0, 1fr) 58px; gap: 8px; font-size: 11px; }
+.hubValidatedFiche > .wrap .field { min-height: 40px; padding: 8px 10px; font-size: 12px; }
+.hubValidatedFiche > .wrap .btn,
+.hubValidatedFiche > .wrap button { font-size: 13px; line-height: 1.4; }
+.hubValidatedFiche > .wrap .final-action-grid { gap: 12px; }
+.hubValidatedFiche > .wrap .final-action-grid small { font-size: 11px; line-height: 1.5; }
+.hubValidatedFiche > .wrap .proof-line,
+.hubValidatedFiche > .wrap footer { font-size: 11px; line-height: 1.5; }
+@container (max-width: 920px) {
+  .hubValidatedFiche > .wrap .split-2 { grid-template-columns: minmax(0, 1fr); }
+  .hubValidatedFiche > .wrap .trigger-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .hubValidatedFiche > .wrap .trigger-card { padding: 12px; gap: 10px; }
+  .hubValidatedFiche > .wrap .trigger-heading { gap: 7px; }
+  .hubValidatedFiche > .wrap .trigger-heading h4 { font-size: 13px; }
+  .hubValidatedFiche > .wrap .trigger-icon { width: 28px; height: 28px; flex-basis: 28px; }
+  .hubValidatedFiche > .wrap .trigger-badges .badge,
+  .hubValidatedFiche > .wrap .trigger-state { padding: 4px 6px; font-size: 10px; white-space: normal; }
+  .hubValidatedFiche > .wrap .criterion-copy span,
+  .hubValidatedFiche > .wrap .trigger-next { font-size: 12px; }
+  .hubValidatedFiche > .wrap .page-head.has-context-map { grid-template-columns: minmax(0, 1fr); }
+}
+@container (max-width: 620px) {
+  .hubValidatedFiche > .wrap .trigger-grid { grid-template-columns: minmax(0, 1fr); }
+  .hubValidatedFiche > .wrap .trigger-card { padding: 16px; gap: 12px; }
+  .hubValidatedFiche > .wrap .trigger-heading h4 { font-size: 14px; }
+  .hubValidatedFiche > .wrap .trigger-badges .badge,
+  .hubValidatedFiche > .wrap .trigger-state { padding: 4px 8px; font-size: 11px; }
+  .hubValidatedFiche > .wrap .criterion-copy span,
+  .hubValidatedFiche > .wrap .trigger-next { font-size: 13px; }
+  .hubValidatedFiche > .wrap .section-title-row { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .hubValidatedFiche > .wrap .section-title-row > .badge { justify-self: start; }
+  .hubValidatedFiche > .wrap .key-row { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .hubValidatedFiche > .wrap .key-row .v { text-align: left; }
+  .hubValidatedFiche > .wrap .title-row h2 { font-size: 22px; }
+  .hubValidatedFiche > .wrap .page-head,
+  .hubValidatedFiche > .wrap .panel { padding: 16px; }
+  .hubValidatedFiche > .wrap .final-action-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 900px) {
+  .hubValidatedFiche > .wrap .page-head.has-context-map { grid-template-columns: minmax(0, 1fr); }
+  .hubValidatedFiche .ficheMapHost { height: 200px; }
+}
+.hubProspectingResults.hubObiDetailOpen .hubCandidatePanel > .hubObiDetail { width: 100%; max-width: none; }
+.ozenoWorkspace .hubProjects .hubCommercialStatusSelect { min-width: 196px; max-width: 235px; }
+.hubMissionSelector { min-width: 0; font-size: 12px; }
+.hubMissionSelector summary { position: relative; box-sizing: border-box; min-height: 42px; padding: 10px 12px 10px 28px; border: 1px solid #bfd5c8; border-radius: 8px; background: #f8fbf9; color: #1a513f; line-height: 1.5; overflow-wrap: anywhere; list-style: none; cursor: pointer; }
+.hubMissionSelector summary::-webkit-details-marker { display: none; }
+.hubMissionSelector summary::before { content: '›'; position: absolute; top: 10px; left: 11px; color: #37785b; font-size: 18px; line-height: 22px; }
+.hubMissionSelector[open] > summary { border-color: #6ea58a; background: #edf6f0; }
+.hubMissionSelector[open] > summary::before { transform: rotate(90deg); }
+.hubMissionSelector summary:hover { border-color: #6ea58a; background: #f0f7f3; }
+.hubMissionSelector > small { display: block; margin: 8px 2px; color: #677b6f; line-height: 1.5; }
+.hubMissionSelector fieldset { display: grid; gap: 3px; min-width: 0; margin: 7px 0 0; padding: 7px; border: 1px solid #d4e2d9; border-radius: 8px; background: #fff; }
+.hubMissionSelector label { display: flex; align-items: start; gap: 8px; min-width: 0; min-height: 30px; box-sizing: border-box; padding: 6px; border-radius: 5px; font-size: 12px; line-height: 1.5; cursor: pointer; }
+.hubMissionSelector label:hover, .hubMissionSelector label:has(input:checked) { background: #eef6f1; }
+.hubMissionSelector input[type="checkbox"] { flex: 0 0 16px; width: 16px; height: 16px; min-height: 0; margin: 1px 0; accent-color: #176c54; cursor: pointer; }
+.hubMissionSelector label[data-unavailable="true"] { background: #f4f6f4; color: #758379; cursor: not-allowed; }
+.hubMissionSelector label[data-unavailable="true"] input { accent-color: #84948a; cursor: not-allowed; }
+.hubPlanningView { display: grid; gap: 18px; min-width: 0; }
+.hubPlanningPanel, .hubPlanningListPanel { padding: 22px 24px; }
+.hubPlanningPanel h2, .hubPlanningToolbar h2 { margin: 0; color: #073f39; font-size: 19px; }
+.hubPlanningForm { display: grid; grid-template-columns: minmax(180px, 1.3fr) minmax(160px, .9fr) minmax(145px, .7fr) minmax(210px, 1.4fr) auto; align-items: end; gap: 13px; margin-top: 17px; }
+.hubPlanningForm label { display: grid; gap: 6px; min-width: 0; color: #496357; font-size: 11px; font-weight: 650; }
+.ozenoWorkspace .hubPlanningForm :is(input, select, textarea), .ozenoWorkspace .hubPlanningToolbar select { box-sizing: border-box; width: 100%; min-width: 0; min-height: 40px; border: 1px solid #cbdad2; border-radius: 6px; padding: 8px 10px; background: #fff; color: var(--ink); font: inherit; font-size: 12px; }
+.ozenoWorkspace .hubPlanningForm textarea { min-height: 58px; resize: vertical; }
+.hubPlanningTitleField { grid-column: 1 / span 2; }
+.hubPlanningNotesField { grid-column: 3 / span 2; }
+.hubPlanningForm .hubPrimary { min-height: 40px; white-space: nowrap; }
+.hubPlanningTimeField { grid-column: 4 / span 2; min-width: 0; margin: 0; padding: 8px 10px; border: 1px solid #d5e1da; border-radius: 7px; }
+.hubPlanningTimeField legend { padding: 0 4px; color: #496357; font-size: 10px; font-weight: 700; }
+.hubPlanningTimeField > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.hubPlanningTimeField label { display: grid; gap: 4px; min-width: 0; color: #496357; font-size: 10px; font-weight: 650; }
+.hubPlanningTimeField small { display: block; margin-top: 5px; color: #75867d; font-size: 9px; line-height: 1.35; }
+.hubWorkflowDialog { box-sizing: border-box; width: min(520px, calc(100vw - 32px)); max-height: min(90vh, 760px); padding: 0; border: 1px solid #cbdad2; border-radius: 12px; color: var(--ink); box-shadow: 0 20px 70px rgb(20 50 43 / 25%); }
+.hubWorkflowDialog::backdrop { background: rgb(14 38 33 / 48%); }
+.hubWorkflowDialogForm { display: grid; gap: 14px; padding: 24px; }
+.hubWorkflowDialogForm h2 { margin: -7px 0 0; color: var(--ink); font-size: 22px; }
+.hubWorkflowDialogContext, .hubWorkflowDialogHint { margin: 0; color: #52685e; font-size: 13px; line-height: 1.5; }
+.hubWorkflowDialogHint { padding: 10px 12px; border-left: 3px solid #dda52d; border-radius: 4px; background: #fff8e8; }
+.hubWorkflowDialogForm label { display: grid; gap: 6px; color: #40584e; font-size: 12px; font-weight: 650; }
+.hubWorkflowDialogForm .hubPlanningTimeField { grid-column: auto; }
+.hubWorkflowDialogForm :is(input, select, textarea) { box-sizing: border-box; width: 100%; min-height: 40px; padding: 9px 11px; border: 1px solid #cbdad2; border-radius: 6px; background: #fff; color: var(--ink); font: inherit; font-size: 13px; }
+.hubWorkflowDialogForm textarea { min-height: 70px; resize: vertical; }
+.hubWorkflowDialogButtons { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 9px; margin-top: 4px; }
+.hubStageChangedAt { display: block; margin-top: 5px; color: #71847b; font-size: 10px; }
+.hubPlanningToolbar { display: flex; justify-content: space-between; align-items: end; gap: 18px; margin-bottom: 15px; }
+.hubPlanningToolbar label { width: min(210px, 40%); }
+.hubPlanningToolbarActions { display: flex; align-items: end; justify-content: flex-end; gap: 9px; }
+.hubPlanningToolbarActions button { min-height: 40px; white-space: nowrap; }
+.hubPlanningToolbarActions button:disabled { cursor: not-allowed; opacity: .55; }
+.hubPlanningSyncNote { margin: -4px 0 14px; color: #75867d; font-size: 11px; line-height: 1.45; }
+.hubPlanningActions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.hubPlanningAction { min-width: 0; padding: 15px 16px; border: 1px solid #d9e5de; border-left: 3px solid #2f9275; border-radius: 8px; background: #fff; }
+.hubPlanningAction.isOverdue { border-left-color: #c67b1b; background: #fffaf1; }
+.hubPlanningActionHeading { display: flex; justify-content: space-between; align-items: start; gap: 14px; }
+.hubPlanningActionTitle { color: #123f36; font-size: 14px; font-weight: 700; overflow-wrap: anywhere; }
+.hubPlanningDue { flex: 0 0 auto; color: #537063; font-size: 11px; }
+.hubPlanningMeta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px; color: #75867d; font-size: 11px; }
+.hubPlanningMeta a { color: #176c57; font-weight: 650; }
+.hubPlanningNotes { margin: 9px 0 0; color: #516a5e; font-size: 12px; line-height: 1.45; white-space: pre-wrap; }
+.hubPlanningButtons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.ozenoWorkspace .hubPlanningButtons :is(.hubSecondary, .hubDiscard) { min-height: 32px; padding: 6px 10px; font-size: 11px; }
+.hubPlanningActions .hubEmpty { grid-column: 1 / -1; margin: 0; padding: 18px; border: 1px dashed #cbdad2; border-radius: 8px; }
+@media (max-width: 1050px) { .hubPlanningForm { grid-template-columns: repeat(2, minmax(0, 1fr)); } .hubPlanningTitleField, .hubPlanningNotesField, .hubPlanningTimeField { grid-column: 1 / -1; } .hubPlanningForm .hubPrimary { grid-column: 1 / -1; justify-self: start; } }
+@media (max-width: 760px) { .hubPlanningPanel, .hubPlanningListPanel { padding: 16px 15px; } .hubPlanningForm { grid-template-columns: 1fr; } .hubPlanningForm label, .hubPlanningTitleField, .hubPlanningNotesField, .hubPlanningTimeField, .hubPlanningForm .hubPrimary { grid-column: 1; } .hubPlanningActions { grid-template-columns: 1fr; } .hubPlanningToolbar { align-items: stretch; flex-direction: column; } .hubPlanningToolbarActions { align-items: stretch; flex-direction: column; } .hubPlanningToolbarActions label, .hubPlanningToolbarActions button { width: 100%; } .hubPlanningToolbar label { width: 100%; } .hubPlanningActionHeading { flex-direction: column; gap: 4px; } }
+@media (max-width: 760px) {
+  .hubC4 .hubC4Hero { grid-template-columns: minmax(0, 1fr); gap: 12px; margin: -16px -16px 12px; padding: 12px 16px; }
+  .hubC4 .hubC4MapHost { height: 210px; }
+  .hubC4 .hubC4Header { top: auto; margin: 0; padding: 0; }
 }
