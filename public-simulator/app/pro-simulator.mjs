@@ -880,6 +880,8 @@ function renderResult(input, production = null) {
   const irrReady = financialReady && irrPct != null && Number.isFinite(Number(irrPct));
   $('resultIndicativeIrr').textContent = irrReady ? `${numberFormat(Number(irrPct), 1)} %` : 'À préciser';
   $('resultIndicativeIrr').classList.toggle('simPendingValue', !irrReady);
+  $('resultSummaryIrr').textContent = irrReady ? `${numberFormat(Number(irrPct), 1)} %` : 'À préciser';
+  $('resultSummaryIrr').classList.toggle('simPendingValue', !irrReady);
   $('resultPayback').textContent = paybackWindow(financial?.projection, financialReady);
   const yearOneAci = financial?.aciSavingsYear1Eur;
   $('resultAciSavings').textContent = yearOneAci != null && Number.isFinite(Number(yearOneAci))
