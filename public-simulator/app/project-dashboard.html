@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>OZENO · Synthèse projet</title>
-  <link rel="stylesheet" href="./project-dashboard.css">
+  <link rel="stylesheet" href="./project-dashboard.css?v=20261120-publication-audit">
   <script src="./runtime-config.js"></script>
   <script src="./app-auth-gate.js"></script>
 </head>
@@ -22,6 +22,13 @@
         </div>
         <div class="headingActions"><label id="scenarioPickerWrap" class="scenarioPicker">Version du scénario<select id="scenarioPicker" aria-label="Choisir une version du scénario"></select></label><div id="lifecycleActions" class="actionRow"></div></div>
       </section>
+
+      <details class="dashboardCard dashboardAudit" id="scenarioAudit" hidden>
+        <summary id="scenarioAuditTitle">Journal d’audit</summary>
+        <p class="quietNote">Publication et accès à cette version de l’étude.</p>
+        <p id="scenarioAuditMessage" class="quietNote" role="status" hidden></p>
+        <ol id="scenarioAuditEvents"></ol>
+      </details>
 
       <section id="kpiRow" class="kpiRow" aria-label="Indicateurs principaux"></section>
 
@@ -55,7 +62,7 @@
       </div>
     </div>
   </main>
-  <script type="module" src="./project-dashboard.js"></script>
+  <script type="module" src="./project-dashboard.js?v=20261120-publication-audit"></script>
   <script type="module" src="./project-site-qualification.mjs"></script>
 <script type="module" src="./project-acc-entry.mjs"></script>
 </body>

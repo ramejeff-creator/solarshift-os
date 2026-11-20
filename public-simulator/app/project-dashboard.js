@@ -251,12 +251,75 @@ function render(model) {
   else if (!model.canonicalRun) setNotice(model.scenario ? 'Aucun calcul canonique n’est lié à cette version de scénario.' : 'Projet chargé · aucun scénario n’est encore associé. Les indicateurs restent à compléter.');
 }
 
+const auditLabels = Object.freeze({
+  PUBLISHED_FOR_INVESTORS: 'Publication de l’étude',
+  INVESTOR_PUBLICATION_REVOKED: 'Retrait de la publication de l’étude',
+  REPORT_PUBLISHED: 'Publication du rapport',
+  REPORT_REVOKED: 'Retrait de la publication du rapport',
+  BETA_RECIPIENT_ACCESS_SUSPENDED: 'Retrait temporaire des droits du destinataire',
+  BETA_RECIPIENT_ACCESS_RESTORED: 'Rétablissement des droits du destinataire'
+});
+const auditDate = new Intl.DateTimeFormat('fr-FR', {
+  year: 'numeric', month: '2-digit', day: '2-digit',
+  hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Europe/Paris'
+});
+let auditRequest;
+
+async function loadScenarioAudit(scenario) {
+  auditRequest?.abort();
+  const panel = $('scenarioAudit'), events = $('scenarioAuditEvents'), message = $('scenarioAuditMessage');
+  panel.hidden = true;
+  events.replaceChildren();
+  message.hidden = true;
+  if (!scenario) return;
+  $('scenarioAuditTitle').textContent = 'Journal d’audit · Étude v' + scenario.version;
+  const request = new AbortController();
+  auditRequest = request;
+  try {
+    const response = await fetch(apiBase + '/rest/v1/rpc/list_scenario_publication_audit', {
+      method: 'POST',
+      headers: { apikey: apiKey, Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ target_project: projectId, target_scenario: scenario.id }),
+      signal: request.signal
+    });
+    if ([401, 403, 404].includes(response.status)) return;
+    if (!response.ok) throw new Error('Journal indisponible');
+    const rows = await response.json();
+    if (request.signal.aborted) return;
+    for (const event of rows) {
+      const entry = document.createElement('li');
+      const date = document.createElement('time');
+      date.dateTime = event.occurred_at;
+      date.textContent = auditDate.format(new Date(event.occurred_at));
+      const label = document.createElement('span');
+      label.textContent = auditLabels[event.action] || event.action;
+      entry.append(date, label);
+      events.append(entry);
+    }
+    message.textContent = 'Aucun événement de publication ou d’accès pour cette version.';
+    message.hidden = rows.length > 0;
+    panel.hidden = false;
+  } catch {
+    if (request.signal.aborted) return;
+    message.textContent = 'Impossible de charger le journal d’audit.';
+    message.hidden = false;
+    panel.hidden = false;
+  }
+}
+
+let scenarioLoad = 0;
 async function loadScenario(scenarioId) {
-  scenarioData = scenarioId ? await getFunction('get-scenario-workspace', { scenarioId }) : null;
+  const load = ++scenarioLoad;
+  auditRequest?.abort();
+  $('scenarioAudit').hidden = true;
+  const data = scenarioId ? await getFunction('get-scenario-workspace', { scenarioId }) : null;
+  if (load !== scenarioLoad) return;
+  scenarioData = data;
   if (scenarioData?.scenario && scenarioData.scenario.project_id !== projectId) throw new Error('Ce scénario ne correspond pas au projet demandé.');
   const model = buildProjectDashboardModel(projectData, scenarioData, selectedPerspective);
   if (model.finance.selectedPerspective) selectedPerspective = model.finance.selectedPerspective.key;
   render(buildProjectDashboardModel(projectData, scenarioData, selectedPerspective));
+  void loadScenarioAudit(model.scenario);
 }
 
 async function boot() {
