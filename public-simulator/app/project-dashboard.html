@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>OZENO · Synthèse projet</title>
-  <link rel="stylesheet" href="./project-dashboard.css?v=20261120-audit-identities">
+  <link rel="stylesheet" href="./project-dashboard.css?v=20261120-recipient-access">
   <script src="./runtime-config.js"></script>
   <script src="./app-auth-gate.js"></script>
 </head>
@@ -25,6 +25,11 @@
 
       <details class="dashboardCard dashboardAudit" id="scenarioAudit" hidden>
         <summary id="scenarioAuditTitle">Journal d’audit</summary>
+        <section id="scenarioAccess" aria-labelledby="scenarioAccessTitle" hidden>
+          <h3 id="scenarioAccessTitle">Droits des destinataires</h3>
+          <ul id="scenarioAccessRecipients"></ul>
+          <p id="scenarioAccessStatus" class="quietNote" role="status"></p>
+        </section>
         <p class="quietNote">Publication et accès à cette version de l’étude.</p>
         <p id="scenarioAuditMessage" class="quietNote" role="status" hidden></p>
         <ol id="scenarioAuditEvents"></ol>
@@ -62,7 +67,7 @@
       </div>
     </div>
   </main>
-  <script type="module" src="./project-dashboard.js?v=20261120-audit-identities"></script>
+  <script type="module" src="./project-dashboard.js?v=20261120-recipient-access"></script>
   <script type="module" src="./project-site-qualification.mjs"></script>
 <script type="module" src="./project-acc-entry.mjs"></script>
 </body>

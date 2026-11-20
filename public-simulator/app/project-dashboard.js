@@ -257,7 +257,9 @@ const auditLabels = Object.freeze({
   REPORT_PUBLISHED: 'Publication du rapport',
   REPORT_REVOKED: 'Retrait de la publication du rapport',
   BETA_RECIPIENT_ACCESS_SUSPENDED: 'Retrait temporaire des droits du destinataire',
-  BETA_RECIPIENT_ACCESS_RESTORED: 'Rétablissement des droits du destinataire'
+  BETA_RECIPIENT_ACCESS_RESTORED: 'Rétablissement des droits du destinataire',
+  RECIPIENT_ACCESS_SUSPENDED: 'Retrait temporaire des droits du destinataire',
+  RECIPIENT_ACCESS_RESTORED: 'Rétablissement des droits du destinataire'
 });
 const auditDate = new Intl.DateTimeFormat('fr-FR', {
   year: 'numeric', month: '2-digit', day: '2-digit',
@@ -265,23 +267,80 @@ const auditDate = new Intl.DateTimeFormat('fr-FR', {
 });
 let auditRequest;
 
+async function scenarioAuditRpc(name, parameters, signal) {
+  return fetch(apiBase + '/rest/v1/rpc/' + name, {
+    method: 'POST',
+    headers: { apikey: apiKey, Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+    body: JSON.stringify(parameters),
+    signal
+  });
+}
+
+async function loadScenarioRecipients(scenario, signal) {
+  const manager = $('scenarioAccess');
+  const status = $('scenarioAccessStatus');
+  const parameters = { target_project: projectId, target_scenario: scenario.id };
+  try {
+    const response = await scenarioAuditRpc('list_scenario_access_recipients', parameters, signal);
+    if ([401, 403, 404].includes(response.status)) return;
+    if (!response.ok) throw new Error('Destinataires indisponibles');
+    const recipients = await response.json();
+    if (signal.aborted || !recipients.length) return;
+    for (const person of recipients) {
+      const row = document.createElement('li');
+      const identity = document.createElement('div');
+      const name = document.createElement('span');
+      name.textContent = person.recipient_label;
+      const state = document.createElement('small');
+      state.textContent = person.suspended ? 'Accès suspendu' : 'Accès actif';
+      identity.append(name, state);
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'actionButton';
+      button.textContent = person.suspended ? 'Rétablir les droits' : 'Retirer les droits';
+      button.setAttribute('aria-label', button.textContent + ' · ' + person.recipient_label);
+      button.addEventListener('click', async () => {
+        button.disabled = true;
+        status.textContent = 'Enregistrement des droits…';
+        try {
+          const saved = await scenarioAuditRpc('set_scenario_recipient_access', {
+            ...parameters, target_recipient: person.recipient_id, suspend_access: !person.suspended
+          });
+          if (!saved.ok) throw new Error('Modification refusée');
+          if (!signal.aborted) await loadScenarioAudit(scenario);
+        } catch {
+          if (signal.aborted) return;
+          status.textContent = 'Impossible de confirmer la modification. Actualisez le dossier pour vérifier les droits.';
+          button.disabled = false;
+        }
+      });
+      row.append(identity, button);
+      $('scenarioAccessRecipients').append(row);
+    }
+    manager.hidden = false;
+  } catch {
+    if (signal.aborted) return;
+    status.textContent = 'Impossible de charger les droits des destinataires.';
+    manager.hidden = false;
+  }
+}
+
 async function loadScenarioAudit(scenario) {
   auditRequest?.abort();
   const panel = $('scenarioAudit'), events = $('scenarioAuditEvents'), message = $('scenarioAuditMessage');
   panel.hidden = true;
   events.replaceChildren();
+  $('scenarioAccess').hidden = true;
+  $('scenarioAccessRecipients').replaceChildren();
+  $('scenarioAccessStatus').textContent = '';
   message.hidden = true;
   if (!scenario) return;
   $('scenarioAuditTitle').textContent = 'Journal d’audit · Étude v' + scenario.version;
   const request = new AbortController();
   auditRequest = request;
   try {
-    const response = await fetch(apiBase + '/rest/v1/rpc/list_scenario_publication_audit', {
-      method: 'POST',
-      headers: { apikey: apiKey, Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ target_project: projectId, target_scenario: scenario.id }),
-      signal: request.signal
-    });
+    const response = await scenarioAuditRpc('list_scenario_publication_audit',
+      { target_project: projectId, target_scenario: scenario.id }, request.signal);
     if ([401, 403, 404].includes(response.status)) return;
     if (!response.ok) throw new Error('Journal indisponible');
     const rows = await response.json();
@@ -298,7 +357,7 @@ async function loadScenarioAudit(scenario) {
       const author = document.createElement('small');
       author.textContent = 'Auteur · ' + (event.actor_label || 'Non renseigné');
       details.append(author);
-      if (['BETA_RECIPIENT_ACCESS_SUSPENDED', 'BETA_RECIPIENT_ACCESS_RESTORED'].includes(event.action)) {
+      if (event.action.startsWith('RECIPIENT_ACCESS_') || event.action.startsWith('BETA_RECIPIENT_ACCESS_')) {
         const recipient = document.createElement('small');
         recipient.textContent = 'Destinataire · ' + (event.recipient_label || 'Non renseigné');
         details.append(recipient);
@@ -309,6 +368,7 @@ async function loadScenarioAudit(scenario) {
     message.textContent = 'Aucun événement de publication ou d’accès pour cette version.';
     message.hidden = rows.length > 0;
     panel.hidden = false;
+    if (scenario.status === 'PUBLISHED') void loadScenarioRecipients(scenario, request.signal);
   } catch {
     if (request.signal.aborted) return;
     message.textContent = 'Impossible de charger le journal d’audit.';
