@@ -10,3 +10,5 @@
 .dashboardAudit ol { list-style: none; padding: 0; margin: 8px 0 0; }
 .dashboardAudit li { display: flex; flex-wrap: wrap; gap: 4px 16px; padding: 9px 0; border-top: 1px solid var(--line); }
 .dashboardAudit time { color: var(--muted); font-variant-numeric: tabular-nums; }
+.dashboardAudit li > div { min-width: 0; overflow-wrap: anywhere; }
+.dashboardAudit li small { display: block; color: var(--muted); }

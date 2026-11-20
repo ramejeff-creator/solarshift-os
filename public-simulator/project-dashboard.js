@@ -293,7 +293,17 @@ async function loadScenarioAudit(scenario) {
       date.textContent = auditDate.format(new Date(event.occurred_at));
       const label = document.createElement('span');
       label.textContent = auditLabels[event.action] || event.action;
-      entry.append(date, label);
+      const details = document.createElement('div');
+      details.append(label);
+      const author = document.createElement('small');
+      author.textContent = 'Auteur · ' + (event.actor_label || 'Non renseigné');
+      details.append(author);
+      if (['BETA_RECIPIENT_ACCESS_SUSPENDED', 'BETA_RECIPIENT_ACCESS_RESTORED'].includes(event.action)) {
+        const recipient = document.createElement('small');
+        recipient.textContent = 'Destinataire · ' + (event.recipient_label || 'Non renseigné');
+        details.append(recipient);
+      }
+      entry.append(date, details);
       events.append(entry);
     }
     message.textContent = 'Aucun événement de publication ou d’accès pour cette version.';
