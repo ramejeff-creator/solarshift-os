@@ -7,7 +7,7 @@
   <link rel="icon" type="image/png" href="./exec-d2eda8f0-968b-466f-b6ab-7ba649808352.png">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="./ozeno-theme.css">
-  <link rel="stylesheet" href="./project-hub.css">
+  <link rel="stylesheet" href="./project-hub.css?v=20261123-published-studies">
   <link rel="stylesheet" href="./market-opportunities.css">
   <script src="./runtime-config.js"></script>
   <script src="./app-auth-gate.js"></script>
@@ -121,6 +121,11 @@
           <article class="hubStatCard"><span class="hubStatIcon draft" aria-hidden="true">◷</span><div><p>Projets en cours</p><strong id="hubInProgressProjects">—</strong><small>Brouillons compris</small></div></article>
           <article class="hubStatCard"><span class="hubStatIcon cloud" aria-hidden="true">↗</span><div><p>Projets en attente</p><strong id="hubPendingProjects">—</strong><small>Formulaire web non connecté</small></div></article>
           <article class="hubStatCard"><span class="hubStatIcon prospecting" aria-hidden="true">⌕</span><div><p>Projets ACC</p><strong id="hubProspectingProjects">—</strong></div></article>
+        </section>
+        <section class="hubProjectPanel hubPublishedStudies" id="hubPublishedStudies" aria-labelledby="hubPublishedStudiesTitle" hidden>
+          <h2 id="hubPublishedStudiesTitle">Études publiées</h2>
+          <p id="hubPublishedStudiesError" role="status" hidden>Les études publiées sont temporairement indisponibles.</p>
+          <ul id="hubPublishedStudiesList"></ul>
         </section>
         <section class="hubProjectPanel" aria-labelledby="hubProjectsHeading">
           <div class="hubToolbar">
@@ -317,5 +322,6 @@
   <script src="./local-preview-navigation.js?v=20261104-ooi-navigation-1"></script>
   <script src="./project-hub.js?v=20261116-enedis-prospecting-display-3"></script>
   <script src="./market-opportunities.js?v=20261104-market-opportunities-2"></script>
+  <script type="module" src="./published-studies.mjs"></script>
 </body>
 </html>

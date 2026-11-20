@@ -257,6 +257,16 @@ export const setRecoveredPassword = (token, password) => request('/auth/v1/user'
 });
 export const cloudOrganizations = (token) => request('/rest/v1/rpc/commercial_project_organizations', { token, method: 'POST', body: {} });
 export const cloudProjects = (token, projectId = null) => request('/rest/v1/rpc/list_commercial_projects', { token, method: 'POST', body: { target_project: projectId } });
+export function cloudPublishedStudies(token) {
+  const query = new URLSearchParams({
+    select: 'id,name,version,project:projects!scenarios_project_id_fkey(name),reports:scenario_reports!scenario_reports_scenario_id_fkey(id,report_type,financial_viewpoint,report_version)',
+    status: 'eq.PUBLISHED',
+    order: 'published_at.desc,id',
+    'reports.status': 'eq.PUBLISHED',
+    'reports.order': 'report_version.desc'
+  });
+  return request('/rest/v1/scenarios?' + query, { token });
+}
 export const saveCloudProject = (token, record, { projectId = null, organizationId = null, expectedVersion = 0 } = {}) => request('/rest/v1/rpc/save_commercial_project', { token, method: 'POST', body: { project_record: normalizeProject(record), target_project: projectId, target_organization: organizationId, expected_version: expectedVersion } });
 export function cloudInstallerPartners(token, organizationId) {
   const query = new URLSearchParams({ select: '*', organization_id: `eq.${organizationId}`, order: 'updated_at.desc' });

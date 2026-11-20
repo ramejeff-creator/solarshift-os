@@ -762,3 +762,11 @@
   .hubC4 .hubC4MapHost { height: 210px; }
   .hubC4 .hubC4Header { top: auto; margin: 0; padding: 0; }
 }
+
+.hubPublishedStudies { margin-bottom: 20px; }
+.hubPublishedStudies h2 { margin: 0; color: var(--pine); font-size: 18px; }
+.hubPublishedStudies ul { margin: 0; padding: 0; list-style: none; }
+.hubPublishedStudies li { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 12px 0; }
+.hubPublishedStudies li + li { border-top: 1px solid var(--line); }
+.hubPublishedStudies h3 { margin: 0; color: var(--pine); font-size: 15px; overflow-wrap: anywhere; }
+.hubPublishedStudies li div { display: flex; flex-wrap: wrap; gap: 8px; }

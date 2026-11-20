@@ -8,6 +8,14 @@
     const facts = Array.isArray(payload.facts) ? payload.facts : [];
     const unresolvedFacts = facts.filter((fact) => unresolvedStates.has(fact.status));
     const gate = input.publication_gate || payload.publication_gate || { ready: false, blockers: [] };
+    if (report.status === 'PUBLISHED') {
+      return {
+        label: 'Rapport publié',
+        provisional: false,
+        unresolvedCount: unresolvedFacts.length,
+        blockers: []
+      };
+    }
     const provisional = unresolvedFacts.length > 0 || gate.ready !== true;
 
     if (provisional) {
@@ -19,11 +27,7 @@
       };
     }
 
-    const label = report.status === 'PUBLISHED'
-      ? 'Rapport publié'
-      : report.status === 'REVOKED'
-        ? 'Rapport révoqué'
-        : 'Rapport généré';
+    const label = report.status === 'REVOKED' ? 'Rapport révoqué' : 'Rapport généré';
     return { label, provisional: false, unresolvedCount: 0, blockers: [] };
   }
 
